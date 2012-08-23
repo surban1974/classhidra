@@ -1,0 +1,813 @@
+/**
+* Creation date: (07/04/2006)
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+*/
+
+/********************************************************************************
+*
+*	Copyright (C) 2005  Svyatoslav Urbanovych
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*********************************************************************************/
+
+package it.classhidra.core.controller.tags;
+
+
+import it.classhidra.core.controller.action;
+import it.classhidra.core.controller.bsConstants;
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_reflect;
+import it.classhidra.core.tool.util.util_tag;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.*;
+import javax.servlet.jsp.tagext.*; 
+import java.io.IOException;
+
+public class tagInput extends BodyTagSupport{
+	private static final long serialVersionUID = -7838184722699016681L;
+	protected String bean = null;
+	protected String objId = null;// id
+	protected String name = null;
+	protected String accept = null;
+	protected String styleClass=null;
+	protected String lang = null;
+	protected String style = null;
+	protected String title = null;
+	protected String dir=null;//"ltr"
+	
+	protected String type = null;//"text"
+	protected String readonly = null;//"readonly"
+	protected String size = null;
+	protected String src = null;
+	protected String tabindex = null;
+	protected String usemap = null;
+	protected String accesskey = null;
+	protected String align = null;//"top"
+	protected String alt = null;
+	protected String border = null;
+	protected String checked = null;//"checked"
+	protected String disabled = null;//"disabled"
+	protected String width = null;
+	protected String height = null;
+	protected String value = null;
+	protected String ismap = null;//"ismap"
+	protected String maxlength = null;
+	
+	protected String formatInput = null;
+	protected String formatOutput = null;
+	protected String formatLanguage=null;
+	protected String formatCountry=null;
+	protected String toUpperCase = null;
+		
+	
+	
+	protected String onclick = null;
+	protected String ondblclick = null;
+	protected String onhelp = null;
+	protected String onkeydown = null;
+	protected String onkeypress = null;
+	protected String onkeyup = null;
+	protected String onmousedown = null;
+	protected String onmousemove = null;
+	protected String onmouseout = null;
+	protected String onmouseover = null;
+	protected String onmouseup = null;
+	protected String onblur = null;
+	protected String onchange = null;
+	protected String onfocus = null;
+	protected String onselect = null;
+	
+	protected String clear = null;
+	
+	protected String method_prefix=null;
+	protected String checkedvalue=null;
+	protected String replaceOnBlank=null;
+	protected String replaceOnErrorFormat=null;
+
+	public int doStartTag() throws JspException {
+		StringBuffer results = new StringBuffer();
+		results.append(this.createTagBody());
+		JspWriter writer = pageContext.getOut();
+		try {
+			writer.print(results.toString());
+		} catch (IOException e) {
+			throw new JspException(e.toString());
+		}
+		value=null;
+		return EVAL_BODY_INCLUDE; 
+	}
+
+	public void release() {
+		super.release();				
+		bean=null;
+		name=null;
+		objId=null;
+		accept=null;
+		styleClass=null;
+		lang=null;
+		style=null;
+		title=null;
+		dir=null;//"ltr"
+
+		type = null;//"text"
+		readonly = null;//"readonly"
+		size = null;
+		src = null;
+		tabindex = null;
+		usemap = null;
+		accesskey = null;
+		align = null;//"top"
+		alt = null;
+		border = null;
+		checked = null;//"checked"
+		disabled = null;//"disabled"
+		width = null;
+		height = null;
+		value = null;
+		ismap = null;//"ismap"
+		maxlength = null;
+		formatInput = null;
+		formatOutput = null;
+		formatLanguage=null;
+		formatCountry=null;
+
+		
+		onclick=null;
+		ondblclick=null;
+		onhelp=null;
+		onkeydown=null;
+		onkeypress=null;
+		onkeyup=null;
+		onmousedown=null;
+		onmousemove=null;
+		onmouseout=null;
+		onmouseover=null;
+		onmouseup=null;
+		onblur = null;
+		onchange = null;
+		onfocus = null;
+		onselect = null;
+		
+		clear = "false";
+		toUpperCase = null;
+		method_prefix=null;
+		checkedvalue=null;
+		
+		replaceOnBlank=null;
+		replaceOnErrorFormat=null;
+	}
+   
+	protected String createTagBody() {
+		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+		i_action 		formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		i_bean		formBean = formAction.get_bean();
+		
+		if(method_prefix==null) method_prefix="get";
+		Object anotherBean = null;
+		Object writeValue=null;
+		
+//		value="";
+		
+		if(value==null){		
+			if(bean==null && name!=null){
+				anotherBean = formBean;
+			}else{
+				try{
+					if(name!=null){
+						if(bean.equals(bsConstants.CONST_TAG_REQUESTPARAMETER)) anotherBean = request.getParameter(name);
+						if(bean.equals(bsConstants.CONST_TAG_SYSTEMPROPERTY)) anotherBean = System.getProperty(name);
+					}
+					if(anotherBean==null) anotherBean = request.getAttribute(bean);
+					if(anotherBean==null) anotherBean = request.getSession().getAttribute(bean);
+					if(anotherBean==null) anotherBean = request.getSession().getServletContext().getAttribute(bean);
+					if(name!=null){
+						if(anotherBean==null) anotherBean = request.getAttribute(name);
+						if(anotherBean==null) anotherBean = request.getSession().getAttribute(name);
+						if(anotherBean==null) anotherBean = request.getSession().getServletContext().getAttribute(name);
+					}
+
+					if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
+				}catch(Exception e){	
+				}
+			}				
+			
+
+			if(anotherBean!=null){
+				if(name==null){
+					writeValue = anotherBean;
+					name=bean;
+					try{
+						value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, writeValue);
+					}catch(Exception e){	 
+					}
+				}else{
+					try{
+						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);
+						if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);		 
+					}catch(Exception e){}
+				}	
+			}else{
+				if(name==null && bean!=null) name=bean;
+			}
+		}	
+		
+		
+		StringBuffer results = new StringBuffer("<input ");
+		if(name!=null){
+			results.append(" name=\"");
+			results.append(name);
+			results.append("\"");
+		}
+		if(objId!=null){
+			results.append(" id=\"");
+			results.append(objId);
+			results.append("\"");
+		}else{
+			if(name!=null){
+				results.append(" id=\"");
+				results.append(name);
+				results.append("\"");
+			}			
+		}
+		if (type != null) {
+			results.append(" type=\"");
+			results.append(type == null ? "text" : type);
+			results.append("\"");
+		}
+		if (readonly != null) {
+			results.append(" readonly=\"");
+			results.append(readonly);
+			results.append("\"");
+		}
+		if (size != null) {
+			results.append(" size=\"");
+			results.append(size);
+			results.append("\"");
+		}
+		if (src != null) {
+			results.append(" src=\"");
+			results.append(src);
+			results.append("\"");
+		}
+		if (tabindex != null) {
+			results.append(" tabindex=\"");
+			results.append(tabindex);
+			results.append("\"");
+		}
+		if (usemap != null) {
+			results.append(" usemap=\"");
+			results.append(usemap);
+			results.append("\"");
+		}
+		if (accesskey != null) {
+			results.append(" accesskey=\"");
+			results.append(accesskey);
+			results.append("\"");
+		}
+		if (align != null) {
+			results.append(" align=\"");
+			results.append(align);
+			results.append("\"");
+		}
+		if (alt != null) {
+			results.append(" alt=\"");
+			results.append(alt);
+			results.append("\"");
+		}
+		if (border != null) {
+			results.append(" border=\"");
+			results.append(border);
+			results.append("\"");
+		}
+		if (checked != null) {
+			results.append(" checked=\"");
+			results.append(checked);
+			results.append("\"");
+		}
+		if (disabled != null) {
+			results.append(" disabled=\"");
+			results.append(disabled);
+			results.append("\"");
+		}
+		if (width != null) {
+			results.append(" width=\"");
+			results.append(width);
+			results.append("\"");
+		}
+		if (height != null) {
+			results.append(" height=\"");
+			results.append(height);
+			results.append("\"");
+		}
+		if (ismap != null) {
+			results.append(" ismap=\"");
+			results.append(ismap);
+			results.append("\"");
+		}
+		if (maxlength != null) {
+			results.append(" maxlength=\"");
+			results.append(maxlength);
+			results.append("\"");
+		}
+
+		if(value!=null)
+			try{			
+				results.append(" value=\"");
+				if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
+				if ( clear != null && clear.equalsIgnoreCase("true") && value.equalsIgnoreCase("0")) value="";
+				
+				results.append(value);
+				results.append("\"");
+				if ( formBean != null &&
+					 type != null && (
+					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 checkedvalue.equalsIgnoreCase(formBean.get(name).toString()))
+				{
+					results.append(" checked=\"checked\"");
+				}
+		}catch(Exception e){}	
+
+		if (styleClass != null) {
+			results.append(" class=\"");
+			results.append(styleClass);
+			results.append("\"");
+		}
+		if (style != null) {
+			results.append(" style=\"");
+			results.append(style);
+			results.append("\"");
+		}
+		if (accept != null) {
+			results.append(" accept=\"");
+			results.append(accept);
+			results.append("\"");
+		}
+		if (lang != null) {
+			results.append(" lang=\"");
+			results.append(lang);
+			results.append("\"");
+		}
+		if (title != null) {
+			results.append(" title=\"");
+			results.append(title);
+			results.append("\"");
+		}
+		if (dir != null) {
+			results.append(" dir=\"");
+			results.append(dir);
+			results.append("\"");
+		}
+		if (onclick != null) {
+			results.append(" onclick=\"");
+			results.append(onclick);
+			results.append("\"");
+		}
+		if (ondblclick != null) {
+			results.append(" ondblclick=\"");
+			results.append(ondblclick);
+			results.append("\"");
+		}
+		if (onhelp != null) {
+			results.append(" onhelp=\"");
+			results.append(onhelp);
+			results.append("\"");
+		}
+		
+		if (onkeydown != null) {
+			results.append(" onkeydown=\"");
+			results.append(onkeydown);
+			results.append("\"");
+		}
+		if (onkeypress != null) {
+			results.append(" onkeypress=\"");
+			results.append(onkeypress);
+			results.append("\"");
+		}
+		if (onkeyup != null) {
+			results.append(" onkeyup=\"");
+			results.append(onkeyup);
+			results.append("\"");
+		}
+		if (onmousedown != null) {
+			results.append(" onmousedown=\"");
+			results.append(onmousedown);
+			results.append("\"");
+		}
+
+		if (onmousemove != null) {
+			results.append(" onmousemove=\"");
+			results.append(onmousemove);
+			results.append("\"");
+		}
+		if (onmouseout != null) {
+			results.append(" onmouseout=\"");
+			results.append(onmouseout);
+			results.append("\"");
+		}
+		if (onmouseover != null) {
+			results.append(" onmouseover=\"");
+			results.append(onmouseover);
+			results.append("\"");
+		}
+		if (onmouseup != null) {
+			results.append(" onmouseup=\"");
+			results.append(onmouseup);
+			results.append("\"");
+		}
+		if (onblur != null) {
+			results.append(" onblur=\"");
+			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))) results.append("this.value=trim(this.value); ");
+			else results.append("this.value=trim(this.value.toUpperCase()); ");
+			results.append(onblur);
+			results.append("\"");
+		}else{
+			results.append(" onblur=\"");
+			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))) results.append("this.value=trim(this.value); ");
+			else results.append("this.value=trim(this.value.toUpperCase()); ");
+			results.append("\"");
+		}
+		
+		if (onchange != null) {
+			results.append(" onchange=\"");
+			results.append(onchange);
+			results.append("\"");
+		}
+		if (onfocus != null) {
+			results.append(" onfocus=\"");
+			results.append(onfocus);
+			results.append("\"");
+		}
+		if (onselect != null) {
+			results.append(" onselect=\"");
+			results.append(onselect);
+			results.append("\"");
+		}
+		results.append(">");
+		
+		if(name!=null && formatInput!=null){
+			results.append("<input name=\"");
+			results.append("$format_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatInput);
+			results.append("\">");
+		}
+		if(name!=null && replaceOnBlank!=null){
+			results.append("<input name=\"");
+			results.append("$replaceOnBlank_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(replaceOnBlank);
+			results.append("\">");
+		}
+		if(name!=null && replaceOnErrorFormat!=null){
+			results.append("<input name=\"");
+			results.append("$replaceOnErrorFormat_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(replaceOnErrorFormat);
+			results.append("\">");
+		}		
+		
+		
+		value=null;
+		return results.toString();
+	}
+	public String getAccept() {
+		return accept;
+	}
+	public String getDir() {
+		return dir;
+	}
+	public String getLang() {
+		return lang;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getOnclick() {
+		return onclick;
+	}
+	public String getOndblclick() {
+		return ondblclick;
+	}
+	public String getOnhelp() {
+		return onhelp;
+	}
+	public String getOnkeydown() {
+		return onkeydown;
+	}
+	public String getOnkeypress() {
+		return onkeypress;
+	}
+	public String getOnkeyup() {
+		return onkeyup;
+	}
+	public String getOnmousedown() {
+		return onmousedown;
+	}
+	public String getOnmousemove() {
+		return onmousemove;
+	}
+	public String getOnmouseout() {
+		return onmouseout;
+	}
+	public String getOnmouseover() {
+		return onmouseover;
+	}
+	public String getOnmouseup() {
+		return onmouseup;
+	}
+	public String getStyle() {
+		return style;
+	}
+	public String getStyleClass() {
+		return styleClass;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setAccept(String string) {
+		accept = string;
+	}
+	public void setDir(String string) {
+		dir = string;
+	}
+	public void setLang(String string) {
+		lang = string;
+	}
+	public void setName(String string) {
+		name = string;
+	}
+	public void setOnclick(String string) {
+		onclick = string;
+	}
+	public void setOndblclick(String string) {
+		ondblclick = string;
+	}
+	public void setOnhelp(String string) {
+		onhelp = string;
+	}
+	public void setOnkeydown(String string) {
+		onkeydown = string;
+	}
+	public void setOnkeypress(String string) {
+		onkeypress = string;
+	}
+	public void setOnkeyup(String string) {
+		onkeyup = string;
+	}
+	public void setOnmousedown(String string) {
+		onmousedown = string;
+	}
+	public void setOnmousemove(String string) {
+		onmousemove = string;
+	}
+	public void setOnmouseout(String string) {
+		onmouseout = string;
+	}
+	public void setOnmouseover(String string) {
+		onmouseover = string;
+	}
+	public void setOnmouseup(String string) {
+		onmouseup = string;
+	}
+	public void setStyle(String string) {
+		style = string;
+	}
+	public void setStyleClass(String string) {
+		styleClass = string;
+	}
+	public void setTitle(String string) {
+		title = string;
+	}
+	public String getAccesskey() {
+		return accesskey;
+	}
+	public String getAlign() {
+		return align;
+	}
+	public String getAlt() {
+		return alt;
+	}
+	public String getBorder() {
+		return border;
+	}
+	public String getChecked() {
+		return checked;
+	}
+	public String getDisabled() {
+		return disabled;
+	}
+	public String getHeight() {
+		return height;
+	}
+	public String getIsmap() {
+		return ismap;
+	}
+	public String getMaxlength() {
+		return maxlength;
+	}
+	public String getOnblur() {
+		return onblur;
+	}
+	public String getOnchange() {
+		return onchange;
+	}
+	public String getOnfocus() {
+		return onfocus;
+	}
+	public String getOnselect() {
+		return onselect;
+	}
+	public String getReadonly() {
+		return readonly;
+	}
+	public String getSize() {
+		return size;
+	}
+	public String getSrc() {
+		return src;
+	}
+	public String getTabindex() {
+		return tabindex;
+	}
+	public String getType() {
+		return type;
+	}
+	public String getUsemap() {
+		return usemap;
+	}
+	public String getValue() {
+		return value;
+	}
+	public String getWidth() {
+		return width;
+	}
+	public void setAccesskey(String string) {
+		accesskey = string;
+	}
+	public void setAlign(String string) {
+		align = string;
+	}
+	public void setAlt(String string) {
+		alt = string;
+	}
+	public void setBorder(String string) {
+		border = string;
+	}
+	public void setChecked(String string) {
+		checked = string;
+	}
+	public void setDisabled(String string) {
+		disabled = string;
+	}
+	public void setHeight(String string) {
+		height = string;
+	}
+	public void setIsmap(String string) {
+		ismap = string;
+	}
+	public void setMaxlength(String string) {
+		maxlength = string;
+	}
+	public void setOnblur(String string) {
+		onblur = string;
+	}
+	public void setOnchange(String string) {
+		onchange = string;
+	}
+	public void setOnfocus(String string) {
+		onfocus = string;
+	}
+	public void setOnselect(String string) {
+		onselect = string;
+	}
+	public void setReadonly(String string) {
+		readonly = string;
+	}
+	public void setSize(String string) {
+		size = string;
+	}
+	public void setSrc(String string) {
+		src = string;
+	}
+	public void setTabindex(String string) {
+		tabindex = string;
+	}
+	public void setType(String string) {
+		type = string;
+	}
+	public void setUsemap(String string) {
+		usemap = string;
+	}
+	public void setValue(String string) {
+		value = string;
+	}
+	public void setWidth(String string) {
+		width = string;
+	}
+
+	public String getBean() {
+		return bean;
+	}
+	public void setBean(String string) {
+		bean = string;
+	}
+	public String getObjId() {
+		return objId;
+	}
+	public void setObjId(String string) {
+		objId = string;
+	}
+	public String getFormatInput() {
+		return formatInput;
+	}
+	public String getFormatOutput() {
+		return formatOutput;
+	}
+	public void setFormatInput(String string) {
+		formatInput = string;
+	}
+	public void setFormatOutput(String string) {
+		formatOutput = string;
+	}
+	public String getClear() 
+	{
+		return clear;
+	}
+	public void setClear(String string) 
+	{
+		clear = string;
+	}
+	public String getToUpperCase() {
+		return toUpperCase;
+	}
+	public void setToUpperCase(String string) {
+		toUpperCase = string;
+	}
+
+	public String getMethod_prefix() {
+		return method_prefix;
+	}
+
+	public void setMethod_prefix(String string) {
+		method_prefix = string;
+	}
+
+	public String getCheckedvalue(){
+		return checkedvalue;
+	}
+
+	public void setCheckedvalue(String newCheckValue) {
+		checkedvalue = newCheckValue;
+	}
+
+	public String getReplaceOnBlank() {
+		return replaceOnBlank;
+	}
+
+	public void setReplaceOnBlank(String string) {
+		replaceOnBlank = string;
+	}
+
+	public String getReplaceOnErrorFormat() {
+		return replaceOnErrorFormat;
+	}
+
+	public void setReplaceOnErrorFormat(String replaceOnErrorFormat) {
+		this.replaceOnErrorFormat = replaceOnErrorFormat;
+	}
+
+	public String getFormatLanguage() {
+		return formatLanguage;
+	}
+
+	public void setFormatLanguage(String formatLanguage) {
+		this.formatLanguage = formatLanguage;
+	}
+
+	public String getFormatCountry() {
+		return formatCountry;
+	}
+
+	public void setFormatCountry(String formatCountry) {
+		this.formatCountry = formatCountry;
+	}
+
+
+}
+

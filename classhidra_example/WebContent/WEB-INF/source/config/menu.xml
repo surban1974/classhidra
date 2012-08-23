@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<menu id="menu_level_0" descr="ClassHidra" mess_id="menu_0" >
+		<element id="ProgectMenu" descr="ProgectMenu" mess_id="menu_1">	
+			<element id="ProgectMenu_action1" action="about" descr="About" mess_id="menu_1_1" img="images/menu/special/about.gif"/>	
+			<element id="ProgectMenu_action2" action="sendMail" descr="Send message" mess_id="menu_1_2" img="images/menu/special/mail.gif"/>				
+			<element id="ProgectMenu_action3" action="builder" descr="Builder actions.xml (BETA)" mess_id="menu_1_3" img="images/menu/special/builder.gif"/>				
+			<element id="ProgectMenu_action4" action="amanager" descr="Users/Groups/Authentications" mess_id="menu_1_4" img="images/menu/special/builder.gif"/>				
+
+		</element>			
+	
+		
+		<element id="Session" descr="Session" mess_id="menu_3">
+			<element id="menu_level_Utility_log" action="log" descr="Log dell'aplicazione" mess_id="menu_3_1"  img="images/menu/special/log.gif"/>
+			<element id="menu_level_Resources" action="resources" descr="Loaded resources" mess_id="menu_3_2"  img="images/menu/special/resources.gif"/>
+			<element id="menu_level_UsersInSession" action="log_users" descr="Users In Session" mess_id="menu_3_3"  img="images/menu/special/sessions.gif"/>
+			<element id="Session_changeUser" action="login" descr="Change user" mess_id="menu_3_4"  img="images/menu/special/login.gif"/>
+			<element id="Session_exit" action="exit" descr="Exit" mess_id="menu_3_5" img="images/menu/special/exit.gif"/>
+		</element>
+		
+</menu>

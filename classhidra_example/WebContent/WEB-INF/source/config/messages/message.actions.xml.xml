@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<messages view="actions.xml"> 
+	<message cd_mess="title_fw_Login" cd_lang="IT" desc_mess="Login"/>
+	<message cd_mess="title_fw_Login" cd_lang="EN" desc_mess="Login"/>
+	<message cd_mess="title_fw_Login" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_Login" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="title_fw_Content" cd_lang="IT" desc_mess="Contenuto"/>
+	<message cd_mess="title_fw_Content" cd_lang="EN" desc_mess="Content"/>
+	<message cd_mess="title_fw_Content" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_Content" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="title_fw_SendMail" cd_lang="IT" desc_mess="Spedire Messaggio"/>
+	<message cd_mess="title_fw_SendMail" cd_lang="EN" desc_mess="Send Message"/>
+	<message cd_mess="title_fw_SendMail" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_SendMail" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="title_fw_About" cd_lang="IT" desc_mess="Info"/>
+	<message cd_mess="title_fw_About" cd_lang="EN" desc_mess="About"/>
+	<message cd_mess="title_fw_About" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_About" cd_lang="FR" desc_mess="???"/>
+	
+	<message cd_mess="title_fw_Log" cd_lang="IT" desc_mess="Log"/>
+	<message cd_mess="title_fw_Log" cd_lang="EN" desc_mess="Log"/>
+	<message cd_mess="title_fw_Log" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_Log" cd_lang="FR" desc_mess="???"/>
+	
+	<message cd_mess="title_fw_Resources" cd_lang="IT" desc_mess="Configurazione caricate"/>
+	<message cd_mess="title_fw_Resources" cd_lang="EN" desc_mess="Loaded resources"/>
+	<message cd_mess="title_fw_Resources" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_Resources" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="title_fw_Log_users" cd_lang="IT" desc_mess="Utenti In Sessione"/>
+	<message cd_mess="title_fw_Log_users" cd_lang="EN" desc_mess="Users In Session"/>
+	<message cd_mess="title_fw_Log_users" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_Log_users" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="title_fw_builder" cd_lang="IT" desc_mess="Builder actions.xml (BETA)"/>
+	<message cd_mess="title_fw_builder" cd_lang="EN" desc_mess="Builder actions.xml (BETA)"/>
+	<message cd_mess="title_fw_builder" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_builder" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="title_fw_amanager" cd_lang="IT" desc_mess="Users/Groups/Authentications"/>
+	<message cd_mess="title_fw_amanager" cd_lang="EN" desc_mess="Users/Groups/Authentications"/>
+	<message cd_mess="title_fw_amanager" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_amanager" cd_lang="FR" desc_mess="???"/>
+
+
+</messages>

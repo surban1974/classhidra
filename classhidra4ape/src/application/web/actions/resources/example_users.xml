@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<users externalloader="">
+   <user
+       name="guest"
+       password="NWdeaPS1r3uZXZIFrQ/EOELxZFA="
+       matriculation="matr@guest"
+       language="EN"
+       group="GUESTS;"
+       target="default_target"
+       wac_fascia=""
+       description="Guest"
+       email=""
+       comment="Example of User - will be create automatically"
+       crypted="true"/>
+   <user
+       name="user"
+       password="Et6pb+wgWTVmq3VpLJlJWWgzrck="
+       matriculation="matr@user"
+       language="EN"
+       group="USERS;"
+       target="default_target"
+       wac_fascia=""
+       description="User"
+       email=""
+       comment="Example of User - will be create automatically"
+       crypted="true"/>
+
+   <group name="GUESTS" comment="Example of Group - will be create automatically"/>
+
+   <group name="USERS" comment="Example of Group - will be create automatically"/>
+
+   <target name="default_target" comment="Example of Target - will be create automatically"/>
+
+</users> 

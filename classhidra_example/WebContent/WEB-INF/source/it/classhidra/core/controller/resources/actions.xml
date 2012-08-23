@@ -1,0 +1,84 @@
+<action-config>  
+	<action-streams>
+		<stream name="def_control_session" type="it.classhidra.core.controller.streams.def_control_session" system="true"/>
+		<stream name="def_control_permission" type="it.classhidra.core.controller.streams.def_control_permission" system="true">
+			<apply-to-action action="*"/>
+<!-- 		
+			<apply-to-action action="test"/>
+-->			
+		</stream>
+		<stream name="def_control_middleaction" type="it.classhidra.core.controller.streams.def_control_middleaction" system="true">
+			<apply-to-action action="*"/>
+<!-- 		
+			<apply-to-action action="test"/>
+-->			
+		</stream>
+		
+	</action-streams>
+	
+	<form-beans>   
+<!-- 	   
+		<form-bean name="formTest" type="it.application.formTest"/>
+		<form-bean name="test_spring_provider" type="it.application.formTestSpringProvider" provider="spring"/>	
+		<form-bean name="test_my_provider" type="it.application.formTestMyProvider" provider="it.application.MyProvider"/>	
+		<form-bean name="formTestModel" model="beans/formTestModel.xml"/>	real path=config.beans/formTestModel.xml, DTD = bean.dtd
+		
+ -->		
+	</form-beans>
+	<form-redirects>
+<!-- 	
+		<form-redirect path="/jsp/test.jsp" descr="Test" mess_id="mess_id_for_test"/>	
+ -->		
+	</form-redirects>
+	<action-mappings error="" auth_error="" session_error="">	
+<!-- 	
+		<action path="test"
+                name="formTest"
+                type="it.application.actionTest"
+                redirect="/jsp/test.jsp"
+                navigated="true"
+                memoryInSession="true"
+                reloadAfterAction="true"
+                help="/help/help_test.html"
+                property="allway:public">
+        	<redirect auth_id="test_id_0" path="/jsp/test_error.jsp"/>    
+        	<redirect auth_id="test_id_1" path="/jsp/test_ok.jsp"/>  
+        	<redirect auth_id="test_id_2" path="/jsp/test_another.jsp">  
+        	<transformationoutput 
+        		name="t_outid_2"
+        		type="xslt"
+        		path="/xslt/testid_2.xslt" 
+        	/>	 
+        		
+        	</redirect>
+        	
+        	<transformationoutput 
+        		name="t_out1"
+        		type="xslt"
+        		path="/xslt/test.xslt" 
+        		inputformat="string"
+        	/>	
+        	<transformationoutput 
+        		name="t_out2"
+        		type="it.transformations.out2"
+        		inputformat="byte"
+        	/>	 
+       		<transformationoutput 
+        		name="t_out3"
+        		type="it.transformations.pdf"
+        		path="/xslt/2pdf.xslt"
+        		inputformat="byte" 
+        	/>	  
+      		<transformationoutput 
+        		name="t_out3"
+        		type="it.transformations.jscript"
+        		name="wsxml_javascript" 
+        		type="jscript" 
+        		inputformat="string"
+        		
+        	/>	         	       	
+        	       	       	
+        </action>        		
+ -->       
+    </action-mappings>
+</action-config>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<messages> 
+
+<!-- Messages/Errors --> 
+	<message cd_mess="ch_error_1" cd_lang="IT" type="E" desc_mess="Attenzione. Questa forma non e valorizzata correttamente. Prova di ripetere."/>
+	<message cd_mess="ch_error_1" cd_lang="EN" type="E" desc_mess="Atention. This form isn't valid. Try to repeat."/>
+	<message cd_mess="ch_error_1" cd_lang="DC" type="E" desc_mess="ACHTUNG. Dieses Formular ist nicht gültig. Versuchen Sie, zu wiederholen."/> 
+	<message cd_mess="ch_error_1" cd_lang="FR" type="E" desc_mess="Atention. Ce formulaire n'est pas valide. Essayez de répéter."/> 
+	<message cd_mess="ch_error_1" cd_lang="ES" type="E" desc_mess="Atención. Este formulario no es válido. Trate de repetir."/> 
+
+	<message cd_mess="ch_error_2" cd_lang="IT" type="E" desc_mess="Utente non e censito."/>
+	<message cd_mess="ch_error_2" cd_lang="EN" type="E" desc_mess="User is not correct."/>
+	<message cd_mess="ch_error_3" cd_lang="DC" type="E" desc_mess="Benutzer ist nicht korrekt."/>
+	<message cd_mess="ch_error_2" cd_lang="FR" type="E" desc_mess="L'utilisateur n'est pas correct."/>
+	<message cd_mess="ch_error_2" cd_lang="ES" type="E" desc_mess="El usuario no es correcto."/>
+
+	<message cd_mess="ch_error_3" cd_lang="IT" type="E" desc_mess="Non ci sono criteri per la ricerca."/>
+	<message cd_mess="ch_error_3" cd_lang="EN" type="E" desc_mess="Must be selected parameter of search."/>
+	<message cd_mess="ch_error_3" cd_lang="DC" type="E" desc_mess="Muss gewählt werden Parameter zu suchen."/>
+	<message cd_mess="ch_error_3" cd_lang="FR" type="E" desc_mess="Doit être sélectionné paramètre de recherche."/>
+	<message cd_mess="ch_error_3" cd_lang="ES" type="E" desc_mess="Se debe seleccionar los parámetros de búsqueda."/>
+
+	<message cd_mess="ch_error_4" cd_lang="IT" type="E" desc_mess="Deve essere selezionata almeno una occorenza."/>
+	<message cd_mess="ch_error_4" cd_lang="EN" type="E" desc_mess="Must be selected un element."/>
+	<message cd_mess="ch_error_4" cd_lang="DC" type="E" desc_mess="Muss gewählt werden un-Element."/>
+	<message cd_mess="ch_error_4" cd_lang="FR" type="E" desc_mess="Doit être sélectionné l'élément."/>
+	<message cd_mess="ch_error_4" cd_lang="ES" type="E" desc_mess="Se debe seleccionar los elementos."/>
+
+	<message cd_mess="ch_error_5" cd_lang="IT" type="E" desc_mess="Dati non sono completi."/>
+	<message cd_mess="ch_error_5" cd_lang="EN" type="E" desc_mess="Data are not complete."/>
+	<message cd_mess="ch_error_5" cd_lang="DC" type="E" desc_mess="Daten sind nicht vollständig."/>
+	<message cd_mess="ch_error_5" cd_lang="FR" type="E" desc_mess="Les données ne sont pas complètes."/>
+	<message cd_mess="ch_error_5" cd_lang="ES" type="E" desc_mess="Los datos no están completos."/>
+
+	<message cd_mess="ch_error_8" cd_lang="IT" type="E" desc_mess="Mancano i permessi per quel tipo d'operazione."/>
+	<message cd_mess="ch_error_8" cd_lang="EN" type="E" desc_mess="Insufficient permissions for this type of operation."/>
+	<message cd_mess="ch_error_8" cd_lang="DC" type="E" desc_mess="Unzureichende Berechtigungen für diese Art von Operation."/>
+	<message cd_mess="ch_error_8" cd_lang="FR" type="E" desc_mess="Autorisations insuffisantes pour ce type d'opération."/>
+	<message cd_mess="ch_error_8" cd_lang="ES" type="E" desc_mess="Permisos insuficientes para este tipo de operaciones."/>
+
+	<message cd_mess="ch_error_7" cd_lang="IT" type="E" desc_mess="Non sono stati valorizzati tutti i campi obbligatori."/>
+	<message cd_mess="ch_error_7" cd_lang="EN" type="E" desc_mess="Have not been valued all required fields."/>
+	<message cd_mess="ch_error_7" cd_lang="DC" type="E" desc_mess="Haben nicht alle benötigten Felder geschätzt."/>
+	<message cd_mess="ch_error_7" cd_lang="FR" type="E" desc_mess="N'ont pas été évalués tous les champs requis."/>
+	<message cd_mess="ch_error_7" cd_lang="ES" type="E" desc_mess="No se han valorado todos los campos obligatorios."/>
+		
+	
+	
+
+	<message cd_mess="ch_message_1" cd_lang="IT" type="I" desc_mess="Autenticazione è andata a buon fine."/>
+	<message cd_mess="ch_message_1" cd_lang="EN" type="I" desc_mess="Authentication is correct."/>
+	<message cd_mess="ch_message_1" cd_lang="DC" type="I" desc_mess="Die Authentifizierung ist erfolgreich."/>
+	<message cd_mess="ch_message_1" cd_lang="FR" type="I" desc_mess="L'authentification est correcte."/>
+	<message cd_mess="ch_message_1" cd_lang="ES" type="I" desc_mess="La autenticación es correcta."/>
+	
+	<message cd_mess="ch_message_2" cd_lang="IT" type="I" desc_mess="Operazione e andata a buon fine."/>
+	<message cd_mess="ch_message_2" cd_lang="EN" type="I" desc_mess="Operation successful."/>
+	<message cd_mess="ch_message_2" cd_lang="DC" type="I" desc_mess="Operation erfolgreich."/>
+	<message cd_mess="ch_message_2" cd_lang="FR" type="I" desc_mess="Operación y éxito."/>
+	<message cd_mess="ch_message_2" cd_lang="ES" type="I" desc_mess="Funcionamiento correcto acabado."/>
+	
+</messages>

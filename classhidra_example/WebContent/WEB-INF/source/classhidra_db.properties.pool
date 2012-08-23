@@ -1,0 +1,21 @@
+#application.db.connectiontype=pooldatasourcev51
+#application.db.datasource=java:comp/env/jdbc/databaseMySQL
+
+
+#application.db.id=connectionODBC
+#application.db.connectiontype=drivermanager
+#application.db.driver=com.mysql.jdbc.Driver
+#application.db.url=jdbc:mysql://localhost:3306/ITCOM_winstoredb?autoReconnect=true&useJvmCharsetConverters=true
+#application.db.user = ITCOM
+#application.db.password = winstoredb
+
+
+application.db.connectiontype=localpool
+application.db.local_pool_size=100
+application.db.local_pool_timeout=60000
+application.db.local_pool_provider=pool.LocalMySqlPool
+application.db.driver=com.mysql.jdbc.Driver
+application.db.url=jdbc:mysql://localhost:3306/winstoredb?autoReconnect=true
+application.db.user = root
+application.db.password = pass
+

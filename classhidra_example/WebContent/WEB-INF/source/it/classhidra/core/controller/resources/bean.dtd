@@ -1,0 +1,9 @@
+<!--Created by Svyatoslav Urbanovych-->
+<!ELEMENT items (item)*>
+<!ATTLIST items 
+	name CDATA #REQUIRED
+	type CDATA #REQUIRED>
+<!ELEMENT item (#PCDATA|items|item)*>
+<!ATTLIST item 
+	name CDATA #IMPLIED
+	type CDATA #REQUIRED>

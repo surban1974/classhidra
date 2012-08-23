@@ -1,0 +1,1579 @@
+/**
+* Creation date: (07/04/2006)
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
+*/
+
+/********************************************************************************
+*
+*	Copyright (C) 2005  Svyatoslav Urbanovych
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*********************************************************************************/
+package it.classhidra.core.controller;
+
+import it.classhidra.core.init.app_init;
+import it.classhidra.core.tool.elements.elementBase;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_beanMessageFactory;
+import it.classhidra.core.tool.util.util_blob;
+import it.classhidra.core.tool.util.util_classes;
+import it.classhidra.core.tool.util.util_find;
+import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.util_xml;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
+public class load_actions extends elementBase{
+
+
+
+	private static final long serialVersionUID = 6337896256233259229L;
+
+	private String error;
+	private String auth_error;
+	private String session_error;
+
+
+
+	private Vector  v_info_actions;
+	private Vector  v_info_streams;
+	private Vector  v_info_beans;
+	private Vector  v_info_redirects;
+	private Vector  v_info_transformationoutput;
+
+
+	private static HashMap _actions;
+	private static HashMap _streams;
+	private static HashMap _streams_apply_to_actions;
+
+	private static HashMap _beans;
+	private static HashMap _redirects;
+	private static HashMap _transformationoutput;
+
+	private boolean readDef;
+
+	private boolean readOk_Resource=false;
+	private boolean readOk_Folder=false;
+	private boolean readOk_File=false;
+	private boolean readOk_Db=false;
+	private boolean readOk_ExtLoader=false;
+
+	private String externalloader;
+	private String xmlEncoding;
+
+	private String loadedFrom="";
+
+	private load_actions_builder builder=null;
+
+
+public load_actions(){
+	super();
+	reimposta();
+
+}
+
+public void init() throws bsControllerException{
+
+
+	String app_path="";
+	app_init ainit = bsController.getAppInit();
+
+	try{
+
+		if(ainit.get_db_name()!=null){
+			if(initDB(ainit)){
+				loadedFrom=ainit.get_db_name();
+				readOk_Db=true;
+				return;
+			}
+		}
+
+		if(app_path==null || app_path.equals("")) app_path="";
+		else app_path+=".";
+	}catch(Exception e){
+	}
+
+	String xml_name = System.getProperty(
+			(ainit.getSynonyms_path().getProperty(bsController.actions_id_xml)==null)?bsController.actions_id_xml:ainit.getSynonyms_path().getProperty(bsController.actions_id_xml)
+		);
+	if(xml_name==null || xml_name.equals("")) 
+		xml_name = System.getProperty(
+				(ainit.getSynonyms_path().getProperty(app_path+bsController.actions_id_xml)==null)?app_path+bsController.actions_id_xml:ainit.getSynonyms_path().getProperty(app_path+bsController.actions_id_xml)
+			);
+
+	if(xml_name==null || xml_name.equals(""))
+		xml_name = ainit.getResources_path().getProperty(
+				(ainit.getSynonyms_path().getProperty(bsController.actions_id_xml)==null)?bsController.actions_id_xml:ainit.getSynonyms_path().getProperty(bsController.actions_id_xml)
+			);
+
+	if(xml_name==null || xml_name.equals(""))
+		xml_name = ainit.getResources_path().getProperty(
+				(ainit.getSynonyms_path().getProperty(app_path+bsController.actions_id_xml)==null)?app_path+bsController.actions_id_xml:ainit.getSynonyms_path().getProperty(app_path+bsController.actions_id_xml)
+			);
+
+
+	if(xml_name!=null && !xml_name.equals("")){
+		initProperties(xml_name);
+	}
+
+
+}
+
+
+public void reInit(i_externalloader _externalloader){
+	if(_externalloader==null) return;
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_actions)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_actions) instanceof HashMap){
+		_actions.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_actions));
+	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_streams)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_streams) instanceof HashMap){
+		_streams.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_streams));
+	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_streams_apply_to_actions)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_streams_apply_to_actions) instanceof HashMap){
+		_streams_apply_to_actions.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_streams_apply_to_actions));
+	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_beans)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_beans) instanceof HashMap){
+		_beans.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_beans));
+	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_redirects)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_redirects) instanceof HashMap){
+		_redirects.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_redirects));
+	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_error)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_error) instanceof String){
+		error=(String)_externalloader.getProperty(i_externalloader.ACTIONS_error);
+	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_auth_error)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_auth_error) instanceof String){
+		auth_error=(String)_externalloader.getProperty(i_externalloader.ACTIONS_auth_error);
+	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_session_error)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_session_error) instanceof String){
+		session_error=(String)_externalloader.getProperty(i_externalloader.ACTIONS_session_error);
+	}
+	loadedFrom+=" "+_externalloader.getClass().getName();
+	
+	v_info_streams = (new Vector(_streams.values()));
+	v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+
+	v_info_actions = (new Vector(_actions.values()));
+	v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+	
+	v_info_beans = (new Vector(_beans.values()));
+	v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+
+	v_info_redirects = (new Vector(_redirects.values()));
+	v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+
+	v_info_transformationoutput = (new Vector(_transformationoutput.values()));
+	v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+	readOk_ExtLoader=true;
+	
+
+}
+
+public void reimposta(){
+
+	if(v_info_actions==null) v_info_actions=new Vector();
+	if(v_info_streams==null) v_info_streams=new Vector();
+	if(v_info_beans==null) v_info_beans=new Vector();
+	if(v_info_redirects==null) v_info_redirects=new Vector();
+	if(v_info_transformationoutput==null) v_info_transformationoutput=new Vector();
+
+	if(_actions==null) _actions = new HashMap();
+	if(_streams==null){
+		_streams = new HashMap();
+		readDef = false;
+	}else readDef = true;
+	if(_streams_apply_to_actions==null){
+		_streams_apply_to_actions = new HashMap();
+		_streams_apply_to_actions.put("*",new Vector());
+	}
+	if(_beans==null) _beans = new HashMap();
+	if(_redirects==null) _redirects = new HashMap();
+	if(_transformationoutput==null) _transformationoutput = new HashMap();
+
+
+	if(error==null) error="";
+	if(auth_error==null) auth_error="";
+	if(session_error==null) session_error="";
+	readOk_Resource=false;
+	readOk_Folder=false;
+	readOk_File=false;
+	readOk_Db=false;
+	readOk_ExtLoader=false;
+	externalloader="";
+	xmlEncoding="";
+
+	if(!readDef){
+		load_def_actions();
+	}
+
+}
+
+public load_actions_builder initBuilder(String xml) throws bsControllerException{
+	try{
+		load_actions_builder _builder = new load_actions_builder();
+		_builder.builder_init(xml);
+		this.builder=_builder;
+	}catch(Exception e){
+		throw new bsControllerException(e, iStub.log_ERROR);
+	}
+	return this.builder;
+}
+
+public void syncroWithBuilder(){
+	if(builder!=null) builder.syncroWithBuilder();
+
+}
+
+public void initProperties(String xml) throws bsControllerException{
+	try{
+		if(initWithFile(xml)){
+			readOk_File = true;
+			loadedFrom+=" "+xml;
+		}else readOk_File = false;
+	}catch(Exception e){
+		readOk_File=false;
+	}
+}
+
+public void initWithFOLDER(String dir) throws bsControllerException{
+	File input = new File(dir);
+
+	if(input.exists()){
+		File[] list = input.listFiles();
+		for(int i=0;i<list.length;i++){
+			try{
+				boolean res = initWithFile(list[i].getAbsolutePath());
+				if(res) bsController.writeLog("Load_action from "+input.getAbsolutePath()+" OK ",iStub.log_INFO);
+				readOk_File=readOk_File || res;
+			}catch(Exception e){
+			}
+		}
+
+	}
+	if(isReadOk()) loadedFrom+=" "+dir;
+}
+
+
+public void load_def_actions() {
+	String property_name = "resources/"+ bsController.CONST_XML_ACTIONS;
+
+	InputStream is = null;
+    BufferedReader br = null;
+    String result=null;
+    String line="";
+
+
+    try {
+    	is = this.getClass().getResourceAsStream(property_name);
+    	if(is!=null){
+    		result="";
+	    	br = new BufferedReader(new InputStreamReader(is));
+	    	while (null != (line = br.readLine())) {
+	    		result+=(line+"\n");
+	    	}
+    	}
+    }catch (Exception e) {
+    }finally {
+    	try {
+    		if (br != null) br.close();
+    		if (is != null) is.close();
+    	}catch (Exception e) {
+    	}
+	}
+
+    try{
+    	if(result!=null){
+    		initWithData(result);
+    		readDef=true;
+    		loadedFrom+=" "+property_name;
+    	}
+    }catch (Exception e) {
+    	readDef=false;
+	}
+}
+
+public void load_from_resources() {
+	load_from_resources(bsController.CONST_XML_ACTIONS);
+	String property_name =  "config."+bsController.CONST_XML_ACTIONS_FOLDER;
+	ArrayList array = new ArrayList();
+
+	try{
+		array = util_classes.getResources(property_name);
+	}catch(Exception e){
+		util_format.writeToConsole(bsController.getLogInit(),"LoadActions: Array.ERROR:"+e.toString());
+	}
+
+	for(int i=0;i<array.size();i++){
+		String property_name0 =  bsController.CONST_XML_ACTIONS_FOLDER+"/"+array.get(i);
+		if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
+			load_from_resources(property_name0);
+	}
+
+}
+private void load_from_resources(String property_name) {
+
+
+	InputStream is = null;
+    BufferedReader br = null;
+    String result=null;
+    String line="";
+
+
+    try {
+    	Object obj = null;
+    	try{
+    		obj = Class.forName("config.Loader").newInstance();
+    	}catch(Exception ex){
+    	}
+    	if(obj==null) return;
+    	is = obj.getClass().getResourceAsStream(property_name);
+    	if(is!=null){
+    		result="";
+	    	br = new BufferedReader(new InputStreamReader(is));
+	    	while (null != (line = br.readLine())) {
+	    		result+=(line+"\n");
+	    	}
+    	}
+    }catch (Exception e) {
+    }finally {
+    	try {
+    		if (br != null) br.close();
+    		if (is != null) is.close();
+    	}catch (Exception e) {
+    	}
+	}
+
+    try{
+    	if(result!=null){
+    		if(initWithData(result)){
+    			bsController.writeLog("Load_actions from "+property_name+" OK ",iStub.log_INFO);
+    			readOk_Resource = readOk_Resource || true;
+    			loadedFrom+=" "+property_name;
+    		}
+    	}
+    }catch (Exception e) {
+
+	}
+
+}
+
+public boolean initWithData(String _xml) throws bsControllerException, Exception{
+		Document documentXML = null;
+		documentXML = util_xml.readXMLData(_xml);
+		if(documentXML!=null){
+			xmlEncoding = documentXML.getXmlEncoding();
+			if(xmlEncoding==null) xmlEncoding="";
+		}
+		if(readDocumentXml(documentXML)) return true;
+		else return false;
+}
+
+public boolean initWithFile(String _xml) throws bsControllerException, Exception{
+	Document documentXML = null;
+	documentXML = util_xml.readXML(_xml);
+	if(documentXML!=null){
+		xmlEncoding = documentXML.getXmlEncoding();
+		if(xmlEncoding==null) xmlEncoding="";
+	}
+	if(readDocumentXml(documentXML)) return true;
+	else return false;
+}
+
+public boolean initDB(app_init ainit) throws bsControllerException, Exception{
+	String app_path=ainit.get_path();
+	if(app_path==null || app_path.equals("")) app_path="";
+	else app_path+=".";
+	
+	String xmlData = null;
+	try{
+		xmlData = util_blob.load_from_config(
+				(ainit.getSynonyms_path().getProperty(app_path+bsController.actions_id_xml)==null)?app_path+bsController.actions_id_xml:ainit.getSynonyms_path().getProperty(app_path+bsController.actions_id_xml),
+				ainit.get_db_name());
+	}catch(Exception e){
+		new bsException(e);
+	}
+	try{		
+		if(xmlData==null) xmlData = util_blob.load_from_config(
+				(ainit.getSynonyms_path().getProperty(bsController.actions_id_xml)==null)?bsController.actions_id_xml:ainit.getSynonyms_path().getProperty(bsController.actions_id_xml),
+				ainit.get_db_name());
+	}catch(Exception e){
+		new bsException(e);
+	}
+	if(xmlData==null) return false;
+
+	Document documentXML = null;
+	documentXML = util_xml.readXMLData(xmlData);
+	if(documentXML!=null){
+		xmlEncoding = documentXML.getXmlEncoding();
+		if(xmlEncoding==null) xmlEncoding="";
+	}
+	if(readDocumentXml(documentXML)) return true;
+	else return false;
+
+
+}
+
+private boolean readDocumentXml(Document documentXML) throws Exception{
+	if(documentXML!=null){
+		if(_actions==null) _actions = new HashMap();
+		if(_streams==null){
+			_streams = new HashMap();
+			readDef = false;
+		}
+		if(_streams_apply_to_actions==null){
+			_streams_apply_to_actions = new HashMap();
+			_streams_apply_to_actions.put("*",new Vector());
+		}
+		if(_beans==null) _beans = new HashMap();
+		if(_redirects==null) _redirects = new HashMap();
+		Node node = null;
+		try{
+			int first=0;
+			while(node==null && first < documentXML.getChildNodes().getLength()){
+				if(documentXML.getChildNodes().item(first).getNodeType()== Node.ELEMENT_NODE)
+					node = documentXML.getChildNodes().item(first);
+				first++;
+			}
+		}catch(Exception e){
+			new bsControllerException(e,iStub.log_DEBUG);
+		}
+		if(node==null) return false;
+		readFormElements(node);
+		for(int i=0;i<node.getChildNodes().getLength();i++){
+			if(node.getChildNodes().item(i).getNodeType()== Node.ELEMENT_NODE)
+				readFormElements(node.getChildNodes().item(i));
+		}
+		if(_actions!=null && _actions.get("*")!=null){
+			Object[] keysIn = _actions.keySet().toArray();
+			Object[] keysFor = ((HashMap)((info_action)_actions.get("*")).get_redirects()).keySet().toArray();
+			for(int i=0;i<keysIn.length;i++){
+				try{
+					HashMap current_redirects = (HashMap)((info_action)_actions.get((String)keysIn[i])).get_redirects();
+					for(int j=0;j<keysFor.length;j++)
+						current_redirects.put(keysFor[j],(((HashMap)((info_action)_actions.get("*")).get_redirects())).get(keysFor[j]));
+				}catch(Exception e){
+				}
+			}
+
+		}
+	}else return false;
+	return true;
+}
+
+
+
+
+private Object providerObjectFactory(String id_provider, String id_bean,ServletContext servletContext){
+	try{
+	if(id_provider==null || id_bean==null || id_provider.equals("") || id_bean.equals("")) return null;
+		i_provider provider  = null;
+		try{
+			provider = (i_provider)Class.forName(id_provider).newInstance();
+		}catch (Exception e) {
+			try{
+				provider = (i_provider)Class.forName(bsConstants.CONST_PROVIDER_PATH+id_provider).newInstance();
+			}catch(Exception ex){
+				throw ex;
+			}
+		}
+		if(provider==null) return null;
+		provider.set_context(servletContext);
+		return provider.get_bean(id_bean);
+	}catch(Exception e){
+		new bsControllerException(e,iStub.log_DEBUG);
+	}catch (Throwable t) {
+		new bsControllerException(t,iStub.log_DEBUG);
+	}
+	return null;
+}
+
+public i_action actionFactory(String id_action, ServletContext servletContext){
+	return actionFactory(id_action,null,servletContext);
+}
+public i_action actionFactory(String id_action){
+	return actionFactory(id_action,null,null);
+}
+public i_action actionFactory(String id_action, HttpSession session, ServletContext servletContext){
+	i_action rAction = new action();
+	info_action iAction = null;
+	if(_actions==null) _actions = new HashMap();
+	if(_actions.get(id_action)==null){
+		load_actions session_l_actions = (load_actions)session.getAttribute(bsConstants.CONST_SESSION_ACTIONS_INSTANCE);
+		if(session_l_actions!=null){
+			try{
+				iAction = (info_action)session_l_actions.getBuilder().get_b_actions().get(id_action);
+			}catch(Exception e){
+			}
+		}
+		if(iAction==null){
+			iAction = new info_action();
+			iAction.setPath(id_action);
+			rAction.set_infoaction(iAction);
+			return rAction;
+		}
+	}else iAction = (info_action)_actions.get(id_action);
+
+
+//	info_action iAction = (info_action)((info_action)_actions.get(id_action)).clone();
+
+
+	boolean loadedFromProvider=false;
+	if(iAction.getProvider()!=null && !iAction.getProvider().equals("")){
+		Object actionFromProvider = providerObjectFactory(iAction.getProvider(), iAction.getPath(), servletContext);
+		if(actionFromProvider!=null && actionFromProvider instanceof i_action){
+			rAction = (i_action)actionFromProvider;
+			loadedFromProvider=true;
+		}
+	}
+
+	if(!loadedFromProvider){
+		if(iAction.getType()!=null && !iAction.getType().equals("")){
+			try{
+				rAction = (i_action)Class.forName(iAction.getType()).newInstance();
+			}catch (Exception e) {
+				bsController.writeLog("Load_action-> actionFactory error: "+e.toString(),iStub.log_ERROR);
+			}
+		}
+	}
+	rAction.set_infoaction(iAction);
+	return rAction;
+}
+
+
+public i_stream streamFactory(String id_stream){
+	return streamFactory(id_stream,null,null);
+}
+public i_stream streamFactory(String id_stream,ServletContext servletContext){
+	return streamFactory(id_stream,null,servletContext);
+}
+public i_stream streamFactory(String id_stream,HttpSession session,ServletContext servletContext){
+	i_stream rStream = new stream();
+	info_stream iStream = null;
+
+	if(_streams==null || _streams.get(id_stream)==null){
+		load_actions session_l_actions = (load_actions)session.getAttribute(bsConstants.CONST_SESSION_ACTIONS_INSTANCE);
+		if(session_l_actions!=null){
+			try{
+				iStream = (info_stream)session_l_actions.getBuilder().get_b_streams().get(id_stream);
+			}catch(Exception e){
+			}
+		}
+		if(iStream==null){
+			return rStream;
+		}
+	}else iStream = (info_stream)_streams.get(id_stream);
+
+//	info_stream iStream = (info_stream)((info_stream)_streams.get(id_stream)).clone();
+
+
+	boolean loadedFromProvider=false;
+	if(iStream.getProvider()!=null && !iStream.getProvider().equals("")){
+		Object streamFromProvider = providerObjectFactory(iStream.getProvider(), iStream.getName(), servletContext);
+		if(streamFromProvider!=null && streamFromProvider instanceof i_stream){
+			rStream = (i_stream)streamFromProvider;
+			loadedFromProvider=true;
+		}
+	}
+
+	if(!loadedFromProvider){
+		if(iStream==null || iStream.getType()==null || iStream.getType().equals("")) return rStream;
+
+		if(iStream.getType()!=null && !iStream.getType().equals("")){
+				try{
+					rStream = (i_stream)Class.forName(iStream.getType()).newInstance();
+				}catch (Exception e) {
+					bsController.writeLog("Load_action-> streamFactory error: "+e.toString(),iStub.log_INFO);
+				}
+		}
+	}
+	rStream.set_infostream(iStream);
+	return rStream;
+}
+
+
+
+public i_stream actionStream(String id_stream){
+	return streamFactory(id_stream,null,null);
+}
+
+
+public i_bean beanFactory(String id_bean){
+	return beanFactory(id_bean,null,null);
+}
+public i_bean beanFactory(String id_bean,ServletContext servletContext){
+	return beanFactory(id_bean,null,servletContext);
+}
+public i_bean beanFactory(String id_bean,HttpSession session,ServletContext servletContext){
+	i_bean rBean = new bean();
+	info_bean iBean = null;
+	if(_beans==null || _beans.get(id_bean)==null){
+		load_actions session_l_actions = (load_actions)session.getAttribute(bsConstants.CONST_SESSION_ACTIONS_INSTANCE);
+		if(session_l_actions!=null){
+			try{
+				iBean = (info_bean)session_l_actions.getBuilder().get_b_beans().get(id_bean);
+			}catch(Exception e){
+			}
+		}
+		if(iBean==null){
+			return rBean;
+		}
+	}else iBean = (info_bean)_beans.get(id_bean);
+
+
+//	info_bean iBean = (info_bean)((info_bean)_beans.get(id_bean)).clone();
+
+	if(iBean==null) return null;
+	boolean loadedFromProvider=false;
+	if(iBean.getProvider()!=null && !iBean.getProvider().equals("")){
+		Object actionFromProvider = providerObjectFactory(iBean.getProvider(), iBean.getName(), servletContext);
+		if(actionFromProvider!=null && actionFromProvider instanceof i_bean){
+			rBean = (i_bean)actionFromProvider;
+			loadedFromProvider=true;
+		}
+		if(actionFromProvider!=null && !(actionFromProvider instanceof i_bean)){
+			rBean.setDelegated(actionFromProvider);
+			loadedFromProvider=true;
+		}
+
+	}
+
+
+	if( !loadedFromProvider &&
+		(
+		(iBean.getType()==null || iBean.getType().trim().equals("")) &&
+		(iBean.getModel()==null || iBean.getModel().trim().equals("")) &&
+		(iBean.getV_info_items()==null && iBean.getV_info_items().size()==0)
+		)) return rBean;
+
+
+	if(!loadedFromProvider){
+
+		if(iBean.getType()!=null && !iBean.getType().equals("")){
+			try{
+				Object obj = Class.forName(iBean.getType()).newInstance();
+				if(obj instanceof i_bean)
+					rBean = (i_bean)obj;
+				else rBean.setDelegated(obj);
+			}catch (Exception e) {
+				bsController.writeLog("Load_action-> beanFactory error: "+e.toString(),iStub.log_INFO);
+			}
+		}
+		if(iBean.getModel()!=null && !iBean.getModel().equals("")){
+			try{
+				String model=iBean.getModel();
+				byte[] xmlModel = util_classes.getResourceAsByte("config.Loader", model);
+				if(xmlModel!=null){
+					HashMap fly = (HashMap)util_beanMessageFactory.message2bean(xmlModel, HashMap.class);
+					rBean.setParametersFly(fly);
+					rBean.setVirtual(true);
+				}
+			}catch (Exception e) {
+				bsController.writeLog("Load_action-> beanFactory load model "+iBean.getModel()+" error: "+e.toString(),iStub.log_INFO);
+			}
+
+		}
+		if(iBean.getV_info_items()!=null && iBean.getV_info_items().size()>0){
+			String xmlModel = "<item name=\""+iBean.getName()+"\">";
+			for(int i=0;i<iBean.getV_info_items().size();i++){
+				info_item iItem = (info_item)iBean.getV_info_items().get(i);
+				if(iItem!=null) xmlModel+=iItem.toXml();
+			}
+			xmlModel+=System.getProperty("line.separator")+"</item>";
+			try{
+				HashMap fly = (HashMap)util_beanMessageFactory.message2bean(xmlModel.getBytes(), HashMap.class);
+				rBean.setParametersFly(fly);
+				rBean.setVirtual(true);
+			}catch (Exception e) {
+				bsController.writeLog("Load_action-> beanFactory load virtual items of model "+iBean.getModel()+" error: "+e.toString(),iStub.log_INFO);
+			}
+		}
+
+	}
+	rBean.set_infobean(iBean);
+	return rBean;
+}
+
+
+
+
+
+public i_transformation transformationFactory(String transformationName){
+	return load_actions.transformationFactory(transformationName,_transformationoutput, null);
+}
+public i_transformation transformationFactory(String transformationName, ServletContext servletContext){
+	return load_actions.transformationFactory(transformationName,_transformationoutput, servletContext);
+}
+
+
+
+public static i_transformation transformationFactory(String transformationName, HashMap h_transformationoutput, ServletContext servletContext){
+	i_transformation rTransformation = new transformation();
+	if(h_transformationoutput==null || h_transformationoutput.get(transformationName)==null) return rTransformation;
+
+	info_transformation iTransformation = (info_transformation)h_transformationoutput.get(transformationName);
+	boolean loadedFromProvider=false;
+	if(iTransformation.getProvider()!=null && !iTransformation.getProvider().equals("")){
+		Object transformationFromProvider = providerTransformationFactory(iTransformation.getProvider(), iTransformation.getName(), servletContext);
+		if(transformationFromProvider!=null && transformationFromProvider instanceof i_transformation){
+			rTransformation = (i_transformation)transformationFromProvider;
+			loadedFromProvider=true;
+		}
+	}
+
+	if(!loadedFromProvider){
+		if(iTransformation==null || iTransformation.getType()==null || iTransformation.getType().equals("")) return rTransformation;
+
+		if(iTransformation.getType()!=null && !iTransformation.getType().equals("")){
+				try{
+					rTransformation = (i_transformation)Class.forName(iTransformation.getType()).newInstance();
+				}catch (Exception e) {
+					try{
+						rTransformation = (i_transformation)Class.forName(i_transformation.CLASSHIDRA_TRANSFORMATION_PACKAGE+iTransformation.getType()).newInstance();
+					}catch (Exception ex) {
+						bsController.writeLog("info_action-> transformationFactory error: "+e.toString(),iStub.log_INFO);
+						bsController.writeLog("info_action-> transformationFactory error: "+ex.toString(),iStub.log_INFO);
+					}
+				}
+		}
+	}
+	rTransformation.set_infotransformation(iTransformation);
+	return rTransformation;
+}
+
+private static Object providerTransformationFactory(String id_provider, String transformationName,ServletContext servletContext){
+	try{
+	if(id_provider==null || transformationName==null || id_provider.equals("") || transformationName.equals("")) return null;
+		i_provider provider  = (i_provider)Class.forName(bsConstants.CONST_PROVIDER_PATH+id_provider).newInstance();
+		if(provider==null) return null;
+		provider.set_context(servletContext);
+		return provider.get_bean(transformationName);
+	}catch(Exception e){
+		new bsControllerException(e,iStub.log_DEBUG);
+	}catch (Throwable t) {
+		new bsControllerException(t,iStub.log_DEBUG);
+	}
+	return null;
+}
+
+
+
+
+public void initTop(Node node) throws bsControllerException{
+	if(node==null) return;
+	try{
+		NamedNodeMap nnm = node.getAttributes();
+		if (nnm!=null){
+			for (int i=0;i<node.getAttributes().getLength();i++){
+				String paramName = node.getAttributes().item(i).getNodeName();
+				Node node_nnm =	nnm.getNamedItem(paramName);
+				if (node_nnm!=null) setCampoValue(paramName,node_nnm.getNodeValue());
+			}
+		}
+	}catch(Exception e){
+		new bsControllerException(e,iStub.log_DEBUG);
+	}
+}
+
+private void readFormElements(Node node) throws Exception{
+	if(node==null) return;
+
+	if(node.getNodeName().equals("action-config")){
+		this.initTop(node);
+		if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+			try{
+				i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+				extl.load();
+				reInit(extl);
+			}catch(Exception e){
+			}catch(Throwable t){
+			}
+		}
+	}
+	if(node.getNodeName().equals("action-streams")){
+		int stream_order=0;
+		HashMap _streams_order = new HashMap();
+		for(int k=0;k<node.getChildNodes().getLength();k++){
+			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+				info_stream iStream = new info_stream();
+				iStream.init(node.getChildNodes().item(k));
+				if(iStream!=null){
+					info_stream old_stream = (info_stream)_streams.get(iStream.getName());
+					if(old_stream!=null){
+						_streams.remove(old_stream.getName());
+						_streams_order.remove(Integer.valueOf(old_stream.getInt_order()));
+						info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
+						if(fromVinfo!=null)
+							v_info_streams.remove(fromVinfo);
+						Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+						if(app_action.size()==0){
+							int l=0;
+							while(l< ((Vector)_streams_apply_to_actions.get("*")).size()){
+								info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get("*")).get(l);
+								if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get("*")).remove(l);
+								else l++;
+							}
+						}else{
+							for(int j=0;j<app_action.size();j++){
+								String key=(String)app_action.get(j);
+								int l=0;
+								while(l< ((Vector)_streams_apply_to_actions.get(key)).size()){
+									info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get(key)).get(l);
+									if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get(key)).remove(l);
+									else l++;
+								}
+
+							}
+						}
+
+					}
+					_streams.put(iStream.getName(),iStream);
+					if(iStream.getInt_order()==-1){
+						while(_streams_order.get(Integer.valueOf(stream_order))!=null) stream_order++;
+						_streams_order.put(Integer.valueOf(stream_order) , iStream.getName());
+						stream_order++;
+					}else{
+						_streams_order.put(Integer.valueOf(iStream.getInt_order()) , iStream.getName());
+						stream_order=iStream.getInt_order();
+						stream_order++;
+					}
+				}
+			}
+		}
+
+		Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
+		for(int i=0;i<v_streams_order.size();i++){
+			info_stream current = (info_stream)_streams.get(_streams_order.get(v_streams_order.get(i)));
+			if(current!=null){
+				Vector app_action = new Vector(current.get_apply_to_action().keySet());
+				if(app_action.size()==0){
+					String key="*";
+					((Vector)_streams_apply_to_actions.get(key)).add(current);
+				}else{
+					for(int j=0;j<app_action.size();j++){
+						String key=(String)app_action.get(j);
+						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector());
+						((Vector)_streams_apply_to_actions.get(key)).add(current);
+					}
+				}
+			}
+		}
+
+//		v_info_streams.addAll(new Vector(_streams.values()));
+		v_info_streams = (new Vector(_streams.values()));
+		v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+
+
+	}
+	if(node.getNodeName().equals("form-beans")){
+		int order=0;
+		for(int k=0;k<node.getChildNodes().getLength();k++){
+			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+				info_bean iBean = new info_bean();
+				iBean.init(node.getChildNodes().item(k));
+				order++;
+				iBean.setOrder(Integer.valueOf(order).toString());
+				if(iBean!=null) _beans.put(iBean.getName(),iBean);
+			}
+		}
+
+//		v_info_beans.addAll(new Vector(_beans.values()));
+		v_info_beans = (new Vector(_beans.values()));
+		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+	}
+	if(node.getNodeName().equals("form-redirects")){
+		int order=0;
+		for(int k=0;k<node.getChildNodes().getLength();k++){
+			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+				info_redirect iRedirect = new info_redirect();
+				iRedirect.init(node.getChildNodes().item(k));
+				order++;
+				iRedirect.setOrder(Integer.valueOf(order).toString());
+				if(iRedirect!=null) _redirects.put(iRedirect.getPath(),iRedirect);
+			}
+		}
+
+//		v_info_redirects.addAll(new Vector(_redirects.values()));
+		v_info_redirects = (new Vector(_redirects.values()));
+		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+
+	}
+
+	if(node.getNodeName().equals("redirect-transformations")){
+		int order=0;
+		for(int k=0;k<node.getChildNodes().getLength();k++){
+			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+				if(node.getNodeName().toLowerCase().equals("transformationoutput")){
+					info_transformation iTransformationoutput = new info_transformation();
+					iTransformationoutput.init(node);
+					order++;
+					iTransformationoutput.setOrder(Integer.valueOf(order).toString());
+					if(iTransformationoutput!=null) _transformationoutput.put(iTransformationoutput.getName(),iTransformationoutput);
+				}
+			}
+		}
+
+//		v_info_transformationoutput.addAll(new Vector(_transformationoutput.values()));
+		v_info_transformationoutput = (new Vector(_transformationoutput.values()));
+		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+
+	}
+
+
+
+	if(node.getNodeName().equals("action-mappings")){
+		try{
+			NamedNodeMap nnm = node.getAttributes();
+			if (nnm!=null){
+				for (int j=0;j<node.getAttributes().getLength();j++){
+					String paramName = node.getAttributes().item(j).getNodeName();
+					Node node_nnm =	nnm.getNamedItem(paramName);
+					if (node_nnm!=null) setCampoValue(paramName,node_nnm.getNodeValue());
+				}
+			}
+		}catch(Exception e){
+			new bsControllerException(e,iStub.log_DEBUG);
+		}
+		int order=0;
+		for(int k=0;k<node.getChildNodes().getLength();k++){
+			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+				info_action iAction = new info_action();
+				iAction.init(node.getChildNodes().item(k),_redirects);
+				order++;
+				iAction.setOrder(Integer.valueOf(order).toString());
+				if(iAction!=null) _actions.put(iAction.getPath(),iAction);
+			}
+		}
+//		v_info_actions.addAll(new Vector(_actions.values()));
+		v_info_actions = (new Vector(_actions.values()));
+		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+
+	}
+}
+public String getError() {
+	return error;
+}
+public void setError(String string) {
+	error = string;
+}
+public String getAuth_error() {
+	return auth_error;
+}
+public void setAuth_error(String string) {
+	auth_error = string;
+}
+
+
+
+public String getSession_error() {
+	return session_error;
+}
+public void setSession_error(String string) {
+	session_error = string;
+}
+
+public boolean isReadOk() {
+	return readOk_File || readOk_Folder || readOk_Resource || readOk_Db || readOk_ExtLoader;
+}
+
+public static HashMap get_actions() {
+	return _actions;
+}
+
+public void set_actions(HashMap map) {
+	_actions = map;
+}
+public static HashMap get_streams() {
+	return _streams;
+}
+public void set_streams(HashMap _streams) {
+	load_actions._streams = _streams;
+}
+public static HashMap get_beans() {
+	return _beans;
+}
+public void set_beans(HashMap _beans) {
+	load_actions._beans = _beans;
+}
+public static HashMap get_redirects() {
+	return _redirects;
+}
+public void set_redirects(HashMap _redirects) {
+	load_actions._redirects = _redirects;
+}
+public HashMap get_streams_apply_to_actions() {
+	return _streams_apply_to_actions;
+}
+public boolean isReadOk_File() {
+	return readOk_File;
+}
+public String getExternalloader() {
+	return externalloader;
+}
+public void setExternalloader(String externalloader) {
+	this.externalloader = externalloader;
+}
+
+public String getLoadedFrom() {
+	return loadedFrom;
+}
+
+public String toString(){
+	return toXml();
+}
+
+public String toXml(){
+	String result="";
+	if(xmlEncoding!=null && !xmlEncoding.equals(""))
+		result+="<?xml version=\"1.0\" encoding=\""+xmlEncoding+"\"?>"+System.getProperty("line.separator");
+	result+="<action-config";
+	result+=" externalloader=\""+util_format.normaliseXMLText(externalloader)+"\"";
+	result+=">";
+	result+=System.getProperty("line.separator")+"   <action-streams>";
+	if(v_info_streams!=null && v_info_streams.size()>0){
+		for(int i=0;i<v_info_streams.size();i++){
+			info_stream entity = (info_stream)v_info_streams.get(i);
+			if(entity!=null) result+=entity.toXml();
+		}
+	}
+	result+=System.getProperty("line.separator")+"   </action-streams>";
+
+	result+=System.getProperty("line.separator")+"   <form-beans>";
+	if(v_info_beans!=null && v_info_beans.size()>0){
+		for(int i=0;i<v_info_beans.size();i++){
+			info_bean entity = (info_bean)v_info_beans.get(i);
+			if(entity!=null) result+=entity.toXml();
+		}
+	}
+	result+=System.getProperty("line.separator")+"   </form-beans>";
+
+	result+=System.getProperty("line.separator")+"   <form-redirects>";
+	if(v_info_redirects!=null && v_info_redirects.size()>0){
+		for(int i=0;i<v_info_redirects.size();i++){
+			info_redirect entity = (info_redirect)v_info_redirects.get(i);
+			if(entity!=null){
+				entity.setPrefix("form-");
+				result+=entity.toXml();
+			}
+		}
+	}
+	result+=System.getProperty("line.separator")+"   </form-redirects>";
+
+	result+=System.getProperty("line.separator")+"   <action-mappings";
+	if(error!=null && !error.trim().equals("")) result+=" error=\""+util_format.normaliseXMLText(error)+"\"";
+	if(auth_error!=null && !auth_error.trim().equals("")) result+=" auth_error=\""+util_format.normaliseXMLText(auth_error)+"\"";
+	if(session_error!=null && !session_error.trim().equals("")) result+=" session_error=\""+util_format.normaliseXMLText(session_error)+"\"";
+	result+=">";
+	if(v_info_actions!=null && v_info_actions.size()>0){
+		for(int i=0;i<v_info_actions.size();i++){
+			info_action entity = (info_action)v_info_actions.get(i);
+			if(entity!=null) result+=entity.toXml();
+		}
+	}
+	result+=System.getProperty("line.separator")+"   </action-mappings>";
+
+	result+=System.getProperty("line.separator")+"   <redirect-transformations>";
+	if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
+		for(int i=0;i<v_info_transformationoutput.size();i++){
+			info_transformation entity = (info_transformation)v_info_transformationoutput.get(i);
+			if(entity!=null) result+=entity.toXml();		}
+	}
+	result+=System.getProperty("line.separator")+"   </redirect-transformations>";
+
+	result+=System.getProperty("line.separator")+"</action-config>";
+
+	return result;
+}
+
+public static HashMap get_transformationoutput() {
+	return _transformationoutput;
+}
+
+public  void set_transformationoutput(HashMap transformationoutput) {
+	_transformationoutput = transformationoutput;
+}
+
+public Vector getV_info_actions() {
+	return v_info_actions;
+}
+
+public void setV_info_actions(Vector vInfoActions) {
+	v_info_actions = vInfoActions;
+}
+
+public Vector getV_info_streams() {
+	return v_info_streams;
+}
+
+public void setV_info_streams(Vector vInfoStreams) {
+	v_info_streams = vInfoStreams;
+}
+
+public Vector getV_info_beans() {
+	return v_info_beans;
+}
+
+public void setV_info_beans(Vector vInfoBeans) {
+	v_info_beans = vInfoBeans;
+}
+
+public Vector getV_info_redirects() {
+	return v_info_redirects;
+}
+
+public void setV_info_redirects(Vector vInfoRedirects) {
+	v_info_redirects = vInfoRedirects;
+}
+
+public Vector getV_info_transformationoutput() {
+	return v_info_transformationoutput;
+}
+
+public void setV_info_transformationoutput(Vector vInfoTransformation) {
+	v_info_transformationoutput = vInfoTransformation;
+}
+
+public load_actions_builder getBuilder() {
+	return builder;
+}
+
+public void set_streams_apply_to_actions(HashMap streamsApplyToActions) {
+	_streams_apply_to_actions = streamsApplyToActions;
+}
+
+public String getXmlEncoding() {
+	return xmlEncoding;
+}
+
+public void setXmlEncoding(String xmlEncoding) {
+	this.xmlEncoding = xmlEncoding;
+}
+class load_actions_builder  implements  java.io.Serializable, Cloneable {
+	private static final long serialVersionUID = 1L;
+	private HashMap _b_actions=null;
+	private HashMap _b_streams=null;
+	private HashMap _b_streams_apply_to_actions=null;
+
+	private HashMap _b_beans=null;
+	private HashMap _b_redirects=null;
+	private HashMap _b_transformationoutput=null;
+
+	load_actions_builder(){
+		super();
+		if(_b_actions==null) _b_actions = new HashMap();
+		if(_b_streams==null) _b_streams = new HashMap();
+		if(_b_streams_apply_to_actions==null){
+			_b_streams_apply_to_actions = new HashMap();
+			_b_streams_apply_to_actions.put("*",new Vector());
+		}
+		if(_b_beans==null) _b_beans = new HashMap();
+		if(_b_redirects==null) _b_redirects = new HashMap();
+		if(_b_transformationoutput==null) _b_transformationoutput = new HashMap();
+
+	}
+
+	public void syncroWithBuilder(){
+		load_actions._actions =_b_actions;
+		load_actions._streams = _b_streams;
+		load_actions._streams_apply_to_actions = _b_streams_apply_to_actions;
+		load_actions._beans = _b_beans;
+		load_actions._redirects = _b_redirects;
+		load_actions._transformationoutput = _b_transformationoutput;
+	}
+
+	public boolean builder_init(String _xml) throws bsControllerException, Exception{
+		return builder_init(_xml,true);
+	}
+	public boolean builder_init(String _xml, boolean load_def_actions) throws bsControllerException, Exception{
+
+		v_info_actions=new Vector();
+		v_info_streams=new Vector();
+		v_info_beans=new Vector();
+		v_info_redirects=new Vector();
+		v_info_transformationoutput=new Vector();
+
+		if(load_def_actions)
+			builder_load_def_actions();
+
+		Document documentXML = null;
+		documentXML = util_xml.readXMLData(_xml);
+		if(documentXML!=null){
+			xmlEncoding = documentXML.getXmlEncoding();
+			if(xmlEncoding==null) xmlEncoding="";
+		}
+		if(builder_readDocumentXml(documentXML)) return true;
+		else return false;
+	}
+
+
+	private boolean builder_initWithData(String _xml) throws bsControllerException, Exception{
+		Document documentXML = null;
+		documentXML = util_xml.readXMLData(_xml);
+		if(documentXML!=null){
+			xmlEncoding = documentXML.getXmlEncoding();
+			if(xmlEncoding==null) xmlEncoding="";
+		}
+		if(builder_readDocumentXml(documentXML)) return true;
+		else return false;
+	}
+
+	private boolean builder_readDocumentXml(Document documentXML) throws Exception{
+
+		if(documentXML!=null){
+
+			Node node = null;
+			try{
+				int first=0;
+				while(node==null && first < documentXML.getChildNodes().getLength()){
+					if(documentXML.getChildNodes().item(first).getNodeType()== Node.ELEMENT_NODE)
+						node = documentXML.getChildNodes().item(first);
+					first++;
+				}
+			}catch(Exception e){
+				new bsControllerException(e,iStub.log_DEBUG);
+			}
+			if(node==null) return false;
+			builder_readFormElements(node);
+			for(int i=0;i<node.getChildNodes().getLength();i++){
+				if(node.getChildNodes().item(i).getNodeType()== Node.ELEMENT_NODE)
+					builder_readFormElements(node.getChildNodes().item(i));
+			}
+			if(_actions!=null && _actions.get("*")!=null){
+				Object[] keysIn = _actions.keySet().toArray();
+				Object[] keysFor = ((HashMap)((info_action)_actions.get("*")).get_redirects()).keySet().toArray();
+				for(int i=0;i<keysIn.length;i++){
+					try{
+						HashMap current_redirects = (HashMap)((info_action)_actions.get((String)keysIn[i])).get_redirects();
+						for(int j=0;j<keysFor.length;j++)
+							current_redirects.put(keysFor[j],(((HashMap)((info_action)_actions.get("*")).get_redirects())).get(keysFor[j]));
+					}catch(Exception e){
+					}
+				}
+
+			}
+		}else return false;
+		return true;
+	}
+
+	private void builder_load_def_actions() {
+		String property_name = "resources/"+ bsController.CONST_XML_ACTIONS;
+
+		InputStream is = null;
+	    BufferedReader br = null;
+	    String result=null;
+	    String line="";
+
+
+	    try {
+	    	is = this.getClass().getResourceAsStream(property_name);
+	    	if(is!=null){
+	    		result="";
+		    	br = new BufferedReader(new InputStreamReader(is));
+		    	while (null != (line = br.readLine())) {
+		    		result+=(line+"\n");
+		    	}
+	    	}
+	    }catch (Exception e) {
+	    }finally {
+	    	try {
+	    		if (br != null) br.close();
+	    		if (is != null) is.close();
+	    	}catch (Exception e) {
+	    	}
+		}
+
+	    try{
+	    	if(result!=null){
+	    		builder_initWithData(result);
+	    		readDef=true;
+	    		loadedFrom+=" "+property_name;
+	    	}
+	    }catch (Exception e) {
+	    	readDef=false;
+		}
+	}
+
+
+	private void builder_readFormElements(Node node) throws Exception{
+		if(node==null) return;
+
+		if(node.getNodeName().equals("action-config")){
+			initTop(node);
+			if(getExternalloader()!=null && !getExternalloader().equals("")){
+				try{
+					i_externalloader extl= (i_externalloader)Class.forName(getExternalloader()).newInstance();
+					extl.load();
+					reInit(extl);
+				}catch(Exception e){
+				}catch(Throwable t){
+				}
+			}
+		}
+		if(node.getNodeName().equals("action-streams")){
+			int stream_order=0;
+			HashMap _b_streams_order = new HashMap();
+			for(int k=0;k<node.getChildNodes().getLength();k++){
+				if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+					info_stream iStream = new info_stream();
+					iStream.init(node.getChildNodes().item(k));
+					if(iStream!=null){
+						info_stream old_stream = (info_stream)_b_streams.get(iStream.getName());
+						if(old_stream!=null){
+							_b_streams.remove(old_stream.getName());
+							_b_streams_order.remove(Integer.valueOf(old_stream.getInt_order()));
+							info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
+							if(fromVinfo!=null)
+								v_info_streams.remove(fromVinfo);
+							Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+							if(app_action.size()==0){
+								int l=0;
+								while(l< ((Vector)_b_streams_apply_to_actions.get("*")).size()){
+									info_stream current = (info_stream)((Vector)_b_streams_apply_to_actions.get("*")).get(l);
+									if(old_stream.getName().equals(current.getName())) ((Vector)_b_streams_apply_to_actions.get("*")).remove(l);
+									else l++;
+								}
+							}else{
+								for(int j=0;j<app_action.size();j++){
+									String key=(String)app_action.get(j);
+									int l=0;
+									while(l< ((Vector)_b_streams_apply_to_actions.get(key)).size()){
+										info_stream current = (info_stream)((Vector)_b_streams_apply_to_actions.get(key)).get(l);
+										if(old_stream.getName().equals(current.getName())) ((Vector)_b_streams_apply_to_actions.get(key)).remove(l);
+										else l++;
+									}
+
+								}
+							}
+
+						}
+						_b_streams.put(iStream.getName(),iStream);
+						if(iStream.getInt_order()==-1){
+							while(_b_streams_order.get(Integer.valueOf(stream_order))!=null) stream_order++;
+							_b_streams_order.put(Integer.valueOf(stream_order) , iStream.getName());
+							stream_order++;
+						}else{
+							_b_streams_order.put(Integer.valueOf(iStream.getInt_order()) , iStream.getName());
+							stream_order=iStream.getInt_order();
+							stream_order++;
+						}
+					}
+				}
+			}
+
+			Vector v_b_streams_order = new util_sort().sort(new  Vector(_b_streams_order.keySet()),"");
+			for(int i=0;i<v_b_streams_order.size();i++){
+				info_stream current = (info_stream)_b_streams.get(_b_streams_order.get(v_b_streams_order.get(i)));
+				if(current!=null){
+					Vector app_action = new Vector(current.get_apply_to_action().keySet());
+					if(app_action.size()==0){
+						String key="*";
+						((Vector)_b_streams_apply_to_actions.get(key)).add(current);
+					}else{
+						for(int j=0;j<app_action.size();j++){
+							String key=(String)app_action.get(j);
+							if(_b_streams_apply_to_actions.get(key)==null) _b_streams_apply_to_actions.put(key,new Vector());
+							((Vector)_b_streams_apply_to_actions.get(key)).add(current);
+						}
+					}
+				}
+			}
+
+//			v_info_streams.addAll(new Vector(_b_streams.values()));
+			v_info_streams=(new Vector(_b_streams.values()));
+			v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+
+
+		}
+		if(node.getNodeName().equals("form-beans")){
+			int order=0;
+			for(int k=0;k<node.getChildNodes().getLength();k++){
+				if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+					info_bean iBean = new info_bean();
+					iBean.init(node.getChildNodes().item(k));
+					order++;
+					iBean.setOrder(Integer.valueOf(order).toString());
+					if(iBean!=null) _b_beans.put(iBean.getName(),iBean);
+				}
+			}
+//			v_info_beans.addAll(new Vector(_b_beans.values()));
+			v_info_beans = (new Vector(_b_beans.values()));
+			v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+		}
+		if(node.getNodeName().equals("form-redirects")){
+			int order=0;
+			for(int k=0;k<node.getChildNodes().getLength();k++){
+				if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+					info_redirect iRedirect = new info_redirect();
+					iRedirect.init(node.getChildNodes().item(k));
+					order++;
+					iRedirect.setOrder(Integer.valueOf(order).toString());
+					if(iRedirect!=null) _b_redirects.put(iRedirect.getPath(),iRedirect);
+				}
+			}
+//			v_info_redirects.addAll(new Vector(_b_redirects.values()));
+			v_info_redirects = (new Vector(_b_redirects.values()));
+			v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+
+		}
+
+		if(node.getNodeName().equals("redirect-transformations")){
+			int order=0;
+			for(int k=0;k<node.getChildNodes().getLength();k++){
+				if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+					if(node.getNodeName().toLowerCase().equals("transformationoutput")){
+						info_transformation iTransformationoutput = new info_transformation();
+						iTransformationoutput.init(node);
+						order++;
+						iTransformationoutput.setOrder(Integer.valueOf(order).toString());
+						if(iTransformationoutput!=null) _b_transformationoutput.put(iTransformationoutput.getName(),iTransformationoutput);
+					}
+				}
+			}
+//			v_info_transformationoutput.addAll(new Vector(_b_transformationoutput.values()));
+			v_info_transformationoutput = (new Vector(_b_transformationoutput.values()));
+			v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+
+		}
+
+
+
+		if(node.getNodeName().equals("action-mappings")){
+			try{
+				NamedNodeMap nnm = node.getAttributes();
+				if (nnm!=null){
+					for (int j=0;j<node.getAttributes().getLength();j++){
+						String paramName = node.getAttributes().item(j).getNodeName();
+						Node node_nnm =	nnm.getNamedItem(paramName);
+						if (node_nnm!=null) setCampoValue(paramName,node_nnm.getNodeValue());
+					}
+				}
+			}catch(Exception e){
+				new bsControllerException(e,iStub.log_DEBUG);
+			}
+			int order=0;
+			for(int k=0;k<node.getChildNodes().getLength();k++){
+				if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
+					info_action iAction = new info_action();
+					iAction.init(node.getChildNodes().item(k),_b_redirects);
+					order++;
+					iAction.setOrder(Integer.valueOf(order).toString());
+					if(iAction!=null) _b_actions.put(iAction.getPath(),iAction);
+				}
+			}
+//			v_info_actions.addAll(new Vector(_b_actions.values()));
+			v_info_actions = (new Vector(_b_actions.values()));
+			v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+
+		}
+	}
+
+	public HashMap get_b_beans() {
+		return _b_beans;
+	}
+
+	public void set_b_beans(HashMap bBeans) {
+		_b_beans = bBeans;
+	}
+
+	public HashMap get_b_actions() {
+		return _b_actions;
+	}
+
+	public HashMap get_b_streams() {
+		return _b_streams;
+	}
+
+	public HashMap get_b_streams_apply_to_actions() {
+		return _b_streams_apply_to_actions;
+	}
+
+	public HashMap get_b_redirects() {
+		return _b_redirects;
+	}
+
+	public HashMap get_b_transformationoutput() {
+		return _b_transformationoutput;
+	}
+}
+public void setReadOk_File(boolean readOkFile) {
+	readOk_File = readOkFile;
+}
+
+public boolean isReadDef() {
+	return readDef;
+}
+
+public void setReadDef(boolean readDef) {
+	this.readDef = readDef;
+}
+
+public boolean isReadOk_Resource() {
+	return readOk_Resource;
+}
+
+public void setReadOk_Resource(boolean readOkResource) {
+	readOk_Resource = readOkResource;
+}
+
+public boolean isReadOk_Folder() {
+	return readOk_Folder;
+}
+
+public void setReadOk_Folder(boolean readOkFolder) {
+	readOk_Folder = readOkFolder;
+}
+
+public boolean isReadOk_Db() {
+	return readOk_Db;
+}
+
+public void setReadOk_Db(boolean readOkDb) {
+	readOk_Db = readOkDb;
+}
+
+public boolean isReadOk_ExtLoader() {
+	return readOk_ExtLoader;
+}
+
+public void setReadOk_ExtLoader(boolean readOkExtLoader) {
+	readOk_ExtLoader = readOkExtLoader;
+}
+
+
+
+
+
+}

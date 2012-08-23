@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT users ((user)*, (group)*, (target)*)>
+<!ATTLIST users
+	externalloader CDATA #IMPLIED
+>
+<!ELEMENT user EMPTY>
+<!ATTLIST user
+	crypted (true | false) #IMPLIED
+	description CDATA #IMPLIED
+	email CDATA #IMPLIED
+	group CDATA #REQUIRED
+	language CDATA #IMPLIED
+	matriculation CDATA #REQUIRED
+	name CDATA #REQUIRED
+	pass_expired CDATA #IMPLIED
+	password CDATA #REQUIRED
+	target CDATA #REQUIRED
+	wac_fascia CDATA #IMPLIED
+	comment CDATA #IMPLIED
+>
+<!ELEMENT target EMPTY>
+<!ATTLIST target
+	comment CDATA #IMPLIED
+	name CDATA #REQUIRED
+>
+<!ELEMENT group EMPTY>
+<!ATTLIST group
+	comment CDATA #IMPLIED
+	name CDATA #REQUIRED
+>
