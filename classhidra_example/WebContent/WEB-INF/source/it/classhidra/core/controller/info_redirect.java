@@ -337,6 +337,10 @@ public class info_redirect extends info_entity implements i_elementBase{
 		v_info_transformationoutput = vInfoTransformationoutput;
 	}
 
+	public HashMap get_transformationoutput() {
+		return _transformationoutput;
+	}
+
 
 
 }

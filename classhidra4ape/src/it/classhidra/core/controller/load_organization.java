@@ -323,7 +323,7 @@ public class load_organization extends elementBase{
 		}
 	}
 	public void load_from_resources() {
-		String property_name =  CONST_XML_ORGANIZATIONS;
+		String property_name =  "/config/"+CONST_XML_ORGANIZATIONS;
 
 		InputStream is = null;
 	    BufferedReader br = null;
@@ -332,13 +332,7 @@ public class load_organization extends elementBase{
 
 
 	    try {
-	    	Object obj = null;
-	    	try{
-	    		obj = Class.forName("config.Loader").newInstance();
-	    	}catch(Exception ex){
-	    	}
-	    	if(obj==null) return;
-	    	is = obj.getClass().getResourceAsStream(property_name);
+	    	is = getClass().getResourceAsStream(property_name);
 	    	if(is!=null){
 	    		result="";
 		    	br = new BufferedReader(new InputStreamReader(is));

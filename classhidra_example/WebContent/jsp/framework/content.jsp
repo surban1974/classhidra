@@ -27,7 +27,7 @@
 				direction: 'counter',
 				duration:500,
 				zIndex:50,
-				widthMultiplier:1.30
+				widthMultiplier:1.40
 			});
 		});
 
@@ -37,7 +37,7 @@
 <body >
 
 <div id="content_Panel_canvas" 
-style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:hidden;"
+style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:hidden;" 
 >
 <table border="0" width="100%" height="100%" cellpadding="0" cellspacing="0">
 <tr>
@@ -54,7 +54,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 <center>
 	<bs:form method="post" onhistory="">
-<table border="0" width="100%" height="100%" style="width: 100%; height: 450px;">
+<table border="0" width="100%" height="100%" style="width: 100%; height: 100%;">
 <tr>
 
 <td align="center">

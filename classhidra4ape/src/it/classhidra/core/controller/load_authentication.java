@@ -509,7 +509,7 @@ public boolean isReadOk() {
 }
 
 public void load_from_resources() {
-		String property_name =  bsController.CONST_XML_AUTHENTIFICATIONS;
+		String property_name =  "/config/"+bsController.CONST_XML_AUTHENTIFICATIONS;
 
 		InputStream is = null;
 	    BufferedReader br = null;
@@ -518,13 +518,7 @@ public void load_from_resources() {
 
 
 	    try {
-	    	Object obj = null;
-	    	try{
-	    		obj = Class.forName("config.Loader").newInstance();
-	    	}catch(Exception ex){
-	    	}
-	    	if(obj==null) return;
-	    	is = obj.getClass().getResourceAsStream(property_name);
+	    	is = getClass().getResourceAsStream(property_name);
 	    	if(is!=null){
 	    		result="";
 		    	br = new BufferedReader(new InputStreamReader(is));

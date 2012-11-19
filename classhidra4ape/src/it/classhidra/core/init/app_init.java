@@ -59,7 +59,7 @@ public class app_init implements Serializable{
 	static public String id_transf_elaborationmode		=	"application.transformation.event.after.elaborationmode";
 	static public String id_transf_elaborationpoint		=	"application.transformation.event.after.elaborationpoint";
 	static public String id_transf_elaborationwrapper	=	"application.transformation.event.after.elaborationwrapper";
-
+	static public String id_package_annotated			=	"application.package.annotated";
 	
 	private String _path;
 	private String _path_root;
@@ -77,6 +77,8 @@ public class app_init implements Serializable{
 	private String _transf_elaborationpoint		=	"controller";
 	private String _transf_elaborationwrapper	=	"it.classhidra.core.controller.wrappers.bsCharResponseWrapper";
 
+	private String _package_annotated;
+	
 	public HashMap content;
 	
 	public static String _rows_on_page="20";
@@ -155,6 +157,9 @@ public class app_init implements Serializable{
 			_transf_elaborationpoint=(System.getProperty(id_transf_elaborationpoint)!=null)?System.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
 			_transf_elaborationwrapper=(System.getProperty(id_transf_elaborationwrapper)!=null)?System.getProperty(id_transf_elaborationwrapper):_transf_elaborationwrapper;
 			
+			_package_annotated=(System.getProperty(id_package_annotated)!=null)?System.getProperty(id_package_annotated):_package_annotated;
+
+			
 			
 			if(_path_config==null || _path_config.equals("")) _path_config = "/config/";
 			if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
@@ -199,6 +204,8 @@ public class app_init implements Serializable{
 		_transf_elaborationpoint=(property.getProperty(id_transf_elaborationpoint)!=null)?property.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
 		_transf_elaborationwrapper=(property.getProperty(id_transf_elaborationwrapper)!=null)?property.getProperty(id_transf_elaborationwrapper):_transf_elaborationwrapper;
 		
+		_package_annotated=(property.getProperty(id_package_annotated)!=null)?property.getProperty(id_package_annotated):_package_annotated;
+
 		
 		if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
 		if(_load_res_mode==null) _load_res_mode="normal";
@@ -398,6 +405,10 @@ public class app_init implements Serializable{
 
 	public void set_extention_do(String extentionDo) {
 		_extention_do = extentionDo;
+	}
+
+	public String get_package_annotated() {
+		return _package_annotated;
 	}
 
 

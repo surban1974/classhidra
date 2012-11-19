@@ -368,13 +368,34 @@ public class bsController extends HttpServlet implements bsConstants  {
 		i_bean bean_instance = getCurrentForm(id_action,request);
 
 		if(bean_instance==null){
-			bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext());
+			info_bean iBean = (info_bean)getAction_config().get_beans().get(action_instance.get_infoaction().getName());
+			if(	action_instance instanceof i_bean &&
+				(
+					action_instance.get_infoaction().getName().equals("") ||
+					(iBean!=null && action_instance.get_infoaction().getType().equals(iBean.getType()))
+				)
+			)
+				bean_instance = (i_bean)action_instance;
+			else 
+				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext());
 			if(bean_instance!=null) bean_instance.reimposta();
+
+			
+			//Modifica 20100521 WARNING
+//			action_instance.set_bean((i_bean)bean_instance.clone());
+			action_instance.set_bean(bean_instance);
+		}else{
+			if(	action_instance instanceof i_bean &&
+					(
+						action_instance.get_infoaction().getName().equals("") ||
+						bean_instance.getClass().getName().equals(action_instance.getClass().getName())
+					)
+				)
+				action_instance = (i_action)bean_instance;
+			else
+				action_instance.set_bean(bean_instance);			
 		}
 
-//Modifica 20100521 WARNING
-//		action_instance.set_bean((i_bean)bean_instance.clone());
-		action_instance.set_bean(bean_instance);
 
 		action_instance.init(request,response);
 
@@ -407,7 +428,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}else{
 			i_bean bean_instance_clone = null;
 			if(bean_instance==null){
-				bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext());
+				info_bean iBean = (info_bean)getAction_config().get_beans().get(prev_action_instance.get_infoaction().getName());
+				if(	prev_action_instance instanceof i_bean &&
+						(
+							prev_action_instance.get_infoaction().getName().equals("") ||
+							(iBean!=null && prev_action_instance.get_infoaction().getType().equals(iBean.getType()))
+						)
+				)
+					bean_instance_clone = (i_bean)prev_action_instance;
+				else
+					bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext());
 				if(bean_instance_clone!=null) bean_instance_clone.reimposta();
 			}else{
 //Modifica 20100521 WARNING
@@ -419,13 +449,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(	prev_action_instance.get_infoaction().getReloadAfterAction().toLowerCase().equals("true"))
 					bean_instance_clone.init(request);
 				redirects validate_redirect = bean_instance_clone.validate(request);
-				prev_action_instance.setCurrent_redirect(validate_redirect);
+				
+				if(	prev_action_instance instanceof i_bean &&
+						(
+							prev_action_instance.get_infoaction().getName().equals("") ||
+							bean_instance_clone.getClass().getName().equals(prev_action_instance.getClass().getName())
+						)
+				)
+					prev_action_instance = (i_action)bean_instance_clone;
+				
 				if(prev_action_instance.get_bean()==null) prev_action_instance.set_bean(bean_instance_clone);
+				prev_action_instance.setCurrent_redirect(validate_redirect);
 				if(validate_redirect!=null) return prev_action_instance;
 			}
 
 		}
-
 		return prev_action_instance;
 	}
 

@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <action-config externalloader=""> 
 	<action-streams>
+<!-- 	
 		<stream name="def_control_permission" type="application.web.streams.app_control_permission">
 			<apply-to-action action="*"/>
 		</stream>
+ -->
 	</action-streams>
 
 
 
 	<form-beans>  
-		<form-bean name="formLogin" type="application.web.forms.formLogin"/>
+	
 		<form-bean name="formLoginVirtual" >
 		     <items name="groups" type="java.util.Vector"> 
 		     </items>
@@ -23,62 +25,42 @@
 		
 		</form-bean>	
 		<form-bean name="formContent" type="application.web.forms.formContent"/>
-		<form-bean name="formMenuCreator" type="application.web.forms.formMenuCreator"/>
 		<form-bean name="formHelp" type="application.web.forms.formHelp"/>
-		<form-bean name="formMessages" type="application.web.forms.formMessages"/>
 		<form-bean name="formMail" type="application.web.forms.formMail"/>
-		<form-bean name="formMinimizer" type="application.web.forms.formMinimizer"/>
+<!-- 
+		<form-bean name="formLogin" type="application.web.forms.formLogin" model_="config/beans/xmlFormTest.xml"/>
 		<form-bean name="formBuilder" type="application.web.forms.formBuilder"/>
 		<form-bean name="formAmanager" type="application.web.forms.formAmanager"/>
-
+		<form-bean name="formMessages" type="application.web.forms.formMessages"/>
+		<form-bean name="formMenuCreator" type="application.web.forms.formMenuCreator"/>
+		<form-bean name="formMinimizer" type="application.web.forms.formMinimizer"/>
+		
+		
+ -->
 		
 
 	</form-beans>
 	<form-redirects>
-		<form-redirect path="/jsp/framework/resources.jsp" descr="Resources" mess_id="title_fw_Resources"/>
-		<form-redirect path="/jsp/framework/login.jsp" descr="Login" mess_id="title_fw_Login"/>
 		<form-redirect path="/jsp/framework/content.jsp" descr="Content" mess_id="title_fw_Content"/>
 		<form-redirect path="/jsp/pages/sendmail.jsp" descr="Send Messages" mess_id="title_fw_SendMail"/>
 		<form-redirect path="/jsp/pages/about.jsp" descr="About" mess_id="title_fw_About"/>
-		<form-redirect path="/jsp/framework/log.jsp" descr="Log" mess_id="title_fw_Log"/>
-		<form-redirect path="/jsp/framework/log_users.jsp" descr="Users In Session" mess_id="title_fw_Log_users"/>
+		
+<!-- 
+		<form-redirect path="/jsp/framework/login.jsp" descr="Login" mess_id="title_fw_Login"/>
 		<form-redirect path="/jsp/builder/canvas.jsp" descr="Builder actions.xml (BETA)" mess_id="title_fw_builder"/>
 		<form-redirect path="/jsp/amanager/canvas.jsp" descr="Users/Groups/Authentications" mess_id="title_fw_amanager"/>
-
+		<form-redirect path="/jsp/framework/log_users.jsp" descr="Users In Session" mess_id="title_fw_Log_users"/>
+		<form-redirect path="/jsp/framework/resources.jsp" descr="Resources" mess_id="title_fw_Resources"/>
+ 		<form-redirect path="/jsp/framework/log.jsp" descr="Log" mess_id="title_fw_Log"/>
+ -->
 	</form-redirects>
 	<action-mappings 
 		error="/jsp/framework/action_mappings_Error.jsp" 
 		auth_error="/jsp/framework/action_mappings_authError.jsp" 
 		session_error="/jsp/framework/action_mappings_sessionError.jsp">
 
-		<action path="messages"
-			name="formMessages"
-			type="application.web.actions.actionMessages" 
-			redirect="/jsp/framework/viewmessages.jsp"
-		/>
 		
-		<action path="log"
-				type="application.web.actions.actionLog"
-				redirect="/jsp/framework/log.jsp"
-				navigated="true">
-				<redirect auth_id="log_id" path="*"/>				
-		</action>
 
-		<action path="log_users"
-				type="application.web.actions.actionLogUsers"
-				redirect="/jsp/framework/log_users.jsp"
-				navigated="true">
-				<redirect auth_id="logu_id" path="*"/>				
-		</action>
-
-		<action path="resources"
-			type="application.web.actions.actionRecources" 
-			redirect="/jsp/framework/resources.jsp"
-			navigated="true"
-			property="allway:public"
-		>
-			<redirect auth_id="res_id" path="*"/>
-		</action>
 
 
 		<action path="portal"
@@ -91,7 +73,43 @@
                 	property="allway:public" />
                 	
 		
-		<action path="login"
+                	
+
+                	
+                	
+              	
+ 
+ <!--                
+ 		<action path="messages"
+			name="formMessages"
+			type="application.web.actions.actionMessages" 
+			redirect="/jsp/framework/viewmessages.jsp"
+		/>
+		
+		<action path="menuCreator"
+            name="formMenuCreator"
+            type="application.web.actions.actionMenuCreator"
+            redirect="/jsp/framework/menuCreator.jsp"
+            memoryInSession="true"
+        />
+ 
+		<action path="minimizer"
+			name="formMinimizer"
+			type="application.web.actions.actionMinimizer" 
+			redirect="/jsp/framework/minimizer.jsp"
+			memoryInSession="true"
+			property="allway:public" 
+		/>   
+
+		<action path="log_users"
+				type="application.web.actions.actionLogUsers"
+				redirect="/jsp/framework/log_users.jsp"
+				navigated="true">
+				<redirect auth_id="logu_id" path="*"/>				
+		</action>
+
+		 
+ 		<action path="login"
                 	name="formLogin"
                 	type="application.web.actions.actionLogin"
                 	redirect="/jsp/framework/login.jsp"
@@ -101,7 +119,7 @@
                 	help="/jsp/help/help_login.html"
                 	property="allway:public" />
                 	
-		<action path="loginVirtual"
+        		<action path="loginVirtual"
                 	name="formLoginVirtual"
                 	type="application.web.actions.actionLogin"
                 	redirect="/jsp/framework/login.jsp"
@@ -109,23 +127,8 @@
                 	memoryInSession="true"
                 	reloadAfterAction="false"
                 	help="/jsp/help/help_login.html"
-                	property="allway:public" />
-                	
-		<action path="menuCreator"
-                	name="formMenuCreator"
-                	type="application.web.actions.actionMenuCreator"
-                	redirect="/jsp/framework/menuCreator.jsp"
-                	memoryInSession="true"
-                 	/>
-                 	
-		<action path="minimizer"
-			name="formMinimizer"
-			type="application.web.actions.actionMinimizer" 
-			redirect="/jsp/framework/minimizer.jsp"
-			memoryInSession="true"
-			property="allway:public" 
-		/>                 	
-                	
+                	property="allway:public" />        	
+ 	
  		<action path="builder"
 			name="formBuilder"
 			type="application.web.actions.actionBuilder" 
@@ -148,7 +151,25 @@
 			<redirect auth_id="amn_id" path="*"/>
 		</action>
 
+
+		<action path="resources"
+			type="application.web.actions.actionRecources" 
+			redirect="/jsp/framework/resources.jsp"
+			navigated="true"
+			property="allway:public"
+		>
+			<redirect auth_id="res_id" path="*"/>
+		</action>
+
+		<action path="log"
+				type="application.web.actions.actionLog"
+				redirect="/jsp/framework/log.jsp"
+				navigated="true">
+				<redirect auth_id="log_id" path="*"/>				
+		</action>
 		
+
+ -->		
 
                 	
 		<action path="content"

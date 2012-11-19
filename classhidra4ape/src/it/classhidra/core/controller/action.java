@@ -35,10 +35,10 @@ import java.util.HashMap;
 import javax.servlet.http.*;
 import javax.servlet.*;
 
-public class action implements i_action, Serializable{
+public class action extends bean implements i_action, Serializable{
 	private static final long serialVersionUID = -6220391111031079562L;
 	private i_bean _bean;
-	private info_action _infoaction;
+//	private info_action _infoaction;
 	private redirects current_redirect;
 	private boolean included = false;
 	
@@ -64,18 +64,24 @@ public class action implements i_action, Serializable{
 	public void actionBeforeRedirect(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 	}
 	public i_bean get_bean() {
+		if(_bean!=null && _bean.getClass().getName().equals(this.getClass().getName())) return this;
+		if(_bean==null) return this;
 		return _bean;
 	}
+/*
 	public info_action get_infoaction() {
 		return _infoaction;
 	}
+*/	
 	public void set_bean(i_bean form) {
 		_bean = form;
 		if(_bean!=null) _bean.set_infoaction(_infoaction);
 	}
+/*	
 	public void set_infoaction(info_action action) {
 		_infoaction = action;
 	}
+*/	
 	public redirects getCurrent_redirect() {
 		return current_redirect;
 	}

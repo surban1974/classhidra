@@ -538,7 +538,7 @@ public void refreshV_info_targets(){
 
 	public void load_from_resources() {
 
-		String property_name = bsController.CONST_XML_USERS;
+		String property_name = "/config/"+bsController.CONST_XML_USERS;
 
 		InputStream is = null;
 	    BufferedReader br = null;
@@ -547,15 +547,7 @@ public void refreshV_info_targets(){
 
 
 	    try {
-	    	Object obj = null;
-	    	try{
-	    		obj = Class.forName("config.Loader").newInstance();
-	    	}catch(Exception ex){
-	    	}
-	    	if(obj==null){
-	    		return;
-	    	}
-	    	is = obj.getClass().getResourceAsStream(property_name);
+	    	is = getClass().getResourceAsStream(property_name);
 	    	if(is!=null){
 	    		result="";
 		    	br = new BufferedReader(new InputStreamReader(is));

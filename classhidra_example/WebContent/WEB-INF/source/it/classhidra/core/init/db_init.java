@@ -137,7 +137,7 @@ public void init() {
 	if(property!=null){
 		loadedFrom+=" "+property_name;
 		init(property,"");
-		int ids=1;
+		int ids=0;
 		boolean valid=true;
 		while(valid){
 			db_init current = new db_init();

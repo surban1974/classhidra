@@ -2,7 +2,7 @@
 <%@ include file="../framework/header_ajax.jsp" %>
 <bs:form name="builder_preview" onhistory=""  >
 <div >
-	<textarea id="xmlContent" name="xmlContent" style="width:100%;height: 500;overflow:scroll"><bs:formelement name="xmlContent"/> </textarea>
+	<textarea id="xmlContent" name="xmlContent" wrap="off"  style="width:100%;height: 500;overflow:scroll"><bs:formelement name="xmlContent"/> </textarea>
 </div>
 <table width="100%">
 	<tr>

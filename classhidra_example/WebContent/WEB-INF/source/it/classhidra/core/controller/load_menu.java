@@ -320,6 +320,8 @@ public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 	}
 
 	public void load_from_resources() {
+		
+		if(_menu==null) return;
 
 		app_init ainit = bsController.getAppInit();
 
@@ -334,7 +336,7 @@ public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 		}catch (Exception e) {
 		}
 
-		String property_name =  bsController.CONST_XML_MENU;
+		String property_name =  "/config/"+bsController.CONST_XML_MENU;
 
 		InputStream is = null;
 	    BufferedReader br = null;
@@ -343,13 +345,7 @@ public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 
 
 	    try {
-	    	Object obj = null;
-	    	try{
-	    		obj = Class.forName("config.Loader").newInstance();
-	    	}catch(Exception ex){
-	    	}
-	    	if(obj==null) return;
-	    	is = obj.getClass().getResourceAsStream(property_name);
+	    	is = getClass().getResourceAsStream(property_name);
 	    	if(is!=null){
 	    		result="";
 		    	br = new BufferedReader(new InputStreamReader(is));

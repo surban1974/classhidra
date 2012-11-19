@@ -135,7 +135,11 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 								<td width="1%"><script>ObjectDraw("page1","button",1,"","changeLang('IT')","page_section","IT.gif","images/menu/","",true,24,"35");</script></td>
 								<td width="1%">&nbsp;</td>
 								<td width="1%"><script>ObjectDraw("page1","button",2,"","changeLang('EN')","page_section","EN.gif","images/menu/","",true,24,"35");</script></td>
+								<td width="1%">&nbsp;</td>
+								<td  width="1%" align="right"><script>ObjectDraw("page1","button",15,"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!Details of version - IMPORTANT!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;","showAsIFrame('jsp/help/news.pdf',900,550)","page_section_active","","images/menu/","",true,24);</script></td>
+
 								<td width="100%" align="center">&nbsp;</td>
+
 							
 	<bs:equal name="groups.size" value="0">	
 								<td align="center" width="20px">&nbsp;</td>

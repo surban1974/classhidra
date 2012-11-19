@@ -17,7 +17,9 @@
 	</action-streams>
 	
 	<form-beans>   
+		
 <!-- 	   
+		<form-bean name="formTest" type="it.application.formTest"/>
 		<form-bean name="formTest" type="it.application.formTest"/>
 		<form-bean name="test_spring_provider" type="it.application.formTestSpringProvider" provider="spring"/>	
 		<form-bean name="test_my_provider" type="it.application.formTestMyProvider" provider="it.application.MyProvider"/>	
@@ -44,11 +46,11 @@
         	<redirect auth_id="test_id_0" path="/jsp/test_error.jsp"/>    
         	<redirect auth_id="test_id_1" path="/jsp/test_ok.jsp"/>  
         	<redirect auth_id="test_id_2" path="/jsp/test_another.jsp">  
-        	<transformationoutput 
-        		name="t_outid_2"
-        		type="xslt"
-        		path="/xslt/testid_2.xslt" 
-        	/>	 
+	        	<transformationoutput 
+	        		name="t_outid_2"
+	        		type="xslt"
+	        		path="/xslt/testid_2.xslt" 
+	        	/>	 
         		
         	</redirect>
         	
@@ -70,15 +72,13 @@
         		inputformat="byte" 
         	/>	  
       		<transformationoutput 
-        		name="t_out3"
-        		type="it.transformations.jscript"
-        		name="wsxml_javascript" 
+        		name="wsxml_javascript"
         		type="jscript" 
         		inputformat="string"
         		
         	/>	         	       	
         	       	       	
         </action>        		
- -->       
+ -->      
     </action-mappings>
 </action-config>

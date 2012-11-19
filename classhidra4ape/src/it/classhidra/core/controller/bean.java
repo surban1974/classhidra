@@ -46,23 +46,24 @@ import javax.servlet.http.HttpServletRequest;
 
 
 public class bean extends elementBeanBase implements i_bean  {
-private static final long serialVersionUID = 3917073481415967577L;
-private info_bean _infobean;
-private info_action _infoaction;
-private auth_init current_auth;
-private HashMap parametersMP;
-private HashMap parametersFly;
-public String $id_returnPointOfService;
-public String middleAction;
-public String js4ajax="false";
-public boolean refresh=false;
-private boolean xmloutput=false;
-private boolean transformationoutput=false;
-private boolean binaryoutput=false;
-private boolean virtual=false;
-public int countActions;
+	private static final long serialVersionUID = 3917073481415967577L;
 
-private Object delegated;
+	private info_bean _infobean;
+	protected info_action _infoaction;
+	private auth_init current_auth;
+	private HashMap parametersMP;
+	private HashMap parametersFly;
+	public String $id_returnPointOfService;
+	public String middleAction;
+	public String js4ajax="false";
+	public boolean refresh=false;
+	private boolean xmloutput=false;
+	private boolean transformationoutput=false;
+	private boolean binaryoutput=false;
+	private boolean virtual=false;
+	public int countActions;
+	
+	private Object delegated;
 
 
 

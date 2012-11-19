@@ -23,11 +23,13 @@
 *********************************************************************************/
 package it.classhidra.core.controller;
 
+import it.classhidra.annotation.load_annotated;
 import it.classhidra.core.init.app_init;
 import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
+
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_classes;
@@ -40,6 +42,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
@@ -105,9 +108,11 @@ public void init() throws bsControllerException{
 
 	String app_path="";
 	app_init ainit = bsController.getAppInit();
+	
+	
 
 	try{
-
+		
 		if(ainit.get_db_name()!=null){
 			if(initDB(ainit)){
 				loadedFrom=ainit.get_db_name();
@@ -324,10 +329,185 @@ public void load_def_actions() {
     }catch (Exception e) {
     	readDef=false;
 	}
+    loadFromAnnotations();
+}
+
+public void loadFromAnnotations(){
+	
+	if(_actions==null) _actions = new HashMap();
+	if(_streams==null){
+		_streams = new HashMap();
+		readDef = false;
+	}
+	if(_streams_apply_to_actions==null){
+		_streams_apply_to_actions = new HashMap();
+		_streams_apply_to_actions.put("*",new Vector());
+	}
+	if(_beans==null) _beans = new HashMap();
+	if(_redirects==null) _redirects = new HashMap();
+
+	
+	load_annotated l_annotated = new load_annotated();
+	l_annotated.loadAllObjects(_redirects);
+	
+	if(l_annotated.getError()!=null && !l_annotated.getError().equals(""))
+		error = l_annotated.getError();
+	if(l_annotated.getSession_error()!=null && !l_annotated.getSession_error().equals(""))
+		session_error = l_annotated.getSession_error();	
+	if(l_annotated.getAuth_error()!=null && !l_annotated.getAuth_error().equals(""))
+		auth_error = l_annotated.getAuth_error();	
+
+	Vector a_streams = new Vector(l_annotated.get_streams().values());
+
+	int stream_order=0;
+	HashMap _streams_order = new HashMap();
+	for(int k=0;k<a_streams.size();k++){
+		info_stream iStream = (info_stream)a_streams.get(k);
+		info_stream old_stream = (info_stream)_streams.get(iStream.getName());
+		if(old_stream!=null){
+			_streams.remove(old_stream.getName());
+			_streams_order.remove(Integer.valueOf(old_stream.getInt_order()));
+			info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
+			if(fromVinfo!=null)
+				v_info_streams.remove(fromVinfo);
+			Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+			if(app_action.size()==0){
+				int l=0;
+				while(l< ((Vector)_streams_apply_to_actions.get("*")).size()){
+					info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get("*")).get(l);
+					if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get("*")).remove(l);
+					else l++;
+				}
+			}else{
+				for(int j=0;j<app_action.size();j++){
+					String key=(String)app_action.get(j);
+					int l=0;
+					while(l< ((Vector)_streams_apply_to_actions.get(key)).size()){
+						info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get(key)).get(l);
+						if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get(key)).remove(l);
+						else l++;
+					}
+				}
+			}
+			
+		}
+		_streams.put(iStream.getName(),iStream);
+		if(iStream.getInt_order()==-1){
+			while(_streams_order.get(Integer.valueOf(stream_order))!=null) stream_order++;
+			_streams_order.put(Integer.valueOf(stream_order) , iStream.getName());
+			stream_order++;
+		}else{
+			_streams_order.put(Integer.valueOf(iStream.getInt_order()) , iStream.getName());
+			stream_order=iStream.getInt_order();
+			stream_order++;
+		}
+	}
+
+	Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
+	for(int i=0;i<v_streams_order.size();i++){
+		info_stream current = (info_stream)_streams.get(_streams_order.get(v_streams_order.get(i)));
+		if(current!=null){
+			Vector app_action = new Vector(current.get_apply_to_action().keySet());
+			if(app_action.size()==0){
+				String key="*";
+				((Vector)_streams_apply_to_actions.get(key)).add(current);
+			}else{
+				for(int j=0;j<app_action.size();j++){
+					String key=(String)app_action.get(j);
+					if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector());
+					((Vector)_streams_apply_to_actions.get(key)).add(current);
+				}
+			}
+		}
+	}
+	
+	//v_info_streams.addAll(new Vector(_streams.values()));
+	v_info_streams = (new Vector(_streams.values()));
+	v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+	
+	
+	Vector a_beans = new Vector(l_annotated.get_beans().values());
+	int max_int_order = -1;
+	if(v_info_beans!=null && v_info_beans.size()>0){
+		try{
+			max_int_order = ((info_bean)v_info_beans.get(v_info_beans.size()-1)).getInt_order();
+		}catch(Exception e){			
+		}
+	}
+	if(max_int_order>-1)
+		a_beans = new util_sort().sort(a_beans,"int_order");
+		
+	for(int i=0;i<a_beans.size();i++){
+		if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(new Integer(max_int_order+1+i).toString());
+		_beans.put(((info_bean)a_beans.get(i)).getName(), a_beans.get(i));
+	}
+	v_info_beans = (new Vector(_beans.values()));
+	v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+	
+	
+	
+	Vector a_redirects = new Vector(l_annotated.get_redirects().values());
+	max_int_order = -1;
+	if(v_info_redirects!=null && v_info_redirects.size()>0){
+		try{
+			max_int_order = ((info_bean)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
+		}catch(Exception e){			
+		}
+	}
+	if(max_int_order>-1)
+		a_redirects = new util_sort().sort(a_redirects,"int_order");
+		
+	for(int i=0;i<a_redirects.size();i++){
+		if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(new Integer(max_int_order+1+i).toString());
+		_redirects.put(((info_redirect)a_redirects.get(i)).getPath(), a_redirects.get(i));
+	}
+	v_info_redirects = (new Vector(_redirects.values()));
+	v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+
+
+	Vector a_actions = new Vector(l_annotated.get_actions().values());
+	max_int_order = -1;
+	if(v_info_actions!=null && v_info_actions.size()>0){
+		try{
+			max_int_order = ((info_action)v_info_actions.get(v_info_actions.size()-1)).getInt_order();
+		}catch(Exception e){			
+		}
+	}
+	if(max_int_order>-1)
+		a_actions = new util_sort().sort(a_actions,"int_order");
+		
+	for(int i=0;i<a_actions.size();i++){
+		if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(new Integer(max_int_order+1+i).toString());
+		_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
+	}
+	v_info_actions = (new Vector(_actions.values()));
+	v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+	
+	
+	Vector a_transformations = new Vector(l_annotated.get_transformationoutput().values());
+	max_int_order = -1;
+	if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
+		try{
+			max_int_order = ((info_transformation)v_info_transformationoutput.get(v_info_transformationoutput.size()-1)).getInt_order();
+		}catch(Exception e){			
+		}
+	}
+	if(max_int_order>-1)
+		a_transformations = new util_sort().sort(a_transformations,"int_order");
+		
+	for(int i=0;i<a_transformations.size();i++){
+		if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(new Integer(max_int_order+1+i).toString());
+		_transformationoutput.put(((info_transformation)a_transformations.get(i)).getName(), a_transformations.get(i));
+	}
+	v_info_transformationoutput = (new Vector(_transformationoutput.values()));
+	v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+	
+	
+	
 }
 
 public void load_from_resources() {
-	load_from_resources(bsController.CONST_XML_ACTIONS);
+	load_from_resources("/config/"+bsController.CONST_XML_ACTIONS);
 	String property_name =  "config."+bsController.CONST_XML_ACTIONS_FOLDER;
 	ArrayList array = new ArrayList();
 
@@ -340,7 +520,7 @@ public void load_from_resources() {
 	for(int i=0;i<array.size();i++){
 		String property_name0 =  bsController.CONST_XML_ACTIONS_FOLDER+"/"+array.get(i);
 		if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
-			load_from_resources(property_name0);
+			load_from_resources("/config/"+property_name0);
 	}
 
 }
@@ -354,13 +534,7 @@ private void load_from_resources(String property_name) {
 
 
     try {
-    	Object obj = null;
-    	try{
-    		obj = Class.forName("config.Loader").newInstance();
-    	}catch(Exception ex){
-    	}
-    	if(obj==null) return;
-    	is = obj.getClass().getResourceAsStream(property_name);
+    	is = getClass().getResourceAsStream(property_name);
     	if(is!=null){
     		result="";
 	    	br = new BufferedReader(new InputStreamReader(is));
@@ -488,7 +662,6 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 				}catch(Exception e){
 				}
 			}
-
 		}
 	}else return false;
 	return true;
@@ -543,12 +716,14 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 			iAction = new info_action();
 			iAction.setPath(id_action);
 			rAction.set_infoaction(iAction);
+			((bean)rAction).set_infobean(new info_bean());
 			return rAction;
 		}
 	}else iAction = (info_action)_actions.get(id_action);
 
 
 //	info_action iAction = (info_action)((info_action)_actions.get(id_action)).clone();
+	info_bean iBean = (info_bean)_beans.get(iAction.getName());
 
 
 	boolean loadedFromProvider=false;
@@ -556,6 +731,7 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 		Object actionFromProvider = providerObjectFactory(iAction.getProvider(), iAction.getPath(), servletContext);
 		if(actionFromProvider!=null && actionFromProvider instanceof i_action){
 			rAction = (i_action)actionFromProvider;
+			if(iBean!=null) ((bean)rAction).set_infobean(iBean);
 			loadedFromProvider=true;
 		}
 	}
@@ -569,7 +745,16 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 			}
 		}
 	}
-	rAction.set_infoaction(iAction);
+	if(rAction!=null){
+		rAction.set_infoaction(iAction);
+		if(iBean!=null) ((bean)rAction).set_infobean(iBean);
+		else ((bean)rAction).set_infobean(new info_bean());
+	}else{
+		iAction = new info_action();
+		iAction.setPath(id_action);
+		rAction.set_infoaction(iAction);
+		((bean)rAction).set_infobean(new info_bean());
+	}
 	return rAction;
 }
 
@@ -695,7 +880,7 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 		if(iBean.getModel()!=null && !iBean.getModel().equals("")){
 			try{
 				String model=iBean.getModel();
-				byte[] xmlModel = util_classes.getResourceAsByte("config.Loader", model);
+				byte[] xmlModel = util_classes.getResourceAsByte(model);
 				if(xmlModel!=null){
 					HashMap fly = (HashMap)util_beanMessageFactory.message2bean(xmlModel, HashMap.class);
 					rBean.setParametersFly(fly);
@@ -808,6 +993,10 @@ public void initTop(Node node) throws bsControllerException{
 	}
 }
 
+
+
+
+
 private void readFormElements(Node node) throws Exception{
 	if(node==null) return;
 
@@ -830,7 +1019,7 @@ private void readFormElements(Node node) throws Exception{
 			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 				info_stream iStream = new info_stream();
 				iStream.init(node.getChildNodes().item(k));
-				if(iStream!=null){
+
 					info_stream old_stream = (info_stream)_streams.get(iStream.getName());
 					if(old_stream!=null){
 						_streams.remove(old_stream.getName());
@@ -870,7 +1059,7 @@ private void readFormElements(Node node) throws Exception{
 						stream_order=iStream.getInt_order();
 						stream_order++;
 					}
-				}
+				
 			}
 		}
 
@@ -900,6 +1089,12 @@ private void readFormElements(Node node) throws Exception{
 	}
 	if(node.getNodeName().equals("form-beans")){
 		int order=0;
+		if(v_info_beans!=null && v_info_beans.size()>0){
+			try{
+				order = ((info_bean)v_info_beans.get(v_info_beans.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
+		}
 		for(int k=0;k<node.getChildNodes().getLength();k++){
 			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 				info_bean iBean = new info_bean();
@@ -916,6 +1111,12 @@ private void readFormElements(Node node) throws Exception{
 	}
 	if(node.getNodeName().equals("form-redirects")){
 		int order=0;
+		if(v_info_redirects!=null && v_info_redirects.size()>0){
+			try{
+				order = ((info_redirect)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
+		}
 		for(int k=0;k<node.getChildNodes().getLength();k++){
 			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 				info_redirect iRedirect = new info_redirect();
@@ -934,6 +1135,12 @@ private void readFormElements(Node node) throws Exception{
 
 	if(node.getNodeName().equals("redirect-transformations")){
 		int order=0;
+		if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
+			try{
+				order = ((info_transformation)v_info_transformationoutput.get(v_info_transformationoutput.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
+		}
 		for(int k=0;k<node.getChildNodes().getLength();k++){
 			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 				if(node.getNodeName().toLowerCase().equals("transformationoutput")){
@@ -968,6 +1175,13 @@ private void readFormElements(Node node) throws Exception{
 			new bsControllerException(e,iStub.log_DEBUG);
 		}
 		int order=0;
+		if(v_info_actions!=null && v_info_actions.size()>0){
+			try{
+				order = ((info_action)v_info_actions.get(v_info_actions.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
+		}
+
 		for(int k=0;k<node.getChildNodes().getLength();k++){
 			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 				info_action iAction = new info_action();
@@ -1066,7 +1280,12 @@ public String toXml(){
 	if(v_info_streams!=null && v_info_streams.size()>0){
 		for(int i=0;i<v_info_streams.size();i++){
 			info_stream entity = (info_stream)v_info_streams.get(i);
-			if(entity!=null) result+=entity.toXml();
+			if(entity!=null && !entity.getAnnotated().equals("true")) result+=entity.toXml();
+			if(entity!=null && entity.getAnnotated().equals("true")){
+				result+=System.getProperty("line.separator")+"<!--";
+				result+=entity.toXml();
+				result+=System.getProperty("line.separator")+"-->";
+			}
 		}
 	}
 	result+=System.getProperty("line.separator")+"   </action-streams>";
@@ -1075,7 +1294,12 @@ public String toXml(){
 	if(v_info_beans!=null && v_info_beans.size()>0){
 		for(int i=0;i<v_info_beans.size();i++){
 			info_bean entity = (info_bean)v_info_beans.get(i);
-			if(entity!=null) result+=entity.toXml();
+			if(entity!=null && !entity.getAnnotated().equals("true")) result+=entity.toXml();
+			if(entity!=null && entity.getAnnotated().equals("true")){
+				result+=System.getProperty("line.separator")+"<!--";
+				result+=entity.toXml();
+				result+=System.getProperty("line.separator")+"-->";
+			}
 		}
 	}
 	result+=System.getProperty("line.separator")+"   </form-beans>";
@@ -1086,8 +1310,15 @@ public String toXml(){
 			info_redirect entity = (info_redirect)v_info_redirects.get(i);
 			if(entity!=null){
 				entity.setPrefix("form-");
-				result+=entity.toXml();
+				if(entity!=null && !entity.getAnnotated().equals("true")) result+=entity.toXml();
+				if(entity!=null && entity.getAnnotated().equals("true")){
+					result+=System.getProperty("line.separator")+"<!--";
+					result+=entity.toXml();
+					result+=System.getProperty("line.separator")+"-->";
+				}
+
 			}
+			
 		}
 	}
 	result+=System.getProperty("line.separator")+"   </form-redirects>";
@@ -1100,7 +1331,12 @@ public String toXml(){
 	if(v_info_actions!=null && v_info_actions.size()>0){
 		for(int i=0;i<v_info_actions.size();i++){
 			info_action entity = (info_action)v_info_actions.get(i);
-			if(entity!=null) result+=entity.toXml();
+			if(entity!=null && !entity.getAnnotated().equals("true")) result+=entity.toXml();
+			if(entity!=null && entity.getAnnotated().equals("true")){
+				result+=System.getProperty("line.separator")+"<!--";
+				result+=entity.toXml();
+				result+=System.getProperty("line.separator")+"-->";
+			}
 		}
 	}
 	result+=System.getProperty("line.separator")+"   </action-mappings>";
@@ -1109,7 +1345,13 @@ public String toXml(){
 	if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
 		for(int i=0;i<v_info_transformationoutput.size();i++){
 			info_transformation entity = (info_transformation)v_info_transformationoutput.get(i);
-			if(entity!=null) result+=entity.toXml();		}
+			if(entity!=null && !entity.getAnnotated().equals("true")) result+=entity.toXml();
+			if(entity!=null && entity.getAnnotated().equals("true")){
+				result+=System.getProperty("line.separator")+"<!--";
+				result+=entity.toXml();
+				result+=System.getProperty("line.separator")+"-->";
+			}
+		}
 	}
 	result+=System.getProperty("line.separator")+"   </redirect-transformations>";
 
@@ -1181,6 +1423,10 @@ public String getXmlEncoding() {
 public void setXmlEncoding(String xmlEncoding) {
 	this.xmlEncoding = xmlEncoding;
 }
+
+
+
+
 class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private HashMap _b_actions=null;

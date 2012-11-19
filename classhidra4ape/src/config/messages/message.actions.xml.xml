@@ -4,6 +4,12 @@
 	<message cd_mess="title_fw_Login" cd_lang="EN" desc_mess="Login"/>
 	<message cd_mess="title_fw_Login" cd_lang="DC" desc_mess="???"/>
 	<message cd_mess="title_fw_Login" cd_lang="FR" desc_mess="???"/>
+	
+	<message cd_mess="title_fw_LoginAsComponent" cd_lang="IT" desc_mess="Login (come COMPONENT)"/>
+	<message cd_mess="title_fw_LoginAsComponent" cd_lang="EN" desc_mess="Login (as COMPONENT)"/>
+	<message cd_mess="title_fw_LoginAsComponent" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_LoginAsComponent" cd_lang="FR" desc_mess="???"/>
+	
 
 	<message cd_mess="title_fw_Content" cd_lang="IT" desc_mess="Contenuto"/>
 	<message cd_mess="title_fw_Content" cd_lang="EN" desc_mess="Content"/>

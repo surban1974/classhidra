@@ -29,8 +29,10 @@ import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -59,7 +61,7 @@ public class app_init implements Serializable{
 	static public String id_transf_elaborationmode		=	"application.transformation.event.after.elaborationmode";
 	static public String id_transf_elaborationpoint		=	"application.transformation.event.after.elaborationpoint";
 	static public String id_transf_elaborationwrapper	=	"application.transformation.event.after.elaborationwrapper";
-
+	static public String id_package_annotated			=	"application.package.annotated";
 	
 	private String _path;
 	private String _path_root;
@@ -77,7 +79,10 @@ public class app_init implements Serializable{
 	private String _transf_elaborationpoint		=	"controller";
 	private String _transf_elaborationwrapper	=	"it.classhidra.core.controller.wrappers.bsCharResponseWrapper";
 
+	
+	
 	public HashMap content;
+	public List _list_package_annotated;
 	
 	public static String _rows_on_page="20";
 	
@@ -99,6 +104,8 @@ public class app_init implements Serializable{
 		
 	}
 	public void init() {
+		
+		if(_list_package_annotated==null) _list_package_annotated=new ArrayList();
 		Properties property = null;
 
 		String property_name = System.getProperty(bsConstants.app_id_property);
@@ -155,6 +162,19 @@ public class app_init implements Serializable{
 			_transf_elaborationpoint=(System.getProperty(id_transf_elaborationpoint)!=null)?System.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
 			_transf_elaborationwrapper=(System.getProperty(id_transf_elaborationwrapper)!=null)?System.getProperty(id_transf_elaborationwrapper):_transf_elaborationwrapper;
 			
+			String _package_annotated=System.getProperty(id_package_annotated);
+			if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+			_package_annotated="";
+			int ids=0;
+			try{
+				while(_package_annotated!=null){
+					_package_annotated=System.getProperty(id_package_annotated+"."+ids);
+					if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+					ids++;
+				}
+			}catch(Exception e){				
+			}
+
 			
 			if(_path_config==null || _path_config.equals("")) _path_config = "/config/";
 			if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
@@ -171,6 +191,7 @@ public class app_init implements Serializable{
 	}
 	
 	public void init(Properties property) {
+		if(_list_package_annotated==null) _list_package_annotated=new ArrayList();
 		_path=(_path==null)?property.getProperty(id_path):_path;
 		_path_root=(_path_root==null)?property.getProperty(bsConstants.CONST_ID_PATHROOT):_path_root;
 
@@ -199,6 +220,19 @@ public class app_init implements Serializable{
 		_transf_elaborationpoint=(property.getProperty(id_transf_elaborationpoint)!=null)?property.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
 		_transf_elaborationwrapper=(property.getProperty(id_transf_elaborationwrapper)!=null)?property.getProperty(id_transf_elaborationwrapper):_transf_elaborationwrapper;
 		
+		String _package_annotated= property.getProperty(id_package_annotated);
+		if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+		_package_annotated="";
+		int ids=0;
+		try{
+			while(_package_annotated!=null){
+				_package_annotated=property.getProperty(id_package_annotated+"."+ids);
+				if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+				ids++;
+			}
+		}catch(Exception e){				
+		}
+
 		
 		if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
 		if(_load_res_mode==null) _load_res_mode="normal";
@@ -398,6 +432,12 @@ public class app_init implements Serializable{
 
 	public void set_extention_do(String extentionDo) {
 		_extention_do = extentionDo;
+	}
+
+
+
+	public List get_list_package_annotated() {
+		return _list_package_annotated;
 	}
 
 

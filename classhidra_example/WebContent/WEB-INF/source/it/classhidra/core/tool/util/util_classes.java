@@ -97,6 +97,46 @@ public class util_classes {
 		return res;
 	}	
 	
+	
+	public  static ArrayList getResourcesAsFile(String pckgname) throws ClassNotFoundException {
+		ArrayList res = new ArrayList();
+		// Get a File object for the package
+		File directory = null;
+		try {
+			ClassLoader cld = Thread.currentThread().getContextClassLoader();
+			if (cld == null) {
+				throw new ClassNotFoundException("Can't get class loader.");
+			}
+			String path = '/' + pckgname.replace('.', '/');
+			URL resource = cld.getResource(path);
+			if (resource == null) {
+				path = pckgname.replace('.', '/');
+				resource = cld.getResource(path);
+			}
+			if (resource == null) {
+				throw new ClassNotFoundException("No resource for " + path);
+			}
+			directory = convertUrl2File(resource);
+//			directory = new File(resource.getPath());
+		} catch (NullPointerException x) {
+			throw new ClassNotFoundException(pckgname + " (" + directory
+					+ ") does not appear to be a valid package");
+		}
+		if (directory.exists()) {
+			// Get the list of the files contained in the package
+			File[] files = directory.listFiles();
+			
+			for(int i=0;i<files.length;i++){
+				res.add(files[i]);
+			}
+		} else {
+			throw new ClassNotFoundException(pckgname
+					+ " does not appear to be a valid package");
+		}
+
+		return res;
+	}	
+	
 	public  static String getResourceAsTxt(String pckgname, String rsname) throws ClassNotFoundException {
 
 		InputStream is = null;
@@ -131,15 +171,15 @@ public class util_classes {
 		
 		return result;
 	}		
-private static File convertUrl2File(URL url){	
-	File f;
-	try {
-	  f = new File(new URI(url.toString()));
-	} catch(URISyntaxException e) {
-	  f = new File(url.getPath());
+	public static File convertUrl2File(URL url){	
+		File f;
+		try {
+		  f = new File(new URI(url.toString()));
+		} catch(URISyntaxException e) {
+		  f = new File(url.getPath());
+		}
+		return f;
 	}
-	return f;
-}
 	
 	public  static String getPath(String pckgname) throws ClassNotFoundException {
 		String res = "?";
@@ -287,6 +327,7 @@ private static File convertUrl2File(URL url){
 		return xslt;
 	}	
 
+
 	public static byte[] getResourceAsByte(String pckgname, String rsname) throws ClassNotFoundException { 
 		
 		byte[] result = null;
@@ -314,4 +355,33 @@ private static File convertUrl2File(URL url){
 	
 	    return result;
 	}	
+	
+	public static byte[] getResourceAsByte(String rsname) throws ClassNotFoundException { 
+		
+		byte[] result = null;
+		String property_name =  rsname;
+		
+		InputStream is = null;
+	    try { 
+	    	ClassLoader cld = Thread.currentThread().getContextClassLoader();
+	    	 if (cld == null)
+	    		 is=ClassLoader.getSystemResourceAsStream( property_name );
+	    	 else 
+	    		 is = cld.getResourceAsStream(property_name);
+	    	
+	    	if(is!=null){
+	    		result = readInputStream2Byte(is);
+	    	}
+	    }catch (Exception e) {
+	    }finally {
+	    	try {
+	    		if (is != null) is.close();
+	    	}catch (Exception e) {
+	    	}
+		}
+	
+	    return result;
+	}	
+
+	
 }

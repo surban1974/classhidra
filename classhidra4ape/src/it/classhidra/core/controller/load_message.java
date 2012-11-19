@@ -281,7 +281,7 @@ public boolean isReadOk() {
 
 
 	public void load_from_resources() {
-		load_from_resources(bsController.CONST_XML_MESSAGES);
+		load_from_resources("/config/"+bsController.CONST_XML_MESSAGES);
 		String property_name =  "config."+bsController.CONST_XML_MESSAGES_FOLDER;
 		ArrayList array = new ArrayList();
 
@@ -294,7 +294,7 @@ public boolean isReadOk() {
 		for(int i=0;i<array.size();i++){
 			String property_name0 =  bsController.CONST_XML_MESSAGES_FOLDER+"/"+array.get(i);
 			if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
-				load_from_resources(property_name0);
+				load_from_resources("/config/"+property_name0);
 		}
 
 	}
@@ -308,13 +308,9 @@ public boolean isReadOk() {
 
 
 	    try {
-	    	Object obj = null;
-	    	try{
-	    		obj = Class.forName("config.Loader").newInstance();
-	    	}catch(Exception ex){
-	    	}
-	    	if(obj==null) return;
-	    	is = obj.getClass().getResourceAsStream(property_name);
+
+	    	is = getClass().getResourceAsStream(property_name);
+	    	
 	    	if(is!=null){
 	    		result="";
 		    	br = new BufferedReader(new InputStreamReader(is));

@@ -1,6 +1,8 @@
 package application.web.streams;
 
 
+import it.classhidra.annotation.elements.Apply_to_action;
+import it.classhidra.annotation.elements.Stream;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_stream;
@@ -17,6 +19,14 @@ import it.classhidra.core.tool.util.util_usersInSession;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+
+@Stream(	
+		name="def_control_permission",
+		applied={
+			@Apply_to_action(action="*")
+		}
+)	
 
 public class app_control_permission extends stream implements i_stream{
 

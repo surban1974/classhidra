@@ -96,14 +96,14 @@ public class info_action extends info_entity implements i_elementBase{
 					iRedirect.init(nodeList.item(i));
 					order_r++;
 					iRedirect.setOrder(Integer.valueOf(order_r).toString());
-					if(iRedirect!=null) _redirects.put(bodyURI(iRedirect.getPath()),iRedirect);
+					_redirects.put(bodyURI(iRedirect.getPath()),iRedirect);
 				}
 				if(nodeList.item(i).getNodeName().toLowerCase().equals("transformationoutput")){
 					info_transformation iTransformationoutput = new info_transformation();
 					iTransformationoutput.init(nodeList.item(i));
 					order_t++;
 					iTransformationoutput.setOrder(Integer.valueOf(order_t).toString());
-					if(iTransformationoutput!=null) _transformationoutput.put(iTransformationoutput.getName(),iTransformationoutput);
+					_transformationoutput.put(iTransformationoutput.getName(),iTransformationoutput);
 				}
 
 			}
@@ -118,11 +118,9 @@ public class info_action extends info_entity implements i_elementBase{
 
 		Object[] keys = _redirects.keySet().toArray();
 		for (int i = 0; i < keys.length; i++){
-//			if(glob_redirects.get((String)keys[i])!=null){
-				info_redirect iRedirect = (info_redirect)_redirects.get((String)keys[i]);
-				iRedirect.init((info_redirect)glob_redirects.get((String)keys[i]));
-				if(!iRedirect.getAuth_id().equals("")) _auth_redirects.put(iRedirect.getAuth_id(),iRedirect);
-//			}
+			info_redirect iRedirect = (info_redirect)_redirects.get((String)keys[i]);
+			iRedirect.init((info_redirect)glob_redirects.get((String)keys[i]));
+			if(!iRedirect.getAuth_id().equals("")) _auth_redirects.put(iRedirect.getAuth_id(),iRedirect);
 		}
 	}
 	public String bodyURI(String uri){

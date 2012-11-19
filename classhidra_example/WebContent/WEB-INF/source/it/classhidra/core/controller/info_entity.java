@@ -47,6 +47,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	protected int int_order=-1;
 	protected String system;
 	protected String prefix;
+	protected String annotated;
 	protected int enabled=1;
 
 	protected HashMap properties;
@@ -60,6 +61,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 		comment="";
 		int_order=-1;
 		system="false";
+		annotated="false";
 		prefix="";
 		enabled=1;
 	}
@@ -214,6 +216,16 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 
 	public void setProperties(HashMap properties) {
 		this.properties = properties;
+	}
+
+
+	public String getAnnotated() {
+		return annotated;
+	}
+
+
+	public void setAnnotated(String annotated) {
+		this.annotated = annotated;
 	}
 
 
