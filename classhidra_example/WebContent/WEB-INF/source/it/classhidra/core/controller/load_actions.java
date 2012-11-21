@@ -817,13 +817,20 @@ public i_stream actionStream(String id_stream){
 
 
 public i_bean beanFactory(String id_bean){
-	return beanFactory(id_bean,null,null);
+	return beanFactory(id_bean,null,null,null);
 }
 public i_bean beanFactory(String id_bean,ServletContext servletContext){
-	return beanFactory(id_bean,null,servletContext);
+	return beanFactory(id_bean,null,servletContext,null);
 }
 public i_bean beanFactory(String id_bean,HttpSession session,ServletContext servletContext){
-	i_bean rBean = new bean();
+	return beanFactory(id_bean,null,servletContext,null);
+}
+public i_bean beanFactory(String id_bean,HttpSession session,ServletContext servletContext,i_action action_instance){
+	i_bean rBean = null;
+	if(action_instance!=null){
+		rBean = (i_bean)action_instance;
+	}
+	else rBean = new bean();
 	info_bean iBean = null;
 	if(_beans==null || _beans.get(id_bean)==null){
 		load_actions session_l_actions = (load_actions)session.getAttribute(bsConstants.CONST_SESSION_ACTIONS_INSTANCE);
@@ -834,12 +841,13 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 			}
 		}
 		if(iBean==null){
+			if(rBean.get_infobean()!=null && action_instance.get_infoaction()!=null){
+				rBean.get_infobean().setName(action_instance.get_infoaction().getName());
+				rBean.get_infobean().setType(action_instance.get_infoaction().getType());
+			}
 			return rBean;
 		}
 	}else iBean = (info_bean)_beans.get(id_bean);
-
-
-//	info_bean iBean = (info_bean)((info_bean)_beans.get(id_bean)).clone();
 
 	if(iBean==null) return null;
 	boolean loadedFromProvider=false;

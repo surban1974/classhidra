@@ -8,7 +8,7 @@
 	<style type="text/css">
 
 		div.comp {
-			background:url(images/menu/circle/96.gif) no-repeat center center;
+			background:url(images/decor/128_logo.gif) no-repeat center center;
 			width:128px;
 			height:128px;
 			display:block;

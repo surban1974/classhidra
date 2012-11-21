@@ -377,7 +377,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			)
 				bean_instance = (i_bean)action_instance;
 			else 
-				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext());
+				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext(),action_instance);
 			if(bean_instance!=null) bean_instance.reimposta();
 
 			
@@ -437,7 +437,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				)
 					bean_instance_clone = (i_bean)prev_action_instance;
 				else
-					bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext());
+					bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext(),prev_action_instance);
 				if(bean_instance_clone!=null) bean_instance_clone.reimposta();
 			}else{
 //Modifica 20100521 WARNING

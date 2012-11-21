@@ -3,7 +3,7 @@
 
 <script language="javascript" src="javascript2012/application/login.js"></script>
 
-<body >
+<body > 
 
 <div id="content_Panel_canvas" 
 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:hidden;"
@@ -54,8 +54,8 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						align="center" 
 						width="150"
 						
-						style="border-right-style: solid;border-right-width: 1px ; border-right-color: #D5E5F7">
-						<img src="images/logo.gif" border="0" >
+						style="border-right-style: solid;border-right-width: 1px ; border-right-color: #D5E5F7; width: 150px; height: 150px;">
+						<img src="images/decor/128_logo.gif" border="0" >
 						
 					</td>
 					<td align="center" valign="top" > 
@@ -126,15 +126,24 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 </td>
 
 </tr>
-
 <tr>
-	<td style="border-top-style: solid;border-top-width: 1px ; border-top-color:#D5E5F7; height: 30px" valign="bottom">
+	<td style="border-top-style: solid;border-top-width: 1px ; border-top-color:#D5E5F7; height: 10px" valign="bottom">
+	</td>
+</tr>
+<tr>
+	<td style=" height: 30px" valign="bottom">
+
 						<table cellpadding="0" cellspacing="0" width="100%">
 							<tr>
 								<td width="5%">&nbsp;</td>
 								<td width="1%"><script>ObjectDraw("page1","button",1,"","changeLang('IT')","page_section","IT.gif","images/menu/","",true,24,"35");</script></td>
 								<td width="1%">&nbsp;</td>
 								<td width="1%"><script>ObjectDraw("page1","button",2,"","changeLang('EN')","page_section","EN.gif","images/menu/","",true,24,"35");</script></td>
+								<td width="1%">&nbsp;</td>
+								<td width="1%" ><script>ObjectDraw("page1","button",16,"","showAsIFrame('jsp/help/Manuale.pdf',900,550)","page_section_active","help.gif","images/menu/","",true,24,"35");</script></td>
+								<td width="1%">&nbsp;</td>
+								<td  width="1%" align="right"><script>ObjectDraw("page1","button",15,"&nbsp;New in 1.4.3&nbsp;&nbsp;","showAsIFrame('jsp/help/news.pdf',900,550)","page_section_active","","images/menu/","",true,24);</script></td>
+
 								<td width="100%" align="center">&nbsp;</td>
 							
 	<bs:equal name="groups.size" value="0">	

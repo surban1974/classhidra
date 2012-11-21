@@ -25,7 +25,7 @@ div#footer_fixedbox{
 		<tr>
 <bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">
 			<td width="0%" background="images/corners/panel_t.gif" onclick="menu()" valign="middle" style="cursor: pointer">
-				<img id="menu_img" src="images/menu/16_close.gif" border="0" height="13"></img>
+				<img id="menu_img" src="images/menu/16_close.gif" border="0" height="13"></img>&nbsp;
 			</td>
 </bs:equal>			
 			<td  width="100%" background="images/corners/panel_t.gif" valign="middle">
@@ -47,7 +47,8 @@ div#footer_fixedbox{
 							"",
 							"images/menu/",
 							"",
-							"false"
+							"false",
+							24
 						);
 				</script>
 				
@@ -67,13 +68,13 @@ div#footer_fixedbox{
 				<table cellspacing="0" border="0" cellpadding="0">
 					<tr>
 						<bs:notEqual name="_infoaction.path" value="">
-							<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",400,"","goAction('<bs:formelement name="_infoaction.path"/>?middleAction=reload')","page_section","reload.gif","images/menu/");</script></td>
+							<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",400,"","goAction('<bs:formelement name="_infoaction.path"/>?middleAction=reload')","page_section","reload.gif","images/menu/","","false", 24);</script></td>
 						</bs:notEqual>
 						<bs:equal name="_infoaction.path" value="">
-							<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",400,"","goAction('<bs:formelement bean="navigationLast" name="IAction.path"/>.bs?middleAction=reload')","page_section","reload.gif","images/menu/");</script></td>
+							<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",400,"","goAction('<bs:formelement bean="navigationLast" name="IAction.path"/>.bs?middleAction=reload')","page_section","reload.gif","images/menu/","","false", 24);</script></td>
 						</bs:equal>
-						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",401,"","goAction('minimizer?middleAction=close')","page_section","minimize.gif","images/menu/");</script></td>
-						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",45,"","goAction('login?middleAction=reload')","page_section","close.gif","images/menu/");</script></td>
+						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",401,"","goAction('minimizer?middleAction=close')","page_section","minimize.gif","images/menu/","","false", 24);</script></td>
+						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",45,"","goAction('login?middleAction=reload')","page_section","close.gif","images/menu/","","false", 24);</script></td>
 				    </tr>
 				</table>
 			</td>

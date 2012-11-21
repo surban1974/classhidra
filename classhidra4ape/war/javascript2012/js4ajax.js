@@ -202,7 +202,7 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction, callBackJs,
 		            	}	
 		            } else {
 		            	var error_mess = http_request.responseText;
-//		            	ajax_makeRequest("messages.bs?error_mess="+encodeURIComponent(error_mess)+"&data_rif="+new Date().getTime(),"idDivMessage");
+//		            	ajax_makeRequest("messages?error_mess="+encodeURIComponent(error_mess)+"&data_rif="+new Date().getTime(),"idDivMessage");
 
 		            }
 		        } 

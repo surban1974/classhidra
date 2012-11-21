@@ -8,7 +8,7 @@
 	<style type="text/css">
 
 		div.comp {
-			background:url(images/menu/circle/96.gif) no-repeat center center;
+			background:url(images/decor/128_logo.gif) no-repeat center center;
 			width:128px;
 			height:128px;
 			display:block;
@@ -37,7 +37,7 @@
 <body >
 
 <div id="content_Panel_canvas" 
-style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:hidden;"
+style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:hidden;" 
 >
 <table border="0" width="100%" height="100%" cellpadding="0" cellspacing="0">
 <tr>

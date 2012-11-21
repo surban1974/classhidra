@@ -5,7 +5,7 @@ var varScrollTopPrev=0;
 var xmouse=0;
 var ymouse=0;
 var variables = new Array;
-var value_variables = new Array;  
+var value_variables = new Array; 
 
 
 var NS4=(document.layers);
@@ -116,7 +116,7 @@ function ObjectDraw(_parent,_type,_index,_descr,_function,_class,_img,PathImage,
 			document.write("<img src=\""+PathImage+"button_left_n.gif\" border=\"0\" >");
 			if(_img_before && _img_before!="") document.write("<img src=\""+PathImage+_img_before+"\" border=\"0\" >");				
 			if(_descr!=""){
-				document.write("<a >");
+				document.write("<a id=\""+_type+"_a_"+_index+"\" >");
 				document.write("<img src=\""+PathImage+"button_left_n.gif\" border=\"0\" >");
 				document.write(""+_descr);
 				document.write("<img src=\""+PathImage+"button_right_n.gif\" border=\"0\" >");

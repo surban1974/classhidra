@@ -6,6 +6,7 @@
 <%@ page import="it.classhidra.core.tool.exception.bsControllerException" %>
 
 <jsp:include page="/jsp/included/page_popup.jsp"/>
+<jsp:include page="/jsp/included/iframe_popup.jsp"/>
 
 <table width="100%" >
 			<tr>

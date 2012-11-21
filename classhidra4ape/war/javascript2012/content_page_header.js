@@ -35,7 +35,7 @@ function actionContent(action,type){
 		if(type=="GET"){
 			if(action.indexOf("?")>-1) 
 				document.forms[0].action = action;
-			else document.forms[0].action = action+"";
+			else document.forms[0].action = action;
 			document.forms[0].submit();
 		}
 		if(type=="PUT"){
