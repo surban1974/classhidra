@@ -29,8 +29,10 @@ import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -60,6 +62,7 @@ public class app_init implements Serializable{
 	static public String id_transf_elaborationpoint		=	"application.transformation.event.after.elaborationpoint";
 	static public String id_transf_elaborationwrapper	=	"application.transformation.event.after.elaborationwrapper";
 	static public String id_package_annotated			=	"application.package.annotated";
+	static public String id_debug						=	"application.debug";
 	
 	private String _path;
 	private String _path_root;
@@ -72,14 +75,16 @@ public class app_init implements Serializable{
 	private String _pin;
 	private String _db_name;
 	private String _extention_do;
+	private String _debug;
 
 	private String _transf_elaborationmode		=	"include";
 	private String _transf_elaborationpoint		=	"controller";
 	private String _transf_elaborationwrapper	=	"it.classhidra.core.controller.wrappers.bsCharResponseWrapper";
 
-	private String _package_annotated;
+	
 	
 	public HashMap content;
+	public List _list_package_annotated;
 	
 	public static String _rows_on_page="20";
 	
@@ -101,6 +106,8 @@ public class app_init implements Serializable{
 		
 	}
 	public void init() {
+		
+		if(_list_package_annotated==null) _list_package_annotated=new ArrayList();
 		Properties property = null;
 
 		String property_name = System.getProperty(bsConstants.app_id_property);
@@ -150,6 +157,8 @@ public class app_init implements Serializable{
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
+			_debug=(_debug==null)?System.getProperty(id_debug):_debug;
+			
 
 			
 			
@@ -157,14 +166,25 @@ public class app_init implements Serializable{
 			_transf_elaborationpoint=(System.getProperty(id_transf_elaborationpoint)!=null)?System.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
 			_transf_elaborationwrapper=(System.getProperty(id_transf_elaborationwrapper)!=null)?System.getProperty(id_transf_elaborationwrapper):_transf_elaborationwrapper;
 			
-			_package_annotated=(System.getProperty(id_package_annotated)!=null)?System.getProperty(id_package_annotated):_package_annotated;
+			String _package_annotated=System.getProperty(id_package_annotated);
+			if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+			_package_annotated="";
+			int ids=0;
+			try{
+				while(_package_annotated!=null){
+					_package_annotated=System.getProperty(id_package_annotated+"."+ids);
+					if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+					ids++;
+				}
+			}catch(Exception e){				
+			}
 
-			
 			
 			if(_path_config==null || _path_config.equals("")) _path_config = "/config/";
 			if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
 			if(_load_res_mode==null) _load_res_mode="normal";
 			if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
+			if(_debug==null) _debug="false";
 		}		
 		content = new HashMap();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?
@@ -176,6 +196,7 @@ public class app_init implements Serializable{
 	}
 	
 	public void init(Properties property) {
+		if(_list_package_annotated==null) _list_package_annotated=new ArrayList();
 		_path=(_path==null)?property.getProperty(id_path):_path;
 		_path_root=(_path_root==null)?property.getProperty(bsConstants.CONST_ID_PATHROOT):_path_root;
 
@@ -198,18 +219,30 @@ public class app_init implements Serializable{
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
 		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
-
+		_debug=(_debug==null)?property.getProperty(id_debug):_debug;
 
 		_transf_elaborationmode=(property.getProperty(id_transf_elaborationmode)!=null)?property.getProperty(id_transf_elaborationmode):_transf_elaborationmode;
 		_transf_elaborationpoint=(property.getProperty(id_transf_elaborationpoint)!=null)?property.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
 		_transf_elaborationwrapper=(property.getProperty(id_transf_elaborationwrapper)!=null)?property.getProperty(id_transf_elaborationwrapper):_transf_elaborationwrapper;
 		
-		_package_annotated=(property.getProperty(id_package_annotated)!=null)?property.getProperty(id_package_annotated):_package_annotated;
+		String _package_annotated= property.getProperty(id_package_annotated);
+		if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+		_package_annotated="";
+		int ids=0;
+		try{
+			while(_package_annotated!=null){
+				_package_annotated=property.getProperty(id_package_annotated+"."+ids);
+				if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+				ids++;
+			}
+		}catch(Exception e){				
+		}
 
 		
 		if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
 		if(_load_res_mode==null) _load_res_mode="normal";
 		if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
+		if(_debug==null) _debug="false";
 		content = new HashMap();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?property.getProperty(CONST_PAGESIZE):(String)content.get(CONST_PAGESIZE));
 	
@@ -399,7 +432,7 @@ public class app_init implements Serializable{
 	}
 
 	public String get_extention_do() {
-		if(_extention_do==null) return bsController.getAppInit().get_extention_do();
+//		if(_extention_do==null) return bsController.getAppInit().get_extention_do();
 		return _extention_do;
 	}
 
@@ -407,8 +440,14 @@ public class app_init implements Serializable{
 		_extention_do = extentionDo;
 	}
 
-	public String get_package_annotated() {
-		return _package_annotated;
+
+
+	public List get_list_package_annotated() {
+		return _list_package_annotated;
+	}
+
+	public String get_debug() {
+		return _debug;
 	}
 
 

@@ -17,6 +17,7 @@ public @interface Action {
 	String memoryInSession() default "";
 	String reloadAfterAction() default "";
 	String navigated() default "";
+	String syncro() default "false";
 	String help() default "";
 	Redirect[] redirects() default {};
 	Transformation[] transformations() default {};

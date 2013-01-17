@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 	name="formAmanager",
 	redirect="/jsp/amanager/canvas.jsp",
 	navigated="true",
+	syncro="true",
     memoryInSession="false",
     reloadAfterAction="false",
 	redirects={

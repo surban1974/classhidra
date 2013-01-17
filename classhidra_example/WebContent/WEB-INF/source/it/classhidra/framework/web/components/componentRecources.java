@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 	path="resources",
 	redirect="/jsp/framework/resources.jsp",
 	navigated="true",
+	syncro="true",
 	entity=@Entity(
 			property="allway:public"
 	),

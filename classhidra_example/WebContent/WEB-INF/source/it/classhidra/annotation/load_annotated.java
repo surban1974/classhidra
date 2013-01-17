@@ -298,6 +298,7 @@ public class load_annotated {
 		    	iAction.setMemoryInSession(annotationAction.memoryInSession());
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
 		    	iAction.setNavigated(annotationAction.navigated());
+		    	iAction.setSyncro(annotationAction.syncro());
 		    	iAction.setHelp(annotationAction.help());
 		    	setEntity(iAction,annotationAction.entity());
 		    	Redirect[] redirects = annotationAction.redirects();

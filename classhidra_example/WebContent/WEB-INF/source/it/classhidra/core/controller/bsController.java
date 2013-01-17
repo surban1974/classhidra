@@ -87,7 +87,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	private static load_menu menu_config;
 	private static String idApp;
 
-	private static ConcurrentHashMap local_container;
+	private static ConcurrentHashMap local_container = new ConcurrentHashMap(); 
 
 
 	private static boolean reInit=false;
@@ -134,11 +134,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}catch(Exception ex){
 			}
 
-			local_container = new ConcurrentHashMap();
+//			local_container = new ConcurrentHashMap();
 
 			boolean	loadModeAsThread=false;
 			try{
-				if(appInit.get_load_res_mode().toUpperCase().equals("THREAD")) loadModeAsThread=true;
+				if(appInit.get_load_res_mode().toLowerCase().equals("thread")) loadModeAsThread=true;
 			}catch(Exception e){
 			}
 
@@ -257,7 +257,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 			boolean isDebug=false;
 			try{
 				isDebug = System.getProperty("debug").equals("true");
-			}catch(Exception e){				
+			}catch(Exception e){	
+				try{
+					isDebug = bsController.getAppInit().get_debug().equals("true");
+				}catch(Exception ex){					
+				}
 			}
 			
 			String id_action=request.getParameter(CONST_ID_$ACTION);
@@ -438,7 +442,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 // ACTIONSEVICE
-		redirects current_redirect = action_instance.actionservice(request,response);
+		redirects current_redirect = null;
+		if(action_instance.get_infoaction().getSyncro().toLowerCase().equals("true"))
+			current_redirect = action_instance.syncroservice(request,response);
+		else current_redirect = action_instance.actionservice(request,response);
 		if(current_redirect==null) return null;
 		action_instance.setCurrent_redirect(current_redirect);
 		setCurrentForm(action_instance,request);
@@ -1681,11 +1688,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static Object getFromLocalContainer(String key) {
 		return local_container.get(key);
 	}
-
-	public static void setToLocalContainer(String key, Object value) {
-		if(local_container!=null)
-			local_container.put(key,value);
+	
+	public static Object removeFromLocalContainer(String key) {
+		return local_container.remove(key);
 	}
+	
+	public static void setToLocalContainer(String key, Object value) {
+		local_container.putIfAbsent(key,value);
+	}
+	
+	public static void putToLocalContainer(String key, Object value) {
+		local_container.put(key,value);
+	}
+	
 
 	public static void setReInit(boolean reInit) {
 		bsController.reInit = reInit;

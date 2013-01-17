@@ -62,6 +62,7 @@ public class app_init implements Serializable{
 	static public String id_transf_elaborationpoint		=	"application.transformation.event.after.elaborationpoint";
 	static public String id_transf_elaborationwrapper	=	"application.transformation.event.after.elaborationwrapper";
 	static public String id_package_annotated			=	"application.package.annotated";
+	static public String id_debug						=	"application.debug";
 	
 	private String _path;
 	private String _path_root;
@@ -74,6 +75,7 @@ public class app_init implements Serializable{
 	private String _pin;
 	private String _db_name;
 	private String _extention_do;
+	private String _debug;
 
 	private String _transf_elaborationmode		=	"include";
 	private String _transf_elaborationpoint		=	"controller";
@@ -155,6 +157,8 @@ public class app_init implements Serializable{
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
+			_debug=(_debug==null)?System.getProperty(id_debug):_debug;
+			
 
 			
 			
@@ -180,6 +184,7 @@ public class app_init implements Serializable{
 			if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
 			if(_load_res_mode==null) _load_res_mode="normal";
 			if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
+			if(_debug==null) _debug="false";
 		}		
 		content = new HashMap();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?
@@ -214,7 +219,7 @@ public class app_init implements Serializable{
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
 		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
-
+		_debug=(_debug==null)?property.getProperty(id_debug):_debug;
 
 		_transf_elaborationmode=(property.getProperty(id_transf_elaborationmode)!=null)?property.getProperty(id_transf_elaborationmode):_transf_elaborationmode;
 		_transf_elaborationpoint=(property.getProperty(id_transf_elaborationpoint)!=null)?property.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
@@ -237,6 +242,7 @@ public class app_init implements Serializable{
 		if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
 		if(_load_res_mode==null) _load_res_mode="normal";
 		if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
+		if(_debug==null) _debug="false";
 		content = new HashMap();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?property.getProperty(CONST_PAGESIZE):(String)content.get(CONST_PAGESIZE));
 	
@@ -426,7 +432,7 @@ public class app_init implements Serializable{
 	}
 
 	public String get_extention_do() {
-		if(_extention_do==null) return bsController.getAppInit().get_extention_do();
+//		if(_extention_do==null) return bsController.getAppInit().get_extention_do();
 		return _extention_do;
 	}
 
@@ -438,6 +444,10 @@ public class app_init implements Serializable{
 
 	public List get_list_package_annotated() {
 		return _list_package_annotated;
+	}
+
+	public String get_debug() {
+		return _debug;
 	}
 
 

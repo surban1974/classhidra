@@ -49,6 +49,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String reloadAfterAction;
 	private String navigated;
 	private String help;
+	private String syncro;
 
 
 	private String wac;
@@ -138,6 +139,7 @@ public class info_action extends info_entity implements i_elementBase{
 		reloadAfterAction="";
 		navigated="";
 		help="";
+		syncro="false";
 
 
 		_redirects=new HashMap();
@@ -255,6 +257,8 @@ public class info_action extends info_entity implements i_elementBase{
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(redirect!=null && !redirect.trim().equals("")) result+=" redirect=\""+util_format.normaliseXMLText(redirect)+"\"";
 		if(navigated!=null && !navigated.trim().equals("")) result+=" navigated=\""+util_format.normaliseXMLText(navigated)+"\"";
+		if(syncro!=null && !syncro.trim().equals("")) result+=" syncro=\""+util_format.normaliseXMLText(syncro)+"\"";
+		
 		if(memoryInSession!=null && !memoryInSession.trim().equals("")) result+=" memoryInSession=\""+util_format.normaliseXMLText(memoryInSession)+"\"";
 		if(reloadAfterAction!=null && !reloadAfterAction.trim().equals("")) result+=" reloadAfterAction=\""+util_format.normaliseXMLText(reloadAfterAction)+"\"";
 		if(help!=null && !help.trim().equals("")) result+=" help=\""+util_format.normaliseXMLText(help)+"\"";
@@ -366,6 +370,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setV_info_transformationoutput(Vector vInfoTransformationoutput) {
 		v_info_transformationoutput = vInfoTransformationoutput;
+	}
+
+	public String getSyncro() {
+		return syncro;
+	}
+
+	public void setSyncro(String syncro) {
+		this.syncro = syncro;
 	}
 
 

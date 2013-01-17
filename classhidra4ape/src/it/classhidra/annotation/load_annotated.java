@@ -48,62 +48,90 @@ public class load_annotated {
 	private String session_error;
 
 	
-	private List elements = null;
+//	private List elements = null;
 	private String package_annotated = "";
 	private File directory;
 	
+	public void loadAllObjects(String _package_annotated,HashMap redirects){
+		if(redirects!=null) _redirects=redirects;
+		package_annotated=_package_annotated;
+		loadObject();
+	}
 	
 	public void loadAllObjects(HashMap redirects){
 		if(redirects!=null) _redirects=redirects;
-		try{
-			package_annotated = bsController.getAppInit().get_package_annotated();
-			if(package_annotated==null || package_annotated.trim().equals("")) return;		
-			
-			try {
-				ClassLoader cld = Thread.currentThread().getContextClassLoader();
-				if (cld == null)
-					throw new ClassNotFoundException("Can't get class loader.");
-				String path = '/' + package_annotated.replace('.', '/');
-				URL resource = cld.getResource(path);
-				if (resource == null) {
-					path = package_annotated.replace('.', '/');
-					resource = cld.getResource(path);
-				}
-				if (resource == null) {
-					throw new ClassNotFoundException("No resource for " + path);
-				}
-				directory = util_classes.convertUrl2File(resource);
-			}catch(Exception ex){				
-			}
-			
-			if(directory==null) return;
-			
-			elements = new ArrayList();
-			
-			if (directory.exists()) {
-				File[] files = directory.listFiles();
-				for(int i=0;i<files.length;i++){
-					String package_path = files[i].getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
-					package_path=package_annotated+package_path;
-					if(files[i].isDirectory())
-						checkBranch(package_path);					
-					else{
-						String class_path=package_path;
-						if(class_path.lastIndexOf(".class")==class_path.length()-6);
-							class_path=class_path.substring(0,class_path.length()-6);
-						checkClassAnnotation(class_path);
-						elements.add(class_path);
-					}
-				}
-			}
-
-			elements.size();
-			
-			
-		}catch(Exception e){
-			
+		
+		List list_package_annotated = bsController.getAppInit().get_list_package_annotated();
+				
+		
+		for(int n=0;n<list_package_annotated.size();n++){
+			package_annotated=(String)list_package_annotated.get(n);
+			loadObject();
 		}
 	}
+	
+	public void loadObject(){
+
+			if(package_annotated!=null && !package_annotated.trim().equals("")){
+				try{
+					
+					try {
+						ClassLoader cld = Thread.currentThread().getContextClassLoader();
+						if (cld == null)
+							throw new ClassNotFoundException("Can't get class loader.");
+						String path = null;
+						if(package_annotated.lastIndexOf(".class")==package_annotated.length()-6){
+							package_annotated=package_annotated.substring(0,package_annotated.length()-6);
+							path = '/' + package_annotated.replace('.', '/')+".class";
+						}else
+							path = '/' + package_annotated.replace('.', '/');
+						URL resource = cld.getResource(path);
+						if (resource == null) {
+							path = package_annotated.replace('.', '/');
+							resource = cld.getResource(path);
+						}
+						if (resource == null) {
+							throw new ClassNotFoundException("No resource for " + path);
+						}
+						directory = util_classes.convertUrl2File(resource);
+					}catch(Exception ex){				
+					}
+					
+					if(directory==null) return;
+					
+
+					
+					if (directory.exists() && directory.isDirectory()) {
+						File[] files = directory.listFiles();
+						for(int i=0;i<files.length;i++){
+							String package_path = files[i].getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
+							package_path=package_annotated+package_path;
+							if(files[i].isDirectory())
+								checkBranch(package_path);					
+							else{
+								String class_path=package_path;
+								if(class_path.lastIndexOf(".class")==class_path.length()-6)
+									class_path=class_path.substring(0,class_path.length()-6);
+								checkClassAnnotation(class_path);
+
+							}
+						}
+					}
+					if (directory.exists() && directory.isFile()) {
+							String package_path = directory.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
+							package_path=package_annotated+package_path;
+							String class_path=package_path;
+							if(class_path.lastIndexOf(".class")==class_path.length()-6)
+								class_path=class_path.substring(0,class_path.length()-6);
+							checkClassAnnotation(class_path);
+
+					}
+					
+				}catch(Exception e){				
+				}
+			}
+	}
+	
 	
 	private List checkBranch(String path){
 		List array = new ArrayList();
@@ -120,10 +148,10 @@ public class load_annotated {
 				checkBranch(package_path);
 			else{
 				String class_path=package_path;
-				if(class_path.lastIndexOf(".class")==class_path.length()-6);
+				if(class_path.lastIndexOf(".class")==class_path.length()-6)
 					class_path=class_path.substring(0,class_path.length()-6);	
 				checkClassAnnotation(class_path);
-				elements.add(class_path);
+
 			}
 		}
 		return array;
@@ -270,6 +298,7 @@ public class load_annotated {
 		    	iAction.setMemoryInSession(annotationAction.memoryInSession());
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
 		    	iAction.setNavigated(annotationAction.navigated());
+		    	iAction.setSyncro(annotationAction.syncro());
 		    	iAction.setHelp(annotationAction.help());
 		    	setEntity(iAction,annotationAction.entity());
 		    	Redirect[] redirects = annotationAction.redirects();

@@ -158,7 +158,13 @@ public class wsController   {
 						action_instance.set_bean(bean_instance); 
 
 						action_instance.init(wsParameters);
-						redirects redirect = action_instance.actionservice(wsParameters);			
+						
+						redirects redirect = null;
+						if(action_instance.get_infoaction().getSyncro().toLowerCase().equals("true"))
+							redirect = action_instance.syncroservice(wsParameters);
+						else redirect = action_instance.actionservice(wsParameters);
+
+//						redirects redirect = action_instance.actionservice(wsParameters);			
 
 						
 						if(action_instance!=null && action_instance.get_bean()!=null){

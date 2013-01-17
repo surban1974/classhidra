@@ -57,8 +57,14 @@ public class action extends bean implements i_action, Serializable{
 	public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException{
 		return new redirects(_infoaction.getRedirect());
 	}
+	public synchronized redirects syncroservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException{
+		return actionservice(request, response);
+	}
 	public redirects actionservice(HashMap wsParameters) throws  bsControllerException{
 		return new redirects(_infoaction.getRedirect());
+	}
+	public synchronized redirects syncroservice(HashMap wsParameters) throws  bsControllerException{
+		return actionservice(wsParameters);
 	}
 	
 	public void actionBeforeRedirect(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{

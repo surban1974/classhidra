@@ -37,9 +37,11 @@ import javax.servlet.http.HttpServletResponse;
 public interface i_action extends Serializable{
 	void init(HttpServletRequest request,HttpServletResponse response) throws bsControllerException;
 	redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
+	redirects syncroservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
 	void actionBeforeRedirect(HttpServletRequest request, HttpServletResponse response) throws bsControllerException;
 	void init(HashMap wsParameters) throws bsControllerException;
-	public redirects actionservice(HashMap wsParameters) throws  bsControllerException;
+	redirects actionservice(HashMap wsParameters) throws  bsControllerException;
+	redirects syncroservice(HashMap wsParameters) throws  bsControllerException;
 	i_bean get_bean();
 	void set_bean(i_bean form);
 	info_action get_infoaction();

@@ -84,6 +84,14 @@
 								</td>
 							</tr>
 							<tr>
+								<td width="0%" class="page_section">syncro:</td>
+								<td width="100%" id="action|<bs:formelement name="selected_action.path"/>|||syncro">
+									<bs:select name="selected_action.syncro" style="border: solid 1px silver; width: 100%" onchange="updateValue(this,'syncro')" onfocus="makeFocus(this)">									
+										<bs:options property="elements_true_false" value="code"  label="desc" />
+									</bs:select>
+								</td>
+							</tr>
+							<tr>
 								<td width="0%" class="page_section">help:</td>
 								<td width="100%" id="action|<bs:formelement name="selected_action.path"/>|||help"><bs:input name="selected_action.help" style="border: solid 1px silver; width: 100%" toUpperCase="no" onchange="updateValue(this,'help')" onfocus="makeFocus(this)"/></td>
 							</tr>

@@ -197,7 +197,19 @@ public static message decode (String cd_mess,HttpServletRequest request, Excepti
 
 	if(request==null) _log=_log + mess_in_desc + ((exp!=null)?" -> "+exp.toString():"");
 	else _log=_log + mess_in_desc+ ((exp!=null)?" -> "+exp.toString():"");
-	if(request!=null){
+	
+	boolean isDebug=false;
+	try{
+		isDebug = System.getProperty("debug").equals("true");
+	}catch(Exception e){	
+		try{
+			isDebug = bsController.getAppInit().get_debug().equals("true");
+		}catch(Exception ex){					
+		}
+	}
+
+	
+	if(isDebug && request!=null){
 		Vector s_log = (Vector)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
 		if(s_log==null) s_log = new Vector();
 		if(exp!=null) s_log.add(exp.toString());
@@ -242,7 +254,18 @@ public static message decode (String cd_mess,HttpServletRequest request, Throwab
 
 	if(request==null) _log=_log + mess_in_desc + ((exp!=null)?" -> "+exp.toString():"");
 	else _log=_log + mess_in_desc+ ((exp!=null)?" -> "+exp.toString():"");
-	if(request!=null){
+	
+	boolean isDebug=false;
+	try{
+		isDebug = System.getProperty("debug").equals("true");
+	}catch(Exception e){	
+		try{
+			isDebug = bsController.getAppInit().get_debug().equals("true");
+		}catch(Exception ex){					
+		}
+	}
+	
+	if(isDebug && request!=null){
 		Vector s_log = (Vector)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
 		if(s_log==null) s_log = new Vector();
 		if(exp!=null) s_log.add(exp.toString());
