@@ -41,7 +41,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 
 public class tagParameter extends TagSupport{
-	private static final long serialVersionUID = 5925138385154867156L;
+	private static final long serialVersionUID = 1L;
 	protected String name = null;	
 	protected String source=null;
 	protected String property=null;
@@ -51,8 +51,16 @@ public class tagParameter extends TagSupport{
 	public int doStartTag() throws JspException {
 		try{
 			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-			i_action 	formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
-			i_bean		formBean 		= formAction.get_bean();
+			i_action formAction=null;
+			i_bean formBean=null;
+			if(source!=null){
+				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+				if(pool!=null) formAction = (i_action)pool.get(source);
+			}
+			if(formAction!=null) source = null;
+			else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+			if(formAction==null) formAction = new action(); 
+			if(source==null) formBean = formAction.get_bean();
 			
 			if(value!=null){
 				

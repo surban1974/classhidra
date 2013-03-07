@@ -5,16 +5,22 @@
 
 <taglib>
 
-  <tlib-version>classHidra 1.4.2</tlib-version>
+  <tlib-version>classHidra 1.4.5</tlib-version>
   <jsp-version>1.3</jsp-version>
   <short-name>bs</short-name>
-  <description> Tag library for bsController   </description>
+  <description> Tag library for classHidra   </description>
   
   <tag>
     <name>form</name>
     <tag-class>it.classhidra.core.controller.tags.tagForm</tag-class>
     <body-content>JSP</body-content>
     <description>for form</description>
+    <attribute>
+        <name>bean</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    
     <attribute>
         <name>name</name>
         <required>false</required>
@@ -876,6 +882,12 @@
     <body-content>JSP</body-content>
     <description>for jRedirect section</description>
     <attribute>
+        <name>bean</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    
+    <attribute>
         <name>name</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
@@ -898,6 +910,12 @@
     <tag-class>it.classhidra.core.controller.tags.tagForbidSection</tag-class>
     <body-content>JSP</body-content>
     <description>for forbidden section</description>
+    <attribute>
+        <name>bean</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	    
     <attribute>
         <name>name</name>
         <required>false</required>

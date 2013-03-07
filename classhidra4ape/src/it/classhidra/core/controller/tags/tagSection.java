@@ -29,6 +29,7 @@ package it.classhidra.core.controller.tags;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_redirect;
 import it.classhidra.core.controller.info_relation;
@@ -40,9 +41,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*; 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class tagSection extends  TagSupport {
-	private static final long serialVersionUID = -1577580781195656125L;
+	private static final long serialVersionUID = -1L;
+	protected String bean=null;
 	protected String name=null;
 	protected String trace=null;
 	protected String type=null;
@@ -69,15 +72,26 @@ public class tagSection extends  TagSupport {
 	}
 	public void release() {
 		super.release();
+		bean=null;
 		name = null;
 		trace = null;
 		type = null;
 	}
 	private boolean condition() throws JspException{
 		boolean result=false;
+
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
 		
-		i_action 		formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
 		redirects 		formRedirect 	=  formAction.getCurrent_redirect();
 		try{
 			auth_init auth = bsController.checkAuth_init(request);
@@ -138,5 +152,13 @@ public class tagSection extends  TagSupport {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getBean() {
+		return bean;
+	}
+
+	public void setBean(String bean) {
+		this.bean = bean;
 	}
 }

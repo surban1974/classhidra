@@ -1,4 +1,4 @@
-package application.web.components; 
+package it.classhidra.framework.web.components; 
 
 
 import it.classhidra.annotation.elements.Action;

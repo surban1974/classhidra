@@ -34,6 +34,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class tagOptions extends TagSupport{
-	private static final long serialVersionUID = -2687877532907025109L;
+	private static final long serialVersionUID = -1L;
 	protected String objId = null;// id
 	protected String label= null;
 	protected String lang = null;
@@ -72,14 +73,23 @@ public class tagOptions extends TagSupport{
 
 	public int doStartTag() throws JspException {
 
-		HttpServletRequest 	request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action 			formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
+		
 		List				iterator = null;
 		
 		StringBuffer results = new StringBuffer();
 		try{
 			if(bean==null){
-				i_bean		formBean = formAction.get_bean();
 				iterator = (List)util_reflect.prepareWriteValueForTag(formBean,"get",property,null);
 			}else{
 				Object anotherBean = null;

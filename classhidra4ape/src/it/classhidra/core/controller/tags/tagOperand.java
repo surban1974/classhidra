@@ -25,6 +25,8 @@
 package it.classhidra.core.controller.tags;
 
 
+import java.util.HashMap;
+
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
@@ -94,8 +96,16 @@ public class tagOperand extends TagSupport{
   
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action 	formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
-
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
 
 		
 		
@@ -105,7 +115,6 @@ public class tagOperand extends TagSupport{
 		Object writeValue=null;
 		Object anotherBean=null;
 		if(bean==null){
-			i_bean		formBean = formAction.get_bean();			
 			if(formBean!=null){
 				writeValue = util_reflect.prepareWriteValueForTag(formBean,method_prefix,name,null);
 			}

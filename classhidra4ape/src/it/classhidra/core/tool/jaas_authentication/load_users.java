@@ -98,9 +98,33 @@ public void reimposta(){
 
 public void init() throws bsControllerException{
 
-
 	String app_path="";
-	app_init ainit = bsController.getAppInit();
+	app_init ainit = bsController.getAppInit(); 
+	
+	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
+		try{ 
+			i_externalloader extl= (i_externalloader)Class.forName(ainit.get_external_loader()).newInstance();
+			reInit(extl);
+		}catch(Exception e){
+			bsController.writeLog("Load_users from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
+		}catch(Throwable t){
+			bsController.writeLog("Load_users from "+ainit.get_external_loader()+" ERROR "+t.toString(),iStub.log_ERROR);
+		}
+	}
+
+
+	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+		try{ 
+			i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+			extl.load();
+			reInit(extl);
+		}catch(Exception e){
+			bsController.writeLog("Load_users from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
+		}catch(Throwable t){
+			bsController.writeLog("Load_users from "+this.getExternalloader()+" ERROR "+t.toString(),iStub.log_ERROR);
+		}
+	}	
+	
 	try{
 
 		if(ainit.get_db_name()!=null){
@@ -299,15 +323,15 @@ private void readFormElements(Node node) throws Exception{
 
 	if(node.getNodeName().equals("users")){
 		this.initTop(node);
-		if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
-			try{
-				i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
-				extl.load();
-				reInit(extl);
-			}catch(Exception e){
-			}catch(Throwable t){
-			}
-		}
+//		if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+//			try{
+//				i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+//				extl.load();
+//				reInit(extl);
+//			}catch(Exception e){
+//			}catch(Throwable t){
+//			}
+//		}
 	}
 
 	NodeList list = node.getChildNodes();
@@ -390,7 +414,7 @@ public void reInit(i_externalloader _externalloader){
 	v_info_targets = new util_sort().sort(v_info_targets,"name");
 	
 	loadedFrom+=" "+_externalloader.getClass().getName();
-	readOk_ExtLoader=true;
+//	readOk_ExtLoader=true;
 
 }
 

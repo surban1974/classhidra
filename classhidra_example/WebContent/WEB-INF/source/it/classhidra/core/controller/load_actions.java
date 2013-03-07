@@ -23,7 +23,8 @@
 *********************************************************************************/
 package it.classhidra.core.controller;
 
-import it.classhidra.annotation.load_annotated;
+import it.classhidra.annotation.annotation_scanner;
+import it.classhidra.annotation.i_annotation_scanner;
 import it.classhidra.core.init.app_init;
 import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -105,10 +106,32 @@ public load_actions(){
 
 public void init() throws bsControllerException{
 
-
 	String app_path="";
-	app_init ainit = bsController.getAppInit();
+	app_init ainit = bsController.getAppInit(); 
 	
+	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
+		try{ 
+			i_externalloader extl= (i_externalloader)Class.forName(ainit.get_external_loader()).newInstance();
+			reInit(extl);
+		}catch(Exception e){
+			bsController.writeLog("Load_actions from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
+		}catch(Throwable t){
+			bsController.writeLog("Load_actions from "+ainit.get_external_loader()+" ERROR "+t.toString(),iStub.log_ERROR);
+		}
+	}
+
+
+	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+		try{ 
+			i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+			extl.load();
+			reInit(extl);
+		}catch(Exception e){
+			bsController.writeLog("Load_actions from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
+		}catch(Throwable t){
+			bsController.writeLog("Load_actions from "+this.getExternalloader()+" ERROR "+t.toString(),iStub.log_ERROR);
+		}
+	}	
 	
 
 	try{
@@ -203,7 +226,7 @@ public void reInit(i_externalloader _externalloader){
 
 	v_info_transformationoutput = (new Vector(_transformationoutput.values()));
 	v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
-	readOk_ExtLoader=true;
+//	readOk_ExtLoader=true;
 	
 
 }
@@ -346,8 +369,23 @@ public void loadFromAnnotations(){
 	if(_beans==null) _beans = new HashMap();
 	if(_redirects==null) _redirects = new HashMap();
 
+	app_init ainit = bsController.getAppInit();
+	i_annotation_scanner l_annotated = null;
 	
-	load_annotated l_annotated = new load_annotated();
+	if(ainit.get_annotation_scanner()==null || ainit.get_annotation_scanner().equals("")){
+		l_annotated = new annotation_scanner();
+	}else{
+		try{
+			l_annotated = (i_annotation_scanner)Class.forName(ainit.get_annotation_scanner()).newInstance();
+		}catch(Exception e){
+			new bsException("Load Error Annotation scaner: "+ainit.get_annotation_scanner(), iStub.log_ERROR);
+			new bsException(e.toString(), iStub.log_ERROR);
+			new bsException("Loading Default Annotation", iStub.log_INFO);
+			l_annotated = new annotation_scanner();
+		}
+	}
+	
+	if(l_annotated==null) l_annotated = new annotation_scanner();
 	l_annotated.loadAllObjects(_redirects);
 	
 	if(l_annotated.getError()!=null && !l_annotated.getError().equals(""))
@@ -525,6 +563,8 @@ public void load_from_resources() {
 
 }
 private void load_from_resources(String property_name) {
+	
+	bsController.writeLog("Start Load_actions from "+property_name,iStub.log_INFO);
 
 
 	InputStream is = null;
@@ -543,6 +583,7 @@ private void load_from_resources(String property_name) {
 	    	}
     	}
     }catch (Exception e) {
+    	bsController.writeLog("Load_actions from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
     }finally {
     	try {
     		if (br != null) br.close();
@@ -552,15 +593,15 @@ private void load_from_resources(String property_name) {
 	}
 
     try{
-    	if(result!=null){
-    		if(initWithData(result)){
-    			bsController.writeLog("Load_actions from "+property_name+" OK ",iStub.log_INFO);
-    			readOk_Resource = readOk_Resource || true;
-    			loadedFrom+=" "+property_name;
-    		}
-    	}
-    }catch (Exception e) {
 
+    	if(initWithData(result)){
+    		bsController.writeLog("Load_actions from "+property_name+" OK ",iStub.log_INFO);
+    		readOk_Resource = readOk_Resource || true;
+    		loadedFrom+=" "+property_name;
+    	}
+
+	}catch(Exception e){
+		bsController.writeLog("Load_actions from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
 	}
 
 }
@@ -1010,15 +1051,15 @@ private void readFormElements(Node node) throws Exception{
 
 	if(node.getNodeName().equals("action-config")){
 		this.initTop(node);
-		if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
-			try{
-				i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
-				extl.load();
-				reInit(extl);
-			}catch(Exception e){
-			}catch(Throwable t){
-			}
-		}
+//		if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+//			try{
+//				i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+//				extl.load();
+//				reInit(extl);
+//			}catch(Exception e){
+//			}catch(Throwable t){
+//			}
+//		}
 	}
 	if(node.getNodeName().equals("action-streams")){
 		int stream_order=0;
@@ -1481,6 +1522,17 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 
 		if(load_def_actions)
 			builder_load_def_actions();
+		
+		if(getExternalloader()!=null && !getExternalloader().equals("")){
+			try{
+				i_externalloader extl= (i_externalloader)Class.forName(getExternalloader()).newInstance();
+				extl.load();
+				reInit(extl);
+			}catch(Exception e){
+			}catch(Throwable t){
+			}
+		}
+
 
 		Document documentXML = null;
 		documentXML = util_xml.readXMLData(_xml);
@@ -1586,15 +1638,15 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 
 		if(node.getNodeName().equals("action-config")){
 			initTop(node);
-			if(getExternalloader()!=null && !getExternalloader().equals("")){
-				try{
-					i_externalloader extl= (i_externalloader)Class.forName(getExternalloader()).newInstance();
-					extl.load();
-					reInit(extl);
-				}catch(Exception e){
-				}catch(Throwable t){
-				}
-			}
+//			if(getExternalloader()!=null && !getExternalloader().equals("")){
+//				try{
+//					i_externalloader extl= (i_externalloader)Class.forName(getExternalloader()).newInstance();
+//					extl.load();
+//					reInit(extl);
+//				}catch(Exception e){
+//				}catch(Throwable t){
+//				}
+//			}
 		}
 		if(node.getNodeName().equals("action-streams")){
 			int stream_order=0;

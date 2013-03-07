@@ -1,5 +1,6 @@
-package it.classhidra.annotation;
+package it.classhidra.plugin.was.jboss;
 
+import it.classhidra.annotation.i_annotation_scanner;
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Apply_to_action;
@@ -21,9 +22,7 @@ import it.classhidra.core.controller.info_transformation;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_sort;
 
-
 import java.io.File;
-
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,9 +30,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.jboss.virtual.VFS;
+import org.jboss.virtual.VirtualFile;
 
 
-public class load_annotated {
+
+public class annotation_scanner implements i_annotation_scanner {
 	
 	private HashMap _actions = new HashMap();
 	private HashMap _streams = new HashMap();
@@ -51,13 +53,27 @@ public class load_annotated {
 //	private List elements = null;
 	private String package_annotated = "";
 	private File directory;
+	private VirtualFile vFile;
 	
+	
+	public annotation_scanner(){
+		super();
+	}
+	
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#loadAllObjects(java.lang.String, java.util.HashMap)
+	 */
+	@Override
 	public void loadAllObjects(String _package_annotated,HashMap redirects){
 		if(redirects!=null) _redirects=redirects;
 		package_annotated=_package_annotated;
 		loadObject();
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#loadAllObjects(java.util.HashMap)
+	 */
+	@Override
 	public void loadAllObjects(HashMap redirects){
 		if(redirects!=null) _redirects=redirects;
 		
@@ -70,6 +86,10 @@ public class load_annotated {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#loadObject()
+	 */
+	@Override
 	public void loadObject(){
 
 			if(package_annotated!=null && !package_annotated.trim().equals("")){
@@ -93,38 +113,82 @@ public class load_annotated {
 						if (resource == null) {
 							throw new ClassNotFoundException("No resource for " + path);
 						}
-						directory = util_classes.convertUrl2File(resource);
+						
+						try{
+							vFile = VFS.getRoot(resource);
+						}catch(Exception e){
+						}
+
+						try{
+							directory = util_classes.convertUrl2File(resource);
+						}catch(Exception e){
+						}	
 					}catch(Exception ex){				
 					}
 					
-					if(directory==null) return;
-					
-
-					
-					if (directory.exists() && directory.isDirectory()) {
-						File[] files = directory.listFiles();
-						for(int i=0;i<files.length;i++){
-							String package_path = files[i].getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
-							package_path=package_annotated+package_path;
-							if(files[i].isDirectory())
-								checkBranch(package_path);					
-							else{
+					if(directory!=null){
+						if (directory.exists() && directory.isDirectory()) {
+							File[] files = directory.listFiles();
+							for(int i=0;i<files.length;i++){
+								String package_path = files[i].getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
+								package_path=package_annotated+package_path;
+								if(files[i].isDirectory())
+									checkBranch(package_path);					
+								else{
+									String class_path=package_path;
+									if(class_path.lastIndexOf(".class")==class_path.length()-6)
+										class_path=class_path.substring(0,class_path.length()-6);
+									checkClassAnnotation(class_path);
+	
+								}
+							}
+						}
+						if (directory.exists() && directory.isFile()) {
+								String package_path = directory.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
+								package_path=package_annotated+package_path;
 								String class_path=package_path;
 								if(class_path.lastIndexOf(".class")==class_path.length()-6)
 									class_path=class_path.substring(0,class_path.length()-6);
 								checkClassAnnotation(class_path);
+	
+						}
+						return;
+					}
+					if(vFile!=null){
+						if (vFile.exists() && vFile.getChildren().size()>0) {
+							List files = vFile.getChildren();
+							for(int i=0;i<files.size();i++){
+								String package_path = ((VirtualFile)files.get(i)).getPathName();
+//								package_path=package_annotated+package_path;
+								if(((VirtualFile)files.get(i)).getChildren().size()>0)
+									checkBranchVFile((VirtualFile)files.get(i));					
+								else{
+									String class_path=package_path;
+									if(class_path.lastIndexOf(".class")==class_path.length()-6)
+										class_path=class_path.substring(0,class_path.length()-6);
+									class_path=class_path.replace("/", ".").replace("\\", ".");
+									if(class_path.indexOf(package_annotated)!=0)
+										class_path = class_path.substring(class_path.indexOf(package_annotated),class_path.length());
 
+									checkClassAnnotation(class_path);
+	
+								}
 							}
 						}
-					}
-					if (directory.exists() && directory.isFile()) {
-							String package_path = directory.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
-							package_path=package_annotated+package_path;
-							String class_path=package_path;
-							if(class_path.lastIndexOf(".class")==class_path.length()-6)
-								class_path=class_path.substring(0,class_path.length()-6);
-							checkClassAnnotation(class_path);
+						if (vFile.exists() && vFile.getChildren().size()==0) {
+							String package_path = vFile.getPathName();
+								String class_path=package_path;
+								if(class_path.lastIndexOf(".class")==class_path.length()-6)
+									class_path=class_path.substring(0,class_path.length()-6);
+								class_path=class_path.replace("/", ".").replace("\\", ".");
+								if(class_path.indexOf(package_annotated)!=0)
+									class_path = class_path.substring(class_path.indexOf(package_annotated),class_path.length());
 
+								checkClassAnnotation(class_path);
+	
+						}
+						return;
+						
 					}
 					
 				}catch(Exception e){				
@@ -157,6 +221,36 @@ public class load_annotated {
 		return array;
 	}
 
+	private List checkBranchVFile(VirtualFile file_){
+		List array = new ArrayList();
+		try{
+			array = file_.getChildren();
+		}catch(Exception e){
+		}
+
+		for(int i=0;i<array.size();i++){
+			VirtualFile current =  (VirtualFile)array.get(i);
+			String package_path = current.getPathName();
+			try{
+				if(current.getChildren().size()>0)
+					checkBranchVFile(current);
+				else{
+					String class_path=package_path;
+					if(class_path.lastIndexOf(".class")==class_path.length()-6)
+						class_path=class_path.substring(0,class_path.length()-6);	
+					class_path=class_path.replace("/", ".").replace("\\", ".");
+					if(class_path.indexOf(package_annotated)!=0)
+						class_path = class_path.substring(class_path.indexOf(package_annotated),class_path.length());
+					
+					checkClassAnnotation(class_path);
+	
+				}
+			}catch(Exception e){
+				
+			}
+		}
+		return array;
+	}
 
 
 	private void checkClassAnnotation(String class_path) {
@@ -448,6 +542,10 @@ public class load_annotated {
 		return uri.substring(0,uri.indexOf("?"));
 	}
 	
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#get_streams()
+	 */
+	@Override
 	public HashMap get_streams() {
 		return _streams;
 	}
@@ -457,30 +555,58 @@ public class load_annotated {
 		return _streams_apply_to_actions;
 	}
 */
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#get_beans()
+	 */
+	@Override
 	public HashMap get_beans() {
 		return _beans;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#get_redirects()
+	 */
+	@Override
 	public HashMap get_redirects() {
 		return _redirects;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#get_transformationoutput()
+	 */
+	@Override
 	public HashMap get_transformationoutput() {
 		return _transformationoutput;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#get_actions()
+	 */
+	@Override
 	public HashMap get_actions() {
 		return _actions;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#getError()
+	 */
+	@Override
 	public String getError() {
 		return error;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#getAuth_error()
+	 */
+	@Override
 	public String getAuth_error() {
 		return auth_error;
 	}
 
+	/* (non-Javadoc)
+	 * @see it.classhidra.annotation.i_load_annotated#getSession_error()
+	 */
+	@Override
 	public String getSession_error() {
 		return session_error;
 	}

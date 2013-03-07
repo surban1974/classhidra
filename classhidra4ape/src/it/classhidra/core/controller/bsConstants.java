@@ -73,6 +73,7 @@ public interface bsConstants {
 
 	public final static String CONST_BEAN_$PREVINSTANCEACTION 			=	"$previnstanceaction";
 	public final static String CONST_BEAN_$INSTANCEACTION 				=	"$instanceaction";
+	public final static String CONST_BEAN_$INSTANCEACTIONPOOL			=	"$instanceactionpool";
 	public final static String CONST_BEAN_$ERRORACTION 					=	"$erroraction";							
 	public final static String CONST_BEAN_$LISTMESSAGE 					=	"$listmessages";
 	public final static String CONST_BEAN_$LISTGETPERMITED 				=	"$listgetpermited";

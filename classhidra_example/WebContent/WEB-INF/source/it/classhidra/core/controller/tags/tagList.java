@@ -38,13 +38,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.io.IOException;
 
 public class tagList extends TagSupport{
-	private static final long serialVersionUID = 5770847916185785099L;
+	private static final long serialVersionUID = 1L;
 
 	protected String objId = null;// id
 
@@ -192,9 +193,18 @@ public class tagList extends TagSupport{
 
 	public int doEndTag() throws JspException {
 
-		HttpServletRequest 	request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action 			formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
-		i_bean				formBean = formAction.get_bean();
+		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
+		
 		List				iterator = null;
 
 		Vector v_propertys = new Vector();

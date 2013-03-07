@@ -125,14 +125,38 @@ public void reInit(i_externalloader _externalloader){
 	}
 
 	loadedFrom+=" "+_externalloader.getClass().getName();
-	readOk_ExtLoader=true;
+//	readOk_ExtLoader=true;
 }
 
 public void init() throws bsControllerException{
 
-
 	String app_path="";
-	app_init ainit = bsController.getAppInit();
+	app_init ainit = bsController.getAppInit(); 
+	
+	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
+		try{ 
+			i_externalloader extl= (i_externalloader)Class.forName(ainit.get_external_loader()).newInstance();
+			reInit(extl);
+		}catch(Exception e){
+			bsController.writeLog("Load_authentication from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
+		}catch(Throwable t){
+			bsController.writeLog("Load_authentication from "+ainit.get_external_loader()+" ERROR "+t.toString(),iStub.log_ERROR);
+		}
+	}
+
+
+	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+		try{ 
+			i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+			extl.load();
+			reInit(extl);
+		}catch(Exception e){
+			bsController.writeLog("Load_authentication from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
+		}catch(Throwable t){
+			bsController.writeLog("Load_authentication from "+this.getExternalloader()+" ERROR "+t.toString(),iStub.log_ERROR);
+		}
+	}	
+
 
 	try{
 
@@ -192,7 +216,7 @@ public void initWithFOLDER(String dir) throws bsControllerException{
 		for(int i=0;i<list.length;i++){
 			try{
 				boolean res = initWithFile(list[i].getAbsolutePath());
-				if(res) bsController.writeLog("Load_action from "+input.getAbsolutePath()+" OK ",iStub.log_INFO);
+				if(res) bsController.writeLog("Load_authentication from "+input.getAbsolutePath()+" OK ",iStub.log_INFO);
 				readOk_File=readOk_File || res;
 			}catch(Exception e){
 			}
@@ -301,15 +325,15 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 		if(node==null) return false;
 		if(node.getNodeName().equals("authentication-forbidden") || node.getNodeName().equals("authentication")){
 			this.initTop(node);
-			if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
-				try{
-					i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
-					extl.load();
-					reInit(extl);
-				}catch(Exception e){
-				}catch(Throwable t){
-				}
-			}
+//			if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+//				try{
+//					i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+//					extl.load();
+//					reInit(extl);
+//				}catch(Exception e){
+//				}catch(Throwable t){
+//				}
+//			}
 		}
 
 		try{
@@ -539,7 +563,7 @@ public void load_from_resources() {
 	    	if(result!=null){
 	    		if(initWithData(result)){
 	    			readOk_Resource = true;
-	    			bsController.writeLog("Load_action from "+property_name+" OK ",iStub.log_INFO);
+	    			bsController.writeLog("Load_authentication from "+property_name+" OK ",iStub.log_INFO);
 	    			loadedFrom+=" "+property_name;
 	    		}else{
 	    			readOk_Resource = false;

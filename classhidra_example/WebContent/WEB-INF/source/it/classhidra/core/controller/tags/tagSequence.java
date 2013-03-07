@@ -35,6 +35,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class tagSequence extends  TagSupport {
-	private static final long serialVersionUID = 3307772123819533487L;
+	private static final long serialVersionUID = 1L;
 	protected String bean=null;
 	protected String name=null;
 	protected String method_prefix=null;
@@ -69,8 +70,17 @@ public class tagSequence extends  TagSupport {
 			index=0;
 			pair = true;
 			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-			i_action 	formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
-			i_bean		formBean 		= formAction.get_bean();
+			i_action formAction=null;
+			i_bean formBean=null;
+			if(bean!=null){
+				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+				if(pool!=null) formAction = (i_action)pool.get(bean);
+			}
+			if(formAction!=null) bean = null;
+			else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+			if(formAction==null) formAction = new action(); 
+			if(bean==null) formBean = formAction.get_bean();
+			
 			
 			if(method_prefix==null) method_prefix="get";
 			

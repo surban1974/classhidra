@@ -1,4 +1,4 @@
-package application.web.components;   
+package it.classhidra.framework.web.components;   
 
 
 import it.classhidra.annotation.elements.Action;
@@ -61,6 +61,7 @@ import javax.servlet.http.HttpServletResponse;
 	name="formAmanager",
 	redirect="/jsp/amanager/canvas.jsp",
 	navigated="true",
+	syncro="true",
     memoryInSession="false",
     reloadAfterAction="false",
 	redirects={

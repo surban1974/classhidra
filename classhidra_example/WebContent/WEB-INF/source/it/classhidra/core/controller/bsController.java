@@ -173,8 +173,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		action_config = new load_actions();
 			try{
+				action_config.load_from_resources();
 				action_config.init();
-				if(!action_config.isReadOk()) action_config.load_from_resources();
 				if(!action_config.isReadOk()){
 					action_config.initProperties(getAppInit().getApplication_path_config()+CONST_XML_ACTIONS);
 					if(action_config.isReadOk_File()) getAppInit().set_path_config(getAppInit().getApplication_path_config());
@@ -184,8 +184,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		mess_config = new load_message();
 			try{
+				mess_config.load_from_resources();
 				mess_config.init();
-				if(!mess_config.isReadOk()) mess_config.load_from_resources();
 				if(!mess_config.isReadOk()){
 					mess_config.initProperties(getAppInit().get_path_config()+CONST_XML_MESSAGES);
 					mess_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_MESSAGES_FOLDER+"/");
@@ -194,8 +194,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		auth_config = new load_authentication();
 			try{
+				auth_config.load_from_resources();
 				auth_config.init();
-				if(!auth_config.isReadOk()) auth_config.load_from_resources();
 				if(!auth_config.isReadOk()){
 					auth_config.initProperties(getAppInit().get_path_config()+CONST_XML_MESSAGES);
 					auth_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/");
@@ -205,8 +205,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		org_config = new load_organization();
 			try{
+				org_config.load_from_resources();
 				org_config.init();
-				if(!org_config.isReadOk()) org_config.load_from_resources();
 				if(!org_config.isReadOk()){
 					org_config.initProperties(getAppInit().get_path_config()+CONST_XML_ORGANIZATION);
 
@@ -215,8 +215,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 		menu_config = new load_menu(null);
 			try{
+				menu_config.load_from_resources();
 				menu_config.init();
-				if(!menu_config.isReadOk()) menu_config.load_from_resources();
 				if(!menu_config.isReadOk())
 					menu_config.initProperties(getAppInit().get_path_config()+CONST_XML_MENU);
 			}catch(bsControllerException je){}
@@ -751,12 +751,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(idApp==null) idApp = util_format.replace(request.getContextPath(),"/", "");
 		}
 		if(auth==null) auth = new auth_init();
-		if(getLogG().isReadError()) 			reloadLog_generator(request.getSession().getServletContext());
-
-		if(!getAction_config().isReadOk())	reloadAction_config(request.getSession().getServletContext());
-		if(!getMess_config().isReadOk()) 	reloadMess_config(request.getSession().getServletContext());
-		if(!getAuth_config().isReadOk()) 	reloadAuth_config(request.getSession().getServletContext());
-		if(!getOrg_config().isReadOk()) 	reloadOrg_config(request.getSession().getServletContext());
+//		if(getLogG().isReadError()) 			reloadLog_generator(request.getSession().getServletContext());
+//
+//		if(!getAction_config().isReadOk())	reloadAction_config(request.getSession().getServletContext());
+//		if(!getMess_config().isReadOk()) 	reloadMess_config(request.getSession().getServletContext());
+//		if(!getAuth_config().isReadOk()) 	reloadAuth_config(request.getSession().getServletContext());
+//		if(!getOrg_config().isReadOk()) 	reloadOrg_config(request.getSession().getServletContext());
 //		if(!getMenu_config().isReadOk()) 	reloadMenu_config(request.getSession().getServletContext(),null);
 
 //		if(getUser_config().isReadError()) reloadUsers_config(request);
@@ -834,6 +834,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 					if(id_rtype.equals(CONST_REQUEST_TYPE_FORWARD)) action_instance.setIncluded(false);
 				}
 
+
+				if(action_instance!=null){
+					if(request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL)==null)
+						request.setAttribute(CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
+					HashMap included_pool = (HashMap)request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL);
+					if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getName()!=null)
+						included_pool.put(action_instance.get_infoaction().getName(),action_instance);
+					else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getPath()!=null)
+						included_pool.put(action_instance.get_infoaction().getPath(),action_instance);
+				}
 
 				request.setAttribute(CONST_BEAN_$INSTANCEACTION,action_instance);
 
@@ -1066,7 +1076,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}catch(Exception e){
 				}
 			}
-			request.setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTION, form);
+//			request.setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTION, form);
 		}
 	}
 
@@ -1281,8 +1291,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(mess_config==null || reInit){
 			mess_config = new load_message();
 			try{
+				mess_config.load_from_resources();
 				mess_config.init();
-				if(!mess_config.isReadOk()) mess_config.load_from_resources();
 				if(!mess_config.isReadOk()){
 					mess_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
 					mess_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
@@ -1309,8 +1319,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(action_config==null || reInit){
 			action_config = new load_actions();
 			try{
+				action_config.load_from_resources();
 				action_config.init();
-				if(!action_config.isReadOk()) action_config.load_from_resources();
 				action_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
 				action_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
 
@@ -1323,8 +1333,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(auth_config==null || reInit){
 			auth_config = new load_authentication();
 			try{
+				auth_config.load_from_resources();
 				auth_config.init();
-				if(!auth_config.isReadOk()) auth_config.load_from_resources();
 				if(!auth_config.isReadOk()){
 					auth_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
 					auth_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
@@ -1338,8 +1348,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(org_config==null || reInit){
 			org_config = new load_organization();
 			try{
+				org_config.load_from_resources();
 				org_config.init();
-				if(!org_config.isReadOk()) org_config.load_from_resources();
 				if(!org_config.isReadOk()){
 					org_config.initProperties(getAppInit().get_path_config()+CONST_XML_ORGANIZATION);
 				}

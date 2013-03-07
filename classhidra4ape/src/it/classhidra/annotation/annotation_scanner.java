@@ -21,9 +21,7 @@ import it.classhidra.core.controller.info_transformation;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_sort;
 
-
 import java.io.File;
-
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,7 +31,7 @@ import java.util.Vector;
 
 
 
-public class load_annotated {
+public class annotation_scanner implements i_annotation_scanner {
 	
 	private HashMap _actions = new HashMap();
 	private HashMap _streams = new HashMap();
@@ -52,12 +50,20 @@ public class load_annotated {
 	private String package_annotated = "";
 	private File directory;
 	
+	
+	public annotation_scanner(){
+		super();
+	}
+
+
 	public void loadAllObjects(String _package_annotated,HashMap redirects){
 		if(redirects!=null) _redirects=redirects;
 		package_annotated=_package_annotated;
 		loadObject();
 	}
 	
+
+
 	public void loadAllObjects(HashMap redirects){
 		if(redirects!=null) _redirects=redirects;
 		
@@ -70,6 +76,8 @@ public class load_annotated {
 		}
 	}
 	
+
+
 	public void loadObject(){
 
 			if(package_annotated!=null && !package_annotated.trim().equals("")){
@@ -448,6 +456,7 @@ public class load_annotated {
 		return uri.substring(0,uri.indexOf("?"));
 	}
 	
+
 	public HashMap get_streams() {
 		return _streams;
 	}
@@ -457,29 +466,37 @@ public class load_annotated {
 		return _streams_apply_to_actions;
 	}
 */
+
+
 	public HashMap get_beans() {
 		return _beans;
 	}
+
 
 	public HashMap get_redirects() {
 		return _redirects;
 	}
 
+
 	public HashMap get_transformationoutput() {
 		return _transformationoutput;
 	}
+
 
 	public HashMap get_actions() {
 		return _actions;
 	}
 
+
 	public String getError() {
 		return error;
 	}
 
+
 	public String getAuth_error() {
 		return auth_error;
 	}
+
 
 	public String getSession_error() {
 		return session_error;

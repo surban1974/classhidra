@@ -28,10 +28,12 @@ package it.classhidra.core.controller.tags;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.init.auth_init;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +42,8 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class tagForm extends TagSupport{
-	private static final long serialVersionUID = 5427999501741375101L;
+	private static final long serialVersionUID = 1L;
+	protected String bean = null;
 	protected String name = null;
 	protected String objId = null;
 	protected String action = null;
@@ -99,6 +102,7 @@ public class tagForm extends TagSupport{
 
 	public void release() {
 		super.release();
+		bean=null;
 		name=null;
 		objId=null;
 		action=null;
@@ -132,8 +136,18 @@ public class tagForm extends TagSupport{
 	protected String createTagBody() {
 		HttpServletResponse response = (HttpServletResponse) this.pageContext.getResponse();
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action 		formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
-
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
+		
+		
 		try{		
 			auth_init aInit = (auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
 			String lang = aInit.get_language();
@@ -489,6 +503,14 @@ public class tagForm extends TagSupport{
 	}
 	public void setWac_fascia(String string) {
 		wac_fascia = string;
+	}
+
+	public String getBean() {
+		return bean;
+	}
+
+	public void setBean(String bean) {
+		this.bean = bean;
 	}
 
 }

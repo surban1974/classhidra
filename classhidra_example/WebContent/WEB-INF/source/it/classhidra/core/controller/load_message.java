@@ -76,23 +76,48 @@ public load_message(){
 
 }
 
-public void reInit(i_externalloader _externalloader){
+public void reInit(i_externalloader _externalloader){ 
 	if(_externalloader==null) return;
 	if(	_externalloader.getProperty(i_externalloader.MESSAGES_messages)!=null &&
 		_externalloader.getProperty(i_externalloader.MESSAGES_messages) instanceof HashMap){
 		_messages.putAll((HashMap)_externalloader.getProperty(i_externalloader.MESSAGES_messages));
 	}
 	loadedFrom+=" "+_externalloader.getClass().getName();
-	readOk_ExtLoader=true;
+//	readOk_ExtLoader=true;
 
 }
 
 
 public void init() throws bsControllerException{
 
-
 	String app_path="";
-	app_init ainit = bsController.getAppInit();
+	app_init ainit = bsController.getAppInit(); 
+	
+	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
+		try{ 
+			i_externalloader extl= (i_externalloader)Class.forName(ainit.get_external_loader()).newInstance();
+			reInit(extl);
+		}catch(Exception e){
+			bsController.writeLog("Load_messages from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
+		}catch(Throwable t){
+			bsController.writeLog("Load_messages from "+ainit.get_external_loader()+" ERROR "+t.toString(),iStub.log_ERROR);
+		}
+	}
+
+
+	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+		try{ 
+			i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+			reInit(extl);
+		}catch(Exception e){
+			bsController.writeLog("Load_messages from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
+		}catch(Throwable t){
+			bsController.writeLog("Load_messages from "+this.getExternalloader()+" ERROR "+t.toString(),iStub.log_ERROR);
+		}
+	}
+
+	
+
 	try{
 
 		if(ainit.get_db_name()!=null){
@@ -181,14 +206,14 @@ public void initFromXML(String xml) throws bsControllerException{
 	}
 }
 */
-private boolean initWithData(String _xml) throws bsControllerException, Exception{
+public boolean initWithData(String _xml) throws bsControllerException, Exception{
 	Document documentXML = null;
 	documentXML = util_xml.readXMLData(_xml);
 	if(readDocumentXml(documentXML)) return true;
 	else return false;
 }
 
-private boolean initWithFile(String _xml) throws bsControllerException, Exception{
+public boolean initWithFile(String _xml) throws bsControllerException, Exception{
 	Document documentXML = null;
 	documentXML = util_xml.readXML(_xml);
 	if(readDocumentXml(documentXML)) return true;
@@ -226,28 +251,17 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 		if(node==null) return false;
 		if(node.getNodeName().equals("messages")){
 			this.initTop(node);
-			if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
-				try{
-					i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
-					extl.load();
-					reInit(extl);
-				}catch(Exception e){
-				}catch(Throwable t){
-				}
-			}
+//			if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+//				try{
+//					i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+//					extl.load();
+//					reInit(extl);
+//				}catch(Exception e){
+//				}catch(Throwable t){
+//				}
+//			}
 		}
-		if(node.getNodeName().equals("action-config")){
-			this.initTop(node);
-			if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
-				try{
-					i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
-					extl.load();
-					reInit(extl);
-				}catch(Exception e){
-				}catch(Throwable t){
-				}
-			}
-		}
+
 		NodeList list = node.getChildNodes();
 		for(int i=0;i<list.getLength();i++){
 			Node child_node = list.item(i);
@@ -280,7 +294,7 @@ public boolean isReadOk() {
 }
 
 
-	public void load_from_resources() {
+public void load_from_resources() { 
 		load_from_resources("/config/"+bsController.CONST_XML_MESSAGES);
 		String property_name =  "config."+bsController.CONST_XML_MESSAGES_FOLDER;
 		ArrayList array = new ArrayList();
@@ -297,8 +311,8 @@ public boolean isReadOk() {
 				load_from_resources("/config/"+property_name0);
 		}
 
-	}
-	private void load_from_resources(String property_name) {
+}
+private void load_from_resources(String property_name) {
 
 
 		InputStream is = null;
@@ -339,9 +353,9 @@ public boolean isReadOk() {
 
 		}
 
-	}
+}
 
-	public boolean initDB(app_init ainit) throws bsControllerException, Exception{
+public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 		String app_path=ainit.get_path();
 		if(app_path==null || app_path.equals("")) app_path="";
 		else app_path+=".";
@@ -369,59 +383,59 @@ public boolean isReadOk() {
 		else return false;
 
 
-	}
+}
 
 	
-	public boolean isReadOk_File() {
-		return readOk_File;
-	}
+public boolean isReadOk_File() {
+	return readOk_File;
+}
 
-	public void setReadOk_File(boolean readOk_File) {
-		this.readOk_File = readOk_File;
-	}
+public void setReadOk_File(boolean readOk_File) {
+	this.readOk_File = readOk_File;
+}
 
-	public String getExternalloader() {
-		return externalloader;
-	}
+public String getExternalloader() {
+	return externalloader;
+}
 
-	public void setExternalloader(String externalloader) {
-		this.externalloader = externalloader;
-	}
+public void setExternalloader(String externalloader) {
+	this.externalloader = externalloader;
+}
 
-	public String getView() {
-		return view;
-	}
+public String getView() {
+	return view;
+}
 
-	public void setView(String view) {
-		this.view = view;
-	}
+public void setView(String view) {
+	this.view = view;
+}
 
-	public String getLoadedFrom() {
-		return loadedFrom;
-	}
+public String getLoadedFrom() {
+	return loadedFrom;
+}
 
-	public boolean isReadOk_Resource() {
-		return readOk_Resource;
-	}
+public boolean isReadOk_Resource() {
+	return readOk_Resource;
+}
 
-	public boolean isReadOk_Folder() {
-		return readOk_Folder;
-	}
+public boolean isReadOk_Folder() {
+	return readOk_Folder;
+}
 
-	public boolean isReadOk_ExtLoader() {
-		return readOk_ExtLoader;
-	}
+public boolean isReadOk_ExtLoader() {
+	return readOk_ExtLoader;
+}
 
-	public void setReadOk_Resource(boolean readOkResource) {
-		readOk_Resource = readOkResource;
-	}
+public void setReadOk_Resource(boolean readOkResource) {
+	readOk_Resource = readOkResource;
+}
 
-	public void setReadOk_Folder(boolean readOkFolder) {
-		readOk_Folder = readOkFolder;
-	}
+public void setReadOk_Folder(boolean readOkFolder) {
+	readOk_Folder = readOkFolder;
+}
 
-	public void setReadOk_ExtLoader(boolean readOkExtLoader) {
-		readOk_ExtLoader = readOkExtLoader;
-	}
+public void setReadOk_ExtLoader(boolean readOkExtLoader) {
+	readOk_ExtLoader = readOkExtLoader;
+}
 
 }

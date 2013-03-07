@@ -38,9 +38,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*; 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class tagInput extends BodyTagSupport{
-	private static final long serialVersionUID = -7838184722699016681L;
+	private static final long serialVersionUID = -1L;
 	protected String bean = null;
 	protected String objId = null;// id
 	protected String name = null;
@@ -175,8 +176,16 @@ public class tagInput extends BodyTagSupport{
    
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action 		formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
-		i_bean		formBean = formAction.get_bean();
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
 		
 		if(method_prefix==null) method_prefix="get";
 		Object anotherBean = null;

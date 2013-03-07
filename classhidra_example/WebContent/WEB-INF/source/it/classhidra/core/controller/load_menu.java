@@ -108,15 +108,38 @@ public class load_menu  extends elementBase{
 			_menu=((i_menu_element)_externalloader.getProperty(i_externalloader.MENU_menu));
 		}
 		loadedFrom+=" "+_externalloader.getClass().getName();
-		readOk_ExtLoader=true;
+//		readOk_ExtLoader=true;
 
 	}
 
 	public void init() throws bsControllerException{
 
-
 		String app_path="";
-		app_init ainit = bsController.getAppInit();
+		app_init ainit = bsController.getAppInit(); 
+		
+		if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
+			try{ 
+				i_externalloader extl= (i_externalloader)Class.forName(ainit.get_external_loader()).newInstance();
+				reInit(extl);
+			}catch(Exception e){
+				bsController.writeLog("Load_menu from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
+			}catch(Throwable t){
+				bsController.writeLog("Load_menu from "+ainit.get_external_loader()+" ERROR "+t.toString(),iStub.log_ERROR);
+			}
+		}
+
+
+		if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+			try{ 
+				i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+				extl.load();
+				reInit(extl);
+			}catch(Exception e){
+				bsController.writeLog("Load_menu from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
+			}catch(Throwable t){
+				bsController.writeLog("Load_menu from "+this.getExternalloader()+" ERROR "+t.toString(),iStub.log_ERROR);
+			}
+		}	
 
 		try{
 
@@ -247,15 +270,15 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 		if(node==null) return false;
 		if(node.getNodeName().equals("menu")){
 //			this.initTop(node);
-			if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
-				try{
-					i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
-					extl.load();
-					reInit(extl);
-				}catch(Exception e){
-				}catch(Throwable t){
-				}
-			}
+//			if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+//				try{
+//					i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+//					extl.load();
+//					reInit(extl);
+//				}catch(Exception e){
+//				}catch(Throwable t){
+//				}
+//			}
 		}
 
 		_menu.init(node);
@@ -322,6 +345,16 @@ public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 	public void load_from_resources() {
 		
 		if(_menu==null) return;
+		
+		if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
+			try{
+				i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+				extl.load();
+				reInit(extl);
+			}catch(Exception e){
+			}catch(Throwable t){
+			}
+		}
 
 		app_init ainit = bsController.getAppInit();
 

@@ -41,6 +41,7 @@ import javax.servlet.jsp.tagext.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class tagShowBeanViaXslt extends TagSupport{
 	private static final long serialVersionUID = 1L;
@@ -137,13 +138,22 @@ public class tagShowBeanViaXslt extends TagSupport{
 	private String getXmlFromBean(){
 		String xml = null;
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action 		formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
+
 		if(method_prefix==null) method_prefix="get";
 		Object writeValue=null;
 		Object anotherBean = null;
 		
 		if(bean==null){
-			i_bean		formBean = formAction.get_bean();
 			anotherBean = formBean;
 			if(anotherBean!=null){
 				if(name==null) writeValue=anotherBean;

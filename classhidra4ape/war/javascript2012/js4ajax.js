@@ -38,11 +38,18 @@ function ajax_loadAction(action,target, callBackJs){
 	ajax_makeRequest(action,target,callBackJs);
 }
 
-function dhtmlLoadScript(url){
+function dhtmlLoadScript(url,type,rel){
 	
    var e = document.createElement("script");
    e.src = url;
-   e.type="text/javascript";
+   if(type){
+	   e.type=type;
+   }else{
+	   e.type="text/javascript";
+   }
+   if(rel){
+	   e.rel=rel;
+   }
 
 	try{
 	   document.getElementsByTagName("head")[0].appendChild(e);
@@ -52,13 +59,21 @@ function dhtmlLoadScript(url){
 
 }
 
-function dhtmlLoadScript_submit(url,frm){
+function dhtmlLoadScript_submit(url,frm,type,rel){
 	
 	   var e = document.createElement("script");
 	   var parameters = ajax_makeParameters(frm,url);
   
 	   e.src = url+parameters;
-	   e.type="text/javascript";
+	   if(type){
+		   e.type=type;
+	   }else{
+		   e.type="text/javascript";
+	   }
+	   if(rel){
+		   e.rel=rel;
+	   }
+
 
 		try{
 		   document.getElementsByTagName("head")[0].appendChild(e);
@@ -189,20 +204,16 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction, callBackJs,
 		    	if (http_request.readyState == 4) {
 		            if (http_request.status == 200 ) {
 		            	if(callBackJs && callBackJs!=""){
-		            		eval(callBackJs + "(http_request.responseXML,target)");
+		            		eval(callBackJs + "(http_request,target)");
 		            	}else{
 		            		document.getElementById(target).innerHTML=http_request.responseText;	
-		            		
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
-		            		try{
-		            			eval(afterJSFunction + "()");
-		        	    	}catch(e){
-		        	    	}
+		            		eval(afterJSFunction + "()");
 		            	}	
 		            } else {
 		            	var error_mess = http_request.responseText;
-//		            	ajax_makeRequest("messages?error_mess="+encodeURIComponent(error_mess)+"&data_rif="+new Date().getTime(),"idDivMessage");
+//		            	ajax_makeRequest("messages.bs?error_mess="+encodeURIComponent(error_mess)+"&data_rif="+new Date().getTime(),"idDivMessage");
 
 		            }
 		        } 
@@ -218,14 +229,10 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction, callBackJs,
 	    
 	    http_request.setRequestHeader("Content-length", parametersOnly.length);
 	    http_request.setRequestHeader("Connection", "close");
-	    
 	    http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");	    
-	    http_request.setRequestHeader("Content-Encoding", "ISO-8859-1");
-	    
+	    http_request.setRequestHeader("Content-Encoding", "iso-8859-1");
 //	    http_request.setRequestHeader("Content-Encoding", "utf-8");
    
-   
-	    
 	    http_request.send(parametersOnly);
 	    
 	   	

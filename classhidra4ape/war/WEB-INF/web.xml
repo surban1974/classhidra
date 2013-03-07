@@ -34,11 +34,21 @@
 		<servlet-class>it.classhidra.core.controller.bsController</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<servlet>
+		<servlet-name>creator_iHort</servlet-name>
+		<display-name>creator_iHort</display-name>
+		<servlet-class>neohort.universal.output.creator_iHort</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>bsController</servlet-name>
 		<url-pattern>/Controller</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>creator_iHort</servlet-name>
+		<url-pattern>/report_creator</url-pattern>
+	</servlet-mapping>
+	
 
 
 

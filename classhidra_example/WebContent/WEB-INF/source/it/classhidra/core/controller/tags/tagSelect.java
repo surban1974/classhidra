@@ -37,10 +37,11 @@ import it.classhidra.core.tool.util.util_tag;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
 import java.io.IOException;
+import java.util.HashMap;
 
 
 public class tagSelect extends tagInput{
-	private static final long serialVersionUID = -8991518276441457454L;
+	private static final long serialVersionUID = -1L;
 	private String multiple=null;
 	public int doEndTag() throws JspException {
 			
@@ -57,7 +58,17 @@ public class tagSelect extends tagInput{
 	}
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action 		formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
+
 		if(method_prefix==null) method_prefix="get";
 		
 		Object writeValue=null;
@@ -66,7 +77,6 @@ public class tagSelect extends tagInput{
 		
 //		if(value==null){
 			if(bean==null && name!=null){
-				i_bean		formBean = formAction.get_bean();
 				writeValue = formBean.get(name);
 				try{
 					if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);

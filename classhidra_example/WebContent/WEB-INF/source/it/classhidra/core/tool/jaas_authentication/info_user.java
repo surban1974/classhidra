@@ -44,6 +44,8 @@ public class info_user extends info_entity implements i_elementBase{
 	private String name;
 	
 	private String password;
+	private String original;
+	private String originalc;
 	private String pass_expired;
 	private String matriculation;
 	private String language;
@@ -87,6 +89,9 @@ public class info_user extends info_entity implements i_elementBase{
 						
 				}
 			}
+			if(crypted!=null && crypted.trim().toUpperCase().equals("TRUE")) originalc=password;
+			else original=password;
+			
 			if(crypted!=null && !crypted.trim().toUpperCase().equals("TRUE")) password = bsController.encrypt(password);
 		}catch(Exception e){
 			new bsControllerException(e,iStub.log_DEBUG);
@@ -174,6 +179,8 @@ public class info_user extends info_entity implements i_elementBase{
 
 	public void setPassword(String string) {
 		password = string;
+		original = null;
+		originalc = null;
 	}
 
 	public void setTarget(String string) {
@@ -223,7 +230,12 @@ public class info_user extends info_entity implements i_elementBase{
 		try{
 			result+= "<user";
 			result+=System.getProperty("line.separator")+"      "+" name=\""+util_format.normaliseXMLText(getName())+"\"";
-			result+=System.getProperty("line.separator")+"      "+" password=\""+util_format.normaliseXMLText(getPassword())+"\"";
+			if(original==null && originalc==null)
+				result+=System.getProperty("line.separator")+"      "+" password=\""+util_format.normaliseXMLText(getPassword())+"\"";
+			else if(getCrypted().toUpperCase().equals("TRUE")) 
+				result+=System.getProperty("line.separator")+"      "+" password=\""+util_format.normaliseXMLText(getOriginalc())+"\"";
+			else result+=System.getProperty("line.separator")+"      "+" password=\""+util_format.normaliseXMLText(getOriginal())+"\"";
+
 			result+=System.getProperty("line.separator")+"      "+" pass_expired=\""+util_format.normaliseXMLText(getPass_expired())+"\"";
 			result+=System.getProperty("line.separator")+"      "+" matriculation=\""+util_format.normaliseXMLText(getMatriculation())+"\"";
 			result+=System.getProperty("line.separator")+"      "+" language=\""+util_format.normaliseXMLText(getLanguage())+"\"";
@@ -319,6 +331,24 @@ public class info_user extends info_entity implements i_elementBase{
 	public void setV_info_targets(Vector vInfoTargets) {
 		v_info_targets = vInfoTargets;
 	}
+
+	public String getOriginal() {
+		return original;
+	}
+
+	public void setOriginal(String original) {
+		this.original = original;
+	}
+
+	public String getOriginalc() {
+		return originalc;
+	}
+
+	public void setOriginalc(String originalc) {
+		this.originalc = originalc;
+	}
+
+
 	
 
 }

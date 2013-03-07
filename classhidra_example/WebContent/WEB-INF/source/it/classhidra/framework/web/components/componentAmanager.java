@@ -106,6 +106,8 @@ public class componentAmanager extends action implements i_action, Serializable{
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	
 	componentAmanager form = this;
+	
+	if(form.getMiddleAction()==null) form.setMiddleAction("");
 /*	
 	Vector tmp1 = new Vector(request.getParameterMap().keySet());
 	String tmp_str = "";

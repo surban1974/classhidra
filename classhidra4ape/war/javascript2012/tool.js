@@ -1,3 +1,4 @@
+//---	08/02/2013 
 var notClear=";$action;$action_from;$navigation;parent_pointOfLaunch;child_pointOfReturn;";
 var prevKEYid = 0;
 var KEYtime = 0;
@@ -90,6 +91,18 @@ function runSubmitOnly(middle){
 	}catch(e){
 	}
 }	 
+
+function runSubmitOnly(formName,middle){
+	try{
+		var form = document.getElementById(formName);
+		if(form){
+			form.middleAction.value=middle;
+			form.submit();
+		}
+	}catch(e){
+	}
+}	
+
 function runSubmit(middle){
 	try{
 
@@ -99,6 +112,27 @@ function runSubmit(middle){
 		document.getElementById("content_Panel_runSubmit").style.display="block";
 		if(parent.frames["content"])
 			parent.frames["content"].beforeClick();
+	}catch(e){
+	}
+}	
+
+function runSubmit(middle,formName){
+	try{
+		var form = document.getElementById(formName);
+		if(form){			
+		}else{
+			form = document.forms[0]; 
+		}
+		if(form){
+			
+			form.middleAction.value=middle;
+			form.submit();
+			document.getElementById("content_Panel_runSubmit").style.top=document.body.scrollTop;
+			document.getElementById("content_Panel_runSubmit").style.display="block";
+			if(parent.frames["content"])
+				parent.frames["content"].beforeClick();
+
+		}
 	}catch(e){
 	}
 }	

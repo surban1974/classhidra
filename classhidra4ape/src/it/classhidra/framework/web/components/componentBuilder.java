@@ -1,4 +1,4 @@
-package application.web.components;   
+package it.classhidra.framework.web.components;   
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 		name="formBuilder",
 		redirect="/jsp/builder/canvas.jsp",
 		navigated="true",
+		syncro="true",
         memoryInSession="false",
         reloadAfterAction="false",
         redirects={

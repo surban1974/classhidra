@@ -142,7 +142,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 								<td width="1%">&nbsp;</td>
 								<td width="1%" ><script>ObjectDraw("page1","button",16,"","showAsIFrame('jsp/help/Manuale.pdf',900,550)","page_section_active","help.gif","images/menu/","",true,24,"35");</script></td>
 								<td width="1%">&nbsp;</td>
-								<td  width="1%" align="right"><script>ObjectDraw("page1","button",15,"&nbsp;New in 1.4.3&nbsp;&nbsp;","showAsIFrame('jsp/help/news.pdf',900,550)","page_section_active","","images/menu/","",true,24);</script></td>
+								<td  width="1%" align="right"><script>ObjectDraw("page1","button",15,"&nbsp;New from version 1.4.3&nbsp;&nbsp;","showAsIFrame('jsp/help/news.pdf',900,550)","page_section_active","","images/menu/","",true,24);</script></td>
 
 								<td width="100%" align="center">&nbsp;</td>
 							

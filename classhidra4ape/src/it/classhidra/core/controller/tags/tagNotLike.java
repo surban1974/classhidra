@@ -26,6 +26,7 @@ package it.classhidra.core.controller.tags;
 
 
 
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import it.classhidra.core.controller.action;
@@ -41,7 +42,7 @@ import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*; 
 
 public class tagNotLike extends  TagSupport {
-	private static final long serialVersionUID = -308062371578311935L;
+	private static final long serialVersionUID = -1L;
 	protected String bean=null;
 	protected String name=null;
 	protected String value=null;
@@ -73,12 +74,21 @@ public class tagNotLike extends  TagSupport {
 	
 	private boolean condition() throws JspException{
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action 		formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		i_action formAction=null;
+		i_bean formBean=null;
+		if(bean!=null){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = (i_action)pool.get(bean);
+		}
+		if(formAction!=null) bean = null;
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(bean==null) formBean = formAction.get_bean();
+		
 		if(method_prefix==null) method_prefix="get";
 		Object writeValue=null;
 		Object anotherBean = null;
 		if(bean==null && name!=null){
-			i_bean		formBean = formAction.get_bean();
 			anotherBean = formBean;
 			writeValue = util_reflect.prepareWriteValueForTag(formBean,method_prefix,name,null);
 		}else{

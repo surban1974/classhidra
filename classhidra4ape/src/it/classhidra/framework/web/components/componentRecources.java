@@ -1,4 +1,4 @@
-package application.web.components; 
+package it.classhidra.framework.web.components; 
 
 
 import it.classhidra.annotation.elements.Action;
@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 	path="resources",
 	redirect="/jsp/framework/resources.jsp",
 	navigated="true",
+	syncro="true",
 	entity=@Entity(
 			property="allway:public"
 	),

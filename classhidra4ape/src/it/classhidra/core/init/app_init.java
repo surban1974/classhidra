@@ -24,7 +24,7 @@
 package it.classhidra.core.init;
 
 import it.classhidra.core.controller.bsConstants;
-import it.classhidra.core.controller.bsController;
+
 import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
 
@@ -61,6 +61,7 @@ public class app_init implements Serializable{
 	static public String id_transf_elaborationmode		=	"application.transformation.event.after.elaborationmode";
 	static public String id_transf_elaborationpoint		=	"application.transformation.event.after.elaborationpoint";
 	static public String id_transf_elaborationwrapper	=	"application.transformation.event.after.elaborationwrapper";
+	static public String id_annotation_scanner			= 	"application.annotation.scanner";
 	static public String id_package_annotated			=	"application.package.annotated";
 	static public String id_debug						=	"application.debug";
 	
@@ -76,6 +77,9 @@ public class app_init implements Serializable{
 	private String _db_name;
 	private String _extention_do;
 	private String _debug;
+	private String _annotation_scanner;
+
+
 
 	private String _transf_elaborationmode		=	"include";
 	private String _transf_elaborationpoint		=	"controller";
@@ -158,7 +162,7 @@ public class app_init implements Serializable{
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
 			_debug=(_debug==null)?System.getProperty(id_debug):_debug;
-			
+			_annotation_scanner=(_annotation_scanner==null)?System.getProperty(id_annotation_scanner):_annotation_scanner;
 
 			
 			
@@ -218,6 +222,7 @@ public class app_init implements Serializable{
 		_external_loader=(_external_loader==null)?property.getProperty(id_external_loader):_external_loader;
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
+		_annotation_scanner=(_annotation_scanner==null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
 		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
 		_debug=(_debug==null)?property.getProperty(id_debug):_debug;
 
@@ -449,6 +454,9 @@ public class app_init implements Serializable{
 	public String get_debug() {
 		return _debug;
 	}
-
+	
+	public String get_annotation_scanner() {
+		return _annotation_scanner;
+	}
 
 }

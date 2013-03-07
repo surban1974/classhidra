@@ -38,7 +38,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <table border="0" width="100%" height="450" >
 <tr>
 <td align="center" style="border-bottom-style: solid 1px;" valign="middle">
-	
+<br></br>	
 
 	
 	 
@@ -120,14 +120,14 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 			
 <jsp:include page="/jsp/included/panel_bottom.jsp"/>			
 <br></br>	
-<br></br>
-<br></br>
-<br></br>
+
+
+
 </td>
 
 </tr>
 <tr>
-	<td style="border-top-style: solid;border-top-width: 1px ; border-top-color:#D5E5F7; height: 10px" valign="bottom">
+	<td style="border-top-style: solid;border-top-width: 1px ; border-top-color:#D5E5F7; height: 10px; " valign="bottom">
 	</td>
 </tr>
 <tr>
@@ -142,7 +142,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 								<td width="1%">&nbsp;</td>
 								<td width="1%" ><script>ObjectDraw("page1","button",16,"","showAsIFrame('jsp/help/Manuale.pdf',900,550)","page_section_active","help.gif","images/menu/","",true,24,"35");</script></td>
 								<td width="1%">&nbsp;</td>
-								<td  width="1%" align="right"><script>ObjectDraw("page1","button",15,"&nbsp;New in 1.4.3&nbsp;&nbsp;","showAsIFrame('jsp/help/news.pdf',900,550)","page_section_active","","images/menu/","",true,24);</script></td>
+								<td  width="1%" align="right"><script>ObjectDraw("page1","button",15,"&nbsp;New from version 1.4.3&nbsp;&nbsp;","showAsIFrame('jsp/help/news.pdf',900,550)","page_section_active","","images/menu/","",true,24);</script></td>
 
 								<td width="100%" align="center">&nbsp;</td>
 							
@@ -169,7 +169,35 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 	</td>
 
 </tr>	
+<tr>
+	<td style="height: 10px; border-bottom-style: solid;border-bottom-width: 1px ; border-bottom-color:#D5E5F7;" valign="bottom">
+	</td>
+</tr>
+<tr>
+	<td align="center">
+<br></br>
+
+<jsp:include page="/jsp/included/panel_top.jsp"/>	
+			
+			<table  >
 	
+				<tr>
+					<td 
+						valign="middle" 
+						align="center" 
+						width="150"
+						style="cursor: pointer;"
+						>
+						<img src="images/decor/neohort/charts.gif" border="0" onclick="goAction('/neohort?')">
+						
+					</td>
+					<td align="center" valign="middle" width="305"><script>ObjectDraw("page1","button",17,"&nbsp;NeoHort PDF Vector Chart integration&nbsp;&nbsp;","goAction('/neohort?')","page_section_active","","images/menu/","",true,24);</script></td>
+				</tr>
+			</table>		
+<jsp:include page="/jsp/included/panel_bottom.jsp"/>	
+	
+	</td>
+</tr>	
 
 </table>	
 

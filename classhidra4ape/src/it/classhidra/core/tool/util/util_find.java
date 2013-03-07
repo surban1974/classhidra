@@ -89,5 +89,160 @@ public class util_find {
 		}
 		return result;
 	}
+	public static Object findElementFromListASText(Vector elements, Object[] obj_value, String[] key){
+		if(obj_value==null || key==null) return null;
+		for(int i=0;i<elements.size();i++){
+			if(elements.get(i) instanceof i_bean){
+				i_bean el = (i_bean)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].toString().equals(el.get(key[j]).toString());
+					}
+					if(isEqual) return el;
+				}
+
+			}
+			if(elements.get(i) instanceof i_elementDBBase){
+				i_elementDBBase el = (i_elementDBBase)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].toString().equals(el.getCampoValue(key[j]).toString());
+					}
+					if(isEqual) return el;
+				}
+
+			}
+			if(elements.get(i) instanceof i_elementBase){
+				i_elementBase el = (i_elementBase)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].toString().equals(el.getCampoValue(key[j]).toString());
+					}
+					if(isEqual) return el;
+				}
+			}
+			
+		}
+		return null;
+	}
+	
+	public static Object findElementFromList(Vector elements, Object[] obj_value, String[] key){
+		if(obj_value==null || key==null) return null;
+		for(int i=0;i<elements.size();i++){
+			if(elements.get(i) instanceof i_bean){
+				i_bean el = (i_bean)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].equals(el.get(key[j]));
+					}
+					if(isEqual) return el;
+				}
+			}
+			if(elements.get(i) instanceof i_elementDBBase){
+				i_elementDBBase el = (i_elementDBBase)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].equals(el.getCampoValue(key[j]));
+					}
+					if(isEqual) return el;
+				}
+			}
+			if(elements.get(i) instanceof i_elementBase){
+				i_elementBase el = (i_elementBase)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].equals(el.getCampoValue(key[j]));
+					}
+					if(isEqual) return el;
+				}
+			}
+			
+		}
+		return null;
+	}
+	
+
+	public static Vector findElementsFromListAsText(Vector elements, Object obj_value[],  String key[]){
+		Vector result = new Vector();
+		if(obj_value==null || key==null) return null;
+		for(int i=0;i<elements.size();i++){
+			if(elements.get(i) instanceof i_bean){
+				i_bean el = (i_bean)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].toString().equals(el.get(key[j]).toString());
+					}
+					if(isEqual) result.add(el);
+				}
+			}
+			if(elements.get(i) instanceof i_elementDBBase){
+				i_elementDBBase el = (i_elementDBBase)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].toString().equals(el.getCampoValue(key[j]).toString());
+					}
+					if(isEqual) result.add(el);
+				}
+			}
+			if(elements.get(i) instanceof i_elementBase){
+				i_elementBase el = (i_elementBase)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].toString().equals(el.getCampoValue(key[j]).toString());
+					}
+					if(isEqual) result.add(el);
+				}
+			}
+			
+		}
+		return result;
+	}	
+	public static Vector findElementsFromList(Vector elements, Object obj_value[],  String[] key){
+		Vector result = new Vector();
+		if(obj_value==null || key==null) return null;
+		for(int i=0;i<elements.size();i++){
+			if(elements.get(i) instanceof i_bean){
+				i_bean el = (i_bean)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].equals(el.get(key[j]));
+					}
+					if(isEqual) result.add(el);
+				}
+			}
+			if(elements.get(i) instanceof i_elementDBBase){
+				i_elementDBBase el = (i_elementDBBase)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].equals(el.getCampoValue(key[j]));
+					}
+					if(isEqual) result.add(el);
+				}
+			}
+			if(elements.get(i) instanceof i_elementBase){
+				i_elementBase el = (i_elementBase)elements.get(i);
+				if(el!=null){
+					boolean isEqual=true;
+					for(int j=0;j<obj_value.length;j++){
+						isEqual&=obj_value[j].equals(el.getCampoValue(key[j]));
+					}
+					if(isEqual) result.add(el);
+				}
+			}			
+		}
+		return result;
+	}	
+
 
 }

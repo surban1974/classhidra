@@ -108,6 +108,7 @@ public class componentBuilder extends action implements i_action, Serializable{
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	
 	componentBuilder form = this;
+	if(form.getMiddleAction()==null) form.setMiddleAction("");
 	
 	
 	if(!form.getL_actions().isReadOk() || this.getMiddleAction().equals("reload")){
