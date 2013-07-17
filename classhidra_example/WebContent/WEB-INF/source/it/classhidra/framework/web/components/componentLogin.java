@@ -12,11 +12,13 @@ import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.exception.message;
+import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_usersInSession;
 import it.classhidra.framework.web.beans.option_element;
+import it.classhidra.framework.web.integration.i_module_integration;
 
 
 import java.io.Serializable;
@@ -70,8 +72,10 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 	private String group;
 	private String target;
 	private String prev_user;
-
+	private String module_integration;
+	
 	private Vector groups;
+	
 	
 	public void reimposta(){
 		group="";
@@ -80,7 +84,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		password="";
 		lang="IT";
 		prev_user="";
-
+		module_integration="";
 		groups=new Vector();
 	}
 	
@@ -204,15 +208,36 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 	    try {
 		    String user = userG;
 		    String pass = password;
+		    info_user _user = null;
+		    
+		    i_module_integration imi = null;
+		    try{
+		    	imi = (i_module_integration)Class.forName(module_integration).newInstance();
+		    }catch(Exception e){		    	
+		    }
 	
-	    
+		    if(imi==null){
+		    	loadUser_config();
+		    	_user = (info_user)((load_users)bsController.getUser_config()).get_user(user,pass);
+		    }else{
+		    	bean form = new bean();
+				form.put("user",user);
+				form.put("password",password);
+		    	Object result=null;
+				try{
+					result = imi.operation(i_module_integration.o_FIND, form);
+				}catch(Exception e){			
+				}
+				
+				if(result!=null && result instanceof Vector && ((Vector)result).size()>0){
+					_user = (info_user)((Vector)result).get(0);
+				}
+		    }
 	
-		    loadUser_config();
 	
-	
-		    info_user _user = (info_user)((load_users)bsController.getUser_config()).get_user(user,pass);
+		    
 		    if(_user!=null){
-	
+		    	auth.setInfouser(_user);
 		    	auth.set_user(_user.getName());
 		    	auth.set_userDesc(_user.getDescription());
 		    	auth.set_ruolo(_user.getGroup());
@@ -220,7 +245,17 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		    	auth.set_matricola(_user.getMatriculation());
 		    	auth.set_target(_user.getTarget().replace(';','^'));
 		    	auth.get_target_property().put(bsConstants.CONST_AUTH_TARGET_ISTITUTION, auth.get_target());
-		    	util_usersInSession.addInSession(auth, request, new Date());	    	
+		    	try{
+		    		info_target itarget = (info_target)_user.getV_info_targets().get(0);
+		    		auth.setInfotarget(itarget);
+		    		auth.get_target_property().putAll(itarget.getProperties());
+		    	}catch(Exception e){	    		
+		    	}
+		    	auth.get_user_property().putAll(_user.getProperties());
+		    	auth.set_logged(true);
+		    	util_usersInSession.addInSession(auth, request, new Date());
+		    	
+		    	loadOrganizationsVisibleNodes4sql(auth.get_matricola(),auth);
 				new bsControllerException(
 						auth.get_user()+":"+auth.get_matricola()+":"+auth.get_user_ip()+" is logged ",						
 						iStub.log_INFO);	
@@ -248,20 +283,65 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		
 	}
 
+	public void loadOrganizationsVisibleNodes4sql(String matr,auth_init auth){
+		String result=null;
+		try{
+			load_organization lo = bsController.getOrg_config();
+			info_nodeorganization node = lo.find_m(matr);
+			if(node!=null) {
+				HashMap nodes = node.getElementsVisible();
+				if(nodes.size()>0){
+					Vector v_matr = new Vector(nodes.keySet());
+					result="";
+					for(int i=0;i<v_matr.size();i++){
+						result+="'"+v_matr.get(i)+"'";
+						if(i<v_matr.size()-1) result+=",";
+					}
+				}else{
+					result+="'"+matr+"'";
+				}
+			}
+		}catch(Exception e){
+			
+		}
+
+		auth.get_user_property().put(load_organization.CONST_$VISIBLE_NODES4SQL, result);
+
+	}
  
+//	private void  loadUser_config() {
+//		if(bsController.getUser_config()==null){
+//			bsController.setUser_config(new load_users());
+//			try{
+//				((load_users)bsController.getUser_config()).setReadError(false);
+//					((load_users)bsController.getUser_config()).load_from_resources();
+//					if(((load_users)bsController.getUser_config()).isReadError()) bsController.setUser_config(null);
+//			}catch(Exception je){
+//				bsController.setUser_config(null);
+//			}
+//		}
+//	}
+
+
 	private void  loadUser_config() {
 		if(bsController.getUser_config()==null){
-			bsController.setUser_config(new load_users());
-			try{
-				((load_users)bsController.getUser_config()).setReadError(false);
-					((load_users)bsController.getUser_config()).load_from_resources();
-					if(((load_users)bsController.getUser_config()).isReadError()) bsController.setUser_config(null);
-			}catch(Exception je){
-				bsController.setUser_config(null);
+			bsController.setUser_config(new  load_users());
+				try{
+					((load_users)bsController.getUser_config()).setReadError(false);
+					((load_users)bsController.getUser_config()).init();
+					if(((load_users)bsController.getUser_config()).isReadError()) ((load_users)bsController.getUser_config()).load_from_resources();
+					if(((load_users)bsController.getUser_config()).isReadError()) ((load_users)bsController.getUser_config()).init(bsController.getAppInit().get_path_config()+bsController.CONST_XML_USERS);
+					if(((load_users)bsController.getUser_config()).isReadError()){
+						((load_users)bsController.getUser_config()).setReadError(false);
+						((load_users)bsController.getUser_config()).load_from_resources();
+						if(((load_users)bsController.getUser_config()).isReadError()) bsController.setUser_config(null);
+					}
+				}catch(bsControllerException je){
+					bsController.setUser_config(null);
+				}
 			}
 		}
-	}
-
+	
 	public String getPassword() {
 		return password;
 	}
@@ -314,6 +394,16 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 
 	public void setGroups(Vector vector) {
 		groups = vector;
+	}
+
+
+	public String getModule_integration() {
+		return module_integration;
+	}
+
+
+	public void setModule_integration(String moduleIntegration) {
+		module_integration = moduleIntegration;
 	}
 
 }

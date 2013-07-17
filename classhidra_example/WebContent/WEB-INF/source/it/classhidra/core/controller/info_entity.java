@@ -162,6 +162,10 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 		return false;
 	}
 
+	public boolean convert2json(){
+		return false;
+	}
+	
 
 
 	public String getComment() {

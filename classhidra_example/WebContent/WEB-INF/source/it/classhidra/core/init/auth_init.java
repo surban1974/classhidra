@@ -29,6 +29,8 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_auth_manager;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.jaas_authentication.info_group;
+import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_auth;
@@ -65,6 +67,8 @@ public class auth_init implements Serializable{
 
 
 	private info_user infouser;
+	private info_target infotarget;
+	private info_group infogroup;
 	private String _user;
 	private String _userDesc;
 	private String _ruolo;
@@ -212,6 +216,8 @@ public class auth_init implements Serializable{
 
 	public void reimposta(){
 		infouser=new info_user();
+		infotarget=new info_target();
+		infogroup=new info_group();
 		_user="";
 		_userDesc="";
 		_ruolo="";
@@ -449,6 +455,10 @@ public class auth_init implements Serializable{
 	public boolean convert2xml(){
 		return false;
 	}
+	
+	public boolean convert2json(){
+		return false;
+	}
 
 	public String get_mail() {
 		return _mail;
@@ -473,6 +483,22 @@ public class auth_init implements Serializable{
 		result+=(_matricola!=null)?_matricola+"|":"|";
 		result+=(_user_ip!=null)?_user_ip+"|":"|";
 		return result;
+	}
+
+	public info_target getInfotarget() {
+		return infotarget;
+	}
+
+	public void setInfotarget(info_target infotarget) {
+		this.infotarget = infotarget;
+	}
+
+	public info_group getInfogroup() {
+		return infogroup;
+	}
+
+	public void setInfogroup(info_group infogroup) {
+		this.infogroup = infogroup;
 	}
 
 }

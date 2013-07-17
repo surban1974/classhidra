@@ -7,6 +7,7 @@
 	String panel_width = request.getParameter("panel-width");
 	String panel_height = request.getParameter("panel-height");
 	String panel_div_style = request.getParameter("panel-style");
+	String panel_table_style = request.getParameter("panel-table-style");
 	
 	String panel_visibility = request.getParameter("panel-visibility");
 	String panel_display = request.getParameter("panel-display");
@@ -40,12 +41,12 @@
 	else panel_div_style+="display :block;";
 	
 	String panel_onclose = (request.getParameter("panel-onclose")==null)?"document.getElementById('"+panel_id+"').style.visibility='hidden';":request.getParameter("panel-onclose");
-	panel_onclose="try{JSBeforeClose_popup();}catch(e){};try{document.getElementById('content_body_Panel_Popup').innerHTML='';}catch(e){};"+panel_onclose;
+	panel_onclose="try{JSBeforeClose_popup();}catch(e){};try{closePanel('"+panel_id+"')}catch(e){};"+panel_onclose;
 %>
 
 
 <div id="<%=panel_id%>"  style="z-index:10000;  <%=panel_div_style %>">
-<table cellspacing="0" cellpadding="0" border="0" >
+<table cellspacing="0" cellpadding="0" border="0" style="<%=panel_table_style %>">
 	<tr >						
 		<td style="background-image:url('images/corners/normal/corner_t_l.gif');filter: alpha(opacity=65);opacity: 0.65;" width="4"  height="5"></td>
 		<td style="background-image:url('images/corners/normal/corner_t.gif');filter: alpha(opacity=65);opacity: 0.65;" height="5"></td>
@@ -54,7 +55,7 @@
 <%if(show_header){%>	
 	<tr >						
 		<td style="background-image:url('images/corners/normal/corner_l.gif');filter: alpha(opacity=65);opacity: 0.65;" width="4" height="4"></td>
-		<td  >
+		<td  style="background-image:url('images/corners/panel_t.gif')">
 		
 			<table width="100%" cellspacing="0" cellpadding="0" >
 			<tr >

@@ -110,6 +110,8 @@ public interface bsConstants {
 	
 	public final static String CONST_SSOID								=	"ssoid";
 	public final static String CONST_ID_OUTPUT4SOAP						=	"$output4SOAP";
+	public final static String CONST_ID_OUTPUT4JSON						=	"$output4JSON";
+
 	public final static String CONST_ID_OUTPUT4BYTE						=	"$output4BYTE";
 	public final static String CONST_ID_TRANSFORMATION4WRAPPER			=	"$transformation4WRAPPER";
 	public final static String CONST_ID_TRANSFORMATION4CONTROLLER		=	"$transformation4CONTROLLER"; 

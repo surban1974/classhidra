@@ -253,7 +253,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 
 
-	private void checkClassAnnotation(String class_path) {
+	public void checkClassAnnotation(String class_path) {
 		try{
 			Class classType = Class.forName(class_path);
 	

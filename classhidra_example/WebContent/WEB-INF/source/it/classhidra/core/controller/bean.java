@@ -58,6 +58,7 @@ public class bean extends elementBeanBase implements i_bean  {
 	public String js4ajax="false";
 	public boolean refresh=false;
 	private boolean xmloutput=false;
+	private boolean jsonoutput=false;
 	private boolean transformationoutput=false;
 	private boolean binaryoutput=false;
 	private boolean virtual=false;
@@ -93,7 +94,10 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		initMultiPart(request);
 		return;
 	}
-
+	
+	xmloutput=false;
+	jsonoutput=false;
+	
 	Enumeration en = request.getParameterNames();
 	while(en.hasMoreElements()){
 		String key = (String)en.nextElement();
@@ -201,6 +205,9 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		HashMap parameters = util_multipart.popolateHashMap(request);
 		if(parameters==null) parameters=new HashMap();
 		parametersMP = parameters;
+		
+		xmloutput=false;
+		jsonoutput=false;
 
 		Vector en = new Vector(parameters.keySet());
 		for(int k=0;k<en.size();k++){
@@ -327,6 +334,10 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 public void init(HashMap _content) throws bsControllerException{
 	if(_content==null) return;
+	
+	xmloutput=false;
+	jsonoutput=false;
+	
 	Object[] keys = _content.keySet().toArray();
 	for (int ii = 0; ii < keys.length; ii++){
 		String key = (String)keys[ii];
@@ -924,6 +935,14 @@ public void setXmloutput(boolean xmloutput) {
 	this.xmloutput = xmloutput;
 }
 
+public boolean getJsonoutput() {
+	return jsonoutput;
+}
+
+public void setJsonoutput(boolean jsonoutput) {
+	this.jsonoutput = jsonoutput;
+}
+
 public boolean getTransformationoutput() {
 	return transformationoutput;
 }
@@ -955,5 +974,7 @@ public boolean getVirtual() {
 public void setVirtual(boolean virtual) {
 	this.virtual = virtual;
 }
+
+
 
 }

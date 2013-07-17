@@ -201,6 +201,12 @@
         	
 		<action path="operator"
 				redirect="/actions/menuCreator"/>
+				
+		<action path="neohort"
+			redirect="/jsp/neohort/examples.jsp"
+			property="allway:public"
+		/>			
+				
 
     </action-mappings>
 </action-config>

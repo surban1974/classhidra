@@ -80,21 +80,32 @@ public class util_beanMessageFactory {
 	}
 
 
-
-
-	public static String bean2xml(Object obj, String name, boolean lowerCase1char){
-		String result="";
-		result+=generateItem(obj,name,0,false,true,lowerCase1char);
-		return result;
-	}
 	public static String bean2xml(Object obj){
 		return bean2xml(obj,null,false);
 	}
 
+	public static String bean2xml(Object obj, String name, boolean lowerCase1char){
+		String result="";
+		result+=generateXmlItem(obj,name,0,false,true,lowerCase1char);
+		return result;
+	}
+	
+	public static String bean2json(Object obj){
+		return bean2json(obj,null);
+	}
+
+	public static String bean2json(Object obj, String name){
+		String result="{\n";
+		result+=generateJsonItem(obj,name,0,false);
+		return result+"\n}";
+	}	
+	
+
+
 
 	public static String bean2message(Object obj, String name, boolean lowerCase1char){
 		String result="";
-		result+=generateItem(obj,name,0,false,false,lowerCase1char);
+		result+=generateXmlItem(obj,name,0,false,false,lowerCase1char);
 		return result;
 	}
 	public static String bean2message(Object obj){
@@ -104,7 +115,7 @@ public class util_beanMessageFactory {
 
 	public static String bean2messageNormalized(Object obj, String name, boolean lowerCase1char){
 		String result="";
-		result+=generateItem(obj,name,0, true,false,lowerCase1char);
+		result+=generateXmlItem(obj,name,0, true,false,lowerCase1char);
 		return result;
 	}
 	public static String bean2messageNormalized(Object obj){
@@ -315,10 +326,213 @@ public class util_beanMessageFactory {
 		return result;
 	}
 
+	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst){
+		String result="";
+
+		boolean showInJson = true;
+
+		try{
+			showInJson = ((Boolean)util_reflect.getValue(sub_obj, "convert2json", null)).booleanValue();
+		}catch(Exception e){
+		}
+
+		if(showInJson){
+			result+=generateJsonItemTag_Start(sub_obj, name,level, notFirst);
+			result+=generateJsonItemTag_Content(sub_obj, name,level);
+			result+=generateJsonItemTag_Finish(sub_obj, name, level, notFirst);
+
+		}
+		return result;
+	}
+
+	private static String generateJsonItemTag_Start(Object sub_obj, String name, int level, boolean notFirst){
+		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
+		String space=spaceLevel(level);
+		String result="";
+
+		
+		if(	sub_obj instanceof i_bean ||
+			sub_obj instanceof i_elementDBBase ||
+			sub_obj instanceof i_elementBase){
+			if(name==null){
+				if(notFirst) result+=",\n";
+				result+=space+"{\n";
+			}else{
+				if(notFirst) result+=",\n";
+			}
+		}else{
+			if(notFirst) result+=",\n";
+			result+="";
+		}
+
+		if(name!=null){
+			result+=space+"\""+util_reflect.revAdaptMethodName(name)+"\":";
+			if(	sub_obj instanceof i_bean ||
+					sub_obj instanceof i_elementDBBase ||
+					sub_obj instanceof i_elementBase){
+				result+="{\n";				
+			}
+		}
+		
+		if(sub_obj instanceof List ){
+			if(notFirst){
+				result+="\n";
+				result+=space+"[\n";
+			}else result+="[\n";
+			
+			return result;
+		}
+		
+		if(sub_obj instanceof HashMap){
+			if(notFirst){
+				result+="\n";
+				result+=space+"{\n";
+			}else result+="{\n";
+			
+			return result;
+		}
+
+		
+		
+		
 
 
+		return result;
+	}
+	
+	
+	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level){
+		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
+		String result="";
+		if(sub_obj==null) return result;
 
-	private static String generateItem(Object sub_obj, String name, int level, boolean normalized, boolean checkConvert2xml,boolean lowerCase1char){
+		if(sub_obj instanceof List){
+			String result_tmp="";
+			List list_sub_obj = (List)sub_obj;
+			for(int i=0;i<list_sub_obj.size();i++){
+				boolean nFirst = true;
+				if(result_tmp.length()==0) nFirst=false;
+				result_tmp+=generateJsonItem(list_sub_obj.get(i),null,level+1,nFirst);
+			}
+			return result+result_tmp;
+		}
+
+		if(sub_obj instanceof HashMap){
+			String result_tmp="";
+			List list_sub_obj = new Vector(((HashMap)sub_obj).values());
+			List names_sub_obj = new Vector(((HashMap)sub_obj).keySet());
+			for(int i=0;i<list_sub_obj.size();i++){
+				boolean nFirst = true;
+				if(result_tmp.length()==0) nFirst=false;
+				result_tmp+=generateJsonItem(list_sub_obj.get(i),names_sub_obj.get(i).toString(),level+1,nFirst);
+			}
+			return result+result_tmp;
+		}
+
+
+		if(	sub_obj.getClass().isPrimitive() ||
+			sub_obj instanceof String ||
+			sub_obj instanceof Number ||
+			sub_obj instanceof Date ||
+			sub_obj instanceof Boolean){
+			String value=sub_obj.toString();
+			boolean check=false;
+			if(sub_obj instanceof String){
+				check=true;
+				result+="\""+normalJSON(value)+"\"";
+				return result;
+			}
+			if(sub_obj instanceof Boolean){
+				check=true;
+				result+=normalJSON(value);
+				return result;
+			}
+			
+			if(sub_obj instanceof Number){
+				check=true;
+				try{
+					java.text.DecimalFormat df = new java.text.DecimalFormat("##0.000000", new DecimalFormatSymbols(new Locale("en")));
+					result+= df.format(new java.math.BigDecimal(value.trim()).doubleValue());
+				}catch(Exception e){}
+				return result;
+			}
+			if(sub_obj instanceof Date){
+				check=true;
+				java.sql.Timestamp  tstmp = new java.sql.Timestamp(((Date)sub_obj).getTime());
+				result+="\""+ util_format.timestampToString(tstmp)+"\"";
+				return result;
+			}
+			if(!check){
+				try{
+					java.text.DecimalFormat df = new java.text.DecimalFormat("##0.000000", new DecimalFormatSymbols(new Locale("en")));
+					result+= df.format(new java.math.BigDecimal(value.trim()).doubleValue());
+					return result;
+				}catch(Exception e){
+					result+=normalJSON(value);
+					return result;
+				}
+			}
+
+		}
+
+		
+		if(	sub_obj instanceof i_bean ||
+			sub_obj instanceof i_elementDBBase ||
+			sub_obj instanceof i_elementBase){
+			String result_tmp="";
+			try{
+				Method[] methods = util_reflect.getMethods(sub_obj,"get");
+				for(int i=0;i<methods.length;i++){
+					String methodName = methods[i].getName().substring(3);
+					Object sub_obj2 = util_reflect.getValue(sub_obj, "get"+util_reflect.adaptMethodName(methodName), null);
+					if(sub_obj2!=null){
+						if(sub_obj2.equals(sub_obj)){
+						}else{
+							boolean nFirst = true;
+							if(result_tmp.length()==0) nFirst=false;
+							result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst);
+						}
+					}
+				}
+			}catch(Exception e){
+			}
+			return result+result_tmp;
+		}
+		result="\"unknown\""; 
+
+
+		return result;
+	}
+
+	private static String generateJsonItemTag_Finish(Object sub_obj, String name, int level, boolean notFirst){
+		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
+		String space=spaceLevel(level);
+		String result="";
+
+
+		if(sub_obj instanceof List ){
+			result+="\n"+space+"]";
+		}
+		if(sub_obj instanceof HashMap){
+			result+="\n"+space+"}";
+		}
+		
+		
+		if(	sub_obj instanceof i_bean ||
+				sub_obj instanceof i_elementDBBase ||
+				sub_obj instanceof i_elementBase){
+				result+="\n"+space+"}";
+			}
+
+		return result;
+	}	
+	
+	
+	
+	
+	
+	
+	private static String generateXmlItem(Object sub_obj, String name, int level, boolean normalized, boolean checkConvert2xml,boolean lowerCase1char){
 		String result="";
 
 		boolean showInXml = true;
@@ -329,14 +543,14 @@ public class util_beanMessageFactory {
 		}
 
 		if(showInXml){
-			result+=generateItemTag_Start(sub_obj, name,level,normalized,checkConvert2xml,lowerCase1char);
-			result+=generateItemTag_Content(sub_obj, name,level,normalized,checkConvert2xml,lowerCase1char);
-			result+=generateItemTag_Finish(sub_obj, name, level,normalized,checkConvert2xml,lowerCase1char);
+			result+=generateXmlItemTag_Start(sub_obj, name,level,normalized,checkConvert2xml,lowerCase1char);
+			result+=generateXmlItemTag_Content(sub_obj, name,level,normalized,checkConvert2xml,lowerCase1char);
+			result+=generateXmlItemTag_Finish(sub_obj, name, level,normalized,checkConvert2xml,lowerCase1char);
 		}
 		return result;
 	}
 
-	private static String generateItemTag_Start(Object sub_obj, String name, int level, boolean normalized, boolean checkConvert2xml,boolean lowerCase1char){
+	private static String generateXmlItemTag_Start(Object sub_obj, String name, int level, boolean normalized, boolean checkConvert2xml,boolean lowerCase1char){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String result=spaceLevel(level);
 		if(normalized){
@@ -360,10 +574,6 @@ public class util_beanMessageFactory {
 			result+="\"";
 			if(sub_obj.getClass().isPrimitive() ) result+=" primitive=\"true\"";
 
-//			result+=" hash=\"";
-//			result+=sub_obj.hashCode();
-//			result+="\"";
-
 
 			result+=">";
 		}
@@ -381,7 +591,7 @@ public class util_beanMessageFactory {
 		return result;
 	}
 
-	private static String generateItemTag_Content(Object sub_obj, String name, int level, boolean normalized, boolean checkConvert2xml,boolean lowerCase1char){
+	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, boolean normalized, boolean checkConvert2xml,boolean lowerCase1char){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String result="";
 		if(sub_obj==null) return result;
@@ -389,7 +599,7 @@ public class util_beanMessageFactory {
 		if(sub_obj instanceof List){
 			List list_sub_obj = (List)sub_obj;
 			for(int i=0;i<list_sub_obj.size();i++){
-				result+=generateItem(list_sub_obj.get(i),null,level+1,normalized,checkConvert2xml,lowerCase1char);
+				result+=generateXmlItem(list_sub_obj.get(i),null,level+1,normalized,checkConvert2xml,lowerCase1char);
 			}
 			return result;
 		}
@@ -398,7 +608,7 @@ public class util_beanMessageFactory {
 			List list_sub_obj = new Vector(((HashMap)sub_obj).values());
 			List names_sub_obj = new Vector(((HashMap)sub_obj).keySet());
 			for(int i=0;i<list_sub_obj.size();i++){
-				result+=generateItem(list_sub_obj.get(i),names_sub_obj.get(i).toString(),level+1,normalized,checkConvert2xml,lowerCase1char);
+				result+=generateXmlItem(list_sub_obj.get(i),names_sub_obj.get(i).toString(),level+1,normalized,checkConvert2xml,lowerCase1char);
 			}
 			return result;
 		}
@@ -451,7 +661,10 @@ public class util_beanMessageFactory {
 				for(int i=0;i<methods.length;i++){
 					String methodName = methods[i].getName().substring(3);
 					Object sub_obj2 = util_reflect.getValue(sub_obj, "get"+util_reflect.adaptMethodName(methodName), null);
-					if(sub_obj2!=null) result+=generateItem(sub_obj2, methodName,level+1,normalized,checkConvert2xml,lowerCase1char);
+					if(sub_obj2!=null){
+						if(!sub_obj2.equals(sub_obj))
+							result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,checkConvert2xml,lowerCase1char);
+					}
 				}
 			}catch(Exception e){
 			}
@@ -478,7 +691,7 @@ public class util_beanMessageFactory {
 		return result;
 	}
 
-	private static String generateItemTag_Finish(Object sub_obj, String name, int level, boolean normalized, boolean checkConvert2xml,boolean lowerCase1char){
+	private static String generateXmlItemTag_Finish(Object sub_obj, String name, int level, boolean normalized, boolean checkConvert2xml,boolean lowerCase1char){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 
 		String result="";
@@ -557,6 +770,33 @@ public class util_beanMessageFactory {
 		else
 			return input;
 	}
+	
+	private static String normalJSON (String input) {
+
+		if (input==null) return input;
+
+//		try{
+//			input = new String(input.getBytes(),"utf8");
+//		}catch(Exception e){
+//			input="";
+//		}
+
+		String result="";
+		if (
+			input.indexOf("\\")>-1 ||
+			input.indexOf("\"")>-1) {
+
+			for (int i=0;i<input.length();i++) {
+				if (input.charAt(i)=='\\') result+="\\\\";
+				else if (input.charAt(i)=='"') result+="\"";
+				else result+=input.charAt(i);
+			}
+			return result;
+		}
+		else
+			return input;
+	}
+
 
 	static public byte[] object2bytes(Object oldObj) throws Exception {
 		byte[] retVal = null;

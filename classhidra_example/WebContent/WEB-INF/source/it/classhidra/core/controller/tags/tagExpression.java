@@ -25,13 +25,11 @@
 package it.classhidra.core.controller.tags;
 
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 

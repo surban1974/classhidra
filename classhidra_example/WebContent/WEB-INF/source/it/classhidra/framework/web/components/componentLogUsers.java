@@ -2,7 +2,6 @@ package it.classhidra.framework.web.components;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
-import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;

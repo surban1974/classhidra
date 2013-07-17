@@ -500,7 +500,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 				)
 					prev_action_instance = (i_action)bean_instance_clone;
 				
-				if(prev_action_instance.get_bean()==null) prev_action_instance.set_bean(bean_instance_clone);
+				if(prev_action_instance.get_bean()==null)
+					prev_action_instance.set_bean(bean_instance_clone);
+				else if(prev_action_instance.equals(prev_action_instance.get_bean()) && !prev_action_instance.get_bean().getClass().getName().equals(bean_instance_clone.getClass().getName())){
+					prev_action_instance.set_bean(bean_instance_clone);
+				}
+			
+			
 				prev_action_instance.setCurrent_redirect(validate_redirect);
 				if(validate_redirect!=null) return prev_action_instance;
 			}
@@ -517,7 +523,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 						(
 								action_instance.getCurrent_redirect().get_uri()==null ||
 								action_instance.getCurrent_redirect().get_uri().trim().equals("") ||
-								action_instance.get_bean().getXmloutput()
+								action_instance.get_bean().getXmloutput() ||
+								action_instance.get_bean().getJsonoutput()
 						)
 						||
 						(
@@ -538,28 +545,45 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 
 
-					String outputXML=null;
 					String output4SOAP = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4SOAP);
+					String output4JSON = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4SOAP);
+
 					byte[] output4BYTE = (byte[])action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4BYTE);
 
-					if(output4SOAP==null)
-						outputXML = util_beanMessageFactory.bean2xml(
-								action_instance.get_bean(),
-								(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
-								true);
-					else outputXML = output4SOAP;
 
 
 
 
 						if(action_instance.get_bean().getXmloutput()){
+							if(output4SOAP==null)
+								output4SOAP = util_beanMessageFactory.bean2xml(
+										action_instance.get_bean(),
+										(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
+										true);
+
 							try{
-								response.getOutputStream().print(outputXML);
+								response.getOutputStream().print(output4SOAP);
 								return new Object[]{response,Boolean.valueOf(true)};
 							}catch(Exception e){
 								throw new bsControllerException("Controller generic redirect error. Print Bean as XML. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
 							}
 						}
+						
+						if(action_instance.get_bean().getJsonoutput()){
+							if(output4JSON==null)
+								output4JSON = util_beanMessageFactory.bean2json(
+										action_instance.get_bean(),
+										(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName()
+										);
+
+							try{
+								response.getOutputStream().print(output4JSON);
+								return new Object[]{response,Boolean.valueOf(true)};
+							}catch(Exception e){
+								throw new bsControllerException("Controller generic redirect error. Print Bean as JSON. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
+							}
+						}
+						
 
 						if(	action_instance.getCurrent_redirect().get_transformationName()!=null &&
 							!action_instance.getCurrent_redirect().get_transformationName().equals("")
@@ -605,7 +629,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 								if(	cTransformation.get_infotransformation().getInputformat().toUpperCase().equals(info_transformation.CONST_INPUTFORMAT_STRING) ||
 									cTransformation.get_infotransformation().getInputformat().toUpperCase().equals("")
 								){
-									outTranformation = cTransformation.transform(outputXML, request);
+									if(output4SOAP==null)
+										output4SOAP = util_beanMessageFactory.bean2xml(
+												action_instance.get_bean(),
+												(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
+												true);
+
+									outTranformation = cTransformation.transform(output4SOAP, request);
 								}
 
 								try{
@@ -1280,6 +1310,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		return logG;
 	}
+	public static i_log_generator getLogG(log_init _logInit) {
+		if(_logInit!=null && reInit){
+			logInit = _logInit;
+			logG = new log_generator(logInit);
+		} 
+		return logG;
+	}	
 	public static log_init getLogInit() {
 		if(logInit==null || reInit){
 			logInit = new log_init();
