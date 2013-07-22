@@ -9,7 +9,8 @@ import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.framework.web.integration.i_module_integration;
-import it.classhidra.scheduler.scheduling.db.db_4Batch;
+
+import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
@@ -64,9 +65,9 @@ public class ProcessBatchEngine  {
 				}
 
 			if(delta>0 && delta <= binit.getLsleep() && nextScanTime!=null){
-				scanAndLaunch(nextScanTime.getTime(),currentTime);
+				scanAndLaunch(nextScanTime.getTime(),currentTime, binit);
 			}else{
-				scanAndLaunch(0,currentTime);
+				scanAndLaunch(0,currentTime,binit);
 			}
 
 
@@ -78,7 +79,7 @@ public class ProcessBatchEngine  {
 		scan=false;
 	}
 
-	private void scanAndLaunch(long nextScanTimeL, String currentTime){
+	private void scanAndLaunch(long nextScanTimeL, String currentTime, batch_init binit){
 		long currentTimeL = new java.util.Date().getTime();
 		try{
 			currentTimeL = util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm").getTime();
@@ -91,7 +92,7 @@ public class ProcessBatchEngine  {
 
 		Vector elementsAll = new Vector();
 
-		db_4Batch m4b = new db_4Batch();
+		i_4Batch m4b = binit.get4BatchManager();
 		HashMap form = new HashMap();
 
 		try{

@@ -1,7 +1,8 @@
-package it.classhidra.scheduler.scheduling.db;
+package it.classhidra.scheduler.scheduling.implementation.mysql;
 
 
 
+import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.servlets.servletBatchScheduling;
 

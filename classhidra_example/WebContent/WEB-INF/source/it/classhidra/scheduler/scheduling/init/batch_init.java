@@ -30,6 +30,8 @@ import it.classhidra.core.init.app_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_file;
+import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.scheduling.implementation.mysql.db_4Batch;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
@@ -39,15 +41,17 @@ public class batch_init implements Serializable{
 	private static final long serialVersionUID = -1L;
 	public static final String environment_id_property =	"application.batch.property";
 
-	public static final String id_active =							"active";
-	public static final String id_db_prefix =						"db_prefix";
-	public static final String id_sleep =							"period.sleep";
+	public static final String id_active=							"active";
+	public static final String id_db_prefix=						"db_prefix";
+	public static final String id_sleep=							"period.sleep";
 	public static final String id_scan= 							"period.batch.scan";
+	public static final String id_stub=								"stub.data.manager";
 
 	private String _active="false";
 	private String _sleep;
 	private String _scan;
 	private String _db_prefix="";
+	private String _stub="";
 	private String loadedFrom="";
 	
 
@@ -112,6 +116,7 @@ public void init() {
 		_sleep = (System.getProperty(id_sleep)==null)?_sleep:System.getProperty(id_sleep);
 		_scan = (System.getProperty(id_scan)==null)?_scan:System.getProperty(id_scan);
 		_db_prefix = (System.getProperty(id_db_prefix)==null)?_db_prefix:System.getProperty(id_db_prefix);
+		_stub = (System.getProperty(id_stub)==null)?_stub:System.getProperty(id_stub);
 		
 		if(_sleep!=null && _scan!=null) loadedFrom="System.property";
 
@@ -119,8 +124,14 @@ public void init() {
 	
 	if(loadedFrom.trim().equals("")){
 		try{
-			property = util_file.loadProperty("it.classhidra.scheduler.default");					
+			property = util_file.loadProperty("classhidra_scheduler");					
 		}catch (Exception e) {
+		}
+		if(property==null){
+			try{
+				property = util_file.loadProperty("it.classhidra.scheduler.default");					
+			}catch (Exception e) {
+			}
 		}
 
 		if(property!=null){
@@ -135,6 +146,7 @@ public void init(Properties ex_property) {
 	_sleep = (ex_property.getProperty(id_sleep)==null)?_sleep:ex_property.getProperty(id_sleep);
 	_scan = (ex_property.getProperty(id_scan)==null)?_scan:ex_property.getProperty(id_scan);
 	_db_prefix = (ex_property.getProperty(id_db_prefix)==null)?_db_prefix:ex_property.getProperty(id_db_prefix);
+	_stub = (ex_property.getProperty(id_stub)==null)?_stub:ex_property.getProperty(id_stub);
 
 }
 
@@ -170,6 +182,19 @@ public String getInfo() {
 
 public String getLoadedFrom() {
 	return loadedFrom;
+}
+
+public i_4Batch get4BatchManager(){
+	i_4Batch result = null;
+	if(_stub!=null && !_stub.equals("")){
+		try{
+			result = (i_4Batch)Class.forName(_stub).newInstance();
+		}catch(Exception e){		
+		}catch(Throwable e){		
+		}
+	}
+	if(result!=null) return result;
+	else return new db_4Batch();
 }
 
 public boolean initDB(String path, String db_name) throws bsControllerException, Exception{

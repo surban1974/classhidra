@@ -11,10 +11,12 @@ import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.framework.web.integration.i_module_integration;
 import it.classhidra.scheduler.common.generic_batch;
+import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
-import it.classhidra.scheduler.scheduling.db.db_4Batch;
+
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
+import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
 import it.classhidra.scheduler.servlets.servletBatchScheduling;
 import it.classhidra.scheduler.util.util_batch;
@@ -63,6 +65,8 @@ public class ProcessBatchEvent  {
 
 
 	private String[] executeBatch(Integer cd_ist, String cd_btch, String common_area, boolean recalc, boolean sequence){
+		
+		batch_init binit = servletBatchScheduling.getConfiguration();
 		String[] result_eb = new String[2];
 		result_eb[0]=common_area;
 		result_eb[1]="1";
@@ -128,7 +132,7 @@ public class ProcessBatchEvent  {
 				}else{
 					Vector child_batch = new Vector();
 					
-					db_4Batch m4b = new db_4Batch();
+					i_4Batch m4b = binit.get4BatchManager();
 					HashMap form = new HashMap();
 					form.put("cd_ist", batch.getCd_ist());
 					form.put("cd_btch", batch.getCd_btch());

@@ -1,10 +1,13 @@
-package it.classhidra.scheduler.scheduling.db;
+package it.classhidra.scheduler.scheduling.implementation.mysql;
 
 
 import it.classhidra.core.tool.db.db_connection;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.framework.web.integration.i_module_integration;
+
+import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.db.db_batch_log;
 import it.classhidra.scheduler.util.util_batch;
 
 import java.sql.Connection;
@@ -13,26 +16,27 @@ import java.util.HashMap;
 import java.util.Vector;
 
 
-public class db_4Batch  {
+public class db_4Batch implements i_4Batch  {
+
 
 	public Object operation(String oper, HashMap form) throws Exception {
 		if(oper==null) return null;
 		oper=oper.toUpperCase();
 
-		if(oper.equals(i_module_integration.o_FINDFORMLIST))
+		if(oper.equals(o_FINDFORMLIST))
 			return operation_FINDFORMLIST(form);
 
-		if(oper.equals(i_module_integration.o_DELETE))
+		if(oper.equals(o_DELETE))
 			return operation_DELETE(form);
 
-		if(oper.equals(i_module_integration.o_UPDATE))
+		if(oper.equals(o_UPDATE))
 			return operation_UPDATE(form);
 
-		if(oper.equals("CLEAR_STATE"))
+		if(oper.equals(o_CLEAR_STATE))
 			return operation_CLEAR_STATE(form);
 
 
-		if(oper.equals(i_module_integration.o_FIND))
+		if(oper.equals(o_FIND))
 			return operation_FIND(form);
 
 		return null;
