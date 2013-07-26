@@ -1,4 +1,4 @@
-
+// version 1.4.7.20130726
 
 
 
@@ -7,27 +7,7 @@ function ajax_linkFromMenu(url,target,js_script){
 	ajax_makeRequest(url,target);
 }
 
-function ajax_submit(frm,target,afterJSFunction){
-	
-	if(document.getElementById(target) ){
-		var parameters = ajax_makeParameters(frm,frm.action);
-		
-		ajax_makeRequest(frm.action+parameters,target,afterJSFunction);
-	}else{	
-		frm.submit();
-	}		
-}
 
-function ajax_submitExt(frm,action,target,afterJSFunction){
-	
-	if(document.getElementById(target) ){
-		var parameters = ajax_makeParameters(frm,action);
-		
-		ajax_makeRequest(action+parameters,target,afterJSFunction);
-	}else{	
-		frm.submit();
-	}		
-}
 
 function ajax_loadMessage(target){
 	ajax_loadAction("messages.action",target);
@@ -38,6 +18,7 @@ function ajax_loadAction(action,target, callBackJs){
 	ajax_makeRequest(action,target,callBackJs);
 }
 
+// Javascript way
 function dhtmlLoadScript(url,type,rel){
 	
    var e = document.createElement("script");
@@ -83,6 +64,29 @@ function dhtmlLoadScript_submit(url,frm,type,rel){
 
 	}
 
+// Simple parameters string way
+
+function ajax_submit(frm,target,afterJSFunction){
+	
+	if(document.getElementById(target) ){
+		var parameters = ajax_makeParameters(frm,frm.action);
+		
+		ajax_makeRequest(frm.action+parameters,target,afterJSFunction);
+	}else{	
+		frm.submit();
+	}		
+}
+
+function ajax_submitExt(frm,action,target,afterJSFunction){
+	
+	if(document.getElementById(target) ){
+		var parameters = ajax_makeParameters(frm,action);
+		
+		ajax_makeRequest(action+parameters,target,afterJSFunction);
+	}else{	
+		frm.submit();
+	}		
+}
 
 function ajax_makeParameters(frm,url) {
 
@@ -137,8 +141,6 @@ function ajax_makeParameters(frm,url) {
  }
 
 function ajax_makeRequest(urlWidthParameters,target,afterJSFunction, callBackJs,showImgBack) {
-
-
 
 		var urlOnly="";
 		var parametersOnly="";
@@ -234,10 +236,205 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction, callBackJs,
 //	    http_request.setRequestHeader("Content-Encoding", "utf-8");
    
 	    http_request.send(parametersOnly);
-	    
 	   	
  }
 
+
+
+//JSON way
+
+
+function ajax_submit_json(frm,target,afterJSFunction){
+	
+	if(document.getElementById(target) ){
+		var json = ajax_makeJSONParameters(frm,frm.action);		
+		ajax_makeJSONRequest(frm.action,json,target,afterJSFunction);
+	}else{	
+		frm.submit();
+	}		
+}
+
+function ajax_submitExt_json(frm,action,target,afterJSFunction){
+	
+	if(document.getElementById(target) ){
+		var json = ajax_makeJSONParameters(frm,action);	
+		ajax_makeJSONRequest(action,json,target,afterJSFunction);
+	}else{	
+		frm.submit();
+	}		
+}
+
+function ajax_makeJSONParameters(frm,url) {
+
+    var issue = {};
+ 
+
+    if(url.indexOf("?")>-1){    	
+    	var urlParameters=url.substring(url.indexOf("?")+1,url.length);
+    	if(urlParameters.length>0){
+    		urlParameters = decodeURIComponent(urlParameters);
+    		var chunks = urlParameters.split('&');
+    		for(var c=0; c < chunks.length; c++){
+    			var split = chunks[c].split('=', 2);
+    			issue[split[0]] = split[1];
+    		}
+    	}
+    }
+
+    for (i=0; i<frm.elements.length; i++) {
+   	
+		var element = frm.elements[i];
+	
+		if(	url.indexOf("?"+element.name+"=")==-1 &&
+				url.indexOf("&"+element.name+"=")==-1){
+		
+			if(element.name && element.name!=""){
+				
+				if	(element.type.toUpperCase() == "TEXT" ||
+			         element.type.toUpperCase() == "HIDDEN" ||
+			         element.type.toUpperCase() == "PASSWORD") {
+					issue[element.name ] = (element.value);
+			    }
+				if	(element.type.toUpperCase() == "TEXTAREA") {
+			        	getstr += element.name + "=" + (element.value) + "&";
+				}
+				
+			    if (element.type.toUpperCase() == "CHECKBOX") {
+			    	if (element.checked) {
+						issue[element.name ] = (element.value);
+			        } else {
+						issue[element.name ] = "";
+
+			        }
+			    }
+			    if (element.type.toUpperCase() == "RADIO") {
+			    	if (element.checked) {
+						issue[element.name ] = (element.value);
+			        }
+			    }
+	  
+				if (element.type.toUpperCase().indexOf("SELECT")==0) {
+			    	var sel = element;
+			    	try{
+						issue[sel.name ] = (sel.options[sel.selectedIndex].value);
+			    	}catch(e){
+			    	}
+			    }
+			}			    
+		}
+		        
+    }
+
+    
+    return issue;
+ }
+
+function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFunction, callBackJs,showImgBack) {
+
+		var urlOnly="";
+		
+		if(urlWidthParameters.indexOf("?")>-1){
+			var pos = urlWidthParameters.indexOf("?");
+			urlOnly = urlWidthParameters.substring(0,pos);
+	    	var urlParameters=urlWidthParameters.substring(pos+1,urlWidthParameters.length);
+	    	if(urlParameters.length>0){
+	    		urlParameters = decodeURIComponent(urlParameters);
+	    		var chunks = urlParameters.split('&');
+	    		for(var c=0; c < chunks.length; c++){
+	    			var split = chunks[c].split('=', 2);
+	    			jsonParameters[split[0]] = split[1];
+	    		}
+	    	}
+		}else{
+			urlOnly=urlWidthParameters;			
+		}
+		
+		jsonParameters["js4ajax"] = "true";
+
+
+	
+		if(	target=="spacer"){
+		}else{	
+			try{
+				var viewBack=true;
+				if(showImgBack==false) viewBack=false;
+			}catch(e){
+				viewBack=true;
+			}
+			try{
+				if(viewBack==true)
+					document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img src='images/wait.gif' border='0'></td></tr></table>";
+			}catch(e){
+			}
+		}	
+		
+		var http_request = false;
+		
+		
+		
+
+	    if (window.ActiveXObject) { // IE
+	       try {
+
+	          http_request = new ActiveXObject("Msxml2.XMLHTTP");
+	       } catch (e) {
+	          try {
+	             http_request = new ActiveXObject("Microsoft.XMLHTTP");
+             
+	          } catch (e) {}
+	       }
+	    }
+	    if (window.XMLHttpRequest) { // Mozilla, Safari,...
+		       http_request = new XMLHttpRequest();
+		       if (http_request.overrideMimeType) {
+		          //http_request.overrideMimeType('text/xml');
+		          http_request.overrideMimeType('text/html');
+		       }
+		
+	    }
+	    if (!http_request) {
+	       alert('Cannot create XMLHTTP instance');
+	       return false;
+	    }
+	
+	    http_request.onreadystatechange = function() { 
+	    	try{
+		    	if (http_request.readyState == 4) {
+		            if (http_request.status == 200 ) {
+		            	if(callBackJs && callBackJs!=""){
+		            		eval(callBackJs + "(http_request,target)");
+		            	}else{
+		            		document.getElementById(target).innerHTML=http_request.responseText;	
+		            	}
+		            	if(afterJSFunction && afterJSFunction!=""){
+		            		eval(afterJSFunction + "()");
+		            	}	
+		            } else {
+		            	var error_mess = http_request.responseText;
+		            }
+		        } 
+	    	}catch(e){
+
+	    	}
+
+        };
+
+        var json_string = JSON.stringify(jsonParameters);
+        
+	    http_request.open("POST", urlOnly, true);
+	    
+	    http_request.setRequestHeader("Content-length", json_string.length);
+	    http_request.setRequestHeader("Connection", "close");
+	    http_request.setRequestHeader("Content-type", "application/json");	    
+	    http_request.setRequestHeader("Content-Encoding", "iso-8859-1");
+//	    http_request.setRequestHeader("Content-Encoding", "utf-8");
+   
+
+	    http_request.send(json_string);
+	   	
+ }
+
+// --------
 
 function ajax_handleResponse(http_request,target) {
 	try{
@@ -259,4 +456,3 @@ function ajax_handleResponse(http_request,target) {
 		alert(e);
     }
  }
-

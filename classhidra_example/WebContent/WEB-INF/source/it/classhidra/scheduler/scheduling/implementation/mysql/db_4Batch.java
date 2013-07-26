@@ -31,6 +31,9 @@ public class db_4Batch implements i_4Batch  {
 
 		if(oper.equals(o_UPDATE))
 			return operation_UPDATE(form);
+		
+		if(oper.equals(o_INSERT))
+			return operation_INSERT(form);
 
 		if(oper.equals(o_CLEAR_STATE))
 			return operation_CLEAR_STATE(form);
@@ -115,6 +118,40 @@ public class db_4Batch implements i_4Batch  {
 		}
 
 	}
+	
+	private Object operation_INSERT(HashMap form) throws Exception{
+
+		if(form==null) return new Boolean(false);
+
+		db_batch inserted = (db_batch)form.get("inserted");
+		if(inserted==null) return new Boolean(false);
+
+		Connection conn=null;
+		Statement st=null;
+
+		try{
+
+			conn = new db_connection().getContent();
+			st = conn.createStatement();
+
+			try{
+				util_batch.reCalcNextTime(inserted, util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm"));
+			}catch(Exception e){
+			}
+
+			st.execute(inserted.sql_Insert());
+
+
+			conn.close();
+			return new Boolean(true);
+		}catch(Exception ex){
+			throw ex;
+		}finally{
+			db_connection.release(null, st, conn);
+		}
+
+	}
+	
 
 
 	private Object operation_CLEAR_STATE(HashMap form) throws Exception{
