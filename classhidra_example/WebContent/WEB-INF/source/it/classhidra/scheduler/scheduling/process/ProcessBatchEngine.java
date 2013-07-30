@@ -45,7 +45,7 @@ public class ProcessBatchEngine  {
 
 		batch_init binit = servletBatchScheduling.getConfiguration();
 
-		new bsException("BatchEngine:launch:scan", iStub.log_INFO);
+		new bsException("Scheduler: BatchEngine:launch:scan", iStub.log_DEBUG);
 
 		try{
 			String currentTime = util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm");
@@ -72,7 +72,7 @@ public class ProcessBatchEngine  {
 
 
 		}catch(Exception e){
-			new bsException("BatchEngine:launch:error: " + e.toString(), iStub.log_ERROR);
+			new bsException("Scheduler: BatchEngine:launch:error: " + e.toString(), iStub.log_ERROR);
 		}finally{
 
 		}

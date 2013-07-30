@@ -2,6 +2,7 @@ package it.classhidra.scheduler.servlets;
 
 
 import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadProcess;
@@ -28,7 +29,7 @@ public class servletBatchScheduling extends HttpServlet {
 			if(configuration.get_active().toLowerCase().trim().equals("true")){
 				thProcess = new schedulingThreadProcess();
 				thProcess.start();
-				new bsException("Start schedulingThreadProcess");
+				new bsException("Scheduler:Start schedulingThreadProcess");
 			}
 		}catch(Exception e){			
 		}
@@ -41,7 +42,7 @@ public class servletBatchScheduling extends HttpServlet {
 			
 			thProcess = new schedulingThreadProcess();
 			thProcess.start();
-			new bsException("Start schedulingThreadProcess");
+			new bsException("Scheduler: Start schedulingThreadProcess");
 		}catch(Exception e){	
 			e.toString();
 		}
@@ -59,8 +60,7 @@ public class servletBatchScheduling extends HttpServlet {
 
 			thProcess = new schedulingThreadProcess();
 			thProcess.start();
-
-			new bsException("Start schedulingThreadProcess");
+			new bsException("Scheduler: Start schedulingThreadProcess", iStub.log_INFO);
 		}catch(Exception e){	
 			e.toString();
 		}
@@ -74,7 +74,7 @@ public class servletBatchScheduling extends HttpServlet {
 				thProcess.interrupt();
 				thProcess=null;
 			}
-			new bsException("Stop schedulingThreadProcess");
+			new bsException("Scheduler: Stop schedulingThreadProcess", iStub.log_INFO);
 		}catch(Exception e){	
 			e.toString();
 		}

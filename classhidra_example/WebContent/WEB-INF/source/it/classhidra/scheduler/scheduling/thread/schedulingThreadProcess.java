@@ -67,13 +67,14 @@ public class schedulingThreadProcess extends Thread {
 
 
 	public void clearBatchState(){
+		batch_init binit = servletBatchScheduling.getConfiguration(); 
 		Connection conn=null;
 		Statement st=null;
 		try{
 			conn = new db_connection().getContent();
 			st = conn.createStatement();
 			conn.setAutoCommit(false);
-			st.executeUpdate("update batch set state=0, st_exec=0, tm_next=null");
+			st.executeUpdate("update "+binit.get_db_prefix()+"batch set state=0, st_exec=0, tm_next=null");
 			conn.commit();
 		}catch(Exception ex){
 			new bsControllerMessageException(ex);

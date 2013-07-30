@@ -29,6 +29,7 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
@@ -456,8 +457,20 @@ public void set_LogMaxFiles(String string) {
 		return loadedFrom;
 	}
 
+	public boolean isStackLevel(String level){
+		if(_LogLevel==null || _LogLevel.equals("")) return true;
+		
+		if(_LogLevel.equals(iStub.log_DEBUG)) return true;
+		if(_LogLevel.equals(iStub.log_INFO) && !level.equals(iStub.log_DEBUG)) return true;
+		if(_LogLevel.equals(iStub.log_WARN) && !level.equals(iStub.log_DEBUG) && !level.equals(iStub.log_INFO)) return true;
+		if(_LogLevel.equals(iStub.log_ERROR) && !level.equals(iStub.log_DEBUG) && !level.equals(iStub.log_INFO) && !level.equals(iStub.log_WARN)) return true;
+		if(_LogLevel.equals(iStub.log_FATAL) && !level.equals(iStub.log_DEBUG) && !level.equals(iStub.log_INFO) && !level.equals(iStub.log_WARN)&& !level.equals(iStub.log_ERROR)) return true;
 
+		return false;
+		
+	}
 
+	
 
 
 }

@@ -170,7 +170,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static void resourcesInit(){
 
-
+		if(getAppInit()!=null && getAppInit().get_init_loader()!=null && !getAppInit().get_init_loader().equals("")){
+			try{
+				i_externalloader initloader = (i_externalloader)Class.forName(getAppInit().get_init_loader().trim()).newInstance();
+				initloader.load();
+				bsController.setToLocalContainer(app_init.id_init_loader,initloader);
+			}catch(Exception ex){
+				new bsControllerException(ex, iStub.log_ERROR);
+			}catch (Throwable  th) {
+				new bsControllerException(th, iStub.log_ERROR);
+			}
+		}
+		
 		action_config = new load_actions();
 			try{
 				action_config.load_from_resources();

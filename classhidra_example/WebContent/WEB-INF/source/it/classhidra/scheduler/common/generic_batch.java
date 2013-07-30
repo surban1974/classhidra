@@ -1,6 +1,8 @@
 package it.classhidra.scheduler.common;
 
 import it.classhidra.core.tool.db.db_connection;
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.scheduler.scheduling.db.db_batch;
@@ -70,7 +72,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 				}					
 			}
 		}catch(Exception e){
-			SenderLog.write(e);
+			new bsException("Scheduler: "+e.toString(), iStub.log_ERROR);
 		}
 	}
 
@@ -129,7 +131,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 				if(db_property_name.indexOf(".properties")==-1) db_property_name+=".properties";		
 				property = util_file.loadExternalProperty(db_property_name);					
 			}catch (Exception ex) {
-				SenderLog.write(ex);
+				new bsException("Scheduler: "+e.toString(), iStub.log_ERROR);
 			}
 			
 		}
@@ -191,7 +193,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 				if(property_name.indexOf(".properties")==-1) property_name+=".properties";		
 				property = util_file.loadExternalProperty(property_name);					
 			}catch (Exception ex) {
-				SenderLog.write(ex);
+				new bsException("Scheduler: "+e.toString(), iStub.log_ERROR);
 			}
 			
 		}

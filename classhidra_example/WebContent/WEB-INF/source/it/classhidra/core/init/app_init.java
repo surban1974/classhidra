@@ -53,6 +53,7 @@ public class app_init implements Serializable{
 	static public String id_nav_excluded 				= 	"application.auth.tag_navigation.action_excluded";
 	static public String id_load_res_mode				= 	"application.load.resource.mode";
 	static public String id_external_loader				= 	"application.external_loader.class";
+	static public String id_init_loader					= 	"application.init_loader.class";
 	static public String id_pin							=	"application.pin";
 	static public String id_db_name 					=	"application.config.db";
 	static public String id_extention_do 				=	"application.extention.do";
@@ -73,6 +74,7 @@ public class app_init implements Serializable{
 	private String _nav_excluded;
 	private String _load_res_mode;
 	private String _external_loader;
+	private String _init_loader;
 	private String _pin;
 	private String _db_name;
 	private String _extention_do;
@@ -158,6 +160,7 @@ public class app_init implements Serializable{
 			_load_res_mode=(_load_res_mode==null)?System.getProperty(id_load_res_mode):_load_res_mode;
 			_nav_excluded=(_nav_excluded==null)?System.getProperty(id_nav_excluded):_nav_excluded;
 			_external_loader=(_external_loader==null)?System.getProperty(id_external_loader):_external_loader;
+			_init_loader=(_init_loader==null)?System.getProperty(id_init_loader):_init_loader;
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
@@ -220,6 +223,7 @@ public class app_init implements Serializable{
 		_load_res_mode=(_load_res_mode==null)?property.getProperty(id_load_res_mode):_load_res_mode;
 		_nav_excluded=(_nav_excluded==null)?property.getProperty(id_nav_excluded):_nav_excluded;
 		_external_loader=(_external_loader==null)?property.getProperty(id_external_loader):_external_loader;
+		_init_loader=(_init_loader==null)?property.getProperty(id_init_loader):_init_loader;
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
 		_annotation_scanner=(_annotation_scanner==null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
@@ -457,6 +461,10 @@ public class app_init implements Serializable{
 	
 	public String get_annotation_scanner() {
 		return _annotation_scanner;
+	}
+
+	public String get_init_loader() {
+		return _init_loader;
 	}
 
 }

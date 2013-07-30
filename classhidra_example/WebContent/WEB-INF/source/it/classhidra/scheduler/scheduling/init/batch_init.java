@@ -86,7 +86,8 @@ public void init() {
 	if(property_name==null || property_name.equals(""))
 		property_name = System.getProperty(app_path+environment_id_property);
 
-	
+
+/*	
 	if(property_name==null || property_name.equals("")){
 		property_name = "environment";
 		try{
@@ -122,20 +123,42 @@ public void init() {
 
 	}
 	
-	if(loadedFrom.trim().equals("")){
+*/	
+	
+	if(property_name==null || property_name.equals("")){
+		property_name="classhidra_scheduler";
 		try{
-			property = util_file.loadProperty("classhidra_scheduler");					
-		}catch (Exception e) {
+			property = util_file.loadProperty(ainit.get_path_config()+property_name);
+			loadedFrom+=" "+ainit.get_path_config()+property_name;
+		}catch(Exception e){
+			try{
+				property = util_file.loadProperty(property_name);
+				loadedFrom+=" "+property_name;
+			}catch(Exception ex){
+			}
 		}
+
+
 		if(property==null){
 			try{
-				property = util_file.loadProperty("it.classhidra.scheduler.default");					
+				property_name="it.classhidra.scheduler.default";
+				property = util_file.loadProperty(property_name);
+				loadedFrom+=" "+property_name;
 			}catch (Exception e) {
 			}
 		}
 
 		if(property!=null){
 			init(property);
+		}else{		
+			_active = (System.getProperty(id_active)==null)?_active:System.getProperty(id_active);
+			_sleep = (System.getProperty(id_sleep)==null)?_sleep:System.getProperty(id_sleep);
+			_scan = (System.getProperty(id_scan)==null)?_scan:System.getProperty(id_scan);
+			_db_prefix = (System.getProperty(id_db_prefix)==null)?_db_prefix:System.getProperty(id_db_prefix);
+			_stub = (System.getProperty(id_stub)==null)?_stub:System.getProperty(id_stub);
+			
+			if(_sleep!=null && _scan!=null) loadedFrom="System.property";
+
 		}
 	}
 

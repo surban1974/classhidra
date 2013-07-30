@@ -185,11 +185,12 @@ public static synchronized void writeLog(log_init _init, String msg, String leve
 	if(_logStub!=null){
 		_logStub.write(prepare4stub(log_mess, null, null, null,null, level,null));
 	}else{	
-
-		log_FileManager fm = new log_FileManager(_init);
-			fm.createFile(true,logPattern.prepare(msg,level));
-			fm.writeLineRecord(log_mess);
-		fm.closeFile();
+		if(_init.isStackLevel(level)){
+			log_FileManager fm = new log_FileManager(_init);
+				fm.createFile(true,log_mess);
+				fm.writeLineRecord(log_mess);
+			fm.closeFile();
+		}
 	}
 }
 
@@ -205,12 +206,13 @@ public synchronized void writeLog(Object obj_request, String msg,String userIP, 
 	if(logStub==null) logStub = stubFactory(init);
 	if(logStub!=null){
 		logStub.write(prepare4stub(log_mess, null, null, request,null, level,userMatricola));
-	}else{	
-	
-		log_FileManager fm = new log_FileManager(init);
-			fm.createFile(true,msg);
-			fm.writeLineRecord(log_mess);
-		fm.closeFile();
+	}else{
+		if(init.isStackLevel(level)){
+			log_FileManager fm = new log_FileManager(init);
+				fm.createFile(true,msg);
+				fm.writeLineRecord(log_mess);
+			fm.closeFile();
+		}
 	}
 }
 
@@ -225,10 +227,12 @@ public synchronized void writeLog(String msg,String userIP, String userMatricola
 		if(logStub!=null){
 			logStub.write(prepare4stub(log_mess, null, null, null,null, level,userMatricola));
 		}else{	
-			log_FileManager fm = new log_FileManager(init);
-				fm.createFile(true,msg);
-				fm.writeLineRecord(log_mess);
-			fm.closeFile();
+			if(init.isStackLevel(level)){
+				log_FileManager fm = new log_FileManager(init);
+					fm.createFile(true,msg);
+					fm.writeLineRecord(log_mess);
+				fm.closeFile();
+			}
 		}
 }
 public synchronized void writeLog(String msg,String userIP, String userMatricola,String classFrom,String level, ServletContext context) throws IOException {
@@ -242,10 +246,12 @@ public synchronized void writeLog(String msg,String userIP, String userMatricola
 	if(logStub!=null){
 		logStub.write(prepare4stub(log_mess, null, null, null,context, level,userMatricola));
 	}else{	
-		log_FileManager fm = new log_FileManager(init);
-			fm.createFile(true,msg);
-			fm.writeLineRecord(log_mess);
-		fm.closeFile();
+		if(init.isStackLevel(level)){
+			log_FileManager fm = new log_FileManager(init);
+				fm.createFile(true,msg);
+				fm.writeLineRecord(log_mess);
+			fm.closeFile();
+		}
 	}
 }
 
@@ -260,10 +266,12 @@ public static synchronized void writeLog(log_init _init, String msg,String userI
 	if(_logStub!=null){
 		_logStub.write(prepare4stub(log_mess, null, null, null,null, level,userMatricola));
 	}else{	
-		log_FileManager fm = new log_FileManager(_init);
-			fm.createFile(true,logPattern.prepare(msg,userIP,userMatricola,classFrom,level));
-			fm.writeLineRecord(log_mess);
-		fm.closeFile();
+		if(_init.isStackLevel(level)){
+			log_FileManager fm = new log_FileManager(_init);
+				fm.createFile(true,logPattern.prepare(msg,userIP,userMatricola,classFrom,level));
+				fm.writeLineRecord(log_mess);
+			fm.closeFile();
+		}
 	}
 }
 

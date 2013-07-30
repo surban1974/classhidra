@@ -45,9 +45,9 @@ public class ProcessBatchEvent  {
 		try {
 			executeBatch(cd_ist,cd_btch, "",recalc,sequence);
 		}catch(Exception ex){
-			new bsException(ex,iStub.log_ERROR);
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
-			new bsException(th,iStub.log_ERROR);
+			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
 		}finally{
 		}
 	}
@@ -56,9 +56,9 @@ public class ProcessBatchEvent  {
 		try {
 			executeBatch(cd_ist,cd_btch, "",true,false);
 		}catch(Exception ex){
-			new bsException(ex,iStub.log_ERROR);
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
-			new bsException(th,iStub.log_ERROR);
+			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
 		}finally{
 		}
 	}
@@ -213,7 +213,7 @@ public class ProcessBatchEvent  {
 			if(log.isWriteLog()) writeLog(log);
 			changeState(batch, batch.getState());
 		}
-		new bsException("BatchEvent:exec for:["+batch.getCd_btch().trim()+ ((currentBatchClass==null)?" ":" "+currentBatchClass.getVersion()) +"]->"+batch.getDesSt_exec(), iStub.log_INFO);
+		new bsException("Scheduler: BatchEvent:exec for:["+batch.getCd_btch().trim()+ ((currentBatchClass==null)?" ":" "+currentBatchClass.getVersion()) +"]->"+batch.getDesSt_exec(), iStub.log_INFO);
 		result_eb[0]=common_area;
 		result_eb[1]=batch.getSt_exec().toString();
 		return result_eb;
@@ -241,7 +241,7 @@ public class ProcessBatchEvent  {
 
 
 		}catch(Exception ex){
-			new bsException(ex,iStub.log_ERROR);
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}finally{
 			db_connection.release(null, st, conn);
 		}
@@ -268,7 +268,7 @@ public class ProcessBatchEvent  {
 				conn.rollback();
 			}catch(Exception e){
 			}
-			new bsException(ex,iStub.log_ERROR);
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}finally{
 			db_connection.release(null, st, conn);
 		}
