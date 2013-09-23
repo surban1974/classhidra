@@ -816,16 +816,18 @@ public static String formatForJS(String target){
 		newTarget=replace(newTarget,"^","&#94;");
 		newTarget=replace(newTarget,"`","&#96;");
 		newTarget=replace(newTarget,"~","&#126;");
-		newTarget=replace(newTarget,"à","&agrave;");
-	    newTarget=replace(newTarget,"è","&egrave;");
-		newTarget=replace(newTarget,"é","&eacute;");
-		newTarget=replace(newTarget,"í","&iacute;");
-		newTarget=replace(newTarget,"ì","&igrave;");
-		newTarget=replace(newTarget,"ò","&ograve;");			 
-		newTarget=replace(newTarget,"ó","&oacute;");
-		newTarget=replace(newTarget,"ù","&ugrave;");
-		newTarget=replace(newTarget,"ú","&uacute;");
-	}
+/*
+        newTarget=replace(newTarget,"ï¿½","&agrave;");
+        newTarget=replace(newTarget,"ï¿½","&egrave;");
+		newTarget=replace(newTarget,"ï¿½","&eacute;");
+		newTarget=replace(newTarget,"ï¿½","&iacute;");
+		newTarget=replace(newTarget,"ï¿½","&igrave;");
+		newTarget=replace(newTarget,"ï¿½","&ograve;");			 
+		newTarget=replace(newTarget,"ï¿½","&oacute;");
+		newTarget=replace(newTarget,"ï¿½","&ugrave;");
+		newTarget=replace(newTarget,"ï¿½","&uacute;");
+*/
+    }
 	return newTarget;	
 }
 

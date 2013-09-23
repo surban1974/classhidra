@@ -27,9 +27,14 @@ package it.classhidra.core.init;
 
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
 
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Properties;
@@ -115,26 +120,41 @@ public void init() {
 	if(property_name==null || property_name.equals(""))
 		property_name = ainit.getResources_path().getProperty(app_path+bsController.log_id_property);
 
-	if(property_name==null || property_name.equals("")){
-		property_name = "classhidra_log";
-		try{
-			property = util_file.loadProperty(ainit.get_path_config()+property_name);
-			loadedFrom+=" "+ainit.get_path_config()+property_name;
-		}catch(Exception e){
+
+	
+	if(property==null){
+		if(property_name==null || property_name.equals("")){
+			try{
+				if(ainit.get_db_name()!=null){
+					property = initDB(ainit);
+					if(property!=null){
+						loadedFrom=ainit.get_db_name();
+						init(property);
+						return;
+					}
+				}
+			}catch(Exception e){
+			}
+
+			property_name = "classhidra_log";
+			try{
+				property = util_file.loadProperty(ainit.get_path_config()+property_name);
+				loadedFrom+=" "+ainit.get_path_config()+property_name;
+			}catch(Exception e){
+				try{
+					property = util_file.loadProperty(property_name);
+					loadedFrom+=" "+property_name;
+				}catch(Exception ex){
+				}
+			}
+		}else{
 			try{
 				property = util_file.loadProperty(property_name);
 				loadedFrom+=" "+property_name;
-			}catch(Exception ex){
+			}catch(Exception e){
 			}
 		}
-	}else{
-		try{
-			property = util_file.loadProperty(property_name);
-			loadedFrom+=" "+property_name;
-		}catch(Exception e){
-		}
 	}
-
 
 	if(property!=null){
 		loadedFrom+=" "+property_name;
@@ -186,6 +206,45 @@ public void init(Properties ex_property) {
 	}
 }
 
+
+public Properties initDB(app_init ainit) throws bsControllerException, Exception{
+	
+	Properties property = new Properties();
+	String app_path=ainit.get_path();
+	if(app_path==null || app_path.equals("")) app_path="";
+	else app_path+=".";
+	
+	String propertyData = null;
+	try{
+		propertyData = util_blob.load_from_config(
+				(ainit.getSynonyms_path().getProperty(app_path+bsController.log_id_property)==null)?app_path+bsController.log_id_property:ainit.getSynonyms_path().getProperty(app_path+bsController.log_id_property),
+				ainit.get_db_name());
+	}catch(Exception e){
+		new bsException(e);
+	}
+	try{
+		if(propertyData==null) propertyData = util_blob.load_from_config(
+				(ainit.getSynonyms_path().getProperty(bsController.log_id_property)==null)?bsController.log_id_property:ainit.getSynonyms_path().getProperty(bsController.log_id_property),
+				ainit.get_db_name());
+	}catch(Exception e){
+		new bsException(e);
+	}
+	if(propertyData==null) return null;
+	
+	try{
+		ByteArrayInputStream instrm = new ByteArrayInputStream(propertyData.getBytes());
+		if(instrm!=null) property.load(instrm);
+		else property=null;		
+	}catch(Exception e){
+		property=null;
+		throw e;
+	}
+	return property;
+	
+
+
+
+}
 
 public int get_LogFlashRate() {
 	try{
@@ -398,8 +457,20 @@ public void set_LogMaxFiles(String string) {
 		return loadedFrom;
 	}
 
+	public boolean isStackLevel(String level){
+		if(_LogLevel==null || _LogLevel.equals("")) return true;
+		
+		if(_LogLevel.equals(iStub.log_DEBUG)) return true;
+		if(_LogLevel.equals(iStub.log_INFO) && !level.equals(iStub.log_DEBUG)) return true;
+		if(_LogLevel.equals(iStub.log_WARN) && !level.equals(iStub.log_DEBUG) && !level.equals(iStub.log_INFO)) return true;
+		if(_LogLevel.equals(iStub.log_ERROR) && !level.equals(iStub.log_DEBUG) && !level.equals(iStub.log_INFO) && !level.equals(iStub.log_WARN)) return true;
+		if(_LogLevel.equals(iStub.log_FATAL) && !level.equals(iStub.log_DEBUG) && !level.equals(iStub.log_INFO) && !level.equals(iStub.log_WARN)&& !level.equals(iStub.log_ERROR)) return true;
 
+		return false;
+		
+	}
 
+	
 
 
 }

@@ -81,9 +81,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 
 
-						<li><a href="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart0.xml',900,500));"><img src="images/decor/neohort/chart0.gif"  /></a><br>
+						<li><a href="javascript:void(showAsIFrame('jsp/neohort/chart0.jsp?ReportProvider=neoHort&$lib=pdf',900,500));"><img src="images/decor/neohort/chart0.gif"  /></a><br>
 						<nobr>
-						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart0.xml',900,500));">
+						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('jsp/neohort/chart0.jsp?ReportProvider=neoHort&$lib=pdf',900,500));">
 							<tr>							
 								<td  width="0%"  height="20"><img src="images/corners/vb_left.gif" border="0"/></td>
 								<td style="background-image:url('images/corners/vb_center.gif')" align="center" width="0%" ><nobr><span class="title_section"><b>Chart Example 1 </b></span></nobr></td>
@@ -95,9 +95,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						</li>
 
 
-						<li><a href="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart1.xml',900,500));"><img src="images/decor/neohort/chart1.gif"  /></a><br>
+						<li><a href="javascript:void(showAsIFrame('jsp/neohort/chart1.jsp?ReportProvider=neoHort&$lib=pdf',900,500));"><img src="images/decor/neohort/chart1.gif"  /></a><br>
 						<nobr>
-						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart1.xml',900,500));">
+						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('jsp/neohort/chart1.jsp?ReportProvider=neoHort&$lib=pdf',900,500));">
 							<tr>							
 								<td  width="0%"  height="20"><img src="images/corners/vb_left.gif" border="0"/></td>
 								<td style="background-image:url('images/corners/vb_center.gif')" align="center" width="0%" ><nobr><span class="title_section"><b>Chart Example 2 </b></span></nobr></td>
@@ -109,9 +109,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						</li>
 						
 
-						<li><a href="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart2.xml',900,500));"><img src="images/decor/neohort/chart2.gif"  /></a><br>
+						<li><a href="javascript:void(showAsIFrame('jsp/neohort/chart2.jsp?ReportProvider=neoHort&$lib=pdf',900,500));"><img src="images/decor/neohort/chart2.gif"  /></a><br>
 						<nobr>
-						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart2.xml',900,500));">
+						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('jsp/neohort/chart2.jsp?ReportProvider=neoHort&$lib=pdf',900,500));">
 							<tr>							
 								<td  width="0%"  height="20"><img src="images/corners/vb_left.gif" border="0"/></td>
 								<td style="background-image:url('images/corners/vb_center.gif')" align="center" width="0%" ><nobr><span class="title_section"><b>Chart Example 3 </b></span></nobr></td>
@@ -122,9 +122,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						</nobr>
 						</li>
 
-						<li><a href="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart3.xml',900,500));"><img src="images/decor/neohort/chart3.gif"  /></a><br>
+						<li><a href="javascript:void(showAsIFrame('jsp/neohort/chart3.jsp?ReportProvider=neoHort&$lib=pdf',900,500));"><img src="images/decor/neohort/chart3.gif"  /></a><br>
 						<nobr>
-						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart3.xml',900,500));">
+						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('jsp/neohort/chart3.jsp?ReportProvider=neoHort&$lib=pdf',900,500));">
 							<tr>							
 								<td  width="0%"  height="20"><img src="images/corners/vb_left.gif" border="0"/></td>
 								<td style="background-image:url('images/corners/vb_center.gif')" align="center" width="0%" ><nobr><span class="title_section"><b>Chart Example 4 </b></span></nobr></td>
@@ -135,9 +135,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						</nobr>
 						</li>
 
-						<li><a href="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart4.xml',900,500));"><img src="images/decor/neohort/chart4.gif"  /></a><br>
+						<li><a href="javascript:void(showAsIFrame('jsp/neohort/chart4.jsp?ReportProvider=neoHort&$lib=pdf',900,500));"><img src="images/decor/neohort/chart4.gif"  /></a><br>
 						<nobr>
-						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('/report_creator?$source=/jsp/neohort/chart4.xml',900,500));">
+						<table  cellspacing="0" cellpadding="0" border="0" onclick="javascript:void(showAsIFrame('jsp/neohort/chart4.jsp?ReportProvider=neoHort&$lib=pdf',900,500));">
 							<tr>							
 								<td  width="0%"  height="20"><img src="images/corners/vb_left.gif" border="0"/></td>
 								<td style="background-image:url('images/corners/vb_center.gif')" align="center" width="0%" ><nobr><span class="title_section"><b>Chart Example 5 </b></span></nobr></td>

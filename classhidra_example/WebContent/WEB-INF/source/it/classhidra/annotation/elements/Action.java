@@ -18,6 +18,7 @@ public @interface Action {
 	String reloadAfterAction() default "";
 	String navigated() default "";
 	String syncro() default "false";
+	String statistic() default "true";
 	String help() default "";
 	Redirect[] redirects() default {};
 	Transformation[] transformations() default {};

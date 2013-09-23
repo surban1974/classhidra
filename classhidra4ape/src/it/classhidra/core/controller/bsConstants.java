@@ -110,6 +110,8 @@ public interface bsConstants {
 	
 	public final static String CONST_SSOID								=	"ssoid";
 	public final static String CONST_ID_OUTPUT4SOAP						=	"$output4SOAP";
+	public final static String CONST_ID_OUTPUT4JSON						=	"$output4JSON";
+
 	public final static String CONST_ID_OUTPUT4BYTE						=	"$output4BYTE";
 	public final static String CONST_ID_TRANSFORMATION4WRAPPER			=	"$transformation4WRAPPER";
 	public final static String CONST_ID_TRANSFORMATION4CONTROLLER		=	"$transformation4CONTROLLER"; 
@@ -125,7 +127,17 @@ public interface bsConstants {
 	public final static String CONST_EXTENTION_DO						=	".bs";
 	public final static String CONST_SESSION_ACTIONS_INSTANCE			=	"$session_actions_instance";
 	
+	public final static String CONST_ID_STATISTIC_STACK					=	"$statisticStack";
+	public final static String CONST_ID_STATISTIC_PROVIDER				=	"$statisticProvider";
+	public final static int CONST_LEN_STATISTIC_STACK					=	100;
 	
+	public final static String CONST_DIRECTINDACTION_bsLog				=	"bsLog";
+	public final static String CONST_DIRECTINDACTION_bsActions			=	"bsActions";
+	public final static String CONST_DIRECTINDACTION_bsLogS				=	"bsLogS";
+	public final static String CONST_DIRECTINDACTION_Controller			=	"Controller";
+	public final static String CONST_DIRECTINDACTION_bsResource			=	"bsResource";
+	public final static String CONST_DIRECTINDACTION_bsStatistics		=	"bsStatistics";
+	public final static String CONST_DIRECTINDACTION_bsTransformation	=	"bsTransformation";
 
 
 	

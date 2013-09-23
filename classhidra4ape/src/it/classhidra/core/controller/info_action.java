@@ -50,6 +50,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String navigated;
 	private String help;
 	private String syncro;
+	private String statistic;
 
 
 	private String wac;
@@ -140,6 +141,7 @@ public class info_action extends info_entity implements i_elementBase{
 		navigated="";
 		help="";
 		syncro="false";
+		statistic="true";
 
 
 		_redirects=new HashMap();
@@ -378,6 +380,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setSyncro(String syncro) {
 		this.syncro = syncro;
+	}
+
+	public String getStatistic() {
+		return statistic;
+	}
+
+	public void setStatistic(String statistic) {
+		this.statistic = statistic;
 	}
 
 

@@ -1,4 +1,4 @@
-//---	08/02/2013 
+//---	30/07/2013 
 var notClear=";$action;$action_from;$navigation;parent_pointOfLaunch;child_pointOfReturn;";
 var prevKEYid = 0;
 var KEYtime = 0;
@@ -164,7 +164,7 @@ function runSubmitAjaxLoadScript(formName,middle){
 		var url = ajax_makeParameters(document.getElementById(formName),document.getElementById(formName).action);
 		if(url=="") url="?tmstamp="+new Date().getTime();
 		else url+="&tmstamp="+new Date().getTime();
-		dhtmlLoadScript(document.getElementById(formName).action+url);
+		dhtmlLoadScript(document.getElementById(formName).action+url,"text/javascript");
 	}catch(e){
 		
 	}
@@ -280,6 +280,56 @@ function getParametersAction(action){
 	return action.substring(pos+1);
 }
 
+function goActionMinimal(urlAction, formName){
+
+	var form = document.forms[0].action;
+	try{
+		if(formName){	
+			form = document.getElementById(formName);
+		}else{
+			form = document.forms[0];
+		}
+	}catch(e){
+	}
+	
+	
+	
+	if(form){
+	}else form = document.forms[0].action;
+	
+	var url=prepareUrlString(urlAction);
+
+		try{
+			if(urlAction.indexOf("?")>-1){				
+				form.action = urlAction;
+			}else{
+				if(url.length>0) urlAction="?"+url;
+				form.action = getIdAction(urlAction)+""+url;
+			}
+
+			form.submit();
+			
+		}catch(e){
+
+			try{
+				var add2url=url+((url=="")?"":"&")+getParametersAction(urlAction);
+				if(add2url.length>0) add2url="?"+add2url;
+				location.replace(getIdAction(urlAction)+""+add2url);
+			}catch(e){
+			}
+		}
+	try{
+		
+		document.getElementById("content_Panel_runSubmit").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_runSubmit").style.display="block";
+
+		if(parent.frames["content"])
+			parent.frames["content"].beforeClick();
+	}catch(e){
+	}
+	return;
+
+}
 
 
 function goAction(action,wac,service_parent,service_child,service_id){
@@ -307,9 +357,15 @@ function goAction(action,wac,service_parent,service_child,service_id){
 				
 			}catch(e){
 				try{
+//					var add2url=url+((url=="")?"":"&")+getParametersAction(action);
+//					if(add2url.length>0) add2url="?"+add2url;
+//					location.replace(getIdAction(action)+""+add2url);
+
 					var add2url=url+((url=="")?"":"&")+getParametersAction(action);
-					if(add2url.length>0) add2url="?"+add2url;
-					location.replace(getIdAction(action)+""+add2url);
+					var _idaction = getIdAction(action);
+					if(_idaction.indexOf("?")==-1) _idaction+="?"+add2url;
+					else _idaction+="&"+add2url;
+					location.replace(_idaction);
 				}catch(e){
 				}
 			}
@@ -960,6 +1016,13 @@ function showAsIFrame(action,panel_width,panel_height,scroll){
 	
 }
 
+function ajustPopupOnScroll(){
+	try{
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}catch(e){
+	}
+}
 
 function showAsPopup(action,panel_width,panel_height,scroll){
 	
@@ -980,6 +1043,7 @@ function showAsPopup(action,panel_width,panel_height,scroll){
 	}
 
 	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
 	document.getElementById("content_Panel_Popup").style.display="block";
 	
 
@@ -1027,6 +1091,7 @@ function showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll){
 	}catch(e){
 	}	
 	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
 	document.getElementById("content_Panel_Popup").style.display="block";
 	
 	try{
@@ -1104,6 +1169,157 @@ function showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll){
 	}
 
 }
+
+
+//JSON
+
+function showAsPopup_json(action,panel_width,panel_height,scroll){
+	
+	try{
+		document.getElementById("content_body_Panel_Popup").style.width=panel_width;
+	}catch(e){		
+	}
+	try{
+		document.getElementById("content_body_Panel_Popup").style.height=panel_height;
+	}catch(e){		
+	}
+	
+	try{
+		if(scroll==true){
+			document.getElementById("content_body_Panel_Popup").style.overflowY="scroll";
+		}
+	}catch(e){
+	}
+
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	document.getElementById("content_Panel_Popup").style.display="block";
+	
+
+	try{
+		if(vPanel_NotPopup.zIndex>-1){
+			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
+			document.getElementById("content_Panel_Popup").style.position="absolute";
+		}
+	}catch(e){
+	}
+
+
+	
+	ajustPanel();
+	try{
+		ajax_makeJSONRequest(action,{},"content_body_Panel_Popup","JSAfter_showAsPopup");	
+
+	}catch(e){
+
+	}
+
+	try{
+		document.getElementById("panel_Popup_img_maximize").style.display="block";
+		document.getElementById("panel_Popup_img_minimize").style.display="none";
+	}catch(e){
+	}
+
+
+	
+}
+
+function showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll){
+	try{
+		document.getElementById("content_body_Panel_Popup").style.width=panel_width;
+	}catch(e){		
+	}
+	try{
+		document.getElementById("content_body_Panel_Popup").style.height=panel_height;
+	}catch(e){		
+	}
+	try{
+		if(scroll==true){
+			document.getElementById("content_body_Panel_Popup").style.overflowY="scroll";
+		}
+	}catch(e){
+	}	
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	document.getElementById("content_Panel_Popup").style.display="block";
+	
+	try{
+		if(vPanel_NotPopup.zIndex>-1){
+			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
+			document.getElementById("content_Panel_Popup").style.position="absolute";
+		}
+	}catch(e){
+	}
+
+	
+	ajustPanel();
+	try{
+		document.getElementById(formName).middleAction.value=middle;
+		ajax_submit_json(document.getElementById(formName),"content_body_Panel_Popup","JSAfter_showAsPopup");
+		
+	}catch(e){
+		alert(e);
+	}
+	
+
+	
+	var vPanel_Popup = mPanel_Popup.get("panel_Popup");
+	if(vPanel_Popup==null){
+	}else{
+		if(vPanel_Popup.maximize==true){
+			showAsPanelMax("panel_Popup");
+		}else showAsPanelNormal("panel_Popup");
+	}
+
+}
+
+function showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scroll){
+	try{
+		document.getElementById("content_body_Panel_Popup").style.width=panel_width;
+	}catch(e){		
+	}
+	try{
+		document.getElementById("content_body_Panel_Popup").style.height=panel_height;
+	}catch(e){		
+	}
+	try{
+		if(scroll==true){
+			document.getElementById("content_body_Panel_Popup").style.overflowY="scroll";
+		}
+	}catch(e){
+	}	
+	
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.display="block";
+	
+	try{
+		if(vPanel_NotPopup.zIndex>-1){
+			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
+			document.getElementById("content_Panel_Popup").style.position="absolute";
+		}
+	}catch(e){
+	}
+
+	
+	ajustPanel();
+	try{
+		ajax_submitExt_json(document.getElementById(formName),action,"content_body_Panel_Popup","JSAfter_showAsPopup");
+		
+	}catch(e){
+		alert(e);
+	}
+	
+	var vPanel_Popup = mPanel_Popup.get("panel_Popup");
+	if(vPanel_Popup==null){
+	}else{
+		if(vPanel_Popup.maximize==true){
+			showAsPanelMax("panel_Popup");
+		}else showAsPanelNormal("panel_Popup");
+	}
+
+}
+
+//---
 
 function showMessAsPopup(panel_width,panel_height){
 	
@@ -1630,4 +1846,35 @@ function removeAt( index ){
   var part2 = this.slice( index+1 );
 
   return( part1.concat( part2 ) );
+}
+
+function canceOnClicklBubble(event){
+	try{
+		event.stopPropagation();
+		window.event.cancelBubble = true;
+	}catch(e){
+		window.event.cancelBubble = true;
+	}
+}
+
+function getFileName (inp){
+
+	var div = inp.offsetParent;
+	var str = inp.value;
+    if (str.lastIndexOf('\\')){
+        var i = str.lastIndexOf('\\')+1;
+    }
+    else{
+        var i = str.lastIndexOf('/')+1;
+    }						
+    var filename = str.slice(i);	
+    var list = div.childNodes;
+	for(var i=0;i<list.length;i++){
+		if(list[i].nodeName=="DIV"){
+			list[i].innerHTML = filename;
+			return;
+		}
+	}		
+//    var uploaded = document.getElementById("fileformlabel");
+//    uploaded.innerHTML = filename;
 }

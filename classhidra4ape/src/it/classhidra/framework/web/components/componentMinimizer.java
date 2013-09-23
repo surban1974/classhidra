@@ -23,6 +23,7 @@ import javax.servlet.*;
 		name="formMinimizer",
 		redirect="/jsp/framework/minimizer.jsp",
         memoryInSession="true",
+        statistic="false",
         entity=@Entity(
 				property="allway:public"
 		)	

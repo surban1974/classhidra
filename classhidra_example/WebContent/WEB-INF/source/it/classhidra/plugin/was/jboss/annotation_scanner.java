@@ -393,6 +393,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
 		    	iAction.setNavigated(annotationAction.navigated());
 		    	iAction.setSyncro(annotationAction.syncro());
+		    	iAction.setStatistic(annotationAction.statistic());
 		    	iAction.setHelp(annotationAction.help());
 		    	setEntity(iAction,annotationAction.entity());
 		    	Redirect[] redirects = annotationAction.redirects();

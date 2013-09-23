@@ -2,7 +2,6 @@ package it.classhidra.framework.web.components;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
-import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
@@ -59,6 +58,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	
 	
 	HashMap h_user_container = (HashMap)bsController.getFromLocalContainer(util_usersInSession.CONST_APP_USER_CONTAINER);
+	if(h_user_container==null) h_user_container = new HashMap();
 	if(this.getMiddleAction()==null) this.setMiddleAction("");
 	if(this.getMiddleAction().equals("view_mess")){
 		return new redirects("/jsp/ajax/add_LogUserMess.jsp?session_id="+this.get("session_id"));	

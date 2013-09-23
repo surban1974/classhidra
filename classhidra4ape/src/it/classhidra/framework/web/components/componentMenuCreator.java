@@ -3,6 +3,7 @@ package it.classhidra.framework.web.components;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.Bean;
+import it.classhidra.annotation.elements.Entity;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
@@ -27,7 +28,10 @@ import javax.servlet.http.HttpServletResponse;
 		path="menuCreator",
 		name="formMenuCreator",
 		redirect="/jsp/framework/menuCreator.jsp",
-        memoryInSession="true"
+        memoryInSession="true",
+        entity=@Entity(
+				property="allway:public"
+		)
 )
 
 public class componentMenuCreator extends action implements i_action, Serializable{

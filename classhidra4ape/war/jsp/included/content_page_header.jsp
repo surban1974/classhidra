@@ -73,7 +73,9 @@ div#footer_fixedbox{
 						<bs:equal name="_infoaction.path" value="">
 							<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",400,"","goAction('<bs:formelement bean="navigationLast" name="IAction.path"/>.bs?middleAction=reload')","page_section","reload.gif","images/menu/","","false", 24);</script></td>
 						</bs:equal>
-						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",401,"","goAction('minimizer?middleAction=close')","page_section","minimize.gif","images/menu/","","false", 24);</script></td>
+<bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">						
+						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",401,"","goAction('minimizer?middleAction=close')","page_section","save.gif","images/menu/","","false", 24);</script></td>
+</bs:equal>
 						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",45,"","goAction('login?middleAction=reload')","page_section","close.gif","images/menu/","","false", 24);</script></td>
 				    </tr>
 				</table>

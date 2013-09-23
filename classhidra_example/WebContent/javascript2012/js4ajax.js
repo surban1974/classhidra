@@ -281,48 +281,49 @@ function ajax_makeJSONParameters(frm,url) {
     	}
     }
 
-    for (i=0; i<frm.elements.length; i++) {
-   	
-		var element = frm.elements[i];
-	
-		if(	url.indexOf("?"+element.name+"=")==-1 &&
+    try{
+	    for (i=0; i<frm.elements.length; i++) {
+	 		var element = frm.elements[i];
+			if(	url.indexOf("?"+element.name+"=")==-1 &&
 				url.indexOf("&"+element.name+"=")==-1){
-		
-			if(element.name && element.name!=""){
-				
-				if	(element.type.toUpperCase() == "TEXT" ||
-			         element.type.toUpperCase() == "HIDDEN" ||
-			         element.type.toUpperCase() == "PASSWORD") {
-					issue[element.name ] = (element.value);
-			    }
-				if	(element.type.toUpperCase() == "TEXTAREA") {
-			        	getstr += element.name + "=" + (element.value) + "&";
-				}
-				
-			    if (element.type.toUpperCase() == "CHECKBOX") {
-			    	if (element.checked) {
+			
+				if(element.name && element.name!=""){
+					
+					if	(element.type.toUpperCase() == "TEXT" ||
+				         element.type.toUpperCase() == "HIDDEN" ||
+				         element.type.toUpperCase() == "PASSWORD") {
 						issue[element.name ] = (element.value);
-			        } else {
-						issue[element.name ] = "";
-
-			        }
-			    }
-			    if (element.type.toUpperCase() == "RADIO") {
-			    	if (element.checked) {
-						issue[element.name ] = (element.value);
-			        }
-			    }
-	  
-				if (element.type.toUpperCase().indexOf("SELECT")==0) {
-			    	var sel = element;
-			    	try{
-						issue[sel.name ] = (sel.options[sel.selectedIndex].value);
-			    	}catch(e){
-			    	}
-			    }
-			}			    
-		}
-		        
+				    }
+					if	(element.type.toUpperCase() == "TEXTAREA") {
+				        	getstr += element.name + "=" + (element.value) + "&";
+					}
+					
+				    if (element.type.toUpperCase() == "CHECKBOX") {
+				    	if (element.checked) {
+							issue[element.name ] = (element.value);
+				        } else {
+							issue[element.name ] = "";
+	
+				        }
+				    }
+				    if (element.type.toUpperCase() == "RADIO") {
+				    	if (element.checked) {
+							issue[element.name ] = (element.value);
+				        }
+				    }
+		  
+					if (element.type.toUpperCase().indexOf("SELECT")==0) {
+				    	var sel = element;
+				    	try{
+							issue[sel.name ] = (sel.options[sel.selectedIndex].value);
+				    	}catch(e){
+				    	}
+				    }
+				}			    
+			}
+			        
+	    }
+    }catch(e){
     }
 
     

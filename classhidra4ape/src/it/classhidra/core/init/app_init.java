@@ -53,6 +53,7 @@ public class app_init implements Serializable{
 	static public String id_nav_excluded 				= 	"application.auth.tag_navigation.action_excluded";
 	static public String id_load_res_mode				= 	"application.load.resource.mode";
 	static public String id_external_loader				= 	"application.external_loader.class";
+	static public String id_init_loader					= 	"application.init_loader.class";
 	static public String id_pin							=	"application.pin";
 	static public String id_db_name 					=	"application.config.db";
 	static public String id_extention_do 				=	"application.extention.do";
@@ -65,6 +66,10 @@ public class app_init implements Serializable{
 	static public String id_package_annotated			=	"application.package.annotated";
 	static public String id_debug						=	"application.debug";
 	
+	static public String id_statistic					=	"application.statistic";
+	static public String id_statistic_provider			=	"application.statistic.provider";
+	static public String id_statistic_stacklength		= 	"application.statictic.stacklength";
+	
 	private String _path;
 	private String _path_root;
 	private String _path_config;
@@ -73,11 +78,15 @@ public class app_init implements Serializable{
 	private String _nav_excluded;
 	private String _load_res_mode;
 	private String _external_loader;
+	private String _init_loader;
 	private String _pin;
 	private String _db_name;
 	private String _extention_do;
 	private String _debug;
+	private String _statistic;
+	private String _statistic_provider;
 	private String _annotation_scanner;
+	private String _statistic_stacklength;
 
 
 
@@ -158,10 +167,16 @@ public class app_init implements Serializable{
 			_load_res_mode=(_load_res_mode==null)?System.getProperty(id_load_res_mode):_load_res_mode;
 			_nav_excluded=(_nav_excluded==null)?System.getProperty(id_nav_excluded):_nav_excluded;
 			_external_loader=(_external_loader==null)?System.getProperty(id_external_loader):_external_loader;
+			_init_loader=(_init_loader==null)?System.getProperty(id_init_loader):_init_loader;
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
 			_debug=(_debug==null)?System.getProperty(id_debug):_debug;
+			_statistic=(_statistic==null)?System.getProperty(id_statistic):_statistic;
+			_statistic_provider=(_statistic_provider==null)?System.getProperty(id_statistic_provider):_statistic_provider;
+			_statistic_stacklength=(_statistic_stacklength==null)?System.getProperty(id_statistic_stacklength):_statistic_stacklength;
+			
+			
 			_annotation_scanner=(_annotation_scanner==null)?System.getProperty(id_annotation_scanner):_annotation_scanner;
 
 			
@@ -189,6 +204,7 @@ public class app_init implements Serializable{
 			if(_load_res_mode==null) _load_res_mode="normal";
 			if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
 			if(_debug==null) _debug="false";
+			if(_statistic==null) _statistic="false";
 		}		
 		content = new HashMap();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?
@@ -220,11 +236,15 @@ public class app_init implements Serializable{
 		_load_res_mode=(_load_res_mode==null)?property.getProperty(id_load_res_mode):_load_res_mode;
 		_nav_excluded=(_nav_excluded==null)?property.getProperty(id_nav_excluded):_nav_excluded;
 		_external_loader=(_external_loader==null)?property.getProperty(id_external_loader):_external_loader;
+		_init_loader=(_init_loader==null)?property.getProperty(id_init_loader):_init_loader;
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
 		_annotation_scanner=(_annotation_scanner==null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
 		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
 		_debug=(_debug==null)?property.getProperty(id_debug):_debug;
+		_statistic=(_statistic==null)?property.getProperty(id_statistic):_statistic;
+		_statistic_provider=(_statistic_provider==null)?property.getProperty(id_statistic_provider):_statistic_provider;
+		_statistic_stacklength=(_statistic_stacklength==null)?property.getProperty(id_statistic_stacklength):_statistic_stacklength;
 
 		_transf_elaborationmode=(property.getProperty(id_transf_elaborationmode)!=null)?property.getProperty(id_transf_elaborationmode):_transf_elaborationmode;
 		_transf_elaborationpoint=(property.getProperty(id_transf_elaborationpoint)!=null)?property.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
@@ -248,6 +268,7 @@ public class app_init implements Serializable{
 		if(_load_res_mode==null) _load_res_mode="normal";
 		if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
 		if(_debug==null) _debug="false";
+		if(_statistic==null) _statistic="false";
 		content = new HashMap();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?property.getProperty(CONST_PAGESIZE):(String)content.get(CONST_PAGESIZE));
 	
@@ -457,6 +478,22 @@ public class app_init implements Serializable{
 	
 	public String get_annotation_scanner() {
 		return _annotation_scanner;
+	}
+
+	public String get_init_loader() {
+		return _init_loader;
+	}
+
+	public String get_statistic() {
+		return _statistic;
+	}
+
+	public String get_statistic_provider() {
+		return _statistic_provider;
+	}
+
+	public String get_statistic_stacklength() {
+		return _statistic_stacklength;
 	}
 
 }

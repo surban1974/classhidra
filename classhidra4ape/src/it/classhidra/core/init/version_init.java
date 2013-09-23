@@ -31,10 +31,15 @@ import java.util.Properties;
 
 public class version_init implements Serializable{
 	private static final long serialVersionUID = -1L;
+	static public String id_author =					"application.author";
+	static public String id_vendor =					"application.vendor";
+
 	static public String id_name =						"application.name";
 	static public String id_version= 					"application.version";
 	static public String id_lastmod = 					"application.lastmod";
 
+	private String _author;
+	private String _vendor;
 	private String _name;
 	private String _version;
 	private String _lastmod;
@@ -54,6 +59,8 @@ public void init(String property_name) {
 	}
 
 	if(property!=null){
+		_author = (_author==null)?property.getProperty(id_author):_author;
+		_vendor = (_vendor==null)?property.getProperty(id_vendor):_vendor;
 		_name = (_name==null)?property.getProperty(id_name):_name;
 		_version = (_version==null)?property.getProperty(id_version):_version;
 		_lastmod = (_lastmod==null)?property.getProperty(id_lastmod):_lastmod;
@@ -85,7 +92,29 @@ public void set_lastmod(String _lastmod) {
 }
 
 public String getInfo() {
-	return "application: "+ _name + "; version: "+_version+"; lastmod.: "+_lastmod;
+	String info="";
+	if(_name!=null) info+=" app: "+ _name+";";
+	if(_author!=null) info+=" author: "+ _author+";";
+	if(_vendor!=null) info+=" vendor: "+ _vendor+";";
+	if(_version!=null) info+=" version: "+ _version+";";
+	if(_lastmod!=null) info+=" lastmod: "+ _lastmod+";";
+	return  info;
+}
+
+public String get_author() {
+	return _author;
+}
+
+public void set_author(String author) {
+	_author = author;
+}
+
+public String get_vendor() {
+	return _vendor;
+}
+
+public void set_vendor(String vendor) {
+	_vendor = vendor;
 }
 
 }

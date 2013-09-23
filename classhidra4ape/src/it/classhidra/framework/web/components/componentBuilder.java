@@ -1,5 +1,6 @@
 package it.classhidra.framework.web.components;   
 
+
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Bean;
@@ -36,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-
 @ActionMapping (
 		redirects={
 				@Redirect(	
@@ -64,7 +64,6 @@ import javax.servlet.http.HttpServletResponse;
 			)
 	}
 )
-
 
 
 public class componentBuilder extends action implements i_action, Serializable{
@@ -105,13 +104,11 @@ public class componentBuilder extends action implements i_action, Serializable{
 	private boolean display_beans=false;
 	private boolean display_redirects=false;
 
-	
-	
-
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	
 	componentBuilder form = this;
+	if(form.getMiddleAction()==null) form.setMiddleAction("");
 	
 	
 	if(!form.getL_actions().isReadOk() || this.getMiddleAction().equals("reload")){
@@ -1021,6 +1018,7 @@ public info_section getSelected_section() {
 public void setSelected_section(info_section selectedSection) {
 	selected_section = selectedSection;
 }
+
 
 
 }

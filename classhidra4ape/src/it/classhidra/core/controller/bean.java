@@ -34,6 +34,7 @@ import it.classhidra.core.tool.util.util_makeValue;
 import it.classhidra.core.tool.util.util_multipart;
 import it.classhidra.core.tool.util.util_reflect;
 
+import java.io.DataInputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Enumeration;
@@ -58,6 +59,7 @@ public class bean extends elementBeanBase implements i_bean  {
 	public String js4ajax="false";
 	public boolean refresh=false;
 	private boolean xmloutput=false;
+	private boolean jsonoutput=false;
 	private boolean transformationoutput=false;
 	private boolean binaryoutput=false;
 	private boolean virtual=false;
@@ -93,7 +95,15 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		initMultiPart(request);
 		return;
 	}
-
+	
+	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
+		if(initJsonPart(request)) return;
+	}
+	
+	
+	xmloutput=false;
+	jsonoutput=false;
+	
 	Enumeration en = request.getParameterNames();
 	while(en.hasMoreElements()){
 		String key = (String)en.nextElement();
@@ -199,8 +209,72 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 	public void initMultiPart(HttpServletRequest request) throws bsControllerException{
 		HashMap parameters = util_multipart.popolateHashMap(request);
+		initPartFromMap(parameters);
+	}
+	
+	public boolean initJsonPart(HttpServletRequest request) throws bsControllerException{
+		boolean isJson=false;
+		HashMap parameters = new HashMap();
+		DataInputStream in = null;
+		try{
+			in = new DataInputStream(request.getInputStream());
+			int formDataLength = request.getContentLength();
+
+			byte dataBytes[] = new byte[formDataLength];
+			int bytesRead = 0;
+			int totalBytesRead = 0;
+			while (totalBytesRead < formDataLength && totalBytesRead>-1) {
+				bytesRead = in.read(dataBytes, totalBytesRead, formDataLength);
+				totalBytesRead += bytesRead;
+			}
+			
+			String json = new String(dataBytes,0,dataBytes.length).trim();
+			if(json.charAt(0)=='{' && json.charAt(json.length()-1)=='}') isJson=true;
+			if(isJson){
+				if(json.charAt(0)=='{' && json.length()>0) json=json.substring(1,json.length());
+				if(json.charAt(json.length()-1)=='}' && json.length()>0) json=json.substring(0,json.length()-1);
+				StringTokenizer st = new StringTokenizer(json,",");
+				while(st.hasMoreTokens()){
+					String pair = st.nextToken();
+					StringTokenizer st1 = new StringTokenizer(pair,":");
+					String key=null;
+					String value=null;
+					if(st1.hasMoreTokens()) key=st1.nextToken();
+					if(st1.hasMoreTokens()) value=st1.nextToken();
+					if(key!=null && value!=null){
+						key=key.trim();
+						if(key.charAt(0)=='"' && key.length()>0) key=key.substring(1,key.length());
+						if(key.charAt(key.length()-1)=='"' && key.length()>0) key=key.substring(0,key.length()-1);
+						value=value.trim();
+						if(value.charAt(0)=='"' && value.length()>0) value=value.substring(1,value.length());
+						if(value.charAt(value.length()-1)=='"' && value.length()>0) value=value.substring(0,value.length()-1);
+						parameters.put(key, value);						
+					}
+				}
+			}
+		
+			
+		}catch(Exception e){
+			
+		}finally{
+			try{
+				in.close();
+			}catch (Exception ex) {
+			}
+		}
+
+		if(isJson) initPartFromMap(parameters);
+		
+		return isJson;
+	}
+	
+
+	private void initPartFromMap(HashMap parameters) throws bsControllerException{
 		if(parameters==null) parameters=new HashMap();
 		parametersMP = parameters;
+		
+		xmloutput=false;
+		jsonoutput=false;
 
 		Vector en = new Vector(parameters.keySet());
 		for(int k=0;k<en.size();k++){
@@ -324,9 +398,12 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	}
 
 
-
 public void init(HashMap _content) throws bsControllerException{
 	if(_content==null) return;
+	
+	xmloutput=false;
+	jsonoutput=false;
+	
 	Object[] keys = _content.keySet().toArray();
 	for (int ii = 0; ii < keys.length; ii++){
 		String key = (String)keys[ii];
@@ -924,6 +1001,14 @@ public void setXmloutput(boolean xmloutput) {
 	this.xmloutput = xmloutput;
 }
 
+public boolean getJsonoutput() {
+	return jsonoutput;
+}
+
+public void setJsonoutput(boolean jsonoutput) {
+	this.jsonoutput = jsonoutput;
+}
+
 public boolean getTransformationoutput() {
 	return transformationoutput;
 }
@@ -955,5 +1040,7 @@ public boolean getVirtual() {
 public void setVirtual(boolean virtual) {
 	this.virtual = virtual;
 }
+
+
 
 }

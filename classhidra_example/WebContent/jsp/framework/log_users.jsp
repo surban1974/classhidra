@@ -19,13 +19,19 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <div id="page" style=" width: 900; height: 530; background-color: white">
 <%@ include file="../included/content_page_header.jsp" %>
 
+<table>
+<tr>
 
+	<td align="center"><script>ObjectDraw("page1","button",1,"show stack activity","showAsPopup('statistisc_json?middleAction=showasxml',800,500)","page_section","","images/menu/","",true,24,"35");</script></td>
+</tr>
+</table>
 <center>
 
 
 <bs:form onhistory="" method="post" >
 
 <table >
+
 <bs:sequence bean="elements">
 	<bs:bean name="current_auth" source="elements" index="sequence"/>
 		<tr >	
@@ -48,6 +54,14 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 </bs:sequence>
 </table>
+<br></br>
+
+<div style="width: 700px; height:300px;border: none; " >
+        <canvas id="graph" style="" width="700" height="300"
+
+        ></canvas>
+</div>
+
 </bs:form> 
 </center>
 
@@ -63,4 +77,82 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 </div>
 </body>
 <%@ include file="../framework/footer.jsp" %>
+
+<script>
+
+
+	function loadJsonList_afterJSFunction(){
+	}
+
+	function loadJsonList_callBackJs(http_request,target){
+
+		try{
+
+			var canvas = document.getElementById('graph');
+			var ctx = canvas.getContext('2d');
+
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+			ctx.strokeStyle = "rgb(0,102,204)";
+				ctx.beginPath();
+				ctx.moveTo(49, canvas.height-19);
+				ctx.lineTo(49, 0);
+				ctx.stroke();
+	
+				ctx.beginPath();
+				ctx.moveTo(49, canvas.height-19);
+				ctx.lineTo(canvas.width, canvas.height-19);
+				ctx.stroke();
+
+
+					
+			var json_object;
+			try{
+				json_object = JSON.parse(http_request.responseText);
+			}catch(e){
+			}
+
+			var maxY=0;
+			var vmaxY="0";
+			var startX="";
+			var finishX="";
+	
+			for(i=0;i<json_object.data.length;i++){
+				ctx.strokeStyle    = 'rgb(255, 0, 0)';
+				ctx.beginPath();
+				ctx.moveTo(json_object.data[i].x*0.65+50, canvas.height - json_object.data[i].y*0.28 -20);
+				ctx.lineTo(json_object.data[i].x*0.65+50, canvas.height -20);
+				ctx.stroke();
+
+				if(startX=="") startX=json_object.data[i].vx;
+				finishX=json_object.data[i].vx;
+
+				if(maxY<json_object.data[i].y){
+					maxY = json_object.data[i].y;
+					vmaxY=json_object.data[i].vy;
+				}
+					
+				
+			}
+			ctx.fillStyle    = 'rgb(255, 0, 0)';
+			ctx.font         = 'normal 8px sans-serif';
+			ctx.textBaseline = 'top';
+			ctx.fillText  ("0 ms", 0,  canvas.height -25);
+			ctx.fillText  (vmaxY, 0,  0);
+
+			ctx.fillText  (startX, 50,  canvas.height-10);
+			ctx.fillText  (finishX, canvas.width-85,  canvas.height-10);
+	
+		}catch(e){
+		
+		}
+
+		
+		
+	}
+
+	ajax_makeRequest("statistisc_json","","loadJsonList_afterJSFunction", "loadJsonList_callBackJs",false);
+
+</script>
 

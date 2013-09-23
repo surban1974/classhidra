@@ -119,13 +119,42 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <%request.setAttribute("mess-description","Version "+new version_init("application.version").get_version());%>
 			
 <jsp:include page="/jsp/included/panel_bottom.jsp"/>			
-<br></br>	
+
 
 
 
 </td>
 
 </tr>
+
+<tr>
+	<td align="center">
+
+
+<jsp:include page="/jsp/included/panel_top.jsp"/>	
+			
+			<table  >
+	
+				<tr>
+					<td 
+						valign="middle" 
+						align="center" 
+						width="150"
+						style="cursor: pointer;"
+						>
+						<img src="images/decor/neohort/charts.gif" border="0" onclick="goAction('/neohort?')">
+						
+					</td>
+					<td align="center" valign="middle" width="305"><script>ObjectDraw("page1","button",17,"&nbsp;NeoHort PDF Vector Chart integration&nbsp;&nbsp;","goAction('/neohort?')","page_section_active","","images/menu/","",true,24);</script></td>
+				</tr>
+			</table>		
+<jsp:include page="/jsp/included/panel_bottom.jsp"/>	
+<br></br>
+<br></br>	
+	</td>
+</tr>	
+
+
 <tr>
 	<td style="border-top-style: solid;border-top-width: 1px ; border-top-color:#D5E5F7; height: 10px; " valign="bottom">
 	</td>
@@ -169,35 +198,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 	</td>
 
 </tr>	
-<tr>
-	<td style="height: 10px; border-bottom-style: solid;border-bottom-width: 1px ; border-bottom-color:#D5E5F7;" valign="bottom">
-	</td>
-</tr>
-<tr>
-	<td align="center">
-<br></br>
 
-<jsp:include page="/jsp/included/panel_top.jsp"/>	
-			
-			<table  >
-	
-				<tr>
-					<td 
-						valign="middle" 
-						align="center" 
-						width="150"
-						style="cursor: pointer;"
-						>
-						<img src="images/decor/neohort/charts.gif" border="0" onclick="goAction('/neohort?')">
-						
-					</td>
-					<td align="center" valign="middle" width="305"><script>ObjectDraw("page1","button",17,"&nbsp;NeoHort PDF Vector Chart integration&nbsp;&nbsp;","goAction('/neohort?')","page_section_active","","images/menu/","",true,24);</script></td>
-				</tr>
-			</table>		
-<jsp:include page="/jsp/included/panel_bottom.jsp"/>	
-	
-	</td>
-</tr>	
 
 </table>	
 

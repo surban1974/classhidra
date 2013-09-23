@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface i_log_pattern_web extends i_log_pattern{
 	String prepare(String mes,String level);
 	String prepare(HttpServletRequest request, String mes,String level);
-//	String prepare(ServletContext request, String mes,String level);
 	String prepare(String mes, String userIP, String userMatricola, String classFrom, String level);
 	String prepare(HttpServletRequest request, String mes, String userIP, String userMatricola, String classFrom, String level);	
 }

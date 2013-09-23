@@ -212,7 +212,6 @@ public class bs_authentication_filters implements i_authentication_filter {
 		boolean result=true;
 		
 		String id_action = _action.get_infoaction().getPath();
-		_action.getCurrent_redirect().get_inforedirect().getPath();
 
 		if(	auth.get_actions_permitted().get(id_action)==null)  result = false;
 		if(	((info_action)auth.get_actions_permitted().get(id_action)).get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;

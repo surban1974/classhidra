@@ -58,6 +58,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	
 	
 	HashMap h_user_container = (HashMap)bsController.getFromLocalContainer(util_usersInSession.CONST_APP_USER_CONTAINER);
+	if(h_user_container==null) h_user_container = new HashMap();
 	if(this.getMiddleAction()==null) this.setMiddleAction("");
 	if(this.getMiddleAction().equals("view_mess")){
 		return new redirects("/jsp/ajax/add_LogUserMess.jsp?session_id="+this.get("session_id"));	

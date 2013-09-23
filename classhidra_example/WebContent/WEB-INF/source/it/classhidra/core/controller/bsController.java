@@ -41,6 +41,9 @@ import it.classhidra.core.tool.exception.message;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.i_log_generator;
 import it.classhidra.core.tool.log.log_generator;
+import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
+import it.classhidra.core.tool.log.statistic.StatisticEntity;
+import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
@@ -55,9 +58,12 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.sql.Connection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -285,7 +291,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 //				bsController.writeLog(request, id_action, iStub.log_INFO);
 			if(id_action!=null) id_action=id_action.trim();
 
-			if(isDebug && id_action!=null && id_action.equals("bsLog")){
+			if(isDebug && id_action!=null && id_action.equals(CONST_DIRECTINDACTION_bsLog)){
 				try{
 					String content = logG.get_log_Content("<br>"+System.getProperty("line.separator"));
 					response.getWriter().write(content);
@@ -293,7 +299,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 				return;
 			}
-			if(isDebug && id_action!=null && id_action.equals("bsActions")){
+			if(isDebug && id_action!=null && id_action.equals(CONST_DIRECTINDACTION_bsActions)){
 				try{
 					String content = "actions.xml<br>ROOT1="+request.getSession().getServletContext().getRealPath("/")+"<br>ROOT2="+request.getSession().getServletContext().getRealPath("/")+"<br>";
 					try{
@@ -315,7 +321,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				return;
 			}
 
-			if(isDebug && id_action!=null && id_action.equals("bsLogS")){
+			if(isDebug && id_action!=null && id_action.equals(CONST_DIRECTINDACTION_bsLogS)){
 				try{
 					String content = "LOG<br>";
 					Vector s_log = (Vector)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
@@ -333,13 +339,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 
 
-			if(isDebug && id_action!=null && id_action.equals("Controller")){
+			if(isDebug && id_action!=null && id_action.equals(CONST_DIRECTINDACTION_Controller)){
 				loadOnInit();
 				return;
 			}
 
 
-			if(isDebug && id_action!=null && id_action.equals("bsResource")){
+			if(isDebug && id_action!=null && id_action.equals(CONST_DIRECTINDACTION_bsResource)){
 				try{
 					String content = "Resource<br>";
 					content+="APP_INIT="+getAppInit().getLoadedFrom()+"<br>";
@@ -363,6 +369,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				return;
 			}
+			
+			if(isDebug && id_action!=null && id_action.equals(CONST_DIRECTINDACTION_bsStatistics)){
+				try{
+					String content = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+					content+="<statistics>\n";
+					I_StatisticProvider stack = getStatisticProvider();
+					if(stack!=null) content+=stack.getAllEntitiesAsXml();
+					content+="</statistics>\n";
+					response.getWriter().write(content);
+				}catch(Exception e){
+
+				}
+				return;
+			}
+			
 
 			if(id_action!=null && id_action.equals("bsTransformation")){
 				transformation cTransformation = (transformation)request.getAttribute(bsConstants.CONST_ID_TRANSFORMATION4CONTROLLER);
@@ -457,7 +478,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(action_instance.get_infoaction().getSyncro().toLowerCase().equals("true"))
 			current_redirect = action_instance.syncroservice(request,response);
 		else current_redirect = action_instance.actionservice(request,response);
-		if(current_redirect==null) return null;
+// Mod 20130923 -- 
+//		if(current_redirect==null) return null;
 		action_instance.setCurrent_redirect(current_redirect);
 		setCurrentForm(action_instance,request);
 
@@ -792,15 +814,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(idApp==null) idApp = util_format.replace(request.getContextPath(),"/", "");
 		}
 		if(auth==null) auth = new auth_init();
-//		if(getLogG().isReadError()) 			reloadLog_generator(request.getSession().getServletContext());
-//
-//		if(!getAction_config().isReadOk())	reloadAction_config(request.getSession().getServletContext());
-//		if(!getMess_config().isReadOk()) 	reloadMess_config(request.getSession().getServletContext());
-//		if(!getAuth_config().isReadOk()) 	reloadAuth_config(request.getSession().getServletContext());
-//		if(!getOrg_config().isReadOk()) 	reloadOrg_config(request.getSession().getServletContext());
-//		if(!getMenu_config().isReadOk()) 	reloadMenu_config(request.getSession().getServletContext(),null);
-
-//		if(getUser_config().isReadError()) reloadUsers_config(request);
+		
+		StatisticEntity stat = null;
+		try{
+			stat = new StatisticEntity(
+					String.valueOf(request.getSession().getId()),
+					auth.get_user_ip(),
+					auth.get_matricola(),
+					id_action,
+					null,
+					new Date(),
+					null,
+					request);
+		}catch(Exception e){
+		}
 
 		String id_rtype=request.getParameter(CONST_ID_REQUEST_TYPE);
 		if(id_rtype==null) id_rtype = (String)request.getAttribute(CONST_ID_REQUEST_TYPE);
@@ -817,7 +844,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			Vector _streams_orig = (Vector)getAction_config().get_streams_apply_to_actions().get("*");
 
 			if(_streams_orig!=null) _streams.addAll(_streams_orig);
-//Modifica 20100521 Warning
+//Modifica 20100521 Warning 
 /*
 			try{
 				_streams = (Vector)util_cloner.clone(_streams_orig);
@@ -857,34 +884,45 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				if(!performStream_Enter(_streams, id_action,action_instance, servletContext, request, response)){
 					isException(action_instance, request);
+					if(stat!=null){
+						stat.setFt(new Date());
+						stat.setException(new Exception("Blocked by STREAM ENTER"));
+						statisticsStack(stat);
+					}					
 					return response;
 				}
 
 
 				action_instance = performAction(id_action, servletContext, request, response);
 
-
 				if(action_instance==null){
 					isException(action_instance, request);
+					if(stat!=null){
+						stat.setFt(new Date());
+						stat.setException(new Exception("ACTION INSTANCE is NULL"));
+						statisticsStack(stat);
+					}					
 					return response;
 				}
+
+				if(	action_instance.get_infoaction()!=null &&	
+					action_instance.get_infoaction().getStatistic()!=null &&
+					action_instance.get_infoaction().getStatistic().toLowerCase().equals("false")) stat=null;
+				
 
 				if(!action_instance.isIncluded()){
 					if(!id_rtype.equals(CONST_REQUEST_TYPE_FORWARD)) action_instance.setIncluded(true);
 				}else{
 					if(id_rtype.equals(CONST_REQUEST_TYPE_FORWARD)) action_instance.setIncluded(false);
 				}
-
-
-				if(action_instance!=null){
-					if(request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL)==null)
-						request.setAttribute(CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
-					HashMap included_pool = (HashMap)request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL);
-					if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getName()!=null)
-						included_pool.put(action_instance.get_infoaction().getName(),action_instance);
-					else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getPath()!=null)
-						included_pool.put(action_instance.get_infoaction().getPath(),action_instance);
-				}
+					
+				if(request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL)==null)
+					request.setAttribute(CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
+				HashMap included_pool = (HashMap)request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL);
+				if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getName()!=null)
+					included_pool.put(action_instance.get_infoaction().getName(),action_instance);
+				else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getPath()!=null)
+					included_pool.put(action_instance.get_infoaction().getPath(),action_instance);
 
 				request.setAttribute(CONST_BEAN_$INSTANCEACTION,action_instance);
 
@@ -893,17 +931,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 
+				if(action_instance.getCurrent_redirect()!=null){
+					if(!performStream_Exit(_streams, id_action,action_instance, servletContext, request, response)){
+						isException(action_instance, request);
+						if(stat!=null){
+							stat.setFt(new Date());
+							stat.setException(new Exception("Blocked by STREAM EXIT"));
+							statisticsStack(stat);
+						}					
+						return response;
+					}
 
-				if(!performStream_Exit(_streams, id_action,action_instance, servletContext, request, response)){
-					isException(action_instance, request);
-					return response;
-				}
-
-				request.removeAttribute(CONST_ID_REQUEST_TYPE);
+					request.removeAttribute(CONST_ID_REQUEST_TYPE);
+					response = execRedirect(action_instance,servletContext,request,response,true);
+				}	
 
 				environmentState(request,id_action);
 
-				response = execRedirect(action_instance,servletContext,request,response,true);
+				
 
 			}catch(bsControllerException e){
 				if(request.getAttribute(CONST_BEAN_$ERRORACTION)==null) request.setAttribute(CONST_BEAN_$ERRORACTION, e.toString());
@@ -914,6 +959,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 //				request.setAttribute(CONST_BEAN_$ERRORACTION, e);
 				if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)!=null) request.getSession().removeAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
 				service_ErrorRedirect(id_action,servletContext,request, response);
+				stat.setException(e);
 			}catch(Exception ex){
 				if(request.getAttribute(CONST_BEAN_$ERRORACTION)==null) request.setAttribute(CONST_BEAN_$ERRORACTION, ex.toString());
 				else request.setAttribute(CONST_BEAN_$ERRORACTION, request.getAttribute(CONST_BEAN_$ERRORACTION) + ";" +ex.toString());
@@ -925,6 +971,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 //				if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)!=null) request.getSession().removeAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
 
 				service_ErrorRedirect(id_action,servletContext,request, response);
+				stat.setException(ex);
 			}catch(Throwable t){
 				if(request.getAttribute(CONST_BEAN_$ERRORACTION)==null) request.setAttribute(CONST_BEAN_$ERRORACTION, t.toString());
 				else request.setAttribute(CONST_BEAN_$ERRORACTION, request.getAttribute(CONST_BEAN_$ERRORACTION) + ";" +t.toString());
@@ -935,9 +982,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 //				request.setAttribute(CONST_BEAN_$ERRORACTION, t);
 //				if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)!=null) request.getSession().removeAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
 				service_ErrorRedirect(id_action,servletContext,request, response);
+				stat.setException(t);
 			}finally{
 			}
 
+			if(stat!=null){
+				stat.setFt(new Date());
+				statisticsStack(stat);
+			}
 		}
 		return response;
 	}
@@ -1642,6 +1694,29 @@ public class bsController extends HttpServlet implements bsConstants  {
         return hash;
     }
 
+// algorithm: SHA, SHA-224, SHA-256, SHA-384, and SHA-512    
+    public static String encrypt(String plaintext, String algorithm) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+    	MessageDigest md = null;
+        md = MessageDigest.getInstance(algorithm);
+        md.update(plaintext.getBytes("UTF-8"));
+        byte raw[] = md.digest();
+		BASE64Encoder encoder = new BASE64Encoder();
+        String hash = encoder.encode(raw);
+		encoder = null;
+        return hash;
+    }
+    
+ // algorithm: SHA, SHA-224, SHA-256, SHA-384, and SHA-512    
+    public static String encrypt(String plaintext, String algorithm, String provider) throws NoSuchAlgorithmException, NoSuchProviderException, UnsupportedEncodingException{
+    	MessageDigest md = null;
+        md = MessageDigest.getInstance(algorithm,provider);
+        md.update(plaintext.getBytes("UTF-8"));
+        byte raw[] = md.digest();
+		BASE64Encoder encoder = new BASE64Encoder();
+        String hash = encoder.encode(raw);
+		encoder = null;
+        return hash;
+    }
 
 //*********************************************************
 	static public int calc(Object oldObj){
@@ -1672,8 +1747,35 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return 0;
 	}
 
+	private static void statisticsStack(StatisticEntity stat){
+		if(appInit.get_statistic()!=null && appInit.get_statistic().toLowerCase().equals("true")){
+			I_StatisticProvider statProvider = (I_StatisticProvider)local_container.get(CONST_ID_STATISTIC_PROVIDER);
+			if(statProvider==null){
+				if(appInit.get_statistic_provider()==null || appInit.get_statistic_provider().equals(""))
+					statProvider = new StatisticProvider_Simple();
+				else{
+					try{
+						statProvider = (I_StatisticProvider)Class.forName(appInit.get_statistic_provider()).newInstance();
+					}catch(Exception e){	
+						writeLog("ERROR instance Statistic Provider:"+appInit.get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
+					}
+				}
+				if(statProvider==null) statProvider = new StatisticProvider_Simple();
+				local_container.put(CONST_ID_STATISTIC_PROVIDER,statProvider);
+			}
+			statProvider.addStatictic(stat);
+		}
+	}
+	
+	public static I_StatisticProvider getStatisticProvider(){
+		if(appInit.get_statistic()!=null && appInit.get_statistic().toLowerCase().equals("true"))
+			return (I_StatisticProvider)local_container.get(CONST_ID_STATISTIC_PROVIDER);
+		return null;
+	}
+
+	
 	private static void environmentState(HttpServletRequest request, String id_action){
-		if(System.getProperty("application.environment.debug")!=null && System.getProperty("application.environment.debug").toUpperCase().equals("TRUE")){
+		if(System.getProperty("application.environment.debug")!=null && System.getProperty("application.environment.debug").toLowerCase().equals("true")){
 			int total=0;
 			int only_session=0;
 			int only_app=0;

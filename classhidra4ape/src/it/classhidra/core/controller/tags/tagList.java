@@ -59,6 +59,7 @@ public class tagList extends TagSupport{
 	protected String propertys = null;
 	protected String key_values = null;
 	protected String formatsOutput=null;
+	protected String replaceOnBlank=null;
 	protected String value = null;
 	protected String multiple = null;
 
@@ -209,7 +210,8 @@ public class tagList extends TagSupport{
 
 		Vector v_propertys = new Vector();
 		Vector v_values = new Vector();
-		Vector v_formatsOutput = new Vector();
+		Vector v_formatsOutput = new Vector();		
+		Vector v_replaceOnBlank = new Vector();
 		Vector v_td_width = new Vector();
 		Vector v_td_styleClassOutput = new Vector();
 		Vector v_key_values = new Vector();
@@ -278,6 +280,16 @@ public class tagList extends TagSupport{
 				}else{
 					for(int i=0;i<count_propertys;i++) v_formatsOutput.add(null);
 				}
+				if(replaceOnBlank!=null){
+					StringTokenizer st = new StringTokenizer(replaceOnBlank,";");
+					while(st.hasMoreTokens()) v_replaceOnBlank.add(st.nextToken().trim());
+					int len = v_replaceOnBlank.size();
+					for(int i=0;i<count_propertys-len;i++) v_replaceOnBlank.add(null);
+				}else{
+					for(int i=0;i<count_propertys;i++) v_replaceOnBlank.add(null);
+				}
+				
+				
 				if(td_styleClassOutput!=null){
 					StringTokenizer st = new StringTokenizer(td_styleClassOutput,";");
 					while(st.hasMoreTokens()) v_td_styleClassOutput.add(st.nextToken().trim());
@@ -315,7 +327,7 @@ public class tagList extends TagSupport{
 			if(body_as_first_row==null || body_as_first_row.toUpperCase().equals("FALSE")){
 				results.append(createDIV_TagBodyTable(v_td_width));
 			}
-			results.append(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput, v_td_width, v_td_styleClassOutput,v_key_values));
+			results.append(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput,v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
 
 			String row_id ="";
 			try{
@@ -382,6 +394,7 @@ public class tagList extends TagSupport{
 		propertys = null;
 		key_values = null;
 		formatsOutput=null;
+		replaceOnBlank=null;
 		value = null;
 
 		tb_style = null;
@@ -588,7 +601,7 @@ public class tagList extends TagSupport{
 		return results.toString();
 	}
 
-	protected String createDIV_TagBodyFinish(List iterator, Vector v_propertys, Vector v_values, Vector v_formatsOutput,Vector v_td_width, Vector v_td_styleClassOutput, Vector v_key_values) {
+	protected String createDIV_TagBodyFinish(List iterator, Vector v_propertys, Vector v_values, Vector v_formatsOutput, Vector v_replaceOnBlank, Vector v_td_width, Vector v_td_styleClassOutput, Vector v_key_values) {
 		StringBuffer results = new StringBuffer("");
 
 
@@ -599,7 +612,7 @@ public class tagList extends TagSupport{
 				String stylePariDispari="";
 				if(i%2!=0) stylePariDispari="Disp";
 				results.append(
-					createTR_TagBody(i,iterator.get(i),v_propertys, v_values, v_formatsOutput, v_td_width,v_td_styleClassOutput,v_key_values,stylePariDispari)
+					createTR_TagBody(i,iterator.get(i),v_propertys, v_values, v_formatsOutput,v_replaceOnBlank,v_td_width,v_td_styleClassOutput,v_key_values,stylePariDispari)
 				);
 			}
 		}
@@ -612,7 +625,7 @@ public class tagList extends TagSupport{
 		return results.toString();
 	}
 
-	protected String createTR_TagBody(int current_position, Object current,Vector v_propertys, Vector v_values, Vector v_formatsOutput,Vector v_td_width,Vector v_td_styleClassOutput, Vector v_key_values, String stylePariDispari) {
+	protected String createTR_TagBody(int current_position, Object current,Vector v_propertys, Vector v_values, Vector v_formatsOutput, Vector v_replaceOnBlank, Vector v_td_width,Vector v_td_styleClassOutput, Vector v_key_values, String stylePariDispari) {
 		StringBuffer results = new StringBuffer("");
 		Object writeObject = null;
 
@@ -761,7 +774,7 @@ public class tagList extends TagSupport{
 
 		if(v_propertys!=null){
 			for(int i=0;i<v_propertys.size();i++){
-				results.append(createTD_TagBody(current,v_propertys.get(i), v_formatsOutput.get(i), v_td_width.get(i),v_td_styleClassOutput.get(i)));
+				results.append(createTD_TagBody(current,v_propertys.get(i), v_formatsOutput.get(i),v_replaceOnBlank.get(i), v_td_width.get(i),v_td_styleClassOutput.get(i)));
 			}
 		}
 
@@ -770,7 +783,7 @@ public class tagList extends TagSupport{
 	}
 
 
-	protected String createTD_TagBody(Object current, Object v_propertys_current, Object v_formatsOutput_current, Object v_td_width_current, Object v_td_styleClassOutput_current) {
+	protected String createTD_TagBody(Object current, Object v_propertys_current, Object v_formatsOutput_current, Object v_replaceOnBlank_current, Object v_td_width_current, Object v_td_styleClassOutput_current) {
 
 		StringBuffer results = new StringBuffer("<td ");
 		if(v_td_width_current!=null){
@@ -866,6 +879,9 @@ public class tagList extends TagSupport{
 		try{
 			if(!v_formatsOutput_current.toString().equals(""))
 				writeValue=util_format.makeFormatedString(v_formatsOutput_current.toString(),formatLanguage,formatCountry,writeValue);
+			if(!v_replaceOnBlank_current.toString().equals(""))
+				writeValue=util_format.replace(writeValue.toString(),v_replaceOnBlank_current.toString(),"");
+	
 		}catch(Exception e){}
 		if(marked){
 			if(mark_styleClass!=null) results.append("span class=\""+mark_styleClass+"\">");
@@ -1059,13 +1075,7 @@ public class tagList extends TagSupport{
 		bean = string;
 	}
 
-	public void setFormatsOutput(String string) {
-		if(string==null || string.length()==0) formatsOutput = string;
-//		while(string.indexOf(";;")>-1) string = string.replace(";;","; ;");
-		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
-		if(string.indexOf(";")==0) string = " "+ string;
-		formatsOutput=string;
-	}
+
 
 	public void setName(String string) {
 		name = string;
@@ -1144,9 +1154,7 @@ public class tagList extends TagSupport{
 		td_onmouseup = string;
 	}
 
-	public void setTd_width(String string) {
-		td_width = string;
-	}
+
 
 	public void setTr_onclick(String string) {
 		tr_onclick = string;
@@ -1326,9 +1334,7 @@ public class tagList extends TagSupport{
 	}
 
 
-	public void setTd_styleClassOutput(String tdStyleClassOutput) {
-		td_styleClassOutput = tdStyleClassOutput;
-	}
+
 
 
 	public String getFormatLanguage() {
@@ -1351,5 +1357,43 @@ public class tagList extends TagSupport{
 	}
 
 
+	public String getReplaceOnBlank() {
+		return replaceOnBlank;
+	}
+
+	public void setFormatsOutput(String string) {
+		if(string==null || string.length()==0) formatsOutput = string;
+//		while(string.indexOf(";;")>-1) string = string.replace(";;","; ;");
+		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
+		if(string.indexOf(";")==0) string = " "+ string;
+		formatsOutput=string;
+	}
+	
+	public void setReplaceOnBlank(String string) {
+		if(string==null || string.length()==0) replaceOnBlank = string;
+		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
+		if(string.indexOf(";")==0) string = " "+ string;
+		replaceOnBlank=string;
+	}
+/*
+	public void setTd_styleClassOutput(String tdStyleClassOutput) {
+		td_styleClassOutput = tdStyleClassOutput;
+	}
+	public void setTd_width(String string) {
+		td_width = string;
+	}
+*/	
+	public void setTd_styleClassOutput(String string) {
+		if(string==null || string.length()==0) td_styleClassOutput = string;
+		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
+		if(string.indexOf(";")==0) string = " "+ string;
+		td_styleClassOutput=string;
+	}
+	public void setTd_width(String string) {
+		if(string==null || string.length()==0) td_width = string;
+		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
+		if(string.indexOf(";")==0) string = " "+ string;
+		td_width=string;
+	}	
 }
 

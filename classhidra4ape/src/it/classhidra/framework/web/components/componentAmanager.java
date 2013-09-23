@@ -24,15 +24,11 @@ import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_cloner;
 import it.classhidra.core.tool.util.util_find;
-import it.classhidra.core.tool.util.util_sort;
 import it.classhidra.framework.web.beans.option_element;
 
-
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -40,9 +36,6 @@ import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
-
 
 @ActionMapping (
 		redirects={
@@ -73,12 +66,8 @@ import javax.servlet.http.HttpServletResponse;
 )
 
 
-
-
-
 public class componentAmanager extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6641876370416839602L;
-
 	private load_actions l_actions;
 	private load_users l_users;
 	private load_authentication l_authentication;
@@ -113,9 +102,12 @@ public class componentAmanager extends action implements i_action, Serializable{
 	private String xmlContent;
 
 
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	
 	componentAmanager form = this;
+	
+	if(form.getMiddleAction()==null) form.setMiddleAction("");
 /*	
 	Vector tmp1 = new Vector(request.getParameterMap().keySet());
 	String tmp_str = "";
@@ -855,6 +847,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 }
 
 private void preLoadUsers(componentAmanager form){
+	return;
+/*	
 	try{
 		load_users tmp = new load_users();
 		String xml = util_classes.getResourceAsTxt(this.getClass().getName(), "resources/example_users.xml");
@@ -870,10 +864,12 @@ private void preLoadUsers(componentAmanager form){
 		
 	}catch(Exception e){
 	}
-
+*/
 }
 
 private void preLoadAuthentications(componentAmanager form){
+	return;
+/*	
 	try{
 		load_authentication tmp = new load_authentication();
 		String xml = util_classes.getResourceAsTxt(this.getClass().getName(), "resources/example_authentication.xml");
@@ -907,9 +903,8 @@ private void preLoadAuthentications(componentAmanager form){
 		
 	}catch(Exception e){
 	}
-
+*/
 }
-
 public void reimposta(){
 	id_selected_action="";
 	id_selected_section="";

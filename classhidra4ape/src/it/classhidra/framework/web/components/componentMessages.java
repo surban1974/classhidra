@@ -22,7 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 @Action (
 		path="messages",
 		name="formMessages",
-		redirect="/jsp/framework/viewmessages.jsp"
+		redirect="/jsp/framework/viewmessages.jsp",
+		statistic="false"
 )
 
 public class componentMessages extends action implements i_action, Serializable{

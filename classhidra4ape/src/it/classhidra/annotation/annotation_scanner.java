@@ -167,7 +167,7 @@ public class annotation_scanner implements i_annotation_scanner {
 
 
 
-	private void checkClassAnnotation(String class_path) {
+	public void checkClassAnnotation(String class_path) {
 		try{
 			Class classType = Class.forName(class_path);
 	
@@ -307,6 +307,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
 		    	iAction.setNavigated(annotationAction.navigated());
 		    	iAction.setSyncro(annotationAction.syncro());
+		    	iAction.setStatistic(annotationAction.statistic());
 		    	iAction.setHelp(annotationAction.help());
 		    	setEntity(iAction,annotationAction.entity());
 		    	Redirect[] redirects = annotationAction.redirects();

@@ -9,9 +9,9 @@ import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.StringTokenizer;
-import java.util.Vector;
+
 
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_bean;
@@ -843,5 +843,6 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 
 	return writeValue;
 }
+
 
 }
