@@ -28,7 +28,9 @@ package it.classhidra.core.controller;
 import it.classhidra.core.controller.wrappers.a_ResponseWrapper;
 
 import it.classhidra.core.controller.wrappers.responseWrapperFactory;
+import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 
@@ -156,6 +158,24 @@ public class bsFilter implements Filter {
 					responseWrapped = bsController.service(id_current, request.getSession().getServletContext(), request,response);
 
 					if(responseWrapped instanceof a_ResponseWrapper){
+						
+						StatisticEntity stat = null;
+						try{
+							auth_init auth = bsController.checkAuth_init(request);
+							if(auth==null) auth = new auth_init();
+
+							stat = new StatisticEntity(
+									String.valueOf(request.getSession().getId()),
+									auth.get_user_ip(),
+									auth.get_matricola(),
+									"WRAPPED",
+									null,
+									new Date(),
+									null,
+									request);
+						}catch(Exception e){
+						}
+						
 
 						String htmlSource = ((a_ResponseWrapper)responseWrapped).toString();
 						transformation cTransformation = (transformation)request.getAttribute(bsConstants.CONST_ID_TRANSFORMATION4WRAPPER);
@@ -202,6 +222,12 @@ public class bsFilter implements Filter {
 								response.sendRedirect("Controller?$action=bsTransformation&id="+idInSession);
 							}
 						}
+						
+						if(stat!=null){
+							stat.setFt(new Date());
+							bsController.putToStatisticProvider(stat);
+						}
+						
 
 					}
 					
@@ -230,10 +256,28 @@ public class bsFilter implements Filter {
 					(request.getParameter("ReportProvider")!=null && request.getParameter("ReportProvider").equals("neoHort"))
 					)
 				){
+					StatisticEntity stat = null;
 					if(System.getProperty("application.log.stub")==null || System.getProperty("application.log.stub").equals(""))
 						System.setProperty("application.log.stub","it.classhidra.core.tool.log.stubs.stub_neoHort_log");
 					try{
+						
+						
+						try{
+							auth_init auth = bsController.checkAuth_init(request);
+							if(auth==null) auth = new auth_init();
 
+							stat = new StatisticEntity(
+									String.valueOf(request.getSession().getId()),
+									auth.get_user_ip(),
+									auth.get_matricola(),
+									"REPORTPROVIDER",
+									null,
+									new Date(),
+									null,
+									request);
+						}catch(Exception e){
+						}
+						
 						a_ResponseWrapper responseWrapper =  responseWrapperFactory.getWrapper(response);
 						if(id_current!=null)
 							bsController.service(id_current, request.getSession().getServletContext(), request,responseWrapper);
@@ -261,11 +305,16 @@ public class bsFilter implements Filter {
 						}
 						return true;
 					}catch(Exception ex){
+						stat.setException(ex);
 						try{
 							response.getWriter().write(ex.toString());
 						}catch(Exception exp){}
-						ex.toString();
 					}
+					if(stat!=null){
+						stat.setFt(new Date());
+						bsController.putToStatisticProvider(stat);
+					}
+
 				}
 			}
 			return result;

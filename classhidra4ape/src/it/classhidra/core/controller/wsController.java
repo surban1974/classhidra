@@ -227,7 +227,7 @@ public class wsController   {
 		}
 		if(stat!=null){
 			stat.setFt(new Date());
-			statisticsStack(stat);
+			putToStatisticProvider(stat);
 		}
 
 		return outputXML;
@@ -289,7 +289,7 @@ public class wsController   {
 		return null;
 	}
 	
-	private static void statisticsStack(StatisticEntity stat){
+	public static void putToStatisticProvider(StatisticEntity stat){
 		if(bsController.getAppInit().get_statistic()!=null && bsController.getAppInit().get_statistic().toUpperCase().equals("TRUE")){
 			I_StatisticProvider statProvider = (I_StatisticProvider)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_PROVIDER);
 			if(statProvider==null){

@@ -8,6 +8,7 @@ import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
+import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_sort;
 
@@ -62,23 +63,44 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	try{
 		I_StatisticProvider provider = bsController.getStatisticProvider();
 		if(provider!=null){
+			int length = 100;
 			String json="";
-			List<StatisticEntity> statistics = provider.getLastEntities(100);
-			statistics = util_sort.sort(statistics, "st");
-			
+			List<StatisticEntity> statistics = null;
+			if(provider instanceof StatisticProvider_Simple){
+				statistics = provider.getAllEntities();
+				try{
+					length = Integer.valueOf(bsController.getAppInit().get_statistic_stacklength()).intValue();
+				}catch(Exception e){
+				}
+			}else{
+				try{
+					length = Integer.valueOf(bsController.getAppInit().get_statistic_stacklength()).intValue();
+				}catch(Exception e){
+				}
+				statistics = provider.getLastEntities(length);
+			}
+			statistics = util_sort.sort(statistics, "st");			
 			long startX=-1;
+			long finishX=-1;
+			long totalDelta=0;
 			long maxX=0;
 			long maxY=0;
 			for(StatisticEntity entity : statistics){
-				if(entity.getDelta()>maxY) maxY=entity.getDelta();
 				if(startX==-1) startX=entity.getSt().getTime();
+				finishX=entity.getSt().getTime();
+				totalDelta+=entity.getDelta();
+				if(entity.getDelta()>maxY) maxY=entity.getDelta();
 				if(entity.getSt().getTime()-startX>maxX) maxX = entity.getSt().getTime()-startX;
 			}
 			
 			if(startX==-1)
-				json+=("{\"data\":[]}");
+				json+=("{\"length\":"+length+",\"n\"=0,\"fr\"=0,\"dn\"=0,\"data\":[]}");
 			else{
-				json+=("{\"data\":[");
+				json+=("{\"length\":"+length+",");
+				json+=("\"n\":"+statistics.size()+",");
+				json+=("\"fr\":"+(finishX-startX)/statistics.size()+",");
+				json+=("\"dn\":"+totalDelta/statistics.size()+",");
+				json+=("\"data\":[");
 				boolean isFirst=true;
 				for(StatisticEntity entity : statistics){
 					if(!isFirst) json+=(",");

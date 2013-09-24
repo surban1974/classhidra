@@ -855,7 +855,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					if(stat!=null){
 						stat.setFt(new Date());
 						stat.setException(new Exception("Blocked by STREAM ENTER"));
-						statisticsStack(stat);
+						putToStatisticProvider(stat);
 					}					
 					return response;
 				}
@@ -868,7 +868,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					if(stat!=null){
 						stat.setFt(new Date());
 						stat.setException(new Exception("ACTION INSTANCE is NULL"));
-						statisticsStack(stat);
+						putToStatisticProvider(stat);
 					}					
 					return response;
 				}
@@ -950,7 +950,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 			if(stat!=null){
 				stat.setFt(new Date());
-				statisticsStack(stat);
+				putToStatisticProvider(stat);
 			}
 
 		}
@@ -1572,7 +1572,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return 0;
 	}
 
-	private static void statisticsStack(StatisticEntity stat){
+	public static void putToStatisticProvider(StatisticEntity stat){
 		if(appInit.get_statistic()!=null && appInit.get_statistic().toLowerCase().equals("true")){
 			I_StatisticProvider statProvider = (I_StatisticProvider)local_container.get(CONST_ID_STATISTIC_PROVIDER);
 			if(statProvider==null){

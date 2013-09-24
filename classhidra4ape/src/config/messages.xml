@@ -27,11 +27,11 @@
 
 	<message cd_mess="login_61" cd_lang="IT" desc_mess="Avanti come Guest"/>
 	<message cd_mess="login_61" cd_lang="EN" desc_mess="Enter as Guest"/>
-	<message cd_mess="login_61" cd_lang="DC" desc_mess="???"/>	
+
 
 	<message cd_mess="login_62" cd_lang="IT" desc_mess="Avanti come User"/>
 	<message cd_mess="login_62" cd_lang="EN" desc_mess="Enter as User"/>
-	<message cd_mess="login_62" cd_lang="DC" desc_mess="???"/>	
+	
 
 	
 	<message cd_mess="error_7" cd_lang="IT" type="E" desc_mess="Inserire intestatario principale."/>
@@ -78,31 +78,31 @@
 <!-- Login -->
 	<message cd_mess="login_1" cd_lang="IT" desc_mess="Utente"/>
 	<message cd_mess="login_1" cd_lang="EN" desc_mess="User"/>
-	<message cd_mess="login_1" cd_lang="DC" desc_mess="???"/>
+
 	
 	<message cd_mess="login_2" cd_lang="IT" desc_mess="Parole d'ordine"/>
 	<message cd_mess="login_2" cd_lang="EN" desc_mess="Password"/>
-	<message cd_mess="login_2" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="login_3" cd_lang="IT" desc_mess="Ruoli"/>
 	<message cd_mess="login_3" cd_lang="EN" desc_mess="Groups"/>
-	<message cd_mess="login_3" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="login_4" cd_lang="IT" desc_mess="Caricare ruoli"/>
 	<message cd_mess="login_4" cd_lang="EN" desc_mess="Load groups"/>
-	<message cd_mess="login_4" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="login_5" cd_lang="IT" desc_mess="Aiuto"/>
 	<message cd_mess="login_5" cd_lang="EN" desc_mess="Help"/>
-	<message cd_mess="login_5" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="login_6" cd_lang="IT" desc_mess="Avanti"/>
 	<message cd_mess="login_6" cd_lang="EN" desc_mess="Enter"/>
-	<message cd_mess="login_6" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="login_7" cd_lang="IT" desc_mess="Pulisci"/>
 	<message cd_mess="login_7" cd_lang="EN" desc_mess="Clear"/>
-	<message cd_mess="login_7" cd_lang="DC" desc_mess="???"/>
+
 
 
 <!-- MENU -->
@@ -112,79 +112,77 @@
 
 	<message cd_mess="page_navigation_1" cd_lang="IT" desc_mess="Pagina"/>
 	<message cd_mess="page_navigation_1" cd_lang="EN" desc_mess="Page"/>
-	<message cd_mess="page_navigation_1" cd_lang="DC" desc_mess="???"/>
 
 	<message cd_mess="page_navigation_2" cd_lang="IT" desc_mess="dal"/>
 	<message cd_mess="page_navigation_2" cd_lang="EN" desc_mess="from"/>
-	<message cd_mess="page_navigation_2" cd_lang="DC" desc_mess="???"/>
+
 	
 
 <!-- Light menu -->
 
 	<message cd_mess="light_menu_1" cd_lang="IT" desc_mess="Operazioni"/>
 	<message cd_mess="light_menu_1" cd_lang="EN" desc_mess="Operations"/>
-	<message cd_mess="light_menu_1" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="light_menu_2" cd_lang="IT" desc_mess="Stato esecuzione"/>
 	<message cd_mess="light_menu_2" cd_lang="EN" desc_mess="State of exec"/>
-	<message cd_mess="light_menu_2" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="light_menu_3" cd_lang="IT" desc_mess="Storico operazioni"/>
 	<message cd_mess="light_menu_3" cd_lang="EN" desc_mess="Store of operations"/>
-	<message cd_mess="light_menu_3" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="light_menu_4" cd_lang="IT" desc_mess="Ricerca sulla pagina "/>
 	<message cd_mess="light_menu_4" cd_lang="EN" desc_mess="Find of the page"/>
-	<message cd_mess="light_menu_4" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="light_menu_5" cd_lang="IT" desc_mess="messaggi/errori... "/>
 	<message cd_mess="light_menu_5" cd_lang="EN" desc_mess="messages/errors..."/>
-	<message cd_mess="light_menu_5" cd_lang="DC" desc_mess="???"/>
+
 	
 	<message cd_mess="light_menu_6" cd_lang="IT" desc_mess="ricerca"/>
 	<message cd_mess="light_menu_6" cd_lang="EN" desc_mess="find"/>
-	<message cd_mess="light_menu_6" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="light_menu_7" cd_lang="IT" desc_mess="Utente"/>
 	<message cd_mess="light_menu_7" cd_lang="EN" desc_mess="User"/>
-	<message cd_mess="light_menu_7" cd_lang="DC" desc_mess="???"/>
+
 	
 	<message cd_mess="light_menu_8" cd_lang="IT" desc_mess="Operazioni"/>
 	<message cd_mess="light_menu_8" cd_lang="EN" desc_mess="Operations"/>
-	<message cd_mess="light_menu_8" cd_lang="DC" desc_mess="???"/>
+
 	
 	<message cd_mess="light_menu_9" cd_lang="IT" desc_mess="IP macchina"/>
 	<message cd_mess="light_menu_9" cd_lang="EN" desc_mess="IP"/>
-	<message cd_mess="light_menu_9" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="light_menu_10" cd_lang="IT" desc_mess="Ruolo"/>
 	<message cd_mess="light_menu_10" cd_lang="EN" desc_mess="Group"/>
-	<message cd_mess="light_menu_10" cd_lang="DC" desc_mess="???"/>
 	
 	
 <!-- Menu Frame -->
 
 	<message cd_mess="menuframe_1" cd_lang="IT" desc_mess="Lingue"/>
 	<message cd_mess="menuframe_1" cd_lang="EN" desc_mess="Lenguages"/>
-	<message cd_mess="menuframe_1" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="menuframe_2" cd_lang="IT" desc_mess="Menu"/>
 	<message cd_mess="menuframe_2" cd_lang="EN" desc_mess="Menu"/>
-	<message cd_mess="menuframe_2" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="menuframe_2" cd_lang="DC" desc_mess="Menu"/>
 
 <!-- Session -->
 
 	<message cd_mess="menu_session_1" cd_lang="IT" desc_mess="Sessione lavorativa"/>
 	<message cd_mess="menu_session_1" cd_lang="EN" desc_mess="Work session"/>
-	<message cd_mess="menu_session_1" cd_lang="DC" desc_mess="???"/>
+
 
 	<message cd_mess="menu_session_11" cd_lang="IT" desc_mess="Cambiare utenza"/>
 	<message cd_mess="menu_session_11" cd_lang="EN" desc_mess="Change user"/>
-	<message cd_mess="menu_session_11" cd_lang="DC" desc_mess="???"/>
+
 	
 	<message cd_mess="menu_session_12" cd_lang="IT" desc_mess="Uscire"/>
 	<message cd_mess="menu_session_12" cd_lang="EN" desc_mess="Exit"/>
-	<message cd_mess="menu_session_12" cd_lang="DC" desc_mess="???"/>
+
 	
 
 	<message cd_mess="obbligatorieta_error" cd_lang="IT" type="E" desc_mess="Campo [{0}] non è stato valorizzato correttamente."/>
@@ -192,14 +190,14 @@
 	<message cd_mess="obbligatorieta_error" cd_lang="FR" type="E" desc_mess="Campo [{0}] non è stato valorizzato correttamente."/>
 
 	<message cd_mess="ajax_carrello_63" cd_lang="IT" desc_mess="Current Session was lost."/>
-	<message cd_mess="ajax_carrello_63" cd_lang="EN" desc_mess="???"/>
-	<message cd_mess="ajax_carrello_63" cd_lang="DC" desc_mess="???"/>
-	<message cd_mess="ajax_carrello_63" cd_lang="FR" desc_mess="???"/>
+	<message cd_mess="ajax_carrello_63" cd_lang="EN" desc_mess="Current Session was lost."/>
+	<message cd_mess="ajax_carrello_63" cd_lang="DC" desc_mess="Current Session was lost."/>
+	<message cd_mess="ajax_carrello_63" cd_lang="FR" desc_mess="Current Session was lost."/>
 
 	<message cd_mess="ajax_carrello_62" cd_lang="IT" desc_mess="ReLogon"/>
-	<message cd_mess="ajax_carrello_62" cd_lang="EN" desc_mess="???"/>
-	<message cd_mess="ajax_carrello_62" cd_lang="DC" desc_mess="???"/>
-	<message cd_mess="ajax_carrello_62" cd_lang="FR" desc_mess="???"/>
+	<message cd_mess="ajax_carrello_62" cd_lang="EN" desc_mess="ReLogon"/>
+	<message cd_mess="ajax_carrello_62" cd_lang="DC" desc_mess="ReLogon"/>
+	<message cd_mess="ajax_carrello_62" cd_lang="FR" desc_mess="ReLogon"/>
 
 
 </messages>

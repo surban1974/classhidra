@@ -29,9 +29,7 @@ import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
-import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
-import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_format;
@@ -233,7 +231,7 @@ public class wsController   {
 		
 		if(stat!=null){
 			stat.setFt(new Date());
-			statisticsStack(stat);
+			bsController.putToStatisticProvider(stat);
 		}
 
 		return outputXML;
@@ -294,24 +292,6 @@ public class wsController   {
 
 		return null;
 	}
-	
-	private static void statisticsStack(StatisticEntity stat){
-		if(bsController.getAppInit().get_statistic()!=null && bsController.getAppInit().get_statistic().toUpperCase().equals("TRUE")){
-			I_StatisticProvider statProvider = (I_StatisticProvider)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_PROVIDER);
-			if(statProvider==null){
-				if(bsController.getAppInit().get_statistic_provider()==null || bsController.getAppInit().get_statistic_provider().equals(""))
-					statProvider = new StatisticProvider_Simple();
-				else{
-					try{
-						statProvider = (I_StatisticProvider)Class.forName(bsController.getAppInit().get_statistic_provider()).newInstance();
-					}catch(Exception e){	
-						bsController.writeLog("ERROR instance Statistic Provider:"+bsController.getAppInit().get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
-					}
-				}
-				if(statProvider==null) statProvider = new StatisticProvider_Simple();
-				bsController.putToLocalContainer(bsConstants.CONST_ID_STATISTIC_PROVIDER,statProvider);
-			}
-			statProvider.addStatictic(stat);
-		}
-	}	
+
+		
 }

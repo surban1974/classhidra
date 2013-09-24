@@ -17,7 +17,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 </jsp:include>	
 
 <div id="page" style=" width: 900; height: 530; background-color: white">
-<%@ include file="../included/content_page_header.jsp" %>
+<%@ include file="../included/content_page_header.jsp" %> 
 
 <table>
 <tr>
@@ -96,13 +96,24 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 			ctx.strokeStyle = "rgb(0,102,204)";
 				ctx.beginPath();
-				ctx.moveTo(49, canvas.height-19);
-				ctx.lineTo(49, 0);
+				ctx.moveTo(47, 0);
+				ctx.lineTo(47, canvas.height-19);
+				ctx.moveTo(47, 0);
+				ctx.lineTo(45, 5);
+				ctx.moveTo(47, 0);
+				ctx.lineTo(50, 5);
 				ctx.stroke();
 	
 				ctx.beginPath();
-				ctx.moveTo(49, canvas.height-19);
-				ctx.lineTo(canvas.width, canvas.height-19);
+				
+				ctx.moveTo(canvas.width, canvas.height-19);
+				ctx.lineTo(47, canvas.height-19);
+				ctx.moveTo(canvas.width, canvas.height-19);
+				ctx.lineTo(canvas.width-5, canvas.height-19-3);
+				ctx.moveTo(canvas.width, canvas.height-19);
+				ctx.lineTo(canvas.width-5, canvas.height-19+3);
+
+				
 				ctx.stroke();
 
 
@@ -141,9 +152,12 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 			ctx.fillText  ("0 ms", 0,  canvas.height -25);
 			ctx.fillText  (vmaxY, 0,  0);
 
-			ctx.fillText  (startX, 50,  canvas.height-10);
-			ctx.fillText  (finishX, canvas.width-85,  canvas.height-10);
-	
+			ctx.fillText  (startX, 50,  canvas.height-15);
+			ctx.fillText  (finishX, canvas.width-85,  canvas.height-15);
+
+
+			ctx.fillStyle    = 'rgb(0, 0, 0)';
+			ctx.fillText  ("(N="+json_object.n+"/"+json_object.length+"; F="+json_object.fr+"; D="+json_object.dn+")", 150,  canvas.height-15);
 		}catch(e){
 		
 		}
@@ -152,7 +166,12 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 		
 	}
 
-	ajax_makeRequest("statistisc_json","","loadJsonList_afterJSFunction", "loadJsonList_callBackJs",false);
+	function drawGraph(){
+		ajax_makeRequest("statistisc_json","","loadJsonList_afterJSFunction", "loadJsonList_callBackJs",false);
+		window.setTimeout("drawGraph()",5000);
+	}
+
+	drawGraph();
 
 </script>
 
