@@ -13,6 +13,7 @@ public class StatisticEntity implements Serializable{
 	private String session;
 	private String ip;
 	private String matriculation;
+	private String lang;
 	private String action;
 	private Throwable exception;
 	private Date st;
@@ -23,11 +24,12 @@ public class StatisticEntity implements Serializable{
 		super();
 	}
 	
-	public StatisticEntity(String _session, String _ip, String _matriculation, String _action, Throwable _exception, Date _st,Date _ft, HttpServletRequest _request){
+	public StatisticEntity(String _session, String _ip, String _matriculation, String _lang, String _action, Throwable _exception, Date _st,Date _ft, HttpServletRequest _request){
 		super();
 		session=_session;
 		ip=_ip;
 		matriculation=_matriculation;
+		lang=_lang;
 		action=_action;
 		exception=_exception;
 		st=_st;
@@ -87,6 +89,7 @@ public class StatisticEntity implements Serializable{
 		if(session!=null) result+="s=\""+util_xml.normalXML(session, null)+"\" ";
 		if(ip!=null) result+="ip=\""+util_xml.normalXML(ip, null)+"\" ";
 		if(matriculation!=null) result+="m=\""+util_xml.normalXML(matriculation, null)+"\" ";
+		if(lang!=null) result+="l=\""+util_xml.normalXML(lang, null)+"\" ";
 		if(action!=null) result+="a=\""+util_xml.normalXML(action, null)+"\" ";
 		if(exception!=null) result+="e=\""+util_xml.normalXML(exception.toString(), null)+"\" ";
 		if(st!=null) result+="st=\""+util_format.dataToString(st, "yyyyMMddHHmmssSSS")+"\" ";
@@ -102,5 +105,13 @@ public class StatisticEntity implements Serializable{
 
 	public void setRequest(HttpServletRequest request) {
 		this.request = request;
+	}
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
 	}
 }

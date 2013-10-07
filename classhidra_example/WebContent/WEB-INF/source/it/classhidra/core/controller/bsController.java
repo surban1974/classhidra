@@ -821,6 +821,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					String.valueOf(request.getSession().getId()),
 					auth.get_user_ip(),
 					auth.get_matricola(),
+					auth.get_language(),
 					id_action,
 					null,
 					new Date(),
@@ -881,12 +882,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 			try{
-
-				if(!performStream_Enter(_streams, id_action,action_instance, servletContext, request, response)){
+				info_stream blockStreamEnter = performStream_EnterRS(_streams, id_action,action_instance, servletContext, request, response);
+				if(blockStreamEnter!=null){
 					isException(action_instance, request);
 					if(stat!=null){
 						stat.setFt(new Date());
-						stat.setException(new Exception("Blocked by STREAM ENTER"));
+						stat.setException(new Exception("Blocked by STREAM ENTER:["+blockStreamEnter.getName()+"]"));
 						putToStatisticProvider(stat);
 					}					
 					return response;
@@ -932,11 +933,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 				if(action_instance.getCurrent_redirect()!=null){
-					if(!performStream_Exit(_streams, id_action,action_instance, servletContext, request, response)){
+					info_stream blockStreamExit = performStream_ExitRS(_streams, id_action,action_instance, servletContext, request, response);
+					if(blockStreamExit!=null){
 						isException(action_instance, request);
 						if(stat!=null){
 							stat.setFt(new Date());
-							stat.setException(new Exception("Blocked by STREAM EXIT"));
+							stat.setException(new Exception("Blocked by STREAM EXIT:["+blockStreamExit.getName()+"]"));
 							putToStatisticProvider(stat);
 						}					
 						return response;
@@ -1028,6 +1030,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 				id_prev = id_prev.substring(0,id_prev.indexOf(":"));
 				prev_action_instance = getPrevActionInstance(id_prev,id_action,request,response);
 				if(prev_action_instance!=null && prev_action_instance.getCurrent_redirect()!=null){
+					
+					if(request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL)==null)
+						request.setAttribute(CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
+					HashMap included_pool = (HashMap)request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL);
+					if(prev_action_instance.get_infoaction()!=null && prev_action_instance.get_infoaction().getName()!=null)
+						included_pool.put(prev_action_instance.get_infoaction().getName(),prev_action_instance);
+					else if(prev_action_instance.get_infoaction()!=null && prev_action_instance.get_infoaction().getPath()!=null)
+						included_pool.put(prev_action_instance.get_infoaction().getPath(),prev_action_instance);
+					
 					request.setAttribute(CONST_BEAN_$INSTANCEACTION,prev_action_instance);
 					execRedirect(prev_action_instance,servletContext,request,response,false);
 					return null;
@@ -1040,6 +1051,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static boolean performStream_Enter(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+		if(performStream_EnterRS(_streams, id_action, action_instance, servletContext, request, response)!=null) return false;
+		return true;
+	}
+	
+	public static info_stream performStream_EnterRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 		for(int i=0;i<_streams.size();i++){
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = action_config.streamFactory(iStream.getName(),request.getSession(), servletContext);
@@ -1048,14 +1064,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(currentStreamRedirect!=null){
 					isException(action_instance, request);
 					execRedirect(currentStream, currentStreamRedirect, id_action, servletContext, request, response);
-					return false;
+					return iStream;
 				}
 			}
 		}
-		return true;
+		return null;
 	}
 
 	public static boolean performStream_Exit(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+		if(performStream_ExitRS(_streams, id_action, action_instance, servletContext, request, response)!=null) return false;
+		return true;
+	}
+	
+	public static info_stream performStream_ExitRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 		for(int i=_streams.size()-1;i>-1;i--){
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = action_config.streamFactory(iStream.getName(), request.getSession(), servletContext);
@@ -1064,12 +1085,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(currentStreamRedirect!=null){
 					isException(action_instance, request);
 					execRedirect(currentStream, currentStreamRedirect, id_action, servletContext, request, response);
-					return false;
+					return iStream;
 				}
 			}
 		}
-		return true;
+		return null;
 	}
+	
 
 	public static i_bean getCurrentForm(String id_current,HttpServletRequest request){
 		if(id_current==null) return null;

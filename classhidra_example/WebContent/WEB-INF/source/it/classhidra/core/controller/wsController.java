@@ -114,9 +114,10 @@ public class wsController   {
 		StatisticEntity stat = null;
 		try{
 			stat = new StatisticEntity(
-					"ws",
+					"WS",
 					auth.get_user_ip(),
 					auth.get_matricola(),
+					auth.get_language(),
 					id_action,
 					null,
 					new Date(),
