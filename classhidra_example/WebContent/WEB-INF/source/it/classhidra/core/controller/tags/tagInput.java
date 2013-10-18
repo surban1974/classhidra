@@ -75,6 +75,7 @@ public class tagInput extends BodyTagSupport{
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String toUpperCase = null;
+	protected String toTrim = null;
 		
 	
 	
@@ -167,6 +168,7 @@ public class tagInput extends BodyTagSupport{
 		
 		clear = "false";
 		toUpperCase = null;
+		toTrim = null;
 		method_prefix=null;
 		checkedvalue=null;
 		
@@ -441,14 +443,27 @@ public class tagInput extends BodyTagSupport{
 		}
 		if (onblur != null) {
 			results.append(" onblur=\"");
-			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))) results.append("this.value=trim(this.value); ");
-			else results.append("this.value=trim(this.value.toUpperCase()); ");
+			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))){
+				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE"))){
+				}else results.append("this.value=trim(this.value); ");
+			}
+			else{
+				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE")))
+					results.append("this.value.toUpperCase(); ");
+				else results.append("this.value=trim(this.value.toUpperCase()); ");
+			}
 			results.append(onblur);
 			results.append("\"");
 		}else{
 			results.append(" onblur=\"");
-			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))) results.append("this.value=trim(this.value); ");
-			else results.append("this.value=trim(this.value.toUpperCase()); ");
+			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))){
+				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE"))){
+				}else results.append("this.value=trim(this.value); ");
+			}else{	
+				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE")))
+					results.append("this.value.toUpperCase(); ");
+				else results.append("this.value=trim(this.value.toUpperCase()); ");
+			}
 			results.append("\"");
 		}
 		
@@ -815,6 +830,14 @@ public class tagInput extends BodyTagSupport{
 
 	public void setFormatCountry(String formatCountry) {
 		this.formatCountry = formatCountry;
+	}
+
+	public String getToTrim() {
+		return toTrim;
+	}
+
+	public void setToTrim(String toTrim) {
+		this.toTrim = toTrim;
 	}
 
 

@@ -350,7 +350,8 @@ private void load_from_resources(String property_name) {
 	    		}
 	    	}
 	    }catch (Exception e) {
-
+	    	readOk_Resource = readOk_Resource || false;
+			bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
 		}
 
 }

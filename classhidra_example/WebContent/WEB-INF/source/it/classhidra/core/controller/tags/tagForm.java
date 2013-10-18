@@ -30,7 +30,6 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_action;
-import it.classhidra.core.init.auth_init;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -72,6 +71,7 @@ public class tagForm extends TagSupport{
 	protected String onreset = null;
 	protected String onsubmit = null;
 	protected String onhistory = null;
+	protected String embedScript = null;
 
 
 	public int doStartTag() throws JspException {
@@ -131,6 +131,7 @@ public class tagForm extends TagSupport{
 		onreset=null;
 		onsubmit=null;
 		onhistory=null;
+		embedScript=null;
 	}
    
 	protected String createTagBody() {
@@ -148,27 +149,14 @@ public class tagForm extends TagSupport{
 		if(bean==null) formBean = formAction.get_bean();
 		
 		
-		try{		
-			auth_init aInit = (auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
-			String lang = aInit.get_language();
-			if(lang.toUpperCase().equals("UA") || lang.toUpperCase().equals("RU")){
-				if ("ISO-8859-1".equalsIgnoreCase(request.getCharacterEncoding()) || request.getCharacterEncoding()==null) {
-					try{
-						request.setCharacterEncoding("windows-1251");
-						response.setContentType("text/html;charset=windows-1251");
-//						response.setCharacterEncoding("windows-1251");						
-					}catch(Exception e){
-					}
-				}
-			}
-		}catch(Exception e){
-		}
 		info_action	formInfoAction = formAction.get_infoaction();
 				
 		StringBuffer results = new StringBuffer("");
-		if(onhistory!=null)	results.append("<script>"+onhistory+"</script>"); 
-		else results.append("<script>history.go(1);</script>"+System.getProperty("line.separator"));
-		
+		if(embedScript!=null && (embedScript.toUpperCase().equals("NO") || embedScript.toUpperCase().equals("FALSE"))){
+		}else{
+			if(onhistory!=null)	results.append("<script>"+onhistory+"</script>"); 
+			else results.append("<script>history.go(1);</script>"+System.getProperty("line.separator"));
+		}
 		results.append("<form ");
 		if(name==null){
 			if(formInfoAction!=null) name=formInfoAction.getName();
@@ -312,28 +300,29 @@ public class tagForm extends TagSupport{
 			results.append("\"");
 		}
 		results.append(">"+System.getProperty("line.separator"));
-		results.append("<script>"+System.getProperty("line.separator"));
-		results.append("function trim(txt){"+System.getProperty("line.separator"));
-		results.append("return txt.replace(/(^\\s+)|(\\s+$)/g,\"\");"+System.getProperty("line.separator"));
-		results.append("}"+System.getProperty("line.separator"));
-		results.append("</script>"+System.getProperty("line.separator"));
+		if(embedScript!=null && (embedScript.toUpperCase().equals("NO") || embedScript.toUpperCase().equals("FALSE"))){
+		}else{
+			results.append("<script>"+System.getProperty("line.separator"));
+			results.append("function trim(txt){"+System.getProperty("line.separator"));
+			results.append("return txt.replace(/(^\\s+)|(\\s+$)/g,\"\");"+System.getProperty("line.separator"));
+			results.append("}"+System.getProperty("line.separator"));
+			results.append("</script>"+System.getProperty("line.separator"));
+		}
 
-			results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$ACTION+"\" name=\""+bsController.CONST_ID_$ACTION+"\" value= \"");			
-			results.append(((action==null)?(formInfoAction==null)?"":formInfoAction.getPath():action));
-			results.append("\">"+System.getProperty("line.separator"));
+		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$ACTION+"\" name=\""+bsController.CONST_ID_$ACTION+"\" value= \"");			
+		results.append(((action==null)?(formInfoAction==null)?"":formInfoAction.getPath():action));
+		results.append("\">"+System.getProperty("line.separator"));
 
 
-			results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$MIDDLE_ACTION+"\" name=\""+bsController.CONST_ID_$MIDDLE_ACTION+"\" value= \"\">"+System.getProperty("line.separator"));
-			results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$ACTION_FROM+"\" name=\""+bsController.CONST_ID_$ACTION_FROM+"\" value= \"\">"+System.getProperty("line.separator"));
-			results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$NAVIGATION+"\" name=\""+bsController.CONST_ID_$NAVIGATION+"\" value= \"");
-			try{
-				results.append(formAction.get_infoaction().getPath()+":"+formAction.getCurrent_redirect().get_inforedirect().getPath());
-			}catch(Exception e){	
-			}
-			results.append("\">"+System.getProperty("line.separator"));
+		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$MIDDLE_ACTION+"\" name=\""+bsController.CONST_ID_$MIDDLE_ACTION+"\" value= \"\">"+System.getProperty("line.separator"));
+		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$ACTION_FROM+"\" name=\""+bsController.CONST_ID_$ACTION_FROM+"\" value= \"\">"+System.getProperty("line.separator"));
+		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$NAVIGATION+"\" name=\""+bsController.CONST_ID_$NAVIGATION+"\" value= \"");
+		try{
+			results.append(formAction.get_infoaction().getPath()+":"+formAction.getCurrent_redirect().get_inforedirect().getPath());
+		}catch(Exception e){	
+		}
+		results.append("\">"+System.getProperty("line.separator"));
 
-//		results.append("<input type=\"hidden\" name=\"parent_pointOfLaunch\" value= \""+((formBean.get("parent_pointOfLaunch")==null)?"":formBean.get("parent_pointOfLaunch"))+"\">"+System.getProperty("line.separator"));
-//		results.append("<input type=\"hidden\" name=\"child_pointOfReturn\" value= \""+((formBean.get("child_pointOfReturn")==null)?"":formBean.get("child_pointOfReturn"))+"\">"+System.getProperty("line.separator"));
 		return results.toString();
 	}
 	public String getAccept() {
@@ -511,6 +500,14 @@ public class tagForm extends TagSupport{
 
 	public void setBean(String bean) {
 		this.bean = bean;
+	}
+
+	public String getEmbedScript() {
+		return embedScript;
+	}
+
+	public void setEmbedScript(String embedScript) {
+		this.embedScript = embedScript;
 	}
 
 }
