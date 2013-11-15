@@ -31,9 +31,6 @@ public class ExecStoredProcedure extends generic_batch implements i_batch,Serial
 		return null;
 	}
 
-	public void readInput(String xml) {
-		super.readInput(xml);
-	}
 
 	public String writeOutput() {
 		return super.writeOutput();

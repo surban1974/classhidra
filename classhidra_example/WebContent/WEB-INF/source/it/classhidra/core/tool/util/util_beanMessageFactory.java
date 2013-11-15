@@ -4,8 +4,7 @@ package it.classhidra.core.tool.util;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
-import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_reflect;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

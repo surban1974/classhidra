@@ -986,12 +986,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 				service_ErrorRedirect(id_action,servletContext,request, response);
 				stat.setException(t);
 			}finally{
+				if(stat!=null){
+					stat.setFt(new Date());
+					putToStatisticProvider(stat);
+				}
 			}
 
-			if(stat!=null){
-				stat.setFt(new Date());
-				putToStatisticProvider(stat);
-			}
+
 		}
 		return response;
 	}

@@ -22,7 +22,7 @@ public class db_pool_container {
 				container.init();
 			}
 
-			result = (Connection)db_pool_servlet.getConnection();
+			result = db_pool_servlet.getConnection();
 			if(result!=null) return result;
 		}catch (Exception e) {
 			throw e;

@@ -156,7 +156,7 @@ public class auth_manager implements i_auth_manager {
 	}
 
 	public boolean saveFromForm(auth_init auth, i_bean bean, HttpServletRequest request, HttpServletResponse response){
-		info_user _user = (info_user)((load_users)bsController.getUser_config()).get_user(auth.get_user(),bean.get("password_old"));
+		info_user _user = ((load_users)bsController.getUser_config()).get_user(auth.get_user(),bean.get("password_old"));
 		if(_user==null){
 			new bsControllerMessageException("error_2",request,null,iStub.log_INFO);
 			return false;

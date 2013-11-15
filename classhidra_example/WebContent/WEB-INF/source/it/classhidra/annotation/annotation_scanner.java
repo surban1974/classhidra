@@ -18,6 +18,8 @@ import it.classhidra.core.controller.info_redirect;
 import it.classhidra.core.controller.info_section;
 import it.classhidra.core.controller.info_stream;
 import it.classhidra.core.controller.info_transformation;
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_sort;
 
@@ -59,12 +61,18 @@ public class annotation_scanner implements i_annotation_scanner {
 	public void loadAllObjects(String _package_annotated,HashMap redirects){
 		if(redirects!=null) _redirects=redirects;
 		package_annotated=_package_annotated;
+		bsController.writeLog("Start Load_actions from "+package_annotated,iStub.log_INFO);
 		loadObject();
+		bsController.writeLog("Load_actions from "+package_annotated+" OK ",iStub.log_INFO);
 	}
 	
 
 
 	public void loadAllObjects(HashMap redirects){
+		
+
+
+		
 		if(redirects!=null) _redirects=redirects;
 		
 		List list_package_annotated = bsController.getAppInit().get_list_package_annotated();
@@ -72,8 +80,11 @@ public class annotation_scanner implements i_annotation_scanner {
 		
 		for(int n=0;n<list_package_annotated.size();n++){
 			package_annotated=(String)list_package_annotated.get(n);
+			bsController.writeLog("Start Load_actions from "+package_annotated,iStub.log_INFO);
 			loadObject();
+			bsController.writeLog("Load_actions from "+package_annotated+" OK ",iStub.log_INFO);
 		}
+
 	}
 	
 
@@ -102,7 +113,10 @@ public class annotation_scanner implements i_annotation_scanner {
 							throw new ClassNotFoundException("No resource for " + path);
 						}
 						directory = util_classes.convertUrl2File(resource);
-					}catch(Exception ex){				
+					}catch(Exception ex){
+						new bsException("Load_actions ClassLoader Error Annotation scaner: "+ex.toString(), iStub.log_ERROR);
+					}catch(Throwable t){
+						new bsException("Load_actions ClassLoader Error Annotation scaner: "+t.toString(), iStub.log_ERROR);
 					}
 					
 					if(directory==null) return;
@@ -135,7 +149,10 @@ public class annotation_scanner implements i_annotation_scanner {
 
 					}
 					
-				}catch(Exception e){				
+				}catch(Exception e){
+					new bsException("Load_actions Loader Error Annotation scaner: "+e.toString(), iStub.log_ERROR);
+				}catch(Throwable t){
+					new bsException("Load_actions Loader Error Annotation scaner: "+t.toString(), iStub.log_ERROR);
 				}
 			}
 	}
@@ -146,6 +163,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		try{
 			array = util_classes.getResourcesAsFile(path);
 		}catch(Exception e){
+			array = new ArrayList();
 		}
 
 		for(int i=0;i<array.size();i++){
@@ -206,11 +224,11 @@ public class annotation_scanner implements i_annotation_scanner {
 			
 			Annotation annotation = classType.getAnnotation(Bean.class);
 				if(annotation!=null) checkClassAnnotation(class_path, annotation);
-			annotation = (Action)classType.getAnnotation(Action.class);
+			annotation = classType.getAnnotation(Action.class);
 				if(annotation!=null) checkClassAnnotation(class_path, annotation);
-			annotation = (Stream)classType.getAnnotation(Stream.class);
+			annotation = classType.getAnnotation(Stream.class);
 				if(annotation!=null) checkClassAnnotation(class_path, annotation);
-			annotation = (Transformation)classType.getAnnotation(Transformation.class);
+			annotation = classType.getAnnotation(Transformation.class);
 				if(annotation!=null) checkClassAnnotation(class_path, annotation);
 		    
 		    

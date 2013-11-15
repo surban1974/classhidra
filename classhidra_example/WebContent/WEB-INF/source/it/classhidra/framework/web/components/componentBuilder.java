@@ -168,7 +168,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				form.getL_actions().getV_info_redirects().clear();
 				form.getL_actions().getV_info_streams().clear();
 				form.getL_actions().getV_info_transformationoutput().clear();
-				form.getL_actions().initBuilder(form.getL_actions().toXml());;
+				form.getL_actions().initBuilder(form.getL_actions().toXml());
 				
 			}
 

@@ -121,12 +121,12 @@ public class showNavigateStory extends TagSupport{
 						if (styleClass != null) {
 							results.append(" class=\"");
 							results.append(styleClass);
-							results.append("\"");
+							results.append('"');
 						}
 						if (style != null) {
 							results.append(" style=\"");
 							results.append(style);
-							results.append("\"");
+							results.append('"');
 						}
 						results.append(">"+subLabel + ((i<sub_results.size()-1)?" &#8594; ":""));
 						results.append("</span>");

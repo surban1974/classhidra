@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class schedulingThreadEvent extends Thread implements Runnable{
 
-	private static final long serialVersionUID = -1L;
+
 	private boolean threadDone = false;
 	private long delta_time;
 	private db_batch batch;

@@ -114,10 +114,10 @@ public void init(HttpServletRequest request) throws bsControllerException{
 				Object makedValue=null;
 				if(request.getParameter("$format_"+key)!=null){
 					if(delegated!=null){
-						makedValue=util_makeValue.makeFormatedValue1(delegated,(String)request.getParameter("$format_"+key),value,key,(String)request.getParameter("$replaceOnBlank_"+key),(String)request.getParameter("$replaceOnErrorFormat_"+key));
-						if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,(String)request.getParameter("$format_"+key),value,key,(String)request.getParameter("$replaceOnBlank_"+key),(String)request.getParameter("$replaceOnErrorFormat_"+key));
+						makedValue=util_makeValue.makeFormatedValue1(delegated,request.getParameter("$format_"+key),value,key,request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
+						if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,request.getParameter("$format_"+key),value,key,request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
 					}else{
-						makedValue=util_makeValue.makeFormatedValue1(this,(String)request.getParameter("$format_"+key),value,key,(String)request.getParameter("$replaceOnBlank_"+key),(String)request.getParameter("$replaceOnErrorFormat_"+key));
+						makedValue=util_makeValue.makeFormatedValue1(this,request.getParameter("$format_"+key),value,key,request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
 					}
 				}else{
 					if(delegated!=null){
@@ -134,10 +134,10 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 					if(request.getParameter("$format_"+key)!=null){
 						if(delegated!=null){
-							makedValue=util_makeValue.makeFormatedValue(delegated,(String)request.getParameter("$format_"+key),value,getCampoValue(key),(String)request.getParameter("$replaceOnBlank_"+key),(String)request.getParameter("$replaceOnErrorFormat_"+key));
-							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,(String)request.getParameter("$format_"+key),value,getCampoValue(key),(String)request.getParameter("$replaceOnBlank_"+key),(String)request.getParameter("$replaceOnErrorFormat_"+key));
+							makedValue=util_makeValue.makeFormatedValue(delegated,request.getParameter("$format_"+key),value,getCampoValue(key),request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
+							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,request.getParameter("$format_"+key),value,getCampoValue(key),request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
 						}else{
-							makedValue=util_makeValue.makeFormatedValue(this,(String)request.getParameter("$format_"+key),value,getCampoValue(key),(String)request.getParameter("$replaceOnBlank_"+key),(String)request.getParameter("$replaceOnErrorFormat_"+key));
+							makedValue=util_makeValue.makeFormatedValue(this,request.getParameter("$format_"+key),value,getCampoValue(key),request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
 						}
 					}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
 
@@ -179,7 +179,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 							current_field_name,
 							util_makeValue.makeFormatedValue1(
 										current_requested,
-										(String)request.getParameter("$format_"+key),
+										request.getParameter("$format_"+key),
 										value,
 										current_field_name,
 										request.getParameter("$replaceOnBlank_"+key),
@@ -194,7 +194,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 			}catch(Exception e){
 				try{
 					if(request.getParameter("$format_"+key)!=null)
-						setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,(String)request.getParameter("$format_"+key),value,getCampoValue(key),(String)request.getParameter("$replaceOnBlank_"+key),(String)request.getParameter("$replaceOnErrorFormat_"+key)));
+						setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,request.getParameter("$format_"+key),value,getCampoValue(key),request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key)));
 					else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
 				}catch(Exception ex){
 				}
@@ -861,8 +861,8 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 	try{
 		if(name.indexOf('.')==-1){
 			if(delegated!=null){
-				boolean res = setValue(delegated, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);;
-				if(!res) res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);;
+				boolean res = setValue(delegated, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
+				if(!res) res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
 				return res;
 			}
 			else{

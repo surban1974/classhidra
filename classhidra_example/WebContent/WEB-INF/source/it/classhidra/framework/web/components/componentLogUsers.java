@@ -104,7 +104,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	if(this.getMiddleAction().equals("remove")){
 		try{
 			HttpSession current_session = (HttpSession)h_user_container.get(this.get("session_id").toString());
-			auth_init auth =  (auth_init)current_session.getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);;
+			auth_init auth =  (auth_init)current_session.getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
 			auth.reimposta();
 			auth.set_logged(false);
 			auth.set_ruolo("guest");

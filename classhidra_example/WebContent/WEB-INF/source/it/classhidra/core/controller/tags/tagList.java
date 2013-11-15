@@ -116,7 +116,7 @@ public class tagList extends TagSupport{
 
 	protected int sel_position=-1;
 	protected int intScrollTopDiv=0;
-	
+
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 
@@ -202,15 +202,15 @@ public class tagList extends TagSupport{
 			if(pool!=null) formAction = (i_action)pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
-		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
-		if(formAction==null) formAction = new action(); 
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		if(formAction==null) formAction = new action();
 		if(bean==null) formBean = formAction.get_bean();
-		
+
 		List				iterator = null;
 
 		Vector v_propertys = new Vector();
 		Vector v_values = new Vector();
-		Vector v_formatsOutput = new Vector();		
+		Vector v_formatsOutput = new Vector();
 		Vector v_replaceOnBlank = new Vector();
 		Vector v_td_width = new Vector();
 		Vector v_td_styleClassOutput = new Vector();
@@ -288,8 +288,8 @@ public class tagList extends TagSupport{
 				}else{
 					for(int i=0;i<count_propertys;i++) v_replaceOnBlank.add(null);
 				}
-				
-				
+
+
 				if(td_styleClassOutput!=null){
 					StringTokenizer st = new StringTokenizer(td_styleClassOutput,";");
 					while(st.hasMoreTokens()) v_td_styleClassOutput.add(st.nextToken().trim());
@@ -440,7 +440,7 @@ public class tagList extends TagSupport{
 		mark=null;
 		mark_styleClass=null;
 		body_as_first_row=null;
-		
+
 		formatLanguage=null;
 		formatCountry=null;
 
@@ -457,17 +457,17 @@ public class tagList extends TagSupport{
 			if(objId!=null){
 				results.append(" id=\"");
 				results.append(objId);
-				results.append("\"");
+				results.append('"');
 			}
 			if(name!=null){
 				results.append(" name=\"");
 				results.append(name);
-				results.append("\"");
+				results.append('"');
 			}
 			if (value != null) {
 				results.append(" value=\"");
 				results.append(value);
-				results.append("\"");
+				results.append('"');
 			}
 			results.append("/>"+System.getProperty("line.separator"));
 		}
@@ -499,7 +499,7 @@ public class tagList extends TagSupport{
 		if (styleClass != null) {
 			results.append(" class=\"");
 			results.append(styleClass);
-			results.append("\"");
+			results.append('"');
 		}
 
 		if (style != null) {
@@ -508,34 +508,34 @@ public class tagList extends TagSupport{
 
 			if(width!=null) results.append("width:"+width+ ((width.indexOf('%')==-1)?"px;":";"));
 			if(height!=null) results.append("height:"+height+((height.indexOf('%')==-1)?"px;":";"));
-			results.append("\"");
+			results.append('"');
 		}else{
 			results.append(" style=\"");
 			results.append("vertical-align:top;");
 			if(width!=null) results.append("width:"+width+((width.indexOf('%')==-1)?"px;":";"));
 			if(height!=null) results.append("height:"+height+((height.indexOf('%')==-1)?"px;":";"));
-			results.append("\"");
+			results.append('"');
 		}
 		if (onhelp != null) {
 			results.append(" onhelp=\"");
 			results.append(onhelp);
-			results.append("\"");
+			results.append('"');
 		}
 		if(disabled==null){
 			if (onkeydown != null) {
 				results.append(" onkeydown=\"");
 				results.append(onkeydown);
-				results.append("\"");
+				results.append('"');
 			}
 			if (onkeypress != null) {
 				results.append(" onkeypress=\"");
 				results.append(onkeypress);
-				results.append("\"");
+				results.append('"');
 			}
 			if (onkeyup != null) {
 				results.append(" onkeyup=\"");
 				results.append(onkeyup);
-				results.append("\"");
+				results.append('"');
 			}
 		}
 		results.append(">"+System.getProperty("line.separator"));
@@ -561,39 +561,39 @@ public class tagList extends TagSupport{
 		if(tb_width!=null){
 			results.append(" width=\"");
 			results.append(tb_width);
-			results.append("\"");
+			results.append('"');
 
 		}
 		if(name!=null){
 			results.append(" name=\"table_");
 			results.append(name);
-			results.append("\"");
+			results.append('"');
 		}
 		if (tb_style != null) {
 			results.append(" style=\"border:none;");
 			results.append(tb_style);
-			results.append("\"");
+			results.append('"');
 		}else{
 			results.append(" style=\"border:none;\"");
 		}
 		if (tb_styleClass != null) {
 			results.append(" class=\"");
 			results.append(tb_styleClass);
-			results.append("\"");
+			results.append('"');
 		}else{
 			results.append(" class=\"");
 			results.append("tableBodyTab");
-			results.append("\"");
+			results.append('"');
 		}
 		if (tb_cellpadding != null) {
 			results.append(" cellpadding=\"");
 			results.append(tb_cellpadding);
-			results.append("\"");
+			results.append('"');
 		}else results.append(" cellpadding=\"0\"");
 		if (tb_cellspacing != null) {
 			results.append(" cellspacing=\"");
 			results.append(tb_cellspacing);
-			results.append("\"");
+			results.append('"');
 		}else results.append(" cellspacing=\"2\"");
 
 		results.append(">"+System.getProperty("line.separator"));
@@ -680,7 +680,7 @@ public class tagList extends TagSupport{
 		if(objId!=null){
 			results.append(" id=\"tr_");
 			results.append(objId+"_"+writeObject);
-			results.append("\"");
+			results.append('"');
 		}else{
 			if(bean==null) results.append(" id=\"tr_formBean_"+name+"_"+writeObject+"\"");
 			else results.append(" id=\"tr_"+bean+"_"+name+"_"+writeObject+"\"");
@@ -688,11 +688,11 @@ public class tagList extends TagSupport{
 		if (tr_style != null) {
 			results.append(" style=\"");
 			results.append(tr_style);
-			results.append("\"");
+			results.append('"');
 		}else{
 			results.append(" style=\"");
 			results.append("cursor:pointer");
-			results.append("\"");
+			results.append('"');
 		}
 		if (tr_styleClass != null) {
 			results.append(" class=\"");
@@ -701,7 +701,7 @@ public class tagList extends TagSupport{
 			else
 				results.append(tr_styleClass);
 			//results.append(tr_styleClass+((selectedValue && multiple==null)?"Dark":""));
-			results.append("\"");
+			results.append('"');
 		}else{
 			results.append(" class=\"");
 			if(selectedValue && multiple==null)
@@ -709,29 +709,29 @@ public class tagList extends TagSupport{
 			else
 				results.append("colTab1"+stylePariDispari);
 			//results.append("colTab1"+((selectedValue && multiple==null)?"Dark":""));
-			results.append("\"");
+			results.append('"');
 		}
 		if(disabled==null){
 			if(!selectedValue || multiple!=null){
 				if (tr_onmouseover != null) {
 					results.append(" onmouseover=\"");
 					results.append(tr_onmouseover);
-					results.append("\"");
+					results.append('"');
 				}else{
 					results.append(" onmouseover=\"");
 					results.append("if(!inListArray("+array_id+",this.id)) this.className='rowTabOver'");
-					results.append("\"");
+					results.append('"');
 				}
 
 				if (tr_onmouseout != null) {
 					results.append(" onmouseout=\"");
 					results.append(tr_onmouseout);
-					results.append("\"");
+					results.append('"');
 				}else{
 					results.append(" onmouseout=\"");
 					if (tr_styleClass != null) results.append("if(!inListArray("+array_id+",this.id)) this.className='"+tr_styleClass+"'");
 					else results.append("if(!inListArray("+array_id+",this.id)) this.className='colTab1"+stylePariDispari+"'");
-					results.append("\"");
+					results.append('"');
 				}
 			}
 			if (tr_onclick != null) {
@@ -743,29 +743,29 @@ public class tagList extends TagSupport{
 				}
 				if (tr_onclick != null) results.append(tr_onclick);
 				else results.append("");
-				results.append("\"");
+				results.append('"');
 			}
 			if (tr_onmousedown != null) {
 				results.append(" onmousedown=\"");
 				results.append(tr_onmousedown);
-				results.append("\"");
+				results.append('"');
 			}
 			if (tr_onmousemove != null) {
 				results.append(" onmousemove=\"");
 				results.append(tr_onmousemove);
-				results.append("\"");
+				results.append('"');
 			}
 			if (tr_onmouseup != null) {
 				results.append(" onmouseup=\"");
 				results.append(tr_onmouseup);
-				results.append("\"");
+				results.append('"');
 			}
 
 
 			if (tr_ondblclick != null) {
 				results.append(" ondblclick=\"");
 				results.append(tr_ondblclick);
-				results.append("\"");
+				results.append('"');
 			}
 
 
@@ -792,24 +792,24 @@ public class tagList extends TagSupport{
 		if (v_td_width_current != null) {
 			results.append(" width=\"");
 			results.append(v_td_width_current);
-			results.append("\"");
+			results.append('"');
 		}
 
 		if (td_style != null) {
 			results.append(" style=\"");
 			results.append(td_style);
-			results.append("\"");
+			results.append('"');
 		}
 
 		if (v_td_styleClassOutput_current != null && !v_td_styleClassOutput_current.toString().trim().equals("")) {
 			results.append(" class=\"");
 			results.append(v_td_styleClassOutput_current);
-			results.append("\"");
+			results.append('"');
 		}else{
 			if (td_styleClass != null) {
 				results.append(" class=\"");
 				results.append(td_styleClass);
-				results.append("\"");
+				results.append('"');
 			}
 		}
 
@@ -817,42 +817,42 @@ public class tagList extends TagSupport{
 			if (td_onmouseover != null) {
 				results.append(" onmouseover=\"");
 				results.append(td_onmouseover);
-				results.append("\"");
+				results.append('"');
 			}
 			if (td_onmouseout != null) {
 				results.append(" onmouseout=\"");
 				results.append(tr_onmouseout);
-				results.append("\"");
+				results.append('"');
 			}
 			if (td_onmousedown != null) {
 				results.append(" onmousedown=\"");
 				results.append(td_onmousedown);
-				results.append("\"");
+				results.append('"');
 			}
 			if (td_onmousemove != null) {
 				results.append(" onmousemove=\"");
 				results.append(td_onmousemove);
-				results.append("\"");
+				results.append('"');
 			}
 			if (td_onmouseup != null) {
 				results.append(" onmouseup=\"");
 				results.append(td_onmouseup);
-				results.append("\"");
+				results.append('"');
 			}
 			if (td_onclick != null) {
 				results.append(" ondblclick=\"");
 				results.append(td_onclick);
-				results.append("\"");
+				results.append('"');
 			}
 			if (td_ondblclick != null) {
 				results.append(" onclick=\"");
 				results.append(td_ondblclick);
-				results.append("\"");
+				results.append('"');
 			}
 		}
 		if(td_nobr==null || td_nobr.toUpperCase().equals("TRUE"))
 			results.append("><nobr>");
-		else results.append(">");
+		else results.append('>');
 
 		boolean marked=false;
 		if(mark!=null){
@@ -881,7 +881,7 @@ public class tagList extends TagSupport{
 				writeValue=util_format.makeFormatedString(v_formatsOutput_current.toString(),formatLanguage,formatCountry,writeValue);
 			if(!v_replaceOnBlank_current.toString().equals(""))
 				writeValue=util_format.replace(writeValue.toString(),v_replaceOnBlank_current.toString(),"");
-	
+
 		}catch(Exception e){}
 		if(marked){
 			if(mark_styleClass!=null) results.append("span class=\""+mark_styleClass+"\">");
@@ -1368,7 +1368,7 @@ public class tagList extends TagSupport{
 		if(string.indexOf(";")==0) string = " "+ string;
 		formatsOutput=string;
 	}
-	
+
 	public void setReplaceOnBlank(String string) {
 		if(string==null || string.length()==0) replaceOnBlank = string;
 		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
@@ -1382,7 +1382,7 @@ public class tagList extends TagSupport{
 	public void setTd_width(String string) {
 		td_width = string;
 	}
-*/	
+*/
 	public void setTd_styleClassOutput(String string) {
 		if(string==null || string.length()==0) td_styleClassOutput = string;
 		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
@@ -1394,6 +1394,6 @@ public class tagList extends TagSupport{
 		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
 		if(string.indexOf(";")==0) string = " "+ string;
 		td_width=string;
-	}	
+	}
 }
 

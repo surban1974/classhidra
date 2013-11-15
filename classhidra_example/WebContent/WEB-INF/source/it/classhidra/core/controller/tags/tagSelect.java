@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -44,7 +44,7 @@ public class tagSelect extends tagInput{
 	private static final long serialVersionUID = -1L;
 	private String multiple=null;
 	public int doEndTag() throws JspException {
-			
+
 		StringBuffer results = new StringBuffer("</select>");
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -54,7 +54,7 @@ public class tagSelect extends tagInput{
 		}
 		value=null;
 		return EVAL_BODY_INCLUDE;
-	
+
 	}
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
@@ -65,16 +65,16 @@ public class tagSelect extends tagInput{
 			if(pool!=null) formAction = (i_action)pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
-		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
-		if(formAction==null) formAction = new action(); 
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		if(formAction==null) formAction = new action();
 		if(bean==null) formBean = formAction.get_bean();
 
 		if(method_prefix==null) method_prefix="get";
-		
-		Object writeValue=null;
-		
 
-		
+		Object writeValue=null;
+
+
+
 //		if(value==null){
 			if(bean==null && name!=null){
 				writeValue = formBean.get(name);
@@ -97,252 +97,334 @@ public class tagSelect extends tagInput{
 				}
 
 				if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
-				
+
 				if(anotherBean!=null){
 					if(name==null){
 						writeValue = anotherBean;
 						name=bean;
 						try{
 							value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
-						}catch(Exception e){	 
+						}catch(Exception e){
 						}
 					}
 					else{
 						try{
 							writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);
-							if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);		 
+							if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
 						}catch(Exception e){}
-					}	
-				}		 		
+					}
+				}
 			}
-//		}	
+//		}
 		StringBuffer results = new StringBuffer("<select ");
 		if(name!=null){
 			results.append(" name=\"");
 			results.append(name);
-			results.append("\"");
+			results.append('"');
 		}
 		if(objId!=null){
 			results.append(" id=\"");
 			results.append(objId);
-			results.append("\"");
+			results.append('"');
 		}else{
 			if(name!=null){
 				results.append(" id=\"");
 				results.append(name);
-				results.append("\"");
-			}			
+				results.append('"');
+			}
 		}
 		if (type != null) {
 			results.append(" type=\"");
 			results.append(type == null ? "text" : type);
-			results.append("\"");
+			results.append('"');
 		}
 		if (readonly != null) {
 			results.append(" readonly=\"");
 			results.append(readonly);
-			results.append("\"");
+			results.append('"');
 		}
 		if (size != null) {
 			results.append(" size=\"");
 			results.append(size);
-			results.append("\"");
+			results.append('"');
 		}
 		if (src != null) {
 			results.append(" src=\"");
 			results.append(src);
-			results.append("\"");
+			results.append('"');
 		}
 		if (tabindex != null) {
 			results.append(" tabindex=\"");
 			results.append(tabindex);
-			results.append("\"");
+			results.append('"');
 		}
 		if (usemap != null) {
 			results.append(" usemap=\"");
 			results.append(usemap);
-			results.append("\"");
+			results.append('"');
 		}
 		if (accesskey != null) {
 			results.append(" accesskey=\"");
 			results.append(accesskey);
-			results.append("\"");
+			results.append('"');
 		}
 		if (align != null) {
 			results.append(" align=\"");
 			results.append(align);
-			results.append("\"");
+			results.append('"');
 		}
 		if (alt != null) {
 			results.append(" alt=\"");
 			results.append(alt);
-			results.append("\"");
+			results.append('"');
 		}
 		if (border != null) {
 			results.append(" border=\"");
 			results.append(border);
-			results.append("\"");
+			results.append('"');
 		}
 		if (checked != null) {
 			results.append(" checked=\"");
 			results.append(checked);
-			results.append("\"");
+			results.append('"');
 		}
 		if (disabled != null) {
 			results.append(" disabled=\"");
 			results.append(disabled);
-			results.append("\"");
+			results.append('"');
 		}
 		if (width != null) {
 			results.append(" width=\"");
 			results.append(width);
-			results.append("\"");
+			results.append('"');
 		}
 		if (height != null) {
 			results.append(" height=\"");
 			results.append(height);
-			results.append("\"");
+			results.append('"');
 		}
 		if (ismap != null) {
 			results.append(" ismap=\"");
 			results.append(ismap);
-			results.append("\"");
+			results.append('"');
 		}
 		if (maxlength != null) {
 			results.append(" maxlength=\"");
 			results.append(maxlength);
-			results.append("\"");
+			results.append('"');
 		}
 		if (multiple != null) {
 			results.append(" multiple =\"");
 			results.append(multiple);
-			results.append("\"");
-		}		
-		
+			results.append('"');
+		}
+		if (autofocus != null) {
+			results.append(" autofocus=\"");
+			results.append(autofocus);
+			results.append('"');
+		}
+		if (form != null) {
+			results.append(" form=\"");
+			results.append(form);
+			results.append('"');
+		}
+		if (required != null) {
+			results.append(" required=\"");
+			results.append(required);
+			results.append('"');
+		}
 		if(value!=null)
 			if(formatOutput!=null) value=util_format.prepareContentString(formatOutput,value);
 			if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
 
-			try{			
+			try{
 				results.append(" value=\"");
 				results.append(value);
-				results.append("\"");
-		}catch(Exception e){}	
-			
+				results.append('"');
+		}catch(Exception e){}
+
 		if (styleClass != null) {
 			results.append(" class=\"");
 			results.append(styleClass);
-			results.append("\"");
+			results.append('"');
 		}
 		if (style != null) {
 			results.append(" style=\"");
 			results.append(style);
-			results.append("\"");
+			results.append('"');
 		}
 		if (accept != null) {
 			results.append(" accept=\"");
 			results.append(accept);
-			results.append("\"");
+			results.append('"');
 		}
 		if (lang != null) {
 			results.append(" lang=\"");
 			results.append(lang);
-			results.append("\"");
+			results.append('"');
 		}
 		if (title != null) {
 			results.append(" title=\"");
 			results.append(title);
-			results.append("\"");
+			results.append('"');
 		}
 		if (dir != null) {
 			results.append(" dir=\"");
 			results.append(dir);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onclick != null) {
 			results.append(" onclick=\"");
 			results.append(onclick);
-			results.append("\"");
+			results.append('"');
 		}
 		if (ondblclick != null) {
 			results.append(" ondblclick=\"");
 			results.append(ondblclick);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onhelp != null) {
 			results.append(" onhelp=\"");
 			results.append(onhelp);
-			results.append("\"");
+			results.append('"');
 		}
-		
+
 		if (onkeydown != null) {
 			results.append(" onkeydown=\"");
 			results.append(onkeydown);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onkeypress != null) {
 			results.append(" onkeypress=\"");
 			results.append(onkeypress);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onkeyup != null) {
 			results.append(" onkeyup=\"");
 			results.append(onkeyup);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onmousedown != null) {
 			results.append(" onmousedown=\"");
 			results.append(onmousedown);
-			results.append("\"");
+			results.append('"');
 		}
-	
+
 		if (onmousemove != null) {
 			results.append(" onmousemove=\"");
 			results.append(onmousemove);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onmouseout != null) {
 			results.append(" onmouseout=\"");
 			results.append(onmouseout);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onmouseover != null) {
 			results.append(" onmouseover=\"");
 			results.append(onmouseover);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onmouseup != null) {
 			results.append(" onmouseup=\"");
 			results.append(onmouseup);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onblur != null) {
 			results.append(" onblur=\"");
 			results.append(onblur);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onchange != null) {
 			results.append(" onchange=\"");
 			results.append("this.value=this[this.selectedIndex].value; "+onchange);
-			results.append("\"");
+			results.append('"');
 		}else{
 			results.append(" onchange=\"");
 			results.append("this.value = this[this.selectedIndex].value; ");
-			results.append("\"");
+			results.append('"');
 		}
 		if (onfocus != null) {
 			results.append(" onfocus=\"");
 			results.append(onfocus);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onselect != null) {
 			results.append(" onselect=\"");
 			results.append(onselect);
-			results.append("\"");
+			results.append('"');
 		}
-		
-		results.append(">");
-		
+
+		if (oncontextmenu != null) {
+			results.append(" oncontextmenu=\"");
+			results.append(oncontextmenu);
+			results.append('"');
+		}
+		if (onformchange != null) {
+			results.append(" onformchange=\"");
+			results.append(onformchange);
+			results.append('"');
+		}
+		if (onforminput != null) {
+			results.append(" onforminput=\"");
+			results.append(onforminput);
+			results.append('"');
+		}
+		if (oninput != null) {
+			results.append(" oninput=\"");
+			results.append(oninput);
+			results.append('"');
+		}
+		if (oninvalid != null) {
+			results.append(" oninvalid=\"");
+			results.append(oninvalid);
+			results.append('"');
+		}
+
+		if (ondrag != null) {
+			results.append(" ondrag=\"");
+			results.append(ondrag);
+			results.append('"');
+		}
+		if (ondragend != null) {
+			results.append(" ondragend=\"");
+			results.append(ondragend);
+			results.append('"');
+		}
+		if (ondragenter != null) {
+			results.append(" ondragenter=\"");
+			results.append(ondragenter);
+			results.append('"');
+		}
+		if (ondragleave != null) {
+			results.append(" ondragleave=\"");
+			results.append(ondragleave);
+			results.append('"');
+		}
+		if (ondragover != null) {
+			results.append(" ondragover=\"");
+			results.append(ondragover);
+			results.append('"');
+		}
+		if (ondragstart != null) {
+			results.append(" ondragstart=\"");
+			results.append(ondragstart);
+			results.append('"');
+		}
+		if (ondrop != null) {
+			results.append(" ondrop=\"");
+			results.append(ondrop);
+			results.append('"');
+		}
+		if (onmousewheel != null) {
+			results.append(" onmousewheel=\"");
+			results.append(onmousewheel);
+			results.append('"');
+		}
+
+
+		results.append('>');
+
 		if(name!=null && formatInput!=null){
 			results.append("<input name=\"");
 			results.append("$format_"+name);
@@ -364,7 +446,7 @@ public class tagSelect extends tagInput{
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(replaceOnErrorFormat);
 			results.append("\">");
-		}				
+		}
 		return results.toString();
 	}
 	public int doStartTag() throws JspException {
@@ -376,7 +458,7 @@ public class tagSelect extends tagInput{
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
-		return EVAL_BODY_INCLUDE; 
+		return EVAL_BODY_INCLUDE;
 	}
 	public void release() {
 		super.release();

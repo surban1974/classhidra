@@ -29,7 +29,7 @@ import java.io.FilenameFilter;
 
 public class log_FilesFilter implements FilenameFilter {
 	public boolean accept(File dir, String name) {
-		if( (name.substring(0,2) != "log") && name.indexOf(".log") != -1){
+		if( (!name.substring(0,2).equals("log")) && name.indexOf(".log") != -1){
 		 	return true;   
 		}
 		return false;

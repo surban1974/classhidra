@@ -63,7 +63,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 
 //		String rootPath = bsController.getAppInit().get_path_config().replace('\\','/').replace("/config/","");
-		String rootPath = request.getSession().getServletContext().getRealPath("/");;
+		String rootPath = request.getSession().getServletContext().getRealPath("/");
 		String tmpPath = rootPath+"/tmp/";
 		String tmpPathDate = rootPath+"/tmp/"+util_format.dataToString(new Date(),"yyyyMMddhhmm");
 

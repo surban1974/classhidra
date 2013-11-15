@@ -122,11 +122,11 @@ public static Object convertType(Class CTarget, Object source, String format) th
 		// Inizio gestione da e verso tipi Date
 		if ( classNameSource.equals("java.util.Date") ) { // Source di tipo Date
 			if ( classNameTarget.equals("short") || classNameTarget.equals("java.lang.Short") )
-				return (Object)Short.valueOf( util_format.dataToString((Date)source,format).trim() );
+				return Short.valueOf( util_format.dataToString((Date)source,format).trim() );
 			if ( classNameTarget.equals("int") || classNameTarget.equals("java.lang.Integer") )
-				return (Object)Integer.valueOf( util_format.dataToString((Date)source,format).trim() );
+				return Integer.valueOf( util_format.dataToString((Date)source,format).trim() );
 			if ( classNameTarget.equals("java.lang.String") )
-				return (Object)util_format.dataToString((Date)source,format);
+				return util_format.dataToString((Date)source,format);
 		}
 		if ( classNameTarget.equals("java.util.Date")) { // Target di tipo Date
 			if ( classNameSource.equals("short")
@@ -135,7 +135,7 @@ public static Object convertType(Class CTarget, Object source, String format) th
 			|| classNameSource.equals("java.lang.Integer")
 			|| classNameSource.equals("long")
 			|| classNameSource.equals("java.lang.Long")
-			|| classNameSource.equals("java.lang.String"))	return (Object)util_format.stringToData(""+source,format);
+			|| classNameSource.equals("java.lang.String"))	return util_format.stringToData(""+source,format);
 		}
 		// Fine gestione da e verso tipi Date
 		// Inizio conversioni da tipi java ai corrispondenti tipi primitivi
@@ -156,22 +156,22 @@ public static Object convertType(Class CTarget, Object source, String format) th
 		if ( classNameSource.equals("java.lang.Character") && classNameTarget.equals("char") ) return source;
 		// Fine conversioni da tipi java ai corrispondenti tipi primitivi
 		// Inizio conversioni pericolose!!!
-		if ( classNameSource.equals("java.lang.Integer") &&	classNameTarget.equals("short") ) return (Object)Short.valueOf(source.toString());
+		if ( classNameSource.equals("java.lang.Integer") &&	classNameTarget.equals("short") ) return Short.valueOf(source.toString());
 		if ( classNameSource.equals("java.lang.Long") ) {
-			if ( classNameTarget.equals("int") ) return (Object)Integer.valueOf(source.toString());
-			if ( classNameTarget.equals("short") ) return (Object)Short.valueOf(source.toString());
+			if ( classNameTarget.equals("int") ) return Integer.valueOf(source.toString());
+			if ( classNameTarget.equals("short") ) return Short.valueOf(source.toString());
 		}
-		if ( classNameSource.equals("java.lang.Float") && classNameTarget.equals("duble") ) return (Object)Double.valueOf(source.toString());
+		if ( classNameSource.equals("java.lang.Float") && classNameTarget.equals("duble") ) return Double.valueOf(source.toString());
 		// Fine conversioni pericolose!!!
 		// Inizio conversioni dal tipo java.lang.String ai corrispondenti tipi primitivi
 		if ( classNameSource.equals("java.lang.String") ) {
-			if ( classNameTarget.equals("int") ) return (Object)Integer.valueOf(source.toString());
-			if ( classNameTarget.equals("short") ) return (Object)Short.valueOf(source.toString());
-			if ( classNameTarget.equals("long") ) return (Object)Long.valueOf(source.toString());
-			if ( classNameTarget.equals("float") ) return (Object)Float.valueOf(source.toString());
-			if ( classNameTarget.equals("double") ) return (Object)Double.valueOf(source.toString());
-			if ( classNameTarget.equals("char") ) return (Object)new Character(source.toString().charAt(0));
-			if ( classNameTarget.equals("boolean") ) return (Object)Boolean.valueOf(source.toString());
+			if ( classNameTarget.equals("int") ) return Integer.valueOf(source.toString());
+			if ( classNameTarget.equals("short") ) return Short.valueOf(source.toString());
+			if ( classNameTarget.equals("long") ) return Long.valueOf(source.toString());
+			if ( classNameTarget.equals("float") ) return Float.valueOf(source.toString());
+			if ( classNameTarget.equals("double") ) return Double.valueOf(source.toString());
+			if ( classNameTarget.equals("char") ) return new Character(source.toString().charAt(0));
+			if ( classNameTarget.equals("boolean") ) return Boolean.valueOf(source.toString());
 		}
 		// Fine conversioni dal tipo java.lang.String ai corrispondenti tipi primitivi
 	} catch( NumberFormatException  e) {

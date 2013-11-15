@@ -206,6 +206,7 @@ public boolean writeRecord(String record){
 }
 
 public String getRealPathName(){
+
 	File dir = new File(init.get_LogPath());
 	if(!dir.exists() || !dir.isDirectory()) return null;
 	String pathLogsDirectory = init.get_LogPath()+init.get_LogName();

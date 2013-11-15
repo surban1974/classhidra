@@ -292,11 +292,11 @@ public class annotation_scanner implements i_annotation_scanner {
 			
 			Annotation annotation = classType.getAnnotation(Bean.class);
 				if(annotation!=null) checkClassAnnotation(class_path, annotation);
-			annotation = (Action)classType.getAnnotation(Action.class);
+			annotation = classType.getAnnotation(Action.class);
 				if(annotation!=null) checkClassAnnotation(class_path, annotation);
-			annotation = (Stream)classType.getAnnotation(Stream.class);
+			annotation = classType.getAnnotation(Stream.class);
 				if(annotation!=null) checkClassAnnotation(class_path, annotation);
-			annotation = (Transformation)classType.getAnnotation(Transformation.class);
+			annotation = classType.getAnnotation(Transformation.class);
 				if(annotation!=null) checkClassAnnotation(class_path, annotation);
 		    
 		    

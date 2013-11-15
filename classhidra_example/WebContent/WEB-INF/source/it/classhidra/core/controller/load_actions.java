@@ -348,6 +348,8 @@ public void load_def_actions() {
     		initWithData(result);
     		readDef=true;
     		loadedFrom+=" "+property_name;
+    		bsController.writeLog("Load_actions from "+property_name+" OK ",iStub.log_INFO);
+
     	}
     }catch (Exception e) {
     	readDef=false;
@@ -386,6 +388,7 @@ public void loadFromAnnotations(){
 	}
 	
 	if(l_annotated==null) l_annotated = new annotation_scanner();
+	bsController.writeLog("Start Load_actions with Annotation scaner: "+l_annotated.getClass().getName(),iStub.log_INFO);
 	l_annotated.loadAllObjects(_redirects);
 	
 	if(l_annotated.getError()!=null && !l_annotated.getError().equals(""))
@@ -476,7 +479,7 @@ public void loadFromAnnotations(){
 		a_beans = new util_sort().sort(a_beans,"int_order");
 		
 	for(int i=0;i<a_beans.size();i++){
-		if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(new Integer(max_int_order+1+i).toString());
+		if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 		_beans.put(((info_bean)a_beans.get(i)).getName(), a_beans.get(i));
 	}
 	v_info_beans = (new Vector(_beans.values()));
@@ -496,7 +499,7 @@ public void loadFromAnnotations(){
 		a_redirects = new util_sort().sort(a_redirects,"int_order");
 		
 	for(int i=0;i<a_redirects.size();i++){
-		if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(new Integer(max_int_order+1+i).toString());
+		if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 		_redirects.put(((info_redirect)a_redirects.get(i)).getPath(), a_redirects.get(i));
 	}
 	v_info_redirects = (new Vector(_redirects.values()));
@@ -515,7 +518,7 @@ public void loadFromAnnotations(){
 		a_actions = new util_sort().sort(a_actions,"int_order");
 		
 	for(int i=0;i<a_actions.size();i++){
-		if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(new Integer(max_int_order+1+i).toString());
+		if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 		_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
 	}
 	v_info_actions = (new Vector(_actions.values()));
@@ -534,7 +537,7 @@ public void loadFromAnnotations(){
 		a_transformations = new util_sort().sort(a_transformations,"int_order");
 		
 	for(int i=0;i<a_transformations.size();i++){
-		if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(new Integer(max_int_order+1+i).toString());
+		if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 		_transformationoutput.put(((info_transformation)a_transformations.get(i)).getName(), a_transformations.get(i));
 	}
 	v_info_transformationoutput = (new Vector(_transformationoutput.values()));
@@ -552,7 +555,7 @@ public void load_from_resources() {
 	try{
 		array = util_classes.getResources(property_name);
 	}catch(Exception e){
-		util_format.writeToConsole(bsController.getLogInit(),"LoadActions: Array.ERROR:"+e.toString());
+    	bsController.writeLog("Load_actions from resources Array ERROR:"+e.toString(),iStub.log_ERROR);
 	}
 
 	for(int i=0;i<array.size();i++){
@@ -694,12 +697,12 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 		}
 		if(_actions!=null && _actions.get("*")!=null){
 			Object[] keysIn = _actions.keySet().toArray();
-			Object[] keysFor = ((HashMap)((info_action)_actions.get("*")).get_redirects()).keySet().toArray();
+			Object[] keysFor = (((info_action)_actions.get("*")).get_redirects()).keySet().toArray();
 			for(int i=0;i<keysIn.length;i++){
 				try{
-					HashMap current_redirects = (HashMap)((info_action)_actions.get((String)keysIn[i])).get_redirects();
+					HashMap current_redirects = ((info_action)_actions.get((String)keysIn[i])).get_redirects();
 					for(int j=0;j<keysFor.length;j++)
-						current_redirects.put(keysFor[j],(((HashMap)((info_action)_actions.get("*")).get_redirects())).get(keysFor[j]));
+						current_redirects.put(keysFor[j],((((info_action)_actions.get("*")).get_redirects())).get(keysFor[j]));
 				}catch(Exception e){
 				}
 			}
@@ -1579,12 +1582,12 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			}
 			if(_actions!=null && _actions.get("*")!=null){
 				Object[] keysIn = _actions.keySet().toArray();
-				Object[] keysFor = ((HashMap)((info_action)_actions.get("*")).get_redirects()).keySet().toArray();
+				Object[] keysFor = (((info_action)_actions.get("*")).get_redirects()).keySet().toArray();
 				for(int i=0;i<keysIn.length;i++){
 					try{
-						HashMap current_redirects = (HashMap)((info_action)_actions.get((String)keysIn[i])).get_redirects();
+						HashMap current_redirects = ((info_action)_actions.get((String)keysIn[i])).get_redirects();
 						for(int j=0;j<keysFor.length;j++)
-							current_redirects.put(keysFor[j],(((HashMap)((info_action)_actions.get("*")).get_redirects())).get(keysFor[j]));
+							current_redirects.put(keysFor[j],((((info_action)_actions.get("*")).get_redirects())).get(keysFor[j]));
 					}catch(Exception e){
 					}
 				}

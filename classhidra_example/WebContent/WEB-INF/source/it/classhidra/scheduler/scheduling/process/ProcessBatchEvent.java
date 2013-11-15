@@ -48,7 +48,6 @@ public class ProcessBatchEvent  {
 			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
 			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
-		}finally{
 		}
 	}
 	
@@ -59,7 +58,6 @@ public class ProcessBatchEvent  {
 			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
 			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
-		}finally{
 		}
 	}
 
@@ -147,7 +145,7 @@ public class ProcessBatchEvent  {
 							db_batch current = (db_batch)child_batch.get(i);
 							String[] current_eb = executeBatch(current.getCd_ist(), current.getCd_btch(), common_area,false,true);
 							common_area = current_eb[0];
-							short current_state = new Short(current_eb[1]).shortValue();
+							short current_state = Short.parseShort(current_eb[1]);
 							h_common_area.put(current.getCd_btch().trim(), current.getCd_btch().trim()+" -> "+current.getDesSt_exec(new Integer(current_state)));
 							
 							if( current_state>batch.getSt_exec().shortValue()) batch.setSt_exec(new Integer(current_state));

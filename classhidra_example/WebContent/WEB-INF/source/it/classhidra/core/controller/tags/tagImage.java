@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -25,7 +25,7 @@
 package it.classhidra.core.controller.tags;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.tagext.*; 
+import javax.servlet.jsp.tagext.*;
 import javax.servlet.jsp.*;
 import java.io.IOException;
 
@@ -63,39 +63,39 @@ public class tagImage extends TagSupport{
 	protected String ismap = null;
 	protected String objId = null;
 	protected String hspace = null;
-	protected String height = null; 
+	protected String height = null;
 	protected String dir = null;
 	protected String styleClass = null;
 	protected String border = null;
 	protected String alt = null;
 	protected String align = null;
 	protected String src = null;
-	
-	public tagImage() 
+
+	public tagImage()
 	{
 		super();
 	}
 
-	public int doStartTag() throws JspException 
+	public int doStartTag() throws JspException
 	{
 		StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
-		try 
+		try
 		{
 			writer.print(results.toString());
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			throw new JspException(e.toString());
 		}
-		return EVAL_BODY_INCLUDE; 
+		return EVAL_BODY_INCLUDE;
 	}
 
-	public void release() 
+	public void release()
 	{
-		super.release();				
-		
+		super.release();
+
 		width = null;
 		vspace = null;
 		usemap = null;
@@ -118,7 +118,7 @@ public class tagImage extends TagSupport{
 		ismap = null;
 		objId = null;
 		hspace = null;
-		height = null; 
+		height = null;
 		dir = null;
 		styleClass = null;
 		border = null;
@@ -126,12 +126,12 @@ public class tagImage extends TagSupport{
 		align = null;
 		src = null;
 	}
-   
+
 	protected String createTagBody(){
-		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();		
-				
-		BigDecimal cdIst = ((auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION)).get_cd_ist();				
-		
+		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+
+		BigDecimal cdIst = ((auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION)).get_cd_ist();
+
 		StringBuffer results = new StringBuffer("");
 		results.append("<img ");
 		if ( src != null)
@@ -152,177 +152,177 @@ public class tagImage extends TagSupport{
 			}
 			results.append(" src=\"");
 			results.append(source);
-			results.append("\"");
-		}		
+			results.append('"');
+		}
 		if(align!=null)
 		{
 			results.append(" align=\"");
 			results.append(align);
-			results.append("\"");
+			results.append('"');
 		}
 		if(alt!=null)
 		{
 			results.append(" alt=\"");
 			results.append(alt);
-			results.append("\"");
+			results.append('"');
 		}
 		if(border!=null)
 		{
 			results.append(" border=\"");
 			results.append(border);
-			results.append("\"");
+			results.append('"');
 		}
 		if(styleClass!=null)
 		{
 			results.append(" class=\"");
 			results.append(styleClass);
-			results.append("\"");
+			results.append('"');
 		}
 		if(dir!=null)
 		{
 			results.append(" dir=\"");
 			results.append(dir);
-			results.append("\"");
+			results.append('"');
 		}
 		if(height!=null)
 		{
 			results.append(" height=\"");
 			results.append(height);
-			results.append("\"");
+			results.append('"');
 		}
 		if(hspace!=null)
 		{
 			results.append(" hspace=\"");
 			results.append(hspace);
-			results.append("\"");
+			results.append('"');
 		}
 		if(objId!=null)
 		{
 			results.append(" id=\"");
 			results.append(objId);
-			results.append("\"");
+			results.append('"');
 		}
 		if(ismap!=null)
 		{
 			results.append(" ismap=\"");
 			results.append(ismap);
-			results.append("\"");
+			results.append('"');
 		}
 		if(lang!=null)
 		{
 			results.append(" lang=\"");
 			results.append(lang);
-			results.append("\"");
+			results.append('"');
 		}
 		if(longdesc!=null)
 		{
 			results.append(" longdesc=\"");
 			results.append(longdesc);
-			results.append("\"");
+			results.append('"');
 		}
 		if(mapfile!=null)
 		{
 			results.append(" mapfile=\"");
 			results.append(objId);
-			results.append("\"");
+			results.append('"');
 		}
 		if(name!=null)
 		{
 			results.append(" name=\"");
 			results.append(name);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onclick!=null)
 		{
 			results.append(" onclick=\"");
 			results.append(onclick);
-			results.append("\"");
+			results.append('"');
 		}
 		if(ondblclick!=null)
 		{
 			results.append(" ondblclick=\"");
 			results.append(ondblclick);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onhelp!=null)
 		{
 			results.append(" onhelp=\"");
 			results.append(onhelp);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onkeydown!=null)
 		{
 			results.append(" onkeydown=\"");
 			results.append(onkeydown);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onkeypress!=null)
 		{
 			results.append(" onkeypress=\"");
 			results.append(onkeypress);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onkeyup!=null)
 		{
 			results.append(" onkeyup=\"");
 			results.append(onkeyup);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onmousedown!=null)
 		{
 			results.append(" onmousedown=\"");
 			results.append(onmousedown);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onmouseup!=null)
 		{
 			results.append(" onmouseup=\"");
 			results.append(onmouseup);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onmousemove!=null)
 		{
 			results.append(" onmousemove=\"");
 			results.append(onmousemove);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onmouseout!=null)
 		{
 			results.append(" onmouseout=\"");
 			results.append(onmouseout);
-			results.append("\"");
+			results.append('"');
 		}
 		if(onmouseover!=null)
 		{
 			results.append(" onmouseover=\"");
 			results.append(onmouseover);
-			results.append("\"");
+			results.append('"');
 		}
 		if(title!=null)
 		{
 			results.append(" title=\"");
 			results.append(title);
-			results.append("\"");
+			results.append('"');
 		}
 		if(usemap!=null)
 		{
 			results.append(" usemap=\"");
 			results.append(usemap);
-			results.append("\"");
+			results.append('"');
 		}
 		if(width!=null)
 		{
 			results.append(" width=\"");
 			results.append(width);
-			results.append("\"");
+			results.append('"');
 		}
 		if(vspace!=null)
 		{
 			results.append(" vspace=\"");
 			results.append(vspace);
-			results.append("\"");
+			results.append('"');
 		}
-		results.append("></img>");		
+		results.append("></img>");
 		return results.toString();
 	}
 

@@ -24,6 +24,7 @@
 
 package it.classhidra.core.tool.log;
 
+
 import it.classhidra.core.init.*;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
@@ -46,10 +47,13 @@ public log_generator(log_init _init) {
 	this.init = _init;
 	logStub = stubFactory(init.get_LogStub());
 	try{
+		if(init==null) throw new Exception("Log INIT is NULL");
+		if(init.get_LogPath()==null) throw new Exception("Log INIT->LogPath is NULL");
 		if(!new File(new log_FileManager(init).getRealPathName()).exists() && logStub==null) readError = true;
 	}catch(Exception e){	
 		readError = true;
-		util_format.writeToConsole(_init," Log : Init "+e.toString());
+//	   	bsController.writeLog("Load_log ERROR:"+e.toString(),iStub.log_ERROR);
+		util_format.writeToConsole(_init,"Load_log ERROR: "+e.toString());
 		return;
 	}
 
@@ -61,7 +65,8 @@ public void setInit(log_init _init) {
 		readError = true;
 	}catch(Exception e){	
 		readError = true;
-		util_format.writeToConsole(_init," Log : Init "+e.toString());
+//	   	bsController.writeLog("Load_log ERROR:"+e.toString(),iStub.log_ERROR);
+		util_format.writeToConsole(_init,"Load_log ERROR: "+e.toString());
 		return;
 	}
 }
@@ -181,7 +186,7 @@ public static synchronized void writeLog(log_init _init, String msg, String leve
 
 	util_format.writeToConsole(_init,log_mess);
 	
-	iStub _logStub = stubFactory(_init);;
+	iStub _logStub = stubFactory(_init);
 	if(_logStub!=null){
 		_logStub.write(prepare4stub(log_mess, null, null, null,null, level,null));
 	}else{	

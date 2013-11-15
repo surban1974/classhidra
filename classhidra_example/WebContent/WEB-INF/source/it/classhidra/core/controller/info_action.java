@@ -171,6 +171,12 @@ public class info_action extends info_entity implements i_elementBase{
 	public String getRedirect() {
 		return redirect;
 	}
+	public String getRedirect(String auth_id) {
+		if(auth_id==null || _auth_redirects==null) return null;
+		info_redirect iRedirect = (info_redirect)_auth_redirects.get(auth_id);
+		if(iRedirect!=null) return iRedirect.getPath();
+		return null;
+	}	
 	public HashMap get_redirects() {
 		return _redirects;
 	}

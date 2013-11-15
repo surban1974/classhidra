@@ -41,7 +41,7 @@ public class db_ResultSet {
 			time = util_format.dataToString(new java.util.Date(), "yyyyMMddHHmmssssss");
 			point = "???";
 			try{
-				StackTraceElement ste = (StackTraceElement)new Exception().getStackTrace()[3];
+				StackTraceElement ste = new Exception().getStackTrace()[3];
 				point = ste.getClassName()+":"+ste.getMethodName();
 			}catch(Exception e){
 

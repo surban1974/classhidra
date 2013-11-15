@@ -218,7 +218,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 	
 		    if(imi==null){
 		    	loadUser_config();
-		    	_user = (info_user)((load_users)bsController.getUser_config()).get_user(user,pass);
+		    	_user = ((load_users)bsController.getUser_config()).get_user(user,pass);
 		    }else{
 		    	bean form = new bean();
 				form.put("user",user);

@@ -75,7 +75,7 @@ public class wsController   {
  			}
 			
 		}
-		info_user _user = (info_user)((load_users)bsController.getUser_config()).get_user(user,password);	 
+		info_user _user = ((load_users)bsController.getUser_config()).get_user(user,password);	 
 	    if(_user!=null){
 	    	
 	    	auth_init auth = new auth_init();
@@ -212,7 +212,6 @@ public class wsController   {
 				errors.add(ex.toString());
 			}catch(Throwable t){
 				errors.add(t.toString());
-			}finally{
 			}
 
 		}	
