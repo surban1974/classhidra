@@ -40,7 +40,7 @@ import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import java.util.Vector;
+
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -108,16 +108,18 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	while(en.hasMoreElements()){
 		String key = (String)en.nextElement();
 		String value = request.getParameter(key);
+		String format = request.getParameter("$format_"+key);
+		String replaceOnBlank = request.getParameter("$replaceOnBlank_"+key);
+		String replaceOnErrorFormat = request.getParameter("$replaceOnErrorFormat_"+key);
 		if(key.indexOf(".")==-1){
 			try{
-
 				Object makedValue=null;
-				if(request.getParameter("$format_"+key)!=null){
+				if(format!=null){
 					if(delegated!=null){
-						makedValue=util_makeValue.makeFormatedValue1(delegated,request.getParameter("$format_"+key),value,key,request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
-						if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,request.getParameter("$format_"+key),value,key,request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
+						makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
+						if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 					}else{
-						makedValue=util_makeValue.makeFormatedValue1(this,request.getParameter("$format_"+key),value,key,request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
+						makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 					}
 				}else{
 					if(delegated!=null){
@@ -131,16 +133,14 @@ public void init(HttpServletRequest request) throws bsControllerException{
 			}catch(Exception e){
 				try{
 					Object makedValue=null;
-
-					if(request.getParameter("$format_"+key)!=null){
+					if(format!=null){
 						if(delegated!=null){
-							makedValue=util_makeValue.makeFormatedValue(delegated,request.getParameter("$format_"+key),value,getCampoValue(key),request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
-							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,request.getParameter("$format_"+key),value,getCampoValue(key),request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
+							makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
 						}else{
-							makedValue=util_makeValue.makeFormatedValue(this,request.getParameter("$format_"+key),value,getCampoValue(key),request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key));
+							makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
 						}
 					}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
-
 					setCampoValueWithPoint(key,makedValue);
 				}catch(Exception ex){
 					if(parametersFly==null) parametersFly = new HashMap();
@@ -148,16 +148,14 @@ public void init(HttpServletRequest request) throws bsControllerException{
 				}
 			}
 		}else{
-			StringTokenizer st = new StringTokenizer(key,".");
-			Vector allfields=new Vector();
-			while(st.hasMoreTokens()){
-				String current_field_name = st.nextToken();
-				allfields.add(current_field_name);
-			}
-
+			
 			Object writeValue=null;
 			Object current_requested = (delegated==null)?this:delegated;
-
+/*			
+			StringTokenizer st = new StringTokenizer(key,".");
+			Vector allfields=new Vector();
+			while(st.hasMoreTokens())
+				allfields.add(st.nextToken());
 
 			for(int i=0;i<allfields.size()-1;i++){
 				String current_field_name = (String)allfields.get(i);
@@ -172,31 +170,54 @@ public void init(HttpServletRequest request) throws bsControllerException{
 				writeValue = null;
 			}
 			String current_field_name = (String)allfields.get(allfields.size()-1);
-			try{
-				if(request.getParameter("$format_"+key)!=null)
-					setCampoValuePoint(
-							current_requested,
-							current_field_name,
-							util_makeValue.makeFormatedValue1(
-										current_requested,
-										request.getParameter("$format_"+key),
-										value,
-										current_field_name,
-										request.getParameter("$replaceOnBlank_"+key),
-										request.getParameter("$replaceOnErrorFormat_"+key)
-							)
-					);
-				else setCampoValuePoint(
-							current_requested,
-							current_field_name,
-							util_makeValue.makeValue1(current_requested,value,current_field_name)
-						);
-			}catch(Exception e){
+*/
+			
+			String last_field_name = null;
+			StringTokenizer st = new StringTokenizer(key,".");
+			while(st.hasMoreTokens()){				
+				if(st.countTokens()>1){
+					String current_field_name = st.nextToken();
+					try{
+						if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
+						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
+						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
+						if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
+					}catch(Exception e){
+					}
+					current_requested = writeValue;
+				}else{
+					last_field_name = st.nextToken();
+				}
+				writeValue = null;
+			}
+			
+			if(current_requested!=null){
 				try{
-					if(request.getParameter("$format_"+key)!=null)
-						setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,request.getParameter("$format_"+key),value,getCampoValue(key),request.getParameter("$replaceOnBlank_"+key),request.getParameter("$replaceOnErrorFormat_"+key)));
-					else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
-				}catch(Exception ex){
+					if(format!=null)
+						setCampoValuePoint(
+								current_requested,
+								last_field_name,
+								util_makeValue.makeFormatedValue1(
+											current_requested,
+											format,
+											value,
+											last_field_name,
+											replaceOnBlank,
+											replaceOnErrorFormat
+								)
+						);
+					else setCampoValuePoint(
+								current_requested,
+								last_field_name,
+								util_makeValue.makeValue1(current_requested,value,last_field_name)
+							);
+				}catch(Exception e){
+					try{
+						if(format!=null)
+							setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
+						else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
+					}catch(Exception ex){
+					}
 				}
 			}
 
@@ -276,21 +297,26 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		xmloutput=false;
 		jsonoutput=false;
 
-		Vector en = new Vector(parameters.keySet());
-		for(int k=0;k<en.size();k++){
-			String key = (String)en.get(k);
+//		Vector en = new Vector(parameters.keySet());
+//		for(int k=0;k<parameters.keySet().size();k++){
+		for (Object elem : parameters.keySet()) {
+			String key = (String)elem;
+			String format = (String)parameters.get("$format_"+key);
+			String replaceOnBlank = (String)parameters.get("$replaceOnBlank_"+key);
+			String replaceOnErrorFormat = (String)parameters.get("$replaceOnErrorFormat_"+key);
+			
 			if(parameters.get(key) instanceof String ){
 				String value = (String)parameters.get(key);
 
 				if(key.indexOf(".")==-1){
 					try{
 						Object makedValue=null;
-						if(parameters.get("$format_"+key)!=null){
+						if(format!=null){
 							if(delegated!=null){
-								makedValue=util_makeValue.makeFormatedValue1(delegated,(String)parameters.get("$format_"+key),value,key,(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key));
-								if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,(String)parameters.get("$format_"+key),value,key,(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key));
+								makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
+								if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 							}else{
-								makedValue=util_makeValue.makeFormatedValue1(this,(String)parameters.get("$format_"+key),value,key,(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key));
+								makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 							}
 						}else{
 							if(delegated!=null){
@@ -305,12 +331,12 @@ public void init(HttpServletRequest request) throws bsControllerException{
 						try{
 							Object makedValue=null;
 
-							if(parameters.get("$format_"+key)!=null){
+							if(format!=null){
 								if(delegated!=null){
-									makedValue=util_makeValue.makeFormatedValue(delegated,(String)parameters.get("$format_"+key),value,getCampoValue(key),(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key));
-									if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,(String)parameters.get("$format_"+key),value,getCampoValue(key),(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key));
+									makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+									if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
 								}else{
-									makedValue=util_makeValue.makeFormatedValue(this,(String)parameters.get("$format_"+key),value,getCampoValue(key),(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key));
+									makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
 								}
 							}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
 
@@ -321,32 +347,15 @@ public void init(HttpServletRequest request) throws bsControllerException{
 						}
 					}
 
-/*
-					try{
-						if(parameters.get("$format_"+key)!=null)
-							setCampoValueWithPoint(key,util_makeValue.makeFormatedValue1((delegated==null)?this:delegated,(String)parameters.get("$format_"+key),value,key,(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key)));
-						else setCampoValueWithPoint(key,util_makeValue.makeValue1(this,value,key));
-					}catch(Exception e){
-						try{
-							if(parameters.get("$format_"+key)!=null)
-								setCampoValueWithPoint(key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,(String)parameters.get("$format_"+key),value,getCampoValue(key),(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key)));
-							else setCampoValueWithPoint(key,util_makeValue.makeValue(value,getCampoValue(key)));
-						}catch(Exception ex){
-							if(parametersFly==null) parametersFly = new HashMap();
-							if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
-						}
-					}
-*/
 				}else{
-					StringTokenizer st = new StringTokenizer(key,".");
-					Vector allfields=new Vector();
-					while(st.hasMoreTokens()){
-						String current_field_name = st.nextToken();
-						allfields.add(current_field_name);
-					}
-
 					Object writeValue=null;
 					Object current_requested = (delegated==null)?this:delegated;
+					
+/*
+					StringTokenizer st = new StringTokenizer(key,".");
+					Vector allfields=new Vector();
+					while(st.hasMoreTokens())
+						allfields.add(st.nextToken());
 
 
 					for(int i=0;i<allfields.size()-1;i++){
@@ -362,31 +371,53 @@ public void init(HttpServletRequest request) throws bsControllerException{
 						current_requested = writeValue;
 					}
 					String current_field_name = (String)allfields.get(allfields.size()-1);
-					try{
-						if(parameters.get("$format_"+key)!=null)
-							setCampoValuePoint(
-									current_requested,
-									current_field_name,
-									util_makeValue.makeFormatedValue1(
-												current_requested,
-												(String)parameters.get("$format_"+key),
-												value,
-												current_field_name,
-												(String)parameters.get("$replaceOnBlank_"+key),
-												(String)parameters.get("$replaceOnErrorFormat_"+key)
-									)
-							);
-						else setCampoValuePoint(
-									current_requested,
-									current_field_name,
-									util_makeValue.makeValue1(current_requested,value,current_field_name)
-								);
-					}catch(Exception e){
+*/					
+					String last_field_name = null;
+					StringTokenizer st = new StringTokenizer(key,".");
+					while(st.hasMoreTokens()){				
+						if(st.countTokens()>1){
+							String current_field_name = st.nextToken();
+							try{
+								writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
+								if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
+								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
+							}catch(Exception e){
+							}
+							current_requested = writeValue;
+						}else{
+							last_field_name = st.nextToken();
+						}
+						writeValue = null;
+					}
+					
+					if(current_requested!=null){
 						try{
-							if(parameters.get("$format_"+key)!=null)
-								setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,(String)parameters.get("$format_"+key),value,getCampoValue(key),(String)parameters.get("$replaceOnBlank_"+key),(String)parameters.get("$replaceOnErrorFormat_"+key)));
-							else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
-						}catch(Exception ex){
+							if(format!=null)
+								setCampoValuePoint(
+										current_requested,
+										last_field_name,
+										util_makeValue.makeFormatedValue1(
+													current_requested,
+													format,
+													value,
+													last_field_name,
+													replaceOnBlank,
+													replaceOnErrorFormat
+										)
+								);
+							else setCampoValuePoint(
+										current_requested,
+										last_field_name,
+										util_makeValue.makeValue1(current_requested,value,last_field_name)
+									);
+						}catch(Exception e){
+							try{
+								if(format!=null)
+									setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
+								else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
+							}catch(Exception ex){
+							}
 						}
 					}
 
@@ -408,17 +439,20 @@ public void init(HashMap _content) throws bsControllerException{
 	for (int ii = 0; ii < keys.length; ii++){
 		String key = (String)keys[ii];
 		String value = (String)_content.get(key);
-
+		String format = (String)_content.get("$format_"+key);
+		String replaceOnBlank = (String)_content.get("$replaceOnBlank_"+key);
+		String replaceOnErrorFormat = (String)_content.get("$replaceOnErrorFormat_"+key);
+		
 		if(key.indexOf(".")==-1){
 			try{
 
 				Object makedValue=null;
-				if(_content.get("$format_"+key)!=null){
+				if(format!=null){
 					if(delegated!=null){
-						makedValue=util_makeValue.makeFormatedValue1(delegated,(String)_content.get("$format_"+key),value,key,(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key));
-						if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,(String)_content.get("$format_"+key),value,key,(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key));
+						makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
+						if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 					}else{
-						makedValue=util_makeValue.makeFormatedValue1(this,(String)_content.get("$format_"+key),value,key,(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key));
+						makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 					}
 				}else{
 					if(delegated!=null){
@@ -433,12 +467,12 @@ public void init(HashMap _content) throws bsControllerException{
 				try{
 					Object makedValue=null;
 
-					if(_content.get("$format_"+key)!=null){
+					if(format!=null){
 						if(delegated!=null){
-							makedValue=util_makeValue.makeFormatedValue(delegated,(String)_content.get("$format_"+key),value,getCampoValue(key),(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key));
-							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,(String)_content.get("$format_"+key),value,getCampoValue(key),(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key));
+							makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
 						}else{
-							makedValue=util_makeValue.makeFormatedValue(this,(String)_content.get("$format_"+key),value,getCampoValue(key),(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key));
+							makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
 						}
 					}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
 
@@ -449,17 +483,18 @@ public void init(HashMap _content) throws bsControllerException{
 				}
 			}
 		}else{
-			StringTokenizer st = new StringTokenizer(key,".");
-			Vector allfields=new Vector();
-			while(st.hasMoreTokens()){
-				String current_field_name = st.nextToken();
-				allfields.add(current_field_name);
-			}
-
 			Object writeValue=null;
 			Object current_requested = (delegated==null)?this:delegated;
 
+/*
+  
+			StringTokenizer st = new StringTokenizer(key,".");
+			Vector allfields=new Vector();
+			while(st.hasMoreTokens())
+				allfields.add(st.nextToken());
 
+
+  
 			for(int i=0;i<allfields.size()-1;i++){
 				String current_field_name = (String)allfields.get(i);
 				try{
@@ -473,52 +508,59 @@ public void init(HashMap _content) throws bsControllerException{
 				current_requested = writeValue;
 			}
 			String current_field_name = (String)allfields.get(allfields.size()-1);
-			try{
-				if(_content.get("$format_"+key)!=null)
-					setCampoValuePoint(
-							current_requested,
-							current_field_name,
-							util_makeValue.makeFormatedValue1(
-										current_requested,
-										(String)_content.get("$format_"+key),
-										value,
-										current_field_name,
-										(String)_content.get("$replaceOnBlank_"+key),
-										(String)_content.get("$replaceOnErrorFormat_"+key)
-							)
-					);
-				else setCampoValuePoint(
-							current_requested,
-							current_field_name,
-							util_makeValue.makeValue1(current_requested,value,current_field_name)
-						);
-			}catch(Exception e){
+*/
+			
+			String last_field_name = null;
+			StringTokenizer st = new StringTokenizer(key,".");
+			while(st.hasMoreTokens()){				
+				if(st.countTokens()>1){
+					String current_field_name = st.nextToken();
+					try{
+						writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
+						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
+						if(writeValue==null && current_requested instanceof HashMap){
+							writeValue = ((HashMap)current_requested).get(current_field_name);
+						}
+					}catch(Exception e){
+					}
+					current_requested = writeValue;
+				}else{
+					last_field_name = st.nextToken();
+				}
+				writeValue = null;
+			}
+
+			if(current_requested!=null){
 				try{
-					if(_content.get("$format_"+key)!=null)
-						setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,(String)_content.get("$format_"+key),value,getCampoValue(key),(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key)));
-					else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
-				}catch(Exception ex){
+					if(format!=null)
+						setCampoValuePoint(
+								current_requested,
+								last_field_name,
+								util_makeValue.makeFormatedValue1(
+											current_requested,
+											format,
+											value,
+											last_field_name,
+											replaceOnBlank,
+											replaceOnErrorFormat
+								)
+						);
+					else setCampoValuePoint(
+								current_requested,
+								last_field_name,
+								util_makeValue.makeValue1(current_requested,value,last_field_name)
+							);
+				}catch(Exception e){
+					try{
+						if(format!=null)
+							setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
+						else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
+					}catch(Exception ex){
+					}
 				}
 			}
 		}
 
-
-/*
-		try{
-			if(_content.get("$format_"+key)!=null)
-				setCampoValueWithPoint(key,util_makeValue.makeFormatedValue1((delegated==null)?this:delegated,(String)_content.get("$format_"+key),value,key,(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key)));
-			else setCampoValueWithPoint(key,util_makeValue.makeValue1((delegated==null)?this:delegated,value,key));
-		}catch(Exception e){
-			try{
-				if(_content.get("$format_"+key)!=null)
-					setCampoValueWithPoint(key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,(String)_content.get("$format_"+key),value,getCampoValue(key),(String)_content.get("$replaceOnBlank_"+key),(String)_content.get("$replaceOnErrorFormat_"+key)));
-				else setCampoValueWithPoint(key,util_makeValue.makeValue(value,getCampoValue(key)));
-			}catch(Exception ex){
-				if(parametersFly==null) parametersFly = new HashMap();
-				if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
-			}
-		}
-*/
 	}
 }
 
@@ -622,22 +664,37 @@ private Object getPrimitiveArgument(String name, String s_value){
 	Object primArgument = null;
 	Class reqClass = (delegated==null)?this.getClass():delegated.getClass();
 	if(name.indexOf('.')>-1){
-		StringTokenizer st = new StringTokenizer(name,".");
+		StringTokenizer st = new StringTokenizer(name,".");		
+/*
 		Vector allfields=new Vector();
-		while(st.hasMoreTokens()){
-			String current_field_name = st.nextToken();
-			allfields.add(current_field_name);
-		}
+		while(st.hasMoreTokens())
+			allfields.add(st.nextToken());
+
+			
 		String complexName="";
 		for(int i=0;i<allfields.size()-1;i++){
 			complexName+=allfields.get(i);
 			if(i!=allfields.size()-2) complexName+=".";
 		}
+		
+		name = (String)allfields.get(allfields.size()-1);
+*/
 
+		String complexName="";
+		while(st.hasMoreTokens()){
+			String token = st.nextToken();			
+			if(st.countTokens()>0) complexName+=token;
+			if(st.countTokens()>1) complexName+=".";
+			if(st.countTokens()==0) name=token;
+		}
+
+		
 		Object writeObj=get(complexName);
 		if(writeObj==null) return primArgument;
-		name = (String)allfields.get(allfields.size()-1);
-		reqClass=writeObj.getClass();
+		reqClass=writeObj.getClass();			
+
+		
+
 	}
 
 
@@ -876,11 +933,11 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 
 		}else{
 			StringTokenizer st = new StringTokenizer(name,".");
+/*			
 			Vector allfields=new Vector();
-			while(st.hasMoreTokens()){
-				String current_field_name = st.nextToken();
-				allfields.add(current_field_name);
-			}
+			while(st.hasMoreTokens())
+				allfields.add(st.nextToken());
+			
 			String complexName="";
 			for(int i=0;i<allfields.size()-1;i++){
 				complexName+=allfields.get(i);
@@ -891,16 +948,32 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 			if(writeObj==null) writeObj=get(this,complexName);
 			if(writeObj==null) return false;
 			String current_field_name = (String)allfields.get(allfields.size()-1);
-			try{
-					setCampoValuePoint(
-							writeObj,
-							current_field_name,
-							value
-						);
-					return true;
-			}catch(Exception e){
-				return false;
+*/
+			String current_field_name = null;
+			String complexName="";
+			while(st.hasMoreTokens()){
+				String token = st.nextToken();			
+				if(st.countTokens()>0) complexName+=token;
+				if(st.countTokens()>1) complexName+=".";
+				if(st.countTokens()==0) current_field_name=token;
 			}
+			Object writeObj=get(complexName);
+			if(writeObj==null) writeObj=get(this,complexName);
+			if(writeObj==null) return false;
+			
+			if(writeObj!=null && current_field_name!=null){
+				try{
+						setCampoValuePoint(
+								writeObj,
+								current_field_name,
+								value
+							);
+						return true;
+				}catch(Exception e){
+					return false;
+				}
+			}
+			return false;
 		}
 	}catch(Exception e){
 		throw e;
@@ -931,6 +1004,9 @@ public String getMiddleAction() {
 }
 
 public void setMiddleAction(String string) {
+	middleAction = string;
+}
+public void set$maction(String string) {
 	middleAction = string;
 }
 

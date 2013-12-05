@@ -99,7 +99,7 @@ public class componentBuilder extends action implements i_action, Serializable{
 	
 	private String xmlContent;
 	
-	private boolean display_streams=true;
+	private boolean display_streams=false;
 	private boolean display_actions=true;
 	private boolean display_beans=false;
 	private boolean display_redirects=false;

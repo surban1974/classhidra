@@ -81,8 +81,6 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <script>
 
 
-	function loadJsonList_afterJSFunction(){
-	}
 
 	function loadJsonList_callBackJs(http_request,target){
 
@@ -99,9 +97,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 				ctx.moveTo(47, 0);
 				ctx.lineTo(47, canvas.height-19);
 				ctx.moveTo(47, 0);
-				ctx.lineTo(45, 5);
+				ctx.lineTo(45, 7);
 				ctx.moveTo(47, 0);
-				ctx.lineTo(50, 5);
+				ctx.lineTo(49, 7);
 				ctx.stroke();
 	
 				ctx.beginPath();
@@ -109,9 +107,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 				ctx.moveTo(canvas.width, canvas.height-19);
 				ctx.lineTo(47, canvas.height-19);
 				ctx.moveTo(canvas.width, canvas.height-19);
-				ctx.lineTo(canvas.width-5, canvas.height-19-3);
+				ctx.lineTo(canvas.width-7, canvas.height-19-2);
 				ctx.moveTo(canvas.width, canvas.height-19);
-				ctx.lineTo(canvas.width-5, canvas.height-19+3);
+				ctx.lineTo(canvas.width-7, canvas.height-19+2);
 
 				
 				ctx.stroke();
@@ -167,7 +165,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 	}
 
 	function drawGraph(){
-		ajax_makeRequest("statistisc_json","","loadJsonList_afterJSFunction", "loadJsonList_callBackJs",false);
+		ajax_makeJSONRequest("statistisc_json","","","", "loadJsonList_callBackJs",false);
 		window.setTimeout("drawGraph()",5000);
 	}
 

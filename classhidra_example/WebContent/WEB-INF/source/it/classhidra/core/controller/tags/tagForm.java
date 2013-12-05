@@ -195,6 +195,15 @@ public class tagForm extends TagSupport{
 		if(formAction==null) formAction = new action();
 		if(bean==null) formBean = formAction.get_bean();
 
+		if(	formAction!=null &&
+			formBean!=null &&
+			name!=null &&
+			formBean.get_infobean()!=null &&
+			formBean.get_infobean().getName()!=null &&
+			!formBean.get_infobean().getName().equals(name)){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) pool.put(name, formAction);
+		}
 
 		info_action	formInfoAction = formAction.get_infoaction();
 

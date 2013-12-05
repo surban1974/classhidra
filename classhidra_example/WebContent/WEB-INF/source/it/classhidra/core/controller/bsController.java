@@ -124,43 +124,60 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public void init() throws ServletException, UnavailableException {
 
+		StatisticEntity stat = null;
+		try{
+			stat = new StatisticEntity(
+					"ClassHidra",
+					"",
+					"",
+					"",
+					"init",
+					null,
+					new Date(),
+					null,
+					null);
+		}catch(Exception e){
+		}
+
 		if(appInit==null){
 
 			appInit = new app_init();
 				appInit.init();
-			logInit = new log_init();
-				logInit.init();
-			dbInit = new db_init();
-				dbInit.init();
-			logG = new log_generator(logInit);
-				if(getLogG().isReadError()) reloadLog_generator(getServletContext());
 
 			try{
 				if(idApp==null) idApp = util_format.replace(getContextPathFor5(getServletContext()), "/", "");
 			}catch(Exception ex){
 			}
 
-//			local_container = new ConcurrentHashMap();
-
 			boolean	loadModeAsThread=false;
 			try{
 				if(appInit.get_load_res_mode().toLowerCase().equals("thread")) loadModeAsThread=true;
 			}catch(Exception e){
-			}
-
-			if(loadModeAsThread)
-				new LoaderConfigThreadProcess().start();
-			else
-				loadOnInit();
-
-
+			}	
+				if(loadModeAsThread)
+					new LoaderConfigThreadProcess().start();
+				else
+					loadOnInit();
 
 		}
+		if(stat!=null){
+			stat.setFt(new Date());
+			putToStatisticProvider(stat);
+		}
+
 
 	}
 
 	public void loadOnInit(){
 
+		logInit = new log_init();
+		logInit.init();
+		dbInit = new db_init();
+			dbInit.init();
+		logG = new log_generator(logInit);
+			if(getLogG().isReadError()) reloadLog_generator(getServletContext());
+		
+		
 		resourcesInit();
 
 
@@ -288,13 +305,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 			request.setAttribute(CONST_ID_REQUEST_TYPE, id_rtype);
 
 			if(id_action==null) id_action = getPropertyMultipart(CONST_ID_$ACTION, request);
-//				bsController.writeLog(request, id_action, iStub.log_INFO);
 			if(id_action!=null) id_action=id_action.trim();
 
 			if(isDebug && id_action!=null && id_action.equals(CONST_DIRECTINDACTION_bsLog)){
 				try{
-					String content = logG.get_log_Content("<br>"+System.getProperty("line.separator"));
-					response.getWriter().write(content);
+					response.getWriter().write(logG.get_log_Content("<br>"+System.getProperty("line.separator")));
 				}catch(Exception e){
 				}
 				return;
@@ -303,7 +318,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				try{
 					String content = "actions.xml<br>ROOT1="+request.getSession().getServletContext().getRealPath("/")+"<br>ROOT2="+request.getSession().getServletContext().getRealPath("/")+"<br>";
 					try{
-					content+="ROOT3="+util_classes.getPath("config")+"<br>";
+						content+="ROOT3="+util_classes.getPath("config")+"<br>";
 					}catch(Exception exp){
 						content+="ROOT3=ERROR:"+exp.toString();
 					}
@@ -385,7 +400,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 			
 
-			if(id_action!=null && id_action.equals("bsTransformation")){
+			if(id_action!=null && id_action.equals(CONST_DIRECTINDACTION_bsTransformation)){
 				transformation cTransformation = (transformation)request.getAttribute(bsConstants.CONST_ID_TRANSFORMATION4CONTROLLER);
 				if(cTransformation==null){
 					String idInSession = request.getParameter("id");
@@ -801,6 +816,89 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 
+	public static Vector getActionStreams(String id_action){
+		Vector _streams = null;
+		info_action iActionMapped = (info_action)getAction_config().get_actions().get(id_action);
+		if(iActionMapped==null)
+			return new Vector();
+		else if(iActionMapped.getVm_streams()!=null)
+			_streams = iActionMapped.getVm_streams();
+		else{
+			_streams = new Vector();
+			Vector _streams_orig = (Vector)getAction_config().get_streams_apply_to_actions().get("*");
+
+			if(_streams_orig!=null) _streams.addAll(_streams_orig);
+			Vector _streams4action = (Vector)getAction_config().get_streams_apply_to_actions().get(id_action);
+			if(_streams4action!=null){
+				Vector _4add = new Vector();
+				HashMap _4remove = new HashMap();
+				for(int i=0;i<_streams4action.size();i++){
+					info_stream currentis = (info_stream)_streams4action.get(i);
+					if(currentis.get_apply_to_action()!=null){
+						info_apply_to_action currentiata = (info_apply_to_action)currentis.get_apply_to_action().get(id_action);
+						if(currentiata.getExcluded()!=null && currentiata.getExcluded().toLowerCase().equals("true"))
+							_4remove.put(currentis.getName(),currentis.getName());
+						else _4add.add(currentis);
+					}
+				}
+				_streams.addAll(_4add);
+				if(_4remove.size()>0){
+					int i=0;
+					while(i<_streams.size()){
+						info_stream currentis = (info_stream)_streams.get(i);
+						if(_4remove.get(currentis.getName())!=null) _streams.remove(i);
+						else i++;
+					}
+				}
+				_streams = new util_sort().sort(_streams,"int_order","A");
+			}
+			iActionMapped.setVm_streams(_streams);
+		}
+		return _streams;
+
+	}
+	
+	public static Vector getActionStreams_(String id_action){
+		
+		Vector _streams_orig = (Vector)getAction_config().get_streams_apply_to_actions().get("*");
+
+		
+//Modifica 20100521 Warning 
+/*
+		try{
+			_streams = (Vector)util_cloner.clone(_streams_orig);
+		}catch(Exception e){
+		}
+*/
+		Vector _streams4action = (Vector)getAction_config().get_streams_apply_to_actions().get(id_action);
+		if(_streams4action==null) return (_streams_orig==null)?new Vector():_streams_orig;
+		else{
+			Vector _streams = new Vector();
+			if(_streams_orig!=null) _streams.addAll(_streams_orig);
+			Vector _4add = new Vector();
+			HashMap _4remove = new HashMap();
+			for(int i=0;i<_streams4action.size();i++){
+				info_stream currentis = (info_stream)_streams4action.get(i);
+				if(currentis.get_apply_to_action()!=null){
+					info_apply_to_action currentiata = (info_apply_to_action)currentis.get_apply_to_action().get(id_action);
+					if(currentiata.getExcluded()!=null && currentiata.getExcluded().toLowerCase().equals("true"))
+						_4remove.put(currentis.getName(),currentis.getName());
+					else _4add.add(currentis);
+				}
+			}
+			_streams.addAll(_4add);
+			if(_4remove.size()>0){
+				int i=0;
+				while(i<_streams.size()){
+					info_stream currentis = (info_stream)_streams.get(i);
+					if(_4remove.get(currentis.getName())!=null) _streams.remove(i);
+					else i++;
+				}
+			}
+			_streams = new util_sort().sort(_streams,"int_order","A");
+			return _streams;
+		}
+	}
 
 
 	public static HttpServletResponse service(String id_action, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response)throws ServletException, UnavailableException {
@@ -840,48 +938,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		if(id_action!=null){
 
-
-			Vector _streams = new Vector();
-			Vector _streams_orig = (Vector)getAction_config().get_streams_apply_to_actions().get("*");
-
-			if(_streams_orig!=null) _streams.addAll(_streams_orig);
-//Modifica 20100521 Warning 
-/*
-			try{
-				_streams = (Vector)util_cloner.clone(_streams_orig);
-			}catch(Exception e){
-			}
-*/
-			Vector _streams4action = (Vector)getAction_config().get_streams_apply_to_actions().get(id_action);
-			if(_streams4action!=null){
-				Vector _4add = new Vector();
-				HashMap _4remove = new HashMap();
-				for(int i=0;i<_streams4action.size();i++){
-					info_stream currentis = (info_stream)_streams4action.get(i);
-					if(currentis.get_apply_to_action()!=null){
-						info_apply_to_action currentiata = (info_apply_to_action)currentis.get_apply_to_action().get(id_action);
-						if(currentiata.getExcluded()!=null && currentiata.getExcluded().toLowerCase().equals("true"))
-							_4remove.put(currentis.getName(),currentis.getName());
-						else _4add.add(currentis);
-					}
-				}
-				_streams.addAll(_4add);
-				if(_4remove.size()>0){
-					int i=0;
-					while(i<_streams.size()){
-						info_stream currentis = (info_stream)_streams.get(i);
-						if(_4remove.get(currentis.getName())!=null) _streams.remove(i);
-						else i++;
-					}
-				}
-				_streams = new util_sort().sort(_streams,"int_order","A");
-			}
-
 			i_action action_instance = null;
 
-
-
 			try{
+				Vector _streams = getActionStreams_(id_action);
+				
 				info_stream blockStreamEnter = performStream_EnterRS(_streams, id_action,action_instance, servletContext, request, response);
 				if(blockStreamEnter!=null){
 					isException(action_instance, request);
@@ -989,6 +1050,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(stat!=null){
 					stat.setFt(new Date());
 					putToStatisticProvider(stat);
+//					if(stat.getAction()!=null && !stat.getAction().equals("content") && !stat.getAction().equals("menuCreator"))
+//						System.out.println(stat.getAction()+":"+stat.getDelta());					
 				}
 			}
 
@@ -1096,17 +1159,27 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static i_bean getCurrentForm(String id_current,HttpServletRequest request){
 		if(id_current==null) return null;
-		if(request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)!=null){
-			info_navigation nav = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(id_current);
+	
+		info_navigation fromNav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+		if(fromNav!=null){
+			info_navigation nav = fromNav.find(id_current);
 			if(nav!=null) return nav.get_content();
 		}
 		try{
+/*
 			i_action action_instance = getAction_config().actionFactory(id_current,request.getSession(),request.getSession().getServletContext());
 			String inSession = action_instance.get_infoaction().getMemoryInSession().toLowerCase();
 			if(inSession.equals("true")){
 				HashMap fromSession = null;
 				fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 				return (i_bean)fromSession.get(action_instance.get_infoaction().getName());
+			}
+*/
+			info_action infoAction = (info_action)getAction_config().get_actions().get(id_current);
+			if(	infoAction.getMemoryInSession().toLowerCase().equals("true")){
+				return (i_bean)
+				((HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION))
+				.get(infoAction.getName());				
 			}
 		}catch(Exception e){
 			if( e instanceof java.lang.NullPointerException){
@@ -1132,8 +1205,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 		info_navigation nav = new info_navigation();
 		try{
 			nav.init(form.get_infoaction(),null,new info_service(request),null);
-			if(request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)!=null)
-				((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).add(nav);
+			info_navigation fromNav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+
+			if(fromNav!=null)
+				fromNav.add(nav);
 			else
 				request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
 		}catch(Exception e){
@@ -1152,28 +1227,32 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		if(!go){
 			try{
-				String inSession = form.get_infoaction().getMemoryInSession().toLowerCase();
-				if(inSession.equals("true")){
+				if(form.get_infoaction().getMemoryInSession().toLowerCase().equals("true")){
 					HashMap fromSession = null;
 					fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
-					if(fromSession==null) fromSession = new HashMap();
+					if(fromSession==null){
+						fromSession = new HashMap();
+						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession);
+					}
 					fromSession.put(form.get_infobean().getName(),form);
-					request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession);
 				}
 			}catch(Exception e){
 			}
 			return;
-		}
-		if(go){
+		}else{
+			try{
+				info_navigation nav = new info_navigation();
+				nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
+				info_navigation fromNav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+				if(fromNav!=null)
+					fromNav.add(nav);
+				else request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
+			}catch(Exception e){
+			}
+/*			
 			if(request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)!=null){
 				info_navigation nav = new info_navigation();
 				try{
-/*
-					String inSession = form.get_infoaction().getMemoryInSession().toLowerCase();
-					if(inSession.equals("true"))
-						nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
-					else nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),null);
-*/
 					nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
 					((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).add(nav);
 				}catch(Exception e){
@@ -1181,17 +1260,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}else{
 				info_navigation nav = new info_navigation();
 				try{
-/*
-					String inSession = form.get_infoaction().getMemoryInSession().toLowerCase();
-					if(inSession.equals("true"))
-						nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
-					else nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),null);
-*/
 					nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
 					request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
 				}catch(Exception e){
 				}
 			}
+*/			
 //			request.setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTION, form);
 		}
 	}
@@ -1799,35 +1873,71 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	private static void environmentState(HttpServletRequest request, String id_action){
 		if(System.getProperty("application.environment.debug")!=null && System.getProperty("application.environment.debug").toLowerCase().equals("true")){
+			String log = "ClassHidra: Application Environment Memory Damp for ["+id_action+"] (only serialization)";
+			String log_detail = "\n";
 			int total=0;
 			int only_session=0;
 			int only_app=0;
 			try{
+				log_detail+="     ServletContext: \n";
 				Enumeration en = request.getSession().getServletContext().getAttributeNames();
 				while(en.hasMoreElements()){
 					String key = (String)en.nextElement();
-					only_app+=calc(request.getSession().getServletContext().getAttribute(key));
+					int dim=calc(request.getSession().getServletContext().getAttribute(key));
+					log_detail+="          ["+key+"]="+dim+"\n";
+					only_app+=dim;
 				}
 				total+=only_app;
+				
+				log_detail+="     ClassHidra Local Container: \n";
+				en = local_container.keys();
+				while(en.hasMoreElements()){
+					String key = (String)en.nextElement();
+					int dim=calc(local_container.get(key));
+					log_detail+="          ["+key+"]="+dim+"\n";
+					only_app+=dim;
+				}
+				total+=only_app;
+				
+				
+				log_detail+="     Session: \n";
 				en = request.getSession().getAttributeNames();
 				while(en.hasMoreElements()){
 					String key = (String)en.nextElement();
-					only_session+=calc(request.getSession().getAttribute(key));
+					int dim=calc(request.getSession().getAttribute(key));
+					log_detail+="          ["+key+"]="+dim+"\n";
+					only_session+=dim;
 				}
-
 				total+=only_session;
+				
+
+				
+				log_detail+="     Request Attributes: \n";
 				en = request.getAttributeNames();
 				while(en.hasMoreElements()){
 					String key = (String)en.nextElement();
-					total+=calc(request.getAttribute(key));
+					int dim=calc(request.getAttribute(key));
+					log_detail+="          ["+key+"]="+dim+"\n";
+					total+=dim;
 				}
 
+				log_detail+="     Request Parameters: \n";
 				en = request.getParameterNames();
 				while(en.hasMoreElements()){
 					String key = (String)en.nextElement();
-					total+=calc(request.getParameter(key));
+					int dim=calc(request.getParameter(key));
+					log_detail+="          ["+key+"]="+dim+"\n";
+					total+=dim;
 				}
-				writeLog("TOTAL for ["+id_action+"] all="+total+"; servletContext="+only_app+"; session="+only_session,iStub.log_INFO);
+				try{
+					log_detail+="     Heap (very approximately): \n";
+					log_detail+="          [HeapSize]="+Runtime.getRuntime().totalMemory()+"\n";
+					log_detail+="          [HeapMaxSize]="+Runtime.getRuntime().maxMemory()+"\n";
+					log_detail+="          [HeapFreeSize]="+Runtime.getRuntime().maxMemory()+"\n";
+				}catch(Exception ex){
+				}catch(Throwable th){
+				}
+				writeLog(log + "all="+total+"; servletContext="+only_app+"; session="+only_session+";"+log_detail,iStub.log_INFO);
 			}catch(Exception e){
 			}
 		}

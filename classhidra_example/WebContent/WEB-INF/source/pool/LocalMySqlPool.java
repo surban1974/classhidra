@@ -53,11 +53,11 @@ public class LocalMySqlPool implements iConnectionPool {
 		  init.init();
 		  
 		  try{
-			  timeout = new Long(init.get_local_pool_timeout()).longValue();
+			  timeout = Long.parseLong(init.get_local_pool_timeout());
 		  }catch(Exception e){		  
 		  }
 		  try{
-			  poolsize = new Integer(init.get_local_pool_size()).intValue();
+			  poolsize = Integer.parseInt(init.get_local_pool_size());
 		  }catch(Exception e){		  
 		  }
 		  
@@ -66,7 +66,7 @@ public class LocalMySqlPool implements iConnectionPool {
 	      
 	      long r_delay=-1;
 		  try{
-			  r_delay = new Long(init.get_local_pool_delay()).longValue();
+			  r_delay = Long.parseLong(init.get_local_pool_delay());
 		  }catch(Exception e){		  
 		  }
 	      

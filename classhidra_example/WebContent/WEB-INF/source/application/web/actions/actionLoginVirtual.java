@@ -171,7 +171,7 @@ private boolean login_Non_JAAS(auth_init auth,String userG, String password, Htt
 	    loadUser_config();
 
 
-	    info_user _user = (info_user)((load_users)bsController.getUser_config()).get_user(user,pass);
+	    info_user _user = ((load_users)bsController.getUser_config()).get_user(user,pass);
 	    if(_user!=null){
 
 	    	auth.set_user(_user.getName());

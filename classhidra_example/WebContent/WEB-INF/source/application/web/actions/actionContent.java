@@ -38,7 +38,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		String section = (String)get_bean().get("menuSource");
 		int intSection=-1;
 		try{
-			intSection=new Integer(section).intValue();
+			intSection=Integer.parseInt(section);
 		}catch(Exception e){
 			intSection=-1;
 		}

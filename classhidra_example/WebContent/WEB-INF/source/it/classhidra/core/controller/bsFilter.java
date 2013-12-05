@@ -109,9 +109,9 @@ public class bsFilter implements Filter {
 				boolean elaborateBsCheck=true;
 				
 				if(url!=null){
-					if(url.indexOf("?")>-1){
+					if(url.indexOf("?")>-1)
 						url=url.substring(0,url.indexOf("?"));
-					}
+
 					if(bsController.getAppInit().get_extention_do().equals("")){
 						if(url.indexOf(".")>-1) elaborateBsCheck=false;
 					}else{
@@ -288,19 +288,22 @@ public class bsFilter implements Filter {
 						xmlSource = analizeXML4neoHort(xmlSource);
 
 						if(response.isCommitted()){
-							request.setAttribute("$source_stream",xmlSource);
-							request.getSession().getServletContext().getRequestDispatcher("/report_creator").include(request,response);
-
-//							response.getOutputStream().print("<center><img src=\"../images/wait.gif\"><form action=\"report_creator.bs\" method=\"POST\"><div style='visibility:hidden'><textarea name=\"$source_stream\" type=\"hidden\">"+normalXML(xmlSource)+"</textarea></div></form><script>document.forms[0].submit();</script>");
-	/*
-	  						iHort report = new iHort();
-	 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-							report.transformXMLtoReport(xmlSource,baos);
-
-							prepResponseContent(report.get_tagLibrery(),response);
-							baos.writeTo(response.getOutputStream());
-							baos.close();
-	*/
+							if(xmlSource!=null && xmlSource.indexOf("org.xml.sax.SAXParseException:")==0){
+							}else{
+								request.setAttribute("$source_stream",xmlSource);
+								request.getSession().getServletContext().getRequestDispatcher("/report_creator").include(request,response);
+	
+	//							response.getOutputStream().print("<center><img src=\"../images/wait.gif\"><form action=\"report_creator.bs\" method=\"POST\"><div style='visibility:hidden'><textarea name=\"$source_stream\" type=\"hidden\">"+normalXML(xmlSource)+"</textarea></div></form><script>document.forms[0].submit();</script>");
+		/*
+		  						iHort report = new iHort();
+		 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
+								report.transformXMLtoReport(xmlSource,baos);
+	
+								prepResponseContent(report.get_tagLibrery(),response);
+								baos.writeTo(response.getOutputStream());
+								baos.close();
+		*/
+							}
 						}else{
 							request.setAttribute("$source_stream",xmlSource);
 							request.getSession().getServletContext().getRequestDispatcher("/report_creator").forward(request,response);
@@ -427,7 +430,7 @@ public class bsFilter implements Filter {
 								return null;
 							id_current=f_id_current;
 							
-							if(load_actions.get_actions().get(id_current)!=null)
+							if(bsController.getAction_config().get_actions().get(id_current)!=null)
 								return id_current;
 							else return null;
 						}
@@ -438,13 +441,13 @@ public class bsFilter implements Filter {
 						(id_current.equals("") && url.lastIndexOf("/")+1==url.length())
 					){
 						id_current = bsController.getAppInit().get_enterpoint();
-						if(load_actions.get_actions().get(id_current)!=null)
+						if(bsController.getAction_config().get_actions().get(id_current)!=null)
 							return id_current;
 						else return null;
 					}
 				}
 			}
-			if(load_actions.get_actions().get(id_current)!=null)
+			if(bsController.getAction_config().get_actions().get(id_current)!=null)
 				return id_current;
 			else return null;
 

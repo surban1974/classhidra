@@ -152,7 +152,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			
 			preLoadUsers(form);
 			
-			form.getL_users().initData(form.getXmlContent());;
+			form.getL_users().initData(form.getXmlContent());
 		}catch(Exception e){
 			new bsControllerMessageException(new message("E", "", e.toString()), request, iStub.log_ERROR);
 		}

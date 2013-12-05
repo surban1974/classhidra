@@ -61,6 +61,8 @@ public class info_action extends info_entity implements i_elementBase{
 
 	private Vector  v_info_redirects;
 	private Vector  v_info_transformationoutput;
+	
+	private Vector  vm_streams;
 
 	public info_action(){
 		super();
@@ -394,6 +396,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setStatistic(String statistic) {
 		this.statistic = statistic;
+	}
+
+	public Vector getVm_streams() {
+		return vm_streams;
+	}
+
+	public void setVm_streams(Vector vmStreams) {
+		vm_streams = vmStreams;
 	}
 
 
