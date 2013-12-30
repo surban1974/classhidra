@@ -25,21 +25,28 @@ public class def_control_permission extends stream implements i_stream{
 			auth = bsController.checkAuth_init(request);
 		}catch(Exception e){			
 		}
+		if(	auth==null || auth.get_authentication_filter()==null) return super.streamservice_enter(request, response);	
+		
+		
 		String id_action = (String)request.getAttribute(bsController.CONST_ID);
 		
 		info_action i_a = (info_action)bsController.getAction_config().get_actions().get(id_action);
-		if(i_a!=null && i_a.getProperty("allway").equals("public")){
+		if(i_a!=null && i_a.getProperty("allway").equals("public"))
 			return super.streamservice_enter(request, response);
-		}
-
 		
-		if(	auth!=null &&
-			auth.get_authentication_filter()!=null &&
-			!auth.get_authentication_filter().check_actionIsPermitted(auth,id_action)){
+		if(	!auth.get_authentication_filter().check_actionIsPermitted(auth,id_action)){
 			redirectURI = service_AuthRedirect(id_action,request.getSession().getServletContext(),request, response);
 			return new redirects(redirectURI);
 		}
+		
+		String id_complete = (String)request.getAttribute(bsController.CONST_ID_COMPLETE);
+		if(id_complete==null || id_complete.equals(id_action))
+			return super.streamservice_enter(request, response);
 
+		if(	!auth.get_authentication_filter().check_actionIsPermitted(auth,id_complete)){
+			redirectURI = service_AuthRedirect(id_complete,request.getSession().getServletContext(),request, response);
+			return new redirects(redirectURI);
+		}
 		
 		return super.streamservice_enter(request, response);
 	}
@@ -51,7 +58,7 @@ public class def_control_permission extends stream implements i_stream{
 			auth = bsController.checkAuth_init(request);
 		}catch(Exception e){			
 		}
-		String id_action = (String)request.getAttribute(bsController.CONST_ID);		
+		String id_complete = (String)request.getAttribute(bsController.CONST_ID_COMPLETE);		
 		i_action action_instance = (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
 		if(action_instance!=null && action_instance.get_infoaction()!=null && action_instance.get_infoaction().getProperty("allway").equals("public")){
 		}else{
@@ -60,7 +67,7 @@ public class def_control_permission extends stream implements i_stream{
 				auth.get_authentication_filter()!=null &&
 				!auth.get_authentication_filter().check_redirectIsPermitted(auth,action_instance)){
 	
-				redirectURI = service_AuthRedirect(id_action,request.getSession().getServletContext(),request, response);
+				redirectURI = service_AuthRedirect(id_complete,request.getSession().getServletContext(),request, response);
 				return new redirects(redirectURI);
 			}
 		}

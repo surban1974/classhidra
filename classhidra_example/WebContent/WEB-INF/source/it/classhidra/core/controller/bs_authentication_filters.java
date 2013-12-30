@@ -179,11 +179,11 @@ public class bs_authentication_filters implements i_authentication_filter {
 	}
 
 	
-	public boolean check_actionIsPermitted(auth_init auth, String id_action){
+	public boolean check_actionIsPermitted(auth_init auth, String id_complete){
 	
-		if(id_action!=null && id_action.equals(bsController.CONST_ID_$ACTION_HELP)) return true;
+		if(id_complete!=null && id_complete.equals(bsController.CONST_ID_$ACTION_HELP)) return true;
 		if(!bsController.getAppInit().get_enterpoint().equals("*")){
-			if(id_action!=null && id_action.equals(bsController.getAppInit().get_enterpoint())) return true;
+			if(id_complete!=null && id_complete.equals(bsController.getAppInit().get_enterpoint())) return true;
 		}else{
 			if(auth==null) return false;
 			check_authIsFull(auth);
@@ -191,7 +191,24 @@ public class bs_authentication_filters implements i_authentication_filter {
 		
 		if(auth!=null && (auth.get_actions_permitted()==null || auth.get_actions_permitted().size()==0)) return false;
 		boolean result = true;
-		if(	auth.get_actions_permitted().get(id_action)==null)  result = false;
+		if(	auth.get_actions_permitted().get(id_complete)==null){
+			if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+//				String id_call=null;
+				String id_action=null;
+				if(id_complete!=null && id_complete.indexOf(separator)>-1){
+					try{
+//						id_call = id_complete.substring(id_complete.indexOf(separator)+1,id_complete.length());
+						id_action = id_complete.substring(0,id_complete.indexOf(separator));
+					}catch(Exception e){
+					}
+					if(	id_action!=null &&
+						auth.get_actions_permitted().get(id_action)!=null &&
+						auth.get_actions_forbidden().get(id_complete)==null){}
+					else result = false;
+				}
+			}else result = false;
+		}
 		return result;
 		
 	}
@@ -211,10 +228,32 @@ public class bs_authentication_filters implements i_authentication_filter {
 	
 		boolean result=true;
 		
-		String id_action = _action.get_infoaction().getPath();
+		String id_complete = _action.get_infoaction().getPath();
 
-		if(	auth.get_actions_permitted().get(id_action)==null)  result = false;
-		if(	((info_action)auth.get_actions_permitted().get(id_action)).get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
+		if(	auth.get_actions_permitted().get(id_complete)==null){
+			if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+//				String id_call=null;
+				String id_action=null;
+				if(id_complete!=null && id_complete.indexOf(separator)>-1){
+					try{
+//						id_call = id_complete.substring(id_complete.indexOf(separator)+1,id_complete.length());
+						id_action = id_complete.substring(0,id_complete.indexOf(separator));
+					}catch(Exception e){
+					}
+					if(	id_action!=null &&
+						auth.get_actions_permitted().get(id_action)!=null &&
+						auth.get_actions_forbidden().get(id_complete)==null){
+						
+						if(	((info_action)auth.get_actions_permitted().get(id_action)).get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
+
+					}
+					else return false;
+				}
+				
+			}else return false;
+		}
+		if(	((info_action)auth.get_actions_permitted().get(id_complete)).get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
 		return result;
 	}
 

@@ -16,6 +16,8 @@ public interface i_externalloader {
 	public static final String AUTHENTICATIONS_targets_allowed="targets_allowed";
 	public static final String AUTHENTICATIONS_mtargets="mtargets";
 	public static final String AUTHENTICATIONS_mtargets_allowed="mtargets_allowed";
+	public static final String AUTHENTICATIONS_ctargets="ctargets";
+	public static final String AUTHENTICATIONS_ctargets_allowed="ctargets_allowed";
 	public static final String AUTHENTICATIONS_area="area";
 	public static final String AUTHENTICATIONS_info_relations="info_relations";
 	

@@ -51,6 +51,8 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	protected int enabled=1;
 
 	protected HashMap properties;
+	
+	protected boolean annotationLoaded=false;
 
 	public info_entity(){
 		super();
@@ -230,6 +232,16 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 
 	public void setAnnotated(String annotated) {
 		this.annotated = annotated;
+	}
+
+
+	public boolean isAnnotationLoaded() {
+		return annotationLoaded;
+	}
+
+
+	public void setAnnotationLoaded(boolean annotationLoaded) {
+		this.annotationLoaded = annotationLoaded;
 	}
 
 

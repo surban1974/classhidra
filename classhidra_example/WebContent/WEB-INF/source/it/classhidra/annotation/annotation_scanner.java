@@ -1,6 +1,7 @@
 package it.classhidra.annotation;
 
 import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Apply_to_action;
 import it.classhidra.annotation.elements.Bean;
@@ -13,6 +14,7 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_apply_to_action;
 import it.classhidra.core.controller.info_bean;
+import it.classhidra.core.controller.info_call;
 import it.classhidra.core.controller.info_entity;
 import it.classhidra.core.controller.info_redirect;
 import it.classhidra.core.controller.info_section;
@@ -35,22 +37,22 @@ import java.util.Vector;
 
 public class annotation_scanner implements i_annotation_scanner {
 	
-	private HashMap _actions = new HashMap();
-	private HashMap _streams = new HashMap();
-//	private HashMap _streams_apply_to_actions = new HashMap();
+	protected HashMap _actions = new HashMap();
+	protected HashMap _streams = new HashMap();
 
-	private HashMap _beans = new HashMap();
-	private HashMap _redirects = new HashMap();
-	private HashMap _transformationoutput = new HashMap();
+
+	protected HashMap _beans = new HashMap();
+	protected HashMap _redirects = new HashMap();
+	protected HashMap _transformationoutput = new HashMap();
 	
-	private String error;
-	private String auth_error;
-	private String session_error;
+	protected String error;
+	protected String auth_error;
+	protected String session_error;
 
 	
-//	private List elements = null;
-	private String package_annotated = "";
-	private File directory;
+
+	protected String package_annotated = "";
+	protected File directory;
 	
 	
 	public annotation_scanner(){
@@ -239,13 +241,13 @@ public class annotation_scanner implements i_annotation_scanner {
 	
 	private void checkClassAnnotation(String class_path, Annotation annotation) {
 		try{
-			Class classType = Class.forName(class_path);
 			
 		    Bean annotationBean = null;
 		    Action annotationAction = null;
 		    Stream annotationStream = null;
 		    Transformation annotationTransformation = null;
 		    Redirect annotationRedirect = null;
+
 
 		    if(annotation instanceof Bean) annotationBean = (Bean)annotation;
 		    if(annotation instanceof Redirect) annotationRedirect = (Redirect)annotation;
@@ -259,6 +261,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iBean.setName(annotationBean.name());
 		    	iBean.setType(class_path);
 		    	setEntity(iBean,annotationBean.entity());
+		    	iBean.setAnnotationLoaded(true);
 		    	_beans.put(iBean.getName(),iBean);
 		    }
 		    
@@ -273,6 +276,7 @@ public class annotation_scanner implements i_annotation_scanner {
     			iRedirect.setImg(annotationRedirect.img());
     			iRedirect.setNavigated(annotationRedirect.navigated());
     			setEntity(iRedirect,annotationRedirect.entity());
+    			iRedirect.setAnnotationLoaded(true);
 
     			Section[] sections = annotationRedirect.sections();
     			if(sections!=null && sections.length>0){
@@ -283,6 +287,7 @@ public class annotation_scanner implements i_annotation_scanner {
     					iSection.setAllowed(annotationSection.allowed());
     					setEntity(iSection,annotationSection.entity());
     					if(iSection.getOrder().equals("")) iSection.setOrder(Integer.valueOf(j+1).toString());
+    					iSection.setAnnotationLoaded(true);
     					iRedirect.get_sections().put(iSection.getName(),iSection);
     				}
 
@@ -303,6 +308,7 @@ public class annotation_scanner implements i_annotation_scanner {
 
     					setEntity(iTransformationoutput,annotationTransf.entity());
     					if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(j+1).toString());
+    					iTransformationoutput.setAnnotationLoaded(true);
     					iRedirect.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
     				}
     				
@@ -328,6 +334,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iAction.setStatistic(annotationAction.statistic());
 		    	iAction.setHelp(annotationAction.help());
 		    	setEntity(iAction,annotationAction.entity());
+		    	iAction.setAnnotationLoaded(true);
 		    	Redirect[] redirects = annotationAction.redirects();
 		    	if(redirects!=null && redirects.length>0){
 		    		for(int i=0;i<redirects.length;i++){
@@ -343,6 +350,8 @@ public class annotation_scanner implements i_annotation_scanner {
 		    			iRedirect.setNavigated(annotationRedirect1.navigated());
 		    			setEntity(iRedirect,annotationRedirect1.entity());
 		    			if(iRedirect.getOrder().equals("")) iRedirect.setOrder(Integer.valueOf(i+1).toString()); 
+		    			iRedirect.setAnnotationLoaded(true);
+		    			
 		    			Section[] sections = annotationRedirect1.sections();
 		    			if(sections!=null && sections.length>0){
 		    				for(int j=0;j<sections.length;j++){
@@ -352,6 +361,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    					iSection.setAllowed(annotationSection.allowed());
 		    					setEntity(iSection,annotationSection.entity());
 		    					if(iSection.getOrder().equals("")) iSection.setOrder(Integer.valueOf(j+1).toString());
+		    					iSection.setAnnotationLoaded(true);
 		    					iRedirect.get_sections().put(iSection.getName(),iSection);
 		    				}
 
@@ -369,9 +379,9 @@ public class annotation_scanner implements i_annotation_scanner {
 		    					iTransformationoutput.setPath(annotationTransf.path());
 		    					iTransformationoutput.setEvent(annotationTransf.event());
 		    					iTransformationoutput.setInputformat(annotationTransf.inputformat());
-
 		    					setEntity(iTransformationoutput,annotationTransf.entity());
 		    					if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(j+1).toString());
+		    					iTransformationoutput.setAnnotationLoaded(true);
 		    					iRedirect.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
 		    				}
 		    				
@@ -406,16 +416,32 @@ public class annotation_scanner implements i_annotation_scanner {
     					iTransformationoutput.setPath(annotationTransf.path());
     					iTransformationoutput.setEvent(annotationTransf.event());
     					iTransformationoutput.setInputformat(annotationTransf.inputformat());
-
     					setEntity(iTransformationoutput,annotationTransf.entity());
     					if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(i+1).toString());
+    					iTransformationoutput.setAnnotationLoaded(true);
     					iAction.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
     				}
     				
     				iAction.getV_info_transformationoutput().addAll(new Vector(iAction.get_transformationoutput().values()));
     				iAction.setV_info_transformationoutput(new util_sort().sort(iAction.getV_info_transformationoutput(),"int_order"));
-
     			}
+
+    			ActionCall[] calls = annotationAction.calls();
+    			if(calls!=null && calls.length>0){
+    				for(int i=0;i<calls.length;i++){
+    					ActionCall annotationCall = calls[i];
+    					info_call iCall = new info_call();
+    					iCall.setName(annotationCall.name());
+    					iCall.setMethod(annotationCall.method());
+    					setEntity(iCall,annotationCall.entity());
+    					if(iCall.getOrder().equals("")) iCall.setOrder(Integer.valueOf(i+1).toString());
+    					iCall.setAnnotationLoaded(true);
+    					iAction.get_calls().put(iCall.getName(),iCall);
+    				}
+    				iAction.getV_info_calls().addAll(new Vector(iAction.get_calls().values()));
+    				iAction.setV_info_calls(new util_sort().sort(iAction.getV_info_calls(),"int_order"));
+    			}
+    			
 		    	_actions.put(iAction.getPath(),iAction);
 		    }
 	
@@ -428,6 +454,7 @@ public class annotation_scanner implements i_annotation_scanner {
 				iTransformationoutput.setInputformat(annotationTransformation.inputformat());
 
 				setEntity(iTransformationoutput,annotationTransformation.entity());
+				iTransformationoutput.setAnnotationLoaded(true);
 				_transformationoutput.put(iTransformationoutput.getName(),iTransformationoutput);
 		    	
 		    }
@@ -437,6 +464,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iStream.setName(annotationStream.name());
 		    	iStream.setType(class_path);
 		    	setEntity(iStream,annotationStream.entity());
+		    	iStream.setAnnotationLoaded(true);
 		    	Apply_to_action[] applied = annotationStream.applied();
 		    	if(applied!=null){
 		    		int order=0;
@@ -446,6 +474,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    			iApply.setExcluded(applied[i].excluded());
 		    			order++;
 		    			iApply.setOrder(Integer.valueOf(order).toString());
+		    			iApply.setAnnotationLoaded(true);
 		    			iStream.get_apply_to_action().put(iApply.getAction(),iApply);		    			
 		    		}
 		    		iStream.getV_info_apply_to_action().addAll(new Vector(iStream.get_apply_to_action().values()));
@@ -480,11 +509,6 @@ public class annotation_scanner implements i_annotation_scanner {
 		return _streams;
 	}
 
-/*
-	public HashMap get_streams_apply_to_actions() {
-		return _streams_apply_to_actions;
-	}
-*/
 
 
 	public HashMap get_beans() {

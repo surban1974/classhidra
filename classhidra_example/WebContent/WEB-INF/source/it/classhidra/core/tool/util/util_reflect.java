@@ -267,6 +267,36 @@ public static Object getValue(Object requested, String nome, Object[] value) thr
 	return  resultObject;
 }
 
+public static Object getValue(Object requested,Method mtd, Object[] value) throws Exception{
+	if (mtd == null || requested==null) return null;
+	if(value==null) value = new Object[0];
+	Object resultObject = null;
+	try{
+
+		Class[] cls = new Class[value.length];
+		for(int i=0;i<value.length;i++) cls[i]=value[i].getClass();
+		resultObject =mtd.invoke(requested, value);
+	}catch(Exception e){
+	}
+	return  resultObject;
+}
+
+public static Object getValueMethodName(Object requested, String nome, Object[] value) throws Exception{
+	if (nome == null || nome.trim().length()==0 || requested==null) return null;
+	if(value==null) value = new Object[0];
+	Object resultObject = null;
+	try{
+		java.lang.reflect.Method mtd = null;
+		Class[] cls = new Class[value.length];
+		for(int i=0;i<value.length;i++) cls[i]=value[i].getClass();
+		mtd = getMethodName(requested,nome,cls);
+		if(mtd==null) return null;
+		resultObject =mtd.invoke(requested, value);
+	}catch(Exception e){
+	}
+	return  resultObject;
+}
+
 public static java.lang.reflect.Method getMethodNull(Object requested, String nome, Class[] cls) throws Exception{
 	java.lang.reflect.Method result=null;
 	java.lang.reflect.Method[] mtds = requested.getClass().getMethods();
@@ -288,6 +318,20 @@ public static java.lang.reflect.Method getMethodNull(Object requested, String no
 	}
 	return result;
 }
+
+public static java.lang.reflect.Method getMethodName(Object requested, String nome, Class[] cls) throws Exception{
+	java.lang.reflect.Method result=null;
+	java.lang.reflect.Method[] mtds = requested.getClass().getMethods();
+	for(int i=0;i<mtds.length;i++){
+		java.lang.reflect.Method current = mtds[i];
+		Class[] par = current.getParameterTypes();
+		if(nome.equals(current.getName()) && par.length==cls.length)
+			return current;
+	}
+	return result;
+}
+
+
 
 public static boolean setValue(Object requested, String nome, Object[] value) throws Exception{
 	return setValue(requested, nome, value,true);

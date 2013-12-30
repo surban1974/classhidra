@@ -1004,10 +1004,18 @@ public String getMiddleAction() {
 }
 
 public void setMiddleAction(String string) {
-	middleAction = string;
+	if(string!=null){
+		if(string.equalsIgnoreCase("null")) middleAction=null;
+		else if(string.equalsIgnoreCase("undefined") || string.equalsIgnoreCase("undef")){}
+		else middleAction = string;
+	}else middleAction = string;
 }
 public void set$maction(String string) {
-	middleAction = string;
+	if(string!=null){
+		if(string.equalsIgnoreCase("null")) middleAction=null;
+		else if(string.equalsIgnoreCase("undefined") || string.equalsIgnoreCase("undef")){}
+		else middleAction = string;
+	}else middleAction = string;
 }
 
 public String get$id_returnPointOfService() {

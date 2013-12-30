@@ -57,10 +57,12 @@ public class info_action extends info_entity implements i_elementBase{
 	private HashMap _redirects;
 	private HashMap _transformationoutput;
 	private HashMap _auth_redirects;
+	private HashMap _calls;
 	private info_bean infobean;
 
 	private Vector  v_info_redirects;
 	private Vector  v_info_transformationoutput;
+	private Vector  v_info_calls;
 	
 	private Vector  vm_streams;
 
@@ -109,6 +111,13 @@ public class info_action extends info_entity implements i_elementBase{
 					iTransformationoutput.setOrder(Integer.valueOf(order_t).toString());
 					_transformationoutput.put(iTransformationoutput.getName(),iTransformationoutput);
 				}
+				if(nodeList.item(i).getNodeName().toLowerCase().equals("call")){
+					info_call iCall = new info_call();
+					iCall.init(nodeList.item(i));
+					order_t++;
+					iCall.setOrder(Integer.valueOf(order_t).toString());
+					_calls.put(iCall.getName(),iCall);
+				}
 
 			}
 		}
@@ -119,6 +128,9 @@ public class info_action extends info_entity implements i_elementBase{
 		v_info_redirects.addAll(new Vector(_redirects.values()));
 		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
 
+		v_info_calls.addAll(new Vector(_calls.values()));
+		v_info_calls = new util_sort().sort(v_info_calls,"int_order");
+		
 
 		Object[] keys = _redirects.keySet().toArray();
 		for (int i = 0; i < keys.length; i++){
@@ -149,9 +161,11 @@ public class info_action extends info_entity implements i_elementBase{
 		_redirects=new HashMap();
 		_transformationoutput=new HashMap();
 		_auth_redirects=new HashMap();
+		_calls=new HashMap();
 
 		v_info_redirects=new Vector();
 		v_info_transformationoutput=new Vector();
+		v_info_calls=new Vector();
 
 	}
 
@@ -293,6 +307,17 @@ public class info_action extends info_entity implements i_elementBase{
 				if(iTransformation!=null) result+=iTransformation.toXml();
 			}
 		}
+		if(v_info_calls!=null && v_info_calls.size()>0){
+
+			for(int i=0;i<v_info_calls.size();i++){
+				info_call iCall = (info_call)v_info_calls.get(i);
+				if(iCall!=null && iCall.getSystem().equals("false")){
+					result+=iCall.toXml();
+					isEntity=true;
+				}
+			}
+		}
+		
 		if(isEntity)
 			result+=System.getProperty("line.separator")+"      </action>";
 		else result+="</action>";
@@ -404,6 +429,18 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setVm_streams(Vector vmStreams) {
 		vm_streams = vmStreams;
+	}
+
+	public HashMap get_calls() {
+		return _calls;
+	}
+
+	public Vector getV_info_calls() {
+		return v_info_calls;
+	}
+
+	public void setV_info_calls(Vector vInfoCalls) {
+		v_info_calls = vInfoCalls;
 	}
 
 

@@ -40,76 +40,39 @@ public class def_control_middleaction extends stream implements i_stream{
 		}
 		
 		String id_action = (String)request.getAttribute(bsController.CONST_ID);
-		String middle_action = request.getParameter(bsController.CONST_ID_$MIDDLE_ACTION);
-		if(middle_action!=null && middle_action.trim().equals("")) middle_action="_blank";
-		
-		if(id_action==null){
+		if(id_action==null)
 			return super.streamservice_enter(request, response);
-		}		
 		
 		info_action i_a = (info_action)bsController.getAction_config().get_actions().get(id_action);
 		if(i_a==null){
 			return super.streamservice_enter(request, response);
 		}
 
-		HashMap m_forbidden =null;
-		HashMap m_allowed =null;
-		try{
-			m_forbidden = (HashMap)((HashMap)bsController.getAuth_config().get_mtargets().get(auth.get_target())).get(auth.get_ruolo());
-		}catch(Exception e){			
-		}
-		try{
-			m_allowed = (HashMap)((HashMap)bsController.getAuth_config().get_mtargets_allowed().get(auth.get_target())).get(auth.get_ruolo());
-		}catch(Exception e){			
-		}
-
-		if(m_forbidden==null){
-			return super.streamservice_enter(request, response);
-		}
-		
-		HashMap mactions = (HashMap)m_forbidden.get(id_action);
-		if(mactions==null){
-			mactions = (HashMap)m_forbidden.get("*");
-		}
-		if(mactions==null){
-			return super.streamservice_enter(request, response);
-		}
-
-		boolean b_forbidden=false;
-		if(mactions.get("*")!=null)
-			b_forbidden=true;
-		
-		if(!b_forbidden && middle_action!=null && mactions.get(middle_action)!=null)
-			b_forbidden=true;
-		
-		if(!b_forbidden){
-			return super.streamservice_enter(request, response);
-		}
-		
-		if(m_allowed!=null){
-			HashMap mactions_allowed = (HashMap)m_allowed.get(id_action);
-			if(mactions_allowed==null){
-				mactions_allowed = (HashMap)m_allowed.get("*");
-			}
-			if(mactions_allowed!=null){
-				if(	mactions_allowed.get("*")!=null ||
-					(middle_action!=null && mactions_allowed.get(middle_action)!=null)
-				){
-					return super.streamservice_enter(request, response);
-				}
-			}
-		}
-		
-		new bsControllerMessageException(new message("E", "ch_error_8", "Insufficient permissions for that type of operation."), request, iStub.log_ERROR);
-
-		redirectURI=id_action+bsController.getAppInit().get_extention_do()+"?middleAction=error_permission_point";
-		
-		if(redirectURI!=null){
+		if(checkMiddleAction(id_action, auth, request, response)){		
+			new bsControllerMessageException(new message("E", "ch_error_8", "Insufficient permissions for that type of operation."), request, iStub.log_ERROR);
+			redirectURI=id_action+bsController.getAppInit().get_extention_do()+"?middleAction=error_permission_point";
+			if(redirectURI!=null)
+				return new redirects(redirectURI);
+			
+			redirectURI = service_AuthRedirect(id_action,request.getSession().getServletContext(),request, response);
 			return new redirects(redirectURI);
 		}
 		
-		redirectURI = service_AuthRedirect(id_action,request.getSession().getServletContext(),request, response);
-		return new redirects(redirectURI);
+		String id_complete = (String)request.getAttribute(bsController.CONST_ID_COMPLETE);
+		if(id_complete==null || id_complete.equals(id_action))
+			return super.streamservice_enter(request, response);
+		
+		if(checkMiddleAction(id_complete, auth, request, response)){		
+			new bsControllerMessageException(new message("E", "ch_error_8", "Insufficient permissions for that type of operation."), request, iStub.log_ERROR);
+			redirectURI=id_action+bsController.getAppInit().get_extention_do()+"?middleAction=error_permission_point";
+			if(redirectURI!=null)
+				return new redirects(redirectURI);
+			
+			redirectURI = service_AuthRedirect(id_complete,request.getSession().getServletContext(),request, response);
+			return new redirects(redirectURI);
+		}
+		return super.streamservice_enter(request, response);
+		
 	}
 
 	public redirects streamservice_exit(HttpServletRequest request, HttpServletResponse response) throws bsControllerException {
@@ -130,5 +93,63 @@ public class def_control_middleaction extends stream implements i_stream{
 			bsController.writeLog(request, "Controller authentication error. Action: ["+id_action+"] URI: ["+redirectURI+"]");		
 		}	
 		return redirectURI;
+	}
+	
+	
+	private boolean checkMiddleAction(String id_entity,auth_init auth, HttpServletRequest request, HttpServletResponse response){
+		String middle_action = request.getParameter(bsController.CONST_ID_$MIDDLE_ACTION);
+		if(middle_action!=null && middle_action.trim().equals("")) middle_action="_blank";
+		
+
+		HashMap m_forbidden =null;
+		HashMap m_allowed =null;
+		try{
+			m_forbidden = (HashMap)((HashMap)bsController.getAuth_config().get_mtargets().get(auth.get_target())).get(auth.get_ruolo());
+		}catch(Exception e){			
+		}
+		try{
+			m_allowed = (HashMap)((HashMap)bsController.getAuth_config().get_mtargets_allowed().get(auth.get_target())).get(auth.get_ruolo());
+		}catch(Exception e){			
+		}
+
+		if(m_forbidden==null){
+			return false;
+		}
+		
+		HashMap mactions = (HashMap)m_forbidden.get(id_entity);
+		if(mactions==null){
+			mactions = (HashMap)m_forbidden.get("*");
+		}
+		if(mactions==null){
+			return false;
+		}
+
+		boolean b_forbidden=false;
+		if(mactions.get("*")!=null)
+			b_forbidden=true;
+		
+		if(!b_forbidden && middle_action!=null && mactions.get(middle_action)!=null)
+			b_forbidden=true;
+		
+		if(!b_forbidden){
+			return false;
+		}
+		
+		if(m_allowed!=null){
+			HashMap mactions_allowed = (HashMap)m_allowed.get(id_entity);
+			if(mactions_allowed==null){
+				mactions_allowed = (HashMap)m_allowed.get("*");
+			}
+			if(mactions_allowed!=null){
+				if(	mactions_allowed.get("*")!=null ||
+					(middle_action!=null && mactions_allowed.get(middle_action)!=null)
+				)
+					return false;
+				
+			}
+		}
+		
+		return true;
+		
 	}
 }

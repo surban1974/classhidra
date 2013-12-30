@@ -56,6 +56,7 @@ import java.io.DataInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -74,6 +75,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import neohort.util.util_cloner;
 
 import sun.misc.BASE64Encoder;
 
@@ -151,7 +154,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			boolean	loadModeAsThread=false;
 			try{
-				if(appInit.get_load_res_mode().toLowerCase().equals("thread")) loadModeAsThread=true;
+				if(appInit.get_load_res_mode().equalsIgnoreCase("thread")) loadModeAsThread=true;
 			}catch(Exception e){
 			}	
 				if(loadModeAsThread)
@@ -415,7 +418,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 						try{
 			    			if(cTransformation.getContentType()!=null){
-			    				if(cTransformation.getContentType().toLowerCase().equals("text/html")){
+			    				if(cTransformation.getContentType().equalsIgnoreCase("text/html")){
 				    				response.setContentType(cTransformation.getContentType().toLowerCase());
 				    				response.setHeader("Content-Type",cTransformation.getContentType().toLowerCase()+
 				    						((cTransformation.getContentTransferEncoding()!=null)?";charset="+cTransformation.getContentTransferEncoding():"")
@@ -449,8 +452,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	}
 
-
 	public static i_action getActionInstance(String id_action, HttpServletRequest request, HttpServletResponse response) throws bsControllerException,ServletException, UnavailableException{
+		return getActionInstance(id_action,null, request, response);
+	}
+	
+	public static i_action getActionInstance(String id_action,String id_call, HttpServletRequest request, HttpServletResponse response) throws bsControllerException,ServletException, UnavailableException{
+		boolean cloned = (request.getParameter(CONST_ID_EXEC_TYPE)==null)?false:request.getParameter(CONST_ID_EXEC_TYPE).equalsIgnoreCase(CONST_ID_EXEC_TYPE_CLONED);
+		
 		i_action action_instance = getAction_config().actionFactory(id_action,request.getSession(),request.getSession().getServletContext());
 
 		i_bean bean_instance = getCurrentForm(id_action,request);
@@ -466,21 +474,45 @@ public class bsController extends HttpServlet implements bsConstants  {
 				bean_instance = (i_bean)action_instance;
 			else 
 				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext(),action_instance);
-			if(bean_instance!=null) bean_instance.reimposta();
+			if(bean_instance!=null){
+				if(bean_instance.getCurrent_auth()==null) bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
+				bean_instance.reimposta();
+			}
 			
 			//Modifica 20100521 WARNING
-//			action_instance.set_bean((i_bean)bean_instance.clone());
-			action_instance.set_bean(bean_instance);
+			if(cloned){ 
+				try{
+					action_instance.set_bean((i_bean)bean_instance.clone());
+				}catch(Exception e){
+					action_instance.set_bean(bean_instance);
+				}
+			}
+			else action_instance.set_bean(bean_instance);
 		}else{
 			if(	action_instance instanceof i_bean &&
 					(
 						action_instance.get_infoaction().getName().equals("") ||
 						bean_instance.getClass().getName().equals(action_instance.getClass().getName())
 					)
-				)
-				action_instance = (i_action)bean_instance;
-			else
-				action_instance.set_bean(bean_instance);			
+				){
+				if(cloned){ 
+					try{
+						action_instance = (i_action)util_cloner.clone(bean_instance);
+					}catch(Exception e){
+						action_instance = (i_action)bean_instance;
+					}
+				}
+				else action_instance = (i_action)bean_instance;
+			}else{
+				if(cloned){ 
+					try{
+						action_instance.set_bean((i_bean)util_cloner.clone(bean_instance));
+					}catch(Exception e){
+						action_instance.set_bean(bean_instance);
+					}
+				}
+				else action_instance.set_bean(bean_instance);
+			}
 		}
 
 		action_instance.init(request,response);
@@ -490,9 +522,38 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 // ACTIONSEVICE
 		redirects current_redirect = null;
-		if(action_instance.get_infoaction().getSyncro().toLowerCase().equals("true"))
-			current_redirect = action_instance.syncroservice(request,response);
-		else current_redirect = action_instance.actionservice(request,response);
+		if(id_call==null){
+			if(action_instance.get_infoaction().getSyncro().equalsIgnoreCase("true"))
+				current_redirect = action_instance.syncroservice(request,response);
+			else current_redirect = action_instance.actionservice(request,response);
+		}else{
+//			boolean called=false;
+			try{
+				Method iCallMethod = null;
+				info_call iCall = (info_call)action_instance.get_infoaction().get_calls().get(id_call);
+				if(iCall==null){
+					iCallMethod = action_instance.getMethodForCall(id_call);
+					if(iCallMethod!=null){
+						iCall = new info_call();
+						iCall.setMethod(iCallMethod.getName());
+						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
+					}
+				}else{
+					try{
+						iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
+					}catch(Exception em){}
+				}
+	
+				if(iCallMethod!=null){
+					current_redirect = (redirects)util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response});
+//					called=true;
+				}
+			}catch(Exception ex){
+				new bsControllerException(ex, iStub.log_ERROR);
+			}catch(Throwable th){
+				new bsControllerException(th, iStub.log_ERROR);
+			}
+		}
 // Mod 20130923 -- 
 //		if(current_redirect==null) return null;
 		action_instance.setCurrent_redirect(current_redirect);
@@ -506,7 +567,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		i_action prev_action_instance = getAction_config().actionFactory(id_action,request.getSession(),request.getSession().getServletContext());
 
 		i_bean bean_instance = getCurrentForm(id_action,request);
-		if(	prev_action_instance.get_infoaction().getReloadAfterAction().toLowerCase().equals("true") &&
+		if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true") &&
 			!id_action.equals(id_current)){
 			if(bean_instance!=null){
 				bean_instance.init(request);
@@ -528,7 +589,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 					bean_instance_clone = (i_bean)prev_action_instance;
 				else
 					bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext(),prev_action_instance);
-				if(bean_instance_clone!=null) bean_instance_clone.reimposta();
+				if(bean_instance_clone!=null){
+					if(bean_instance_clone.getCurrent_auth()==null) bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
+					bean_instance_clone.reimposta();
+				}
 			}else{
 //Modifica 20100521 WARNING
 //				bean_instance_clone = (i_bean)bean_instance.clone();
@@ -536,8 +600,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 
 			if(bean_instance_clone!=null){
-				if(	prev_action_instance.get_infoaction().getReloadAfterAction().toLowerCase().equals("true"))
+				if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true"))
 					bean_instance_clone.init(request);
+				if(bean_instance_clone.getCurrent_auth()==null) bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
 				redirects validate_redirect = bean_instance_clone.validate(request);
 				
 				if(	prev_action_instance instanceof i_bean &&
@@ -758,16 +823,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 					if(tansformationElaborationMode==null || tansformationElaborationMode.trim().length()==0) tansformationElaborationMode=CONST_TRANSFORMATION_ELMODE_INCLUDE;
 
-					if(tansformationElaborationMode.toLowerCase().equals(CONST_TRANSFORMATION_ELMODE_BOTH)){
+					if(tansformationElaborationMode.equalsIgnoreCase(CONST_TRANSFORMATION_ELMODE_BOTH)){
 						if(response.isCommitted())
 							rd.include(request,response);
 						else
 							rd.forward(request,response);
 					}
-					if(tansformationElaborationMode.toLowerCase().equals(CONST_TRANSFORMATION_ELMODE_INCLUDE)){
+					if(tansformationElaborationMode.equalsIgnoreCase(CONST_TRANSFORMATION_ELMODE_INCLUDE)){
 						rd.include(request,response);
 					}
-					if(tansformationElaborationMode.toLowerCase().equals(CONST_TRANSFORMATION_ELMODE_FORWARD)){
+					if(tansformationElaborationMode.equalsIgnoreCase(CONST_TRANSFORMATION_ELMODE_FORWARD)){
 						rd.forward(request,response);
 					}
 
@@ -836,7 +901,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					info_stream currentis = (info_stream)_streams4action.get(i);
 					if(currentis.get_apply_to_action()!=null){
 						info_apply_to_action currentiata = (info_apply_to_action)currentis.get_apply_to_action().get(id_action);
-						if(currentiata.getExcluded()!=null && currentiata.getExcluded().toLowerCase().equals("true"))
+						if(currentiata.getExcluded()!=null && currentiata.getExcluded().equalsIgnoreCase("true"))
 							_4remove.put(currentis.getName(),currentis.getName());
 						else _4add.add(currentis);
 					}
@@ -881,7 +946,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				info_stream currentis = (info_stream)_streams4action.get(i);
 				if(currentis.get_apply_to_action()!=null){
 					info_apply_to_action currentiata = (info_apply_to_action)currentis.get_apply_to_action().get(id_action);
-					if(currentiata.getExcluded()!=null && currentiata.getExcluded().toLowerCase().equals("true"))
+					if(currentiata.getExcluded()!=null && currentiata.getExcluded().equalsIgnoreCase("true"))
 						_4remove.put(currentis.getName(),currentis.getName());
 					else _4add.add(currentis);
 				}
@@ -931,9 +996,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 		String id_rtype=request.getParameter(CONST_ID_REQUEST_TYPE);
 		if(id_rtype==null) id_rtype = (String)request.getAttribute(CONST_ID_REQUEST_TYPE);
 		if(id_rtype==null) id_rtype = CONST_REQUEST_TYPE_FORWARD;
+		
 		request.setAttribute(CONST_ID_REQUEST_TYPE, id_rtype);
+		request.setAttribute(CONST_ID_COMPLETE,id_action);
 
-
+		String id_call=null;
+		if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+			char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+			if(id_action!=null && id_action.indexOf(separator)>-1){
+				try{
+					id_call = id_action.substring(id_action.indexOf(separator)+1,id_action.length());
+				}catch(Exception e){
+				}
+				id_action = id_action.substring(0,id_action.indexOf(separator));
+			}
+		}
+		request.setAttribute(CONST_ID_CALL,id_call);
 		request.setAttribute(CONST_ID,id_action);
 
 		if(id_action!=null){
@@ -955,7 +1033,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 
 
-				action_instance = performAction(id_action, servletContext, request, response);
+				action_instance = performAction(id_action, id_call, servletContext, request, response);
 
 				if(action_instance==null){
 					isException(action_instance, request);
@@ -969,7 +1047,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				if(	action_instance.get_infoaction()!=null &&	
 					action_instance.get_infoaction().getStatistic()!=null &&
-					action_instance.get_infoaction().getStatistic().toLowerCase().equals("false")) stat=null;
+					action_instance.get_infoaction().getStatistic().equalsIgnoreCase("false")) stat=null;
 				
 
 				if(!action_instance.isIncluded()){
@@ -1081,7 +1159,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	}
 
-	public static i_action performAction(String id_action, ServletContext servletContext,
+	public static i_action performAction(String id_action,  ServletContext servletContext,
+			HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+		return performAction(id_action, null, servletContext, request, response);
+	}
+	
+	public static i_action performAction(String id_action, String id_call, ServletContext servletContext,
 				HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 		i_action prev_action_instance = null;
 
@@ -1110,7 +1193,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 		i_action action_instance = null;
-		action_instance =getActionInstance(id_action,request,response);
+		action_instance =getActionInstance(id_action,id_call, request,response);
 		return action_instance;
 	}
 
@@ -1176,7 +1259,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 */
 			info_action infoAction = (info_action)getAction_config().get_actions().get(id_current);
-			if(	infoAction.getMemoryInSession().toLowerCase().equals("true")){
+			if(	infoAction.getMemoryInSession().equalsIgnoreCase("true")){
 				return (i_bean)
 				((HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION))
 				.get(infoAction.getName());				
@@ -1195,7 +1278,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		boolean go = false;
 		i_bean form = action.get_bean();
 		try{
-			if(form.get_infoaction().getNavigated().toLowerCase().equals("true")) go = true;
+			if(form.get_infoaction().getNavigated().equalsIgnoreCase("true")) go = true;
 		}catch(Exception ex){
 		}
 		if(!go){
@@ -1219,15 +1302,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static void setCurrentForm(i_action action, HttpServletRequest request){
+		boolean cloned = (request.getParameter(CONST_ID_EXEC_TYPE)==null)?false:request.getParameter(CONST_ID_EXEC_TYPE).equalsIgnoreCase(CONST_ID_EXEC_TYPE_CLONED);
+		if(cloned) return;
 		boolean go = false;
 		i_bean form = action.get_bean();
 		try{
-			if(form.get_infoaction().getNavigated().toLowerCase().equals("true")) go = true;
+			if(form.get_infoaction().getNavigated().equalsIgnoreCase("true")) go = true;
 		}catch(Exception ex){
 		}
 		if(!go){
 			try{
-				if(form.get_infoaction().getMemoryInSession().toLowerCase().equals("true")){
+				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
 					HashMap fromSession = null;
 					fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 					if(fromSession==null){
@@ -1268,6 +1353,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 */			
 //			request.setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTION, form);
 		}
+	}
+	
+	public static info_navigation getFromInfoNavigation(String id,HttpServletRequest request){
+		info_navigation nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+		if(nav==null) return null;
+		return nav.find(id);
 	}
 
 
@@ -1845,7 +1936,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static void putToStatisticProvider(StatisticEntity stat){
-		if(appInit.get_statistic()!=null && appInit.get_statistic().toLowerCase().equals("true")){
+		if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true")){
 			I_StatisticProvider statProvider = (I_StatisticProvider)local_container.get(CONST_ID_STATISTIC_PROVIDER);
 			if(statProvider==null){
 				if(appInit.get_statistic_provider()==null || appInit.get_statistic_provider().equals(""))
@@ -1865,14 +1956,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 	
 	public static I_StatisticProvider getStatisticProvider(){
-		if(appInit.get_statistic()!=null && appInit.get_statistic().toLowerCase().equals("true"))
+		if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true"))
 			return (I_StatisticProvider)local_container.get(CONST_ID_STATISTIC_PROVIDER);
 		return null;
 	}
 
 	
 	private static void environmentState(HttpServletRequest request, String id_action){
-		if(System.getProperty("application.environment.debug")!=null && System.getProperty("application.environment.debug").toLowerCase().equals("true")){
+		if(System.getProperty("application.environment.debug")!=null && System.getProperty("application.environment.debug").equalsIgnoreCase("true")){
 			String log = "ClassHidra: Application Environment Memory Damp for ["+id_action+"] (only serialization)";
 			String log_detail = "\n";
 			int total=0;

@@ -26,10 +26,12 @@
 
 package it.classhidra.core.controller;
 
+import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
 import javax.servlet.http.*;
@@ -111,6 +113,21 @@ public class action extends bean implements i_action, Serializable{
 
 	public void setIncluded(boolean included) {
 		this.included = included;
+	}
+	
+	public java.lang.reflect.Method getMethodForCall(String annotation_name){
+		java.lang.reflect.Method result=null;
+		java.lang.reflect.Method[] mtds = this.getClass().getMethods();
+		for(int i=0;i<mtds.length;i++){
+			java.lang.reflect.Method current = mtds[i];
+			try{
+				ActionCall a_call = current.getAnnotation(ActionCall.class);
+				if(a_call!=null && a_call.name().equals(annotation_name))
+					return current;
+			}catch (Exception e) {
+			}
+		}
+		return result;
 	}
 
 }

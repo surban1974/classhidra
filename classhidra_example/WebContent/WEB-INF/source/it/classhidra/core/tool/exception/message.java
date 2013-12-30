@@ -95,6 +95,15 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 		mess_in_desc=decodeParameters(mess_in_desc,parameters);
 		return mess_in_desc;
 	}
+	public String getDESC_MESS_JS() {
+		String mess_in_desc = DESC_MESS;
+		mess_in_desc=decodeParameters(mess_in_desc,parameters);
+		if(mess_in_desc!=null)
+			mess_in_desc = mess_in_desc.replace('"', '\"').replace('\n', ' ').replace('\r', ' ');
+
+		return mess_in_desc;
+	}	
+	
 	public void setDESC_MESS(String value) {
 		if(value!=null) DESC_MESS=value;
 		else DESC_MESS="";

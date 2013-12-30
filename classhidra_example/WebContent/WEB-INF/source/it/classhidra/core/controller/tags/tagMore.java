@@ -34,6 +34,8 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_navigation;
+import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
@@ -50,7 +52,10 @@ public class tagMore extends  TagSupport {
 	protected String valueFromBean=null;
 	protected String method_prefix=null;
 	protected String field=null;
-
+	protected String formatOutput=null;
+	protected String formatLanguage=null;
+	protected String formatCountry=null;
+	
 	public int doStartTag() throws JspException {
 		if (condition())
 			return (EVAL_BODY_INCLUDE);
@@ -69,6 +74,9 @@ public class tagMore extends  TagSupport {
 		method_prefix=null;
 		valueFromBean=null;
 		field=null;
+		formatOutput=null;
+		formatLanguage=null;
+		formatCountry=null;	
 	}
 
 	private boolean condition() throws JspException{
@@ -104,7 +112,10 @@ public class tagMore extends  TagSupport {
 				if(anotherBean==null) anotherBean = request.getSession().getServletContext().getAttribute(name);
 			}
 			if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
-
+			try{
+				if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(bean).get_content();
+			}catch(Exception e){
+			}
 
 			if(anotherBean!=null){
 				if(name==null) writeValue = anotherBean.toString();
@@ -154,8 +165,10 @@ public class tagMore extends  TagSupport {
 			}catch(Exception e){
 			}
 		}
-
-
+		try{
+			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
+		}catch (Exception e) {
+		}		
 		if(value==null && writeValue!=null) return true;
 		if(value==null || writeValue==null) return false;
 		try{
@@ -207,6 +220,30 @@ public class tagMore extends  TagSupport {
 
 	public void setValueFromBean(String valueFromBean) {
 		this.valueFromBean = valueFromBean;
+	}
+
+	public String getFormatOutput() {
+		return formatOutput;
+	}
+
+	public void setFormatOutput(String formatOutput) {
+		this.formatOutput = formatOutput;
+	}
+
+	public String getFormatLanguage() {
+		return formatLanguage;
+	}
+
+	public void setFormatLanguage(String formatLanguage) {
+		this.formatLanguage = formatLanguage;
+	}
+
+	public String getFormatCountry() {
+		return formatCountry;
+	}
+
+	public void setFormatCountry(String formatCountry) {
+		this.formatCountry = formatCountry;
 	}
 
 }

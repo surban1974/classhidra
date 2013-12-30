@@ -30,6 +30,7 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
@@ -281,6 +282,10 @@ public class tagInput extends BodyTagSupport{
 					}
 
 					if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
+					try{
+						if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(bean).get_content();
+					}catch(Exception e){
+					}					
 				}catch(Exception e){
 				}
 			}

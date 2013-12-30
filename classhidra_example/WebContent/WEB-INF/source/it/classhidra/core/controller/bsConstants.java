@@ -32,7 +32,10 @@ public interface bsConstants {
 	public final static String CONST_ID_PATHCONFIG 						=	"application.path.config";
 	public final static String CONST_ID_PATHROOT 						=	"application.path.root";
 	public final static String CONST_ID 								=	"$id_action";
+	public final static String CONST_ID_CALL 							=	"$id_action_call";
+	public final static String CONST_ID_COMPLETE						=	"$id_action_complete";
 	public final static String CONST_ID_REQUEST_TYPE 					= 	"$request_type";
+	public final static String CONST_ID_EXEC_TYPE 						= 	"$exec_type";
 	public final static String CONST_ID_JS4AJAX 						=	"js4ajax";	
 	public final static String CONST_REQUEST_TYPE_FORWARD 				=	"$forward";
 	public final static String CONST_REQUEST_TYPE_INCLUDE 				=	"$include";
@@ -138,6 +141,9 @@ public interface bsConstants {
 	public final static String CONST_DIRECTINDACTION_bsResource			=	"bsResource";
 	public final static String CONST_DIRECTINDACTION_bsStatistics		=	"bsStatistics";
 	public final static String CONST_DIRECTINDACTION_bsTransformation	=	"bsTransformation";
+	
+	public final static String CONST_ID_EXEC_TYPE_CLONED				= 	"cloned";
+
 
 
 	

@@ -410,18 +410,19 @@ public class bsFilter implements Filter {
 			if(	request.getMethod()!=null){
 				if(isIncluded) request.setAttribute(bsConstants.CONST_ID_REQUEST_TYPE, bsConstants.CONST_REQUEST_TYPE_INCLUDE);
 				
-				if(id_current==null){
-					try{
-						if(url.lastIndexOf("/actions")+8==url.length()) url+="/";
-						if(url.lastIndexOf("/")>-1) id_current = url.substring(url.lastIndexOf("/")+1);
-					}catch(Exception e){}
-				}
+
+				try{
+					if(url.lastIndexOf("/actions")+8==url.length()) url+="/";
+					if(url.lastIndexOf("/")>-1) id_current = url.substring(url.lastIndexOf("/")+1);
+				}catch(Exception e){}
+
 				if(id_current!=null){	
 					boolean checkExt=true;
 					if(bsController.getAppInit().get_extention_do()==null || bsController.getAppInit().get_extention_do().trim().equals("")){
 						checkExt=false;						
 					}
 					id_current=id_current.trim();
+					
 					if(checkExt){
 						int lastInOf = id_current.lastIndexOf(bsController.getAppInit().get_extention_do());
 						if(lastInOf>-1){
@@ -449,7 +450,14 @@ public class bsFilter implements Filter {
 			}
 			if(bsController.getAction_config().get_actions().get(id_current)!=null)
 				return id_current;
+			else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+				if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null)
+					return id_current;
+				else return null;
+			}
 			else return null;
+			
 
 		}
 		

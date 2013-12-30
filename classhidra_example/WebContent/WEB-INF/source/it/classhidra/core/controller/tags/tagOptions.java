@@ -26,9 +26,11 @@ package it.classhidra.core.controller.tags;
 
 
 import it.classhidra.core.controller.action;
+import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
@@ -90,6 +92,7 @@ public class tagOptions extends TagSupport{
 
 
 	protected String formatInput = null;
+	protected String ignoreCase =null;
 
 
 	public int doStartTag() throws JspException {
@@ -118,7 +121,11 @@ public class tagOptions extends TagSupport{
 				if(anotherBean==null) anotherBean = request.getSession().getAttribute(bean);
 				if(anotherBean==null) anotherBean = request.getSession().getServletContext().getAttribute(bean);
 				if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
-
+				try{
+					if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(bean).get_content();
+				}catch(Exception e){
+				}
+				
 				if(property!=null)
 					iterator = (List)util_reflect.prepareWriteValueForTag(anotherBean,"get",property,null);
 				else iterator = (List)anotherBean;
@@ -186,6 +193,7 @@ public class tagOptions extends TagSupport{
 		ondragstart = null;
 		ondrop = null;
 		onmousewheel = null;
+		ignoreCase =null;
 
 	}
 
@@ -224,7 +232,11 @@ public class tagOptions extends TagSupport{
 		try{
 			if(getParent()!=null && getParent() instanceof tagSelect){
 				if(((tagSelect)getParent()).getValue().equals(currentValue.toString()))
-				results.append(" selected ");
+					results.append(" selected ");
+				else{
+					if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true") && ((tagSelect)getParent()).getValue().equalsIgnoreCase(currentValue.toString()))
+						results.append(" selected ");
+				}
 			}
 		}catch(Exception e){
 		}
@@ -687,6 +699,16 @@ public class tagOptions extends TagSupport{
 	public void setOnmousewheel(String onmousewheel) {
 		this.onmousewheel = onmousewheel;
 	}
+
+	public String getIgnoreCase() {
+		return ignoreCase;
+	}
+
+	public void setIgnoreCase(String ignoreCase) {
+		this.ignoreCase = ignoreCase;
+	}
+
+
 
 }
 
