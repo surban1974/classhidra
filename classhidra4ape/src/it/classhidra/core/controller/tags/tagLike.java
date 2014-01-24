@@ -34,6 +34,8 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_navigation;
+import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
@@ -51,6 +53,10 @@ public class tagLike extends  TagSupport {
 	protected String method_prefix=null;
 	protected String upperCase=null;
 	protected String field=null;
+	protected String formatOutput=null;
+	protected String formatLanguage=null;
+	protected String formatCountry=null;
+	protected String ignoreCase =null;
 	
 	public int doStartTag() throws JspException {
 		if (condition())
@@ -71,6 +77,10 @@ public class tagLike extends  TagSupport {
 		valueFromBean=null;
 		field=null;
 		upperCase=null;
+		formatOutput=null;
+		formatLanguage=null;
+		formatCountry=null;	
+		ignoreCase =null;
 	}
 	
 	private boolean condition() throws JspException{
@@ -107,7 +117,10 @@ public class tagLike extends  TagSupport {
 			}
 
 			if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
-			
+			try{
+				if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(bean).get_content();
+			}catch(Exception e){
+			}			
 
 			if(anotherBean!=null){
 				if(name==null) writeValue = anotherBean.toString();
@@ -157,16 +170,23 @@ public class tagLike extends  TagSupport {
 			}catch(Exception e){
 			}
 		}
-		
-		
+		try{
+			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
+		}catch (Exception e) {
+		}		
 		if(value==null && writeValue!=null) return true;
 		if(value==null || writeValue==null) return false;
 		if(upperCase!=null && upperCase.toLowerCase().equals("true")){
 			if(writeValue.toString().toUpperCase().indexOf(value)>-1) return true;
 			else return false;
 		}else{
-			if(writeValue.toString().indexOf(value)>-1) return true;
-			else return false;			
+			if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true")){
+				if(writeValue.toString().toUpperCase().indexOf(value.toUpperCase())>-1) return true;
+				else return false;
+			}else{
+				if(writeValue.toString().indexOf(value)>-1) return true;
+				else return false;	
+			}
 		}
 	}
 	public String getName() {
@@ -218,6 +238,38 @@ public class tagLike extends  TagSupport {
 
 	public void setUpperCase(String upperCase) {
 		this.upperCase = upperCase;
+	}
+
+	public String getFormatOutput() {
+		return formatOutput;
+	}
+
+	public void setFormatOutput(String formatOutput) {
+		this.formatOutput = formatOutput;
+	}
+
+	public String getFormatLanguage() {
+		return formatLanguage;
+	}
+
+	public void setFormatLanguage(String formatLanguage) {
+		this.formatLanguage = formatLanguage;
+	}
+
+	public String getFormatCountry() {
+		return formatCountry;
+	}
+
+	public void setFormatCountry(String formatCountry) {
+		this.formatCountry = formatCountry;
+	}
+
+	public String getIgnoreCase() {
+		return ignoreCase;
+	}
+
+	public void setIgnoreCase(String ignoreCase) {
+		this.ignoreCase = ignoreCase;
 	}
 
 }

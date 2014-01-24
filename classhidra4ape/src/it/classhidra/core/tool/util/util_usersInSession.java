@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 public class util_usersInSession {
-	public final static String CONST_APP_USER_CONTAINER = "FINC_USER_CONTAINER";
+	public final static String CONST_APP_USER_CONTAINER = "APP_USER_CONTAINER";
 	public final static String CONST_LOGIN_TIME = "LOGIN_TIME";
 	public final static String CONST_LOGIN_IP = "LOGIN_IP";
 	public final static String CONST_LASTUSE_TIME = "LASTUSE_TIME";

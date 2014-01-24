@@ -43,6 +43,7 @@ public class tagMessage extends TagSupport{
 	protected String defaultValue=null;
 	protected HashMap parameters=null;
 	protected String normalXML=null;
+	protected String normalASCII=null;
 
 
 	
@@ -69,6 +70,8 @@ public class tagMessage extends TagSupport{
 		styleClass=null;
 		defaultValue=null;
 		parameters=null;
+		normalXML=null;
+		normalASCII=null;
 	}
   
 	protected String createTagBody() {
@@ -87,9 +90,11 @@ public class tagMessage extends TagSupport{
 			}
 		}
 		String output = results.toString();
-		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
-			return util_xml.normalXML(output,null);
-		else return output;
+		if(normalXML!=null && normalXML.equalsIgnoreCase("true"))
+			output = util_xml.normalXML(output,null);
+		if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))
+			output = util_xml.normalASCII(output);
+		return output;
 
 	}
 	public String getDefaultValue() {
@@ -114,6 +119,24 @@ public class tagMessage extends TagSupport{
 	public HashMap getParameters() {
 		return parameters;
 	}
+
+	public String getNormalXML() {
+		return normalXML;
+	}
+
+	public void setNormalXML(String normalXML) {
+		this.normalXML = normalXML;
+	}
+
+	public String getNormalASCII() {
+		return normalASCII;
+	}
+
+	public void setNormalASCII(String normalASCII) {
+		this.normalASCII = normalASCII;
+	}
+	
+
 
 }
 

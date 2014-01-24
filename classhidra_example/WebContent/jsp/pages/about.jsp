@@ -42,7 +42,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 		</tr>	
 		<tr>
 			<td align="right" width="" class="labelLeft"><nobr><b><bs:message code="about_2" defaultValue="Version"/>:</b></nobr></td>
-			<td class="labelContent"> 1.4.7</td>
+			<td class="labelContent"> 1.4.8</td>
 		</tr>	
 		<tr>
 			<td align="right" width="" class="labelLeft"><nobr><b><bs:message code="about_3" defaultValue="Author"/>:</b></nobr></td>

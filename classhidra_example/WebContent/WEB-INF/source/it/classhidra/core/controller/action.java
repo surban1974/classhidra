@@ -31,7 +31,6 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
 import javax.servlet.http.*;

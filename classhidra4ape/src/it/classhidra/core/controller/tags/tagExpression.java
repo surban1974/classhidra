@@ -98,10 +98,10 @@ public class tagExpression extends TagSupport{
 		double par1 = 0;
 		double par2 = 0;
 		double result = 0;
-		if(param.size()==1) par2=new Double(((tagOperand)param.get(0)).getValue()).doubleValue();
+		if(param.size()==1) par2=Double.parseDouble(((tagOperand)param.get(0)).getValue());
 		if(param.size()==2){
-			par2=new Double(((tagOperand)param.get(0)).getValue()).doubleValue();
-			par1=new Double(((tagOperand)param.get(1)).getValue()).doubleValue();
+			par2=Double.parseDouble(((tagOperand)param.get(0)).getValue());
+			par1=Double.parseDouble(((tagOperand)param.get(1)).getValue());
 		}
 		if(operation.getName().trim().equals("+"))
 			result=(par2+par1)/1;
@@ -117,7 +117,7 @@ public class tagExpression extends TagSupport{
 			result=Math.pow(par2,par1);
 		
 		tagOperand operand = new tagOperand();
-		operand.setValue(new Double(result).toString());
+		operand.setValue(String.valueOf(result));
 		return operand;
 	}
 	

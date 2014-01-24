@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -30,7 +30,6 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_action;
-import it.classhidra.core.init.auth_init;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -57,7 +56,16 @@ public class tagForm extends TagSupport{
 	protected String target = null;
 	protected String title = null;
 	protected String dir=null;//"ltr"
-	protected String wac_fascia = null;	
+	protected String wac_fascia = null;
+
+	protected String autocomplete = null;
+	protected String novalidate = null;
+
+
+	protected String onreset = null;
+	protected String onsubmit = null;
+	protected String onhistory = null;
+
 	protected String onclick = null;
 	protected String ondblclick = null;
 	protected String onhelp = null;
@@ -69,9 +77,27 @@ public class tagForm extends TagSupport{
 	protected String onmouseout = null;
 	protected String onmouseover = null;
 	protected String onmouseup = null;
-	protected String onreset = null;
-	protected String onsubmit = null;
-	protected String onhistory = null;
+	protected String onblur = null;
+	protected String onchange = null;
+	protected String oncontextmenu = null;
+	protected String onfocus = null;
+	protected String onformchange = null;
+	protected String onforminput = null;
+	protected String oninput = null;
+	protected String oninvalid = null;
+	protected String onselect = null;
+	protected String ondrag = null;
+	protected String ondragend = null;
+	protected String ondragenter = null;
+	protected String ondragleave = null;
+	protected String ondragover = null;
+	protected String ondragstart = null;
+	protected String ondrop = null;
+	protected String onmousewheel = null;
+
+	protected String embedScript = null;
+
+
 
 
 	public int doStartTag() throws JspException {
@@ -84,11 +110,11 @@ public class tagForm extends TagSupport{
 			throw new JspException(e.toString());
 		}
 		return (EVAL_BODY_INCLUDE);
-	
+
 	}
 
 	public int doEndTag() throws JspException {
-			
+
 		StringBuffer results = new StringBuffer("</form>");
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -97,7 +123,7 @@ public class tagForm extends TagSupport{
 			throw new JspException(e.toString());
 		}
 		return (EVAL_PAGE);
-	
+
 	}
 
 	public void release() {
@@ -117,6 +143,9 @@ public class tagForm extends TagSupport{
 		title=null;
 		dir=null;//"ltr"
 		wac_fascia=null;
+		autocomplete = null;
+		novalidate = null;
+
 		onclick=null;
 		ondblclick=null;
 		onhelp=null;
@@ -131,8 +160,27 @@ public class tagForm extends TagSupport{
 		onreset=null;
 		onsubmit=null;
 		onhistory=null;
+		onblur = null;
+		onchange = null;
+		oncontextmenu = null;
+		onfocus = null;
+		onformchange = null;
+		onforminput = null;
+		oninput = null;
+		oninvalid = null;
+		onselect = null;
+		ondrag = null;
+		ondragend = null;
+		ondragenter = null;
+		ondragleave = null;
+		ondragover = null;
+		ondragstart = null;
+		ondrop = null;
+		onmousewheel = null;
+
+		embedScript=null;
 	}
-   
+
 	protected String createTagBody() {
 		HttpServletResponse response = (HttpServletResponse) this.pageContext.getResponse();
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
@@ -143,32 +191,28 @@ public class tagForm extends TagSupport{
 			if(pool!=null) formAction = (i_action)pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
-		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
-		if(formAction==null) formAction = new action(); 
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		if(formAction==null) formAction = new action();
 		if(bean==null) formBean = formAction.get_bean();
-		
-		
-		try{		
-			auth_init aInit = (auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
-			String lang = aInit.get_language();
-			if(lang.toUpperCase().equals("UA") || lang.toUpperCase().equals("RU")){
-				if ("ISO-8859-1".equalsIgnoreCase(request.getCharacterEncoding()) || request.getCharacterEncoding()==null) {
-					try{
-						request.setCharacterEncoding("windows-1251");
-						response.setContentType("text/html;charset=windows-1251");
-//						response.setCharacterEncoding("windows-1251");						
-					}catch(Exception e){
-					}
-				}
-			}
-		}catch(Exception e){
+
+		if(	formAction!=null &&
+			formBean!=null &&
+			name!=null &&
+			formBean.get_infobean()!=null &&
+			formBean.get_infobean().getName()!=null &&
+			!formBean.get_infobean().getName().equals(name)){
+			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) pool.put(name, formAction);
 		}
+
 		info_action	formInfoAction = formAction.get_infoaction();
-				
+
 		StringBuffer results = new StringBuffer("");
-		if(onhistory!=null)	results.append("<script>"+onhistory+"</script>"); 
-		else results.append("<script>history.go(1);</script>"+System.getProperty("line.separator"));
-		
+		if(embedScript!=null && (embedScript.toUpperCase().equals("NO") || embedScript.toUpperCase().equals("FALSE"))){
+		}else{
+			if(onhistory!=null)	results.append("<script>"+onhistory+"</script>");
+			else results.append("<script>history.go(1);</script>"+System.getProperty("line.separator"));
+		}
 		results.append("<form ");
 		if(name==null){
 			if(formInfoAction!=null) name=formInfoAction.getName();
@@ -176,7 +220,7 @@ public class tagForm extends TagSupport{
 		if(name!=null){
 			results.append(" name=\"");
 			results.append(name);
-			results.append("\"");
+			results.append('"');
 		}
 
 		if(objId==null){
@@ -185,155 +229,259 @@ public class tagForm extends TagSupport{
 		if(objId!=null){
 			results.append(" id=\"");
 			results.append(name);
-			results.append("\"");
+			results.append('"');
 		}
-		
+
 		results.append(" action=\"");
 		if(formInfoAction!=null)
-			results.append(formInfoAction.getPath()+bsController.getAppInit().get_extention_do());			
-		else results.append("/Controller");			
-		results.append("\"");
-		
+			results.append(formInfoAction.getPath()+bsController.getAppInit().get_extention_do());
+		else results.append("/Controller");
+		results.append('"');
+
 		results.append(" method=\"");
 		results.append(method == null ? "post" : method);
-		results.append("\"");
+		results.append('"');
 
 		if (styleClass != null) {
 			results.append(" class=\"");
 			results.append(styleClass);
-			results.append("\"");
+			results.append('"');
 		}
 		if (style != null) {
 			results.append(" style=\"");
 			results.append(style);
-			results.append("\"");
+			results.append('"');
 		}
 		if (enctype != null) {
 			results.append(" enctype=\"");
 			results.append(enctype);
-			results.append("\"");
+			results.append('"');
 		}
 		if (accept != null) {
 			results.append(" accept=\"");
 			results.append(accept);
-			results.append("\"");
+			results.append('"');
 		}
 		if (accept_charset != null) {
 			results.append(" accept-charset=\"");
 			results.append(accept_charset);
-			results.append("\"");
+			results.append('"');
 		}
 		if (lang != null) {
 			results.append(" lang=\"");
 			results.append(lang);
-			results.append("\"");
+			results.append('"');
 		}
 		if (target != null) {
 			results.append(" target=\"");
 			results.append(target);
-			results.append("\"");
+			results.append('"');
 		}
 		if (title != null) {
 			results.append(" title=\"");
 			results.append(title);
-			results.append("\"");
+			results.append('"');
 		}
 		if (dir != null) {
 			results.append(" dir=\"");
 			results.append(dir);
-			results.append("\"");
+			results.append('"');
 		}
-		if (onclick != null) {
-			results.append(" onclick=\"");
-			results.append(onclick);
-			results.append("\"");
+		if (autocomplete != null) {
+			results.append(" autocomplete=\"");
+			results.append(autocomplete);
+			results.append('"');
 		}
-		if (ondblclick != null) {
-			results.append(" ondblclick=\"");
-			results.append(ondblclick);
-			results.append("\"");
-		}
-		if (onhelp != null) {
-			results.append(" onhelp=\"");
-			results.append(onhelp);
-			results.append("\"");
-		}
-		
-		if (onkeydown != null) {
-			results.append(" onkeydown=\"");
-			results.append(onkeydown);
-			results.append("\"");
-		}
-		if (onkeypress != null) {
-			results.append(" onkeypress=\"");
-			results.append(onkeypress);
-			results.append("\"");
-		}
-		if (onkeyup != null) {
-			results.append(" onkeyup=\"");
-			results.append(onkeyup);
-			results.append("\"");
-		}
-		if (onmousedown != null) {
-			results.append(" onmousedown=\"");
-			results.append(onmousedown);
-			results.append("\"");
+		if (novalidate != null) {
+			results.append(" novalidate=\"");
+			results.append(novalidate);
+			results.append('"');
 		}
 
-		if (onmousemove != null) {
-			results.append(" onmousemove=\"");
-			results.append(onmousemove);
-			results.append("\"");
-		}
-		if (onmouseout != null) {
-			results.append(" onmouseout=\"");
-			results.append(onmouseout);
-			results.append("\"");
-		}
-		if (onmouseover != null) {
-			results.append(" onmouseover=\"");
-			results.append(onmouseover);
-			results.append("\"");
-		}
-		if (onmouseup != null) {
-			results.append(" onmouseup=\"");
-			results.append(onmouseup);
-			results.append("\"");
-		}
+
 		if (onreset != null) {
 			results.append(" onreset=\"");
 			results.append(onreset);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onsubmit != null) {
 			results.append(" onsubmit=\"");
 //			results.append("if(this.action.indexOf('Controller')!=0){if(this.$action){this.$action.value = this.action;} this.action='Controller';} ");
 			results.append(onsubmit);
-			results.append("\"");
+			results.append('"');
 		}
+
+
+
+
+		if (onclick != null) {
+			results.append(" onclick=\"");
+			results.append(onclick);
+			results.append('"');
+		}
+		if (ondblclick != null) {
+			results.append(" ondblclick=\"");
+			results.append(ondblclick);
+			results.append('"');
+		}
+		if (onhelp != null) {
+			results.append(" onhelp=\"");
+			results.append(onhelp);
+			results.append('"');
+		}
+		if (onkeydown != null) {
+			results.append(" onkeydown=\"");
+			results.append(onkeydown);
+			results.append('"');
+		}
+		if (onkeypress != null) {
+			results.append(" onkeypress=\"");
+			results.append(onkeypress);
+			results.append('"');
+		}
+		if (onkeyup != null) {
+			results.append(" onkeyup=\"");
+			results.append(onkeyup);
+			results.append('"');
+		}
+		if (onmousedown != null) {
+			results.append(" onmousedown=\"");
+			results.append(onmousedown);
+			results.append('"');
+		}
+		if (onmousemove != null) {
+			results.append(" onmousemove=\"");
+			results.append(onmousemove);
+			results.append('"');
+		}
+		if (onmouseout != null) {
+			results.append(" onmouseout=\"");
+			results.append(onmouseout);
+			results.append('"');
+		}
+		if (onmouseover != null) {
+			results.append(" onmouseover=\"");
+			results.append(onmouseover);
+			results.append('"');
+		}
+		if (onmouseup != null) {
+			results.append(" onmouseup=\"");
+			results.append(onmouseup);
+			results.append('"');
+		}
+		if (onblur != null) {
+			results.append(" onblur=\"");
+			results.append(onblur);
+			results.append('"');
+		}
+		if (onchange != null) {
+			results.append(" onchange=\"");
+			results.append(onchange);
+			results.append('"');
+		}
+		if (oncontextmenu != null) {
+			results.append(" oncontextmenu=\"");
+			results.append(oncontextmenu);
+			results.append('"');
+		}
+		if (onfocus != null) {
+			results.append(" onfocus=\"");
+			results.append(onfocus);
+			results.append('"');
+		}
+		if (onformchange != null) {
+			results.append(" onformchange=\"");
+			results.append(onformchange);
+			results.append('"');
+		}
+		if (onforminput != null) {
+			results.append(" onforminput=\"");
+			results.append(onforminput);
+			results.append('"');
+		}
+		if (oninput != null) {
+			results.append(" oninput=\"");
+			results.append(oninput);
+			results.append('"');
+		}
+		if (oninvalid != null) {
+			results.append(" oninvalid=\"");
+			results.append(oninvalid);
+			results.append('"');
+		}
+		if (onselect != null) {
+			results.append(" onselect=\"");
+			results.append(onselect);
+			results.append('"');
+		}
+		if (ondrag != null) {
+			results.append(" ondrag=\"");
+			results.append(ondrag);
+			results.append('"');
+		}
+		if (ondragend != null) {
+			results.append(" ondragend=\"");
+			results.append(ondragend);
+			results.append('"');
+		}
+		if (ondragenter != null) {
+			results.append(" ondragenter=\"");
+			results.append(ondragenter);
+			results.append('"');
+		}
+		if (ondragleave != null) {
+			results.append(" ondragleave=\"");
+			results.append(ondragleave);
+			results.append('"');
+		}
+		if (ondragover != null) {
+			results.append(" ondragover=\"");
+			results.append(ondragover);
+			results.append('"');
+		}
+		if (ondragstart != null) {
+			results.append(" ondragstart=\"");
+			results.append(ondragstart);
+			results.append('"');
+		}
+		if (ondrop != null) {
+			results.append(" ondrop=\"");
+			results.append(ondrop);
+			results.append('"');
+		}
+		if (onmousewheel != null) {
+			results.append(" onmousewheel=\"");
+			results.append(onmousewheel);
+			results.append('"');
+		}
+
+
+
+
 		results.append(">"+System.getProperty("line.separator"));
-		results.append("<script>"+System.getProperty("line.separator"));
-		results.append("function trim(txt){"+System.getProperty("line.separator"));
-		results.append("return txt.replace(/(^\\s+)|(\\s+$)/g,\"\");"+System.getProperty("line.separator"));
-		results.append("}"+System.getProperty("line.separator"));
-		results.append("</script>"+System.getProperty("line.separator"));
+		if(embedScript!=null && (embedScript.toUpperCase().equals("NO") || embedScript.toUpperCase().equals("FALSE"))){
+		}else{
+			results.append("<script>"+System.getProperty("line.separator"));
+			results.append("function trim(txt){"+System.getProperty("line.separator"));
+			results.append("return txt.replace(/(^\\s+)|(\\s+$)/g,\"\");"+System.getProperty("line.separator"));
+			results.append("}"+System.getProperty("line.separator"));
+			results.append("</script>"+System.getProperty("line.separator"));
+		}
 
-			results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$ACTION+"\" name=\""+bsController.CONST_ID_$ACTION+"\" value= \"");			
-			results.append(((action==null)?(formInfoAction==null)?"":formInfoAction.getPath():action));
-			results.append("\">"+System.getProperty("line.separator"));
+		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$ACTION+"\" name=\""+bsController.CONST_ID_$ACTION+"\" value= \"");
+		results.append(((action==null)?(formInfoAction==null)?"":formInfoAction.getPath():action));
+		results.append("\">"+System.getProperty("line.separator"));
 
 
-			results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$MIDDLE_ACTION+"\" name=\""+bsController.CONST_ID_$MIDDLE_ACTION+"\" value= \"\">"+System.getProperty("line.separator"));
-			results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$ACTION_FROM+"\" name=\""+bsController.CONST_ID_$ACTION_FROM+"\" value= \"\">"+System.getProperty("line.separator"));
-			results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$NAVIGATION+"\" name=\""+bsController.CONST_ID_$NAVIGATION+"\" value= \"");
-			try{
-				results.append(formAction.get_infoaction().getPath()+":"+formAction.getCurrent_redirect().get_inforedirect().getPath());
-			}catch(Exception e){	
-			}
-			results.append("\">"+System.getProperty("line.separator"));
+		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$MIDDLE_ACTION+"\" name=\""+bsController.CONST_ID_$MIDDLE_ACTION+"\" value= \"\">"+System.getProperty("line.separator"));
+		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$ACTION_FROM+"\" name=\""+bsController.CONST_ID_$ACTION_FROM+"\" value= \"\">"+System.getProperty("line.separator"));
+		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$NAVIGATION+"\" name=\""+bsController.CONST_ID_$NAVIGATION+"\" value= \"");
+		try{
+			results.append(formAction.get_infoaction().getPath()+":"+formAction.getCurrent_redirect().get_inforedirect().getPath());
+		}catch(Exception e){
+		}
+		results.append("\">"+System.getProperty("line.separator"));
 
-//		results.append("<input type=\"hidden\" name=\"parent_pointOfLaunch\" value= \""+((formBean.get("parent_pointOfLaunch")==null)?"":formBean.get("parent_pointOfLaunch"))+"\">"+System.getProperty("line.separator"));
-//		results.append("<input type=\"hidden\" name=\"child_pointOfReturn\" value= \""+((formBean.get("child_pointOfReturn")==null)?"":formBean.get("child_pointOfReturn"))+"\">"+System.getProperty("line.separator"));
 		return results.toString();
 	}
 	public String getAccept() {
@@ -511,6 +659,166 @@ public class tagForm extends TagSupport{
 
 	public void setBean(String bean) {
 		this.bean = bean;
+	}
+
+	public String getEmbedScript() {
+		return embedScript;
+	}
+
+	public void setEmbedScript(String embedScript) {
+		this.embedScript = embedScript;
+	}
+
+	public String getOnblur() {
+		return onblur;
+	}
+
+	public void setOnblur(String onblur) {
+		this.onblur = onblur;
+	}
+
+	public String getOnchange() {
+		return onchange;
+	}
+
+	public void setOnchange(String onchange) {
+		this.onchange = onchange;
+	}
+
+	public String getOncontextmenu() {
+		return oncontextmenu;
+	}
+
+	public void setOncontextmenu(String oncontextmenu) {
+		this.oncontextmenu = oncontextmenu;
+	}
+
+	public String getOnfocus() {
+		return onfocus;
+	}
+
+	public void setOnfocus(String onfocus) {
+		this.onfocus = onfocus;
+	}
+
+	public String getOnformchange() {
+		return onformchange;
+	}
+
+	public void setOnformchange(String onformchange) {
+		this.onformchange = onformchange;
+	}
+
+	public String getOnforminput() {
+		return onforminput;
+	}
+
+	public void setOnforminput(String onforminput) {
+		this.onforminput = onforminput;
+	}
+
+	public String getOninput() {
+		return oninput;
+	}
+
+	public void setOninput(String oninput) {
+		this.oninput = oninput;
+	}
+
+	public String getOninvalid() {
+		return oninvalid;
+	}
+
+	public void setOninvalid(String oninvalid) {
+		this.oninvalid = oninvalid;
+	}
+
+	public String getOnselect() {
+		return onselect;
+	}
+
+	public void setOnselect(String onselect) {
+		this.onselect = onselect;
+	}
+
+	public String getOndrag() {
+		return ondrag;
+	}
+
+	public void setOndrag(String ondrag) {
+		this.ondrag = ondrag;
+	}
+
+	public String getOndragend() {
+		return ondragend;
+	}
+
+	public void setOndragend(String ondragend) {
+		this.ondragend = ondragend;
+	}
+
+	public String getOndragenter() {
+		return ondragenter;
+	}
+
+	public void setOndragenter(String ondragenter) {
+		this.ondragenter = ondragenter;
+	}
+
+	public String getOndragleave() {
+		return ondragleave;
+	}
+
+	public void setOndragleave(String ondragleave) {
+		this.ondragleave = ondragleave;
+	}
+
+	public String getOndragover() {
+		return ondragover;
+	}
+
+	public void setOndragover(String ondragover) {
+		this.ondragover = ondragover;
+	}
+
+	public String getOndragstart() {
+		return ondragstart;
+	}
+
+	public void setOndragstart(String ondragstart) {
+		this.ondragstart = ondragstart;
+	}
+
+	public String getOndrop() {
+		return ondrop;
+	}
+
+	public void setOndrop(String ondrop) {
+		this.ondrop = ondrop;
+	}
+
+	public String getOnmousewheel() {
+		return onmousewheel;
+	}
+
+	public void setOnmousewheel(String onmousewheel) {
+		this.onmousewheel = onmousewheel;
+	}
+
+	public String getAutocomplete() {
+		return autocomplete;
+	}
+
+	public void setAutocomplete(String autocomplete) {
+		this.autocomplete = autocomplete;
+	}
+
+	public String getNovalidate() {
+		return novalidate;
+	}
+
+	public void setNovalidate(String novalidate) {
+		this.novalidate = novalidate;
 	}
 
 }

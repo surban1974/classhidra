@@ -73,8 +73,6 @@ public class ProcessBatchEngine  {
 
 		}catch(Exception e){
 			new bsException("Scheduler: BatchEngine:launch:error: " + e.toString(), iStub.log_ERROR);
-		}finally{
-
 		}
 		scan=false;
 	}

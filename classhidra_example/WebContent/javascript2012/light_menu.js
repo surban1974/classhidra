@@ -1,3 +1,5 @@
+//---	23/01/2014 (compatible classHidra 1.4.8)
+
 var frame_dynamic = true;
 var timeForOut = 250;
 var varScrollLeftPrev=0;
@@ -672,7 +674,7 @@ function f_closeSection(val){
 	beforeCheckNew("page");	
 }
 
-function beforeClick(){
+function beforeClickLM(){
 	try{
 		document.getElementById("content_Panel_runSubmit").style.display="block";
 	}catch(e){

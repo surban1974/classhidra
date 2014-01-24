@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -33,7 +33,7 @@ import it.classhidra.core.tool.util.util_format;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*; 
+import javax.servlet.jsp.tagext.*;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -49,15 +49,15 @@ public class showLMActionLabel extends TagSupport{
 	protected String js_function = null;
 	protected String img = null;
 	protected String path_for_backimg = null;
-	
+
 	protected String img_before;
 	protected String viewborder;
 	protected String img_height;
 	protected String img_width;
 	protected String img_disable;
-	
+
 	protected HashMap parameters=null;
-	
+
 
 
 	public int doStartTag() throws JspException {
@@ -83,7 +83,7 @@ public class showLMActionLabel extends TagSupport{
 		styleClass=null;
 		message_code=null;
 		message_defaultValue=null;
-		
+
 		_parent = null;
 		type = null;
 		index = null;
@@ -91,107 +91,107 @@ public class showLMActionLabel extends TagSupport{
 		img = null;
 		path_for_backimg = null;
 		parameters=null;
-		
+
 		img_before = null;
 		viewborder = null;
 		img_height = null;
 		img_width = null;
 		img_disable = null;
-		
+
 	}
-  
+
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		StringBuffer results = new StringBuffer("");
-		
+
 		try{
 
 			String mess = null;
-			try{		
+			try{
 				mess=bsController.writeLabel(request,message_code,message_defaultValue,parameters);
 			}catch(Exception e){
 			}
 //			mess = mess.replace("\"","\\\"");
 			mess = util_format.replace(mess,"\"","\\\"");
-			 
+
 			results.append("<script>ObjectDraw(");
 			if (_parent != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(_parent);
 				results.append("\",");
 			}else results.append("\"page1\",");
-			
+
 			if (type != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(type);
 				results.append("\",");
 			}else results.append("\"button\",");
 
 			if (index != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(index);
 				results.append("\",");
 			}else results.append("\"0\",");
 			if (mess != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(mess);
 				results.append("\",");
 			}else results.append("\"\",");
 			if (js_function != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(js_function);
 				results.append("\",");
 			}else results.append("\"\",");
 			if (styleClass != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(styleClass);
 				results.append("\",");
 			}else results.append("\"page_section\",");
 			if (img != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(img);
 				results.append("\",");
 			}else results.append("\"\",");
 			if (path_for_backimg != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(path_for_backimg);
 				results.append("\",");
-			}else results.append("\"\",");			
+			}else results.append("\"\",");
 			if (img_before != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(img_before);
 				results.append("\",");
-			}else results.append("\"\",");		
+			}else results.append("\"\",");
 			if (viewborder != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(viewborder);
 				results.append("\",");
-			}else results.append("\"\",");			
+			}else results.append("\"\",");
 			if (img_height != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(img_height);
 				results.append("\",");
-			}else results.append("\"\",");			
+			}else results.append("\"\",");
 			if (img_width != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(img_width);
 				results.append("\",");
-			}else results.append("\"\",");		
+			}else results.append("\"\",");
 			if (img_disable != null) {
-				results.append("\"");
+				results.append('"');
 				results.append(img_disable);
-				results.append("\"");
+				results.append('"');
 			}else results.append("\"\"");
-			
-			
-			
-			results.append(");</script>");			
+
+
+
+			results.append(");</script>");
 		}catch(Exception e){
-			
+
 		}
 		return results.toString();
-	}		
-	
+	}
+
 
 	public String getStyleClass() {
 		return styleClass;

@@ -59,6 +59,14 @@ public class info_navigation extends elementBase implements i_elementBase{
 		if(this.child!=null) child.decodeMessage(request);
 	}
 	
+	public void reDecodeMessage(HttpServletRequest request){
+		if(this.iRedirect!=null)
+			desc_second = (bsController.writeLabel(request,this.getIRedirect().getMess_id(),this.getIRedirect().getDescr(),null));
+		
+		if(this.child!=null) child.reDecodeMessage(request);
+	}
+	
+	
 	public void init(info_action iAction, info_redirect iRedirect, info_service iService, i_bean content) throws bsControllerException{
 		if(iAction==null) throw new bsControllerException("ERROR load iAction",iStub.log_ERROR);
 		this.iAction = iAction;
@@ -304,6 +312,10 @@ public class info_navigation extends elementBase implements i_elementBase{
 
 	public void setChild(info_navigation child) {
 		this.child = child;
+	}
+
+	public void set_content(i_bean content) {
+		_content = content;
 	}
 
 }

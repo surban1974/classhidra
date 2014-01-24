@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -27,7 +27,7 @@ package it.classhidra.core.controller.tags;
 
 
 import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*; 
+import javax.servlet.jsp.tagext.*;
 import java.io.IOException;
 
 public class showLMPage extends TagSupport{
@@ -40,23 +40,23 @@ public class showLMPage extends TagSupport{
 	public int doStartTag() throws JspException {
 
 
-		StringBuffer results = new StringBuffer();		 	
+		StringBuffer results = new StringBuffer();
 		results.append("<div id='"+name+"' name='"+name+"' style='position:absolute;visibility: hidden'>"+System.getProperty("line.separator"));
 		results.append("<font face='GENEVA, ARIAL, MS SANS SERIF, SANS-SERIF' size='1'>"+System.getProperty("line.separator"));
 		results.append("<table cellspacing='0' border='0'");
 		if (styleClass != null) {
 			results.append(" class=\"");
 			results.append(styleClass);
-			results.append("\"");
+			results.append('"');
 		}
 		if (style != null) {
 			results.append(" style=\"");
 			results.append(style);
-			results.append("\"");
+			results.append('"');
 		}
-		if(styleClass == null && style==null) results.append(" class='block_background'"); 
+		if(styleClass == null && style==null) results.append(" class='block_background'");
 		results.append(">"+System.getProperty("line.separator"));
-		
+
 		JspWriter writer = pageContext.getOut();
 		try {
 			writer.print(results.toString());
@@ -72,7 +72,7 @@ public class showLMPage extends TagSupport{
 		style=null;
 		styleClass=null;
 	}
-  
+
 
 	public String getStyleClass() {
 		return styleClass;
@@ -93,8 +93,8 @@ public class showLMPage extends TagSupport{
 
 		results.append("</table>"+System.getProperty("line.separator"));
 		results.append("</font>"+System.getProperty("line.separator"));
-		results.append("</div>"+System.getProperty("line.separator")); 
-		
+		results.append("</div>"+System.getProperty("line.separator"));
+
 		JspWriter writer = pageContext.getOut();
 		try {
 			writer.print(results.toString());

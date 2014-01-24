@@ -44,6 +44,9 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
 
 
 public class bean extends elementBeanBase implements i_bean  {
@@ -103,7 +106,13 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	
 	xmloutput=false;
 	jsonoutput=false;
-	
+	boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
+			(
+					request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
+					request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))		
+			)
+		);
+
 	Enumeration en = request.getParameterNames();
 	while(en.hasMoreElements()){
 		String key = (String)en.nextElement();
@@ -111,6 +120,24 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		String format = request.getParameter("$format_"+key);
 		String replaceOnBlank = request.getParameter("$replaceOnBlank_"+key);
 		String replaceOnErrorFormat = request.getParameter("$replaceOnErrorFormat_"+key);
+		
+		if(inputBase64){
+			String charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
+			try{
+				if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+			}catch(Exception e){}
+			try{
+				if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+			}catch(Exception e){}
+			try{
+				if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+			}catch(Exception e){}
+			try{
+				if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+			}catch(Exception e){
+			}
+		}
+		
 		if(key.indexOf(".")==-1){
 			try{
 				Object makedValue=null;
@@ -151,26 +178,6 @@ public void init(HttpServletRequest request) throws bsControllerException{
 			
 			Object writeValue=null;
 			Object current_requested = (delegated==null)?this:delegated;
-/*			
-			StringTokenizer st = new StringTokenizer(key,".");
-			Vector allfields=new Vector();
-			while(st.hasMoreTokens())
-				allfields.add(st.nextToken());
-
-			for(int i=0;i<allfields.size()-1;i++){
-				String current_field_name = (String)allfields.get(i);
-				try{
-					if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
-					if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
-					if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-					if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
-				}catch(Exception e){
-				}
-				current_requested = writeValue;
-				writeValue = null;
-			}
-			String current_field_name = (String)allfields.get(allfields.size()-1);
-*/
 			
 			String last_field_name = null;
 			StringTokenizer st = new StringTokenizer(key,".");
@@ -296,17 +303,43 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		
 		xmloutput=false;
 		jsonoutput=false;
+		boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
+				(
+						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
+						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))		
+				)
+			);
+
 
 //		Vector en = new Vector(parameters.keySet());
 //		for(int k=0;k<parameters.keySet().size();k++){
 		for (Object elem : parameters.keySet()) {
 			String key = (String)elem;
-			String format = (String)parameters.get("$format_"+key);
-			String replaceOnBlank = (String)parameters.get("$replaceOnBlank_"+key);
-			String replaceOnErrorFormat = (String)parameters.get("$replaceOnErrorFormat_"+key);
 			
 			if(parameters.get(key) instanceof String ){
 				String value = (String)parameters.get(key);
+				String format = (String)parameters.get("$format_"+key);
+				String replaceOnBlank = (String)parameters.get("$replaceOnBlank_"+key);
+				String replaceOnErrorFormat = (String)parameters.get("$replaceOnErrorFormat_"+key);
+
+				if(inputBase64){
+					String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
+
+					try{
+						if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+					}catch(Exception e){}
+					try{
+						if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+					}catch(Exception e){}
+					try{
+						if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+					}catch(Exception e){}
+					try{
+						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+					}catch(Exception e){
+					}
+				}
+				
 
 				if(key.indexOf(".")==-1){
 					try{
@@ -351,27 +384,6 @@ public void init(HttpServletRequest request) throws bsControllerException{
 					Object writeValue=null;
 					Object current_requested = (delegated==null)?this:delegated;
 					
-/*
-					StringTokenizer st = new StringTokenizer(key,".");
-					Vector allfields=new Vector();
-					while(st.hasMoreTokens())
-						allfields.add(st.nextToken());
-
-
-					for(int i=0;i<allfields.size()-1;i++){
-						String current_field_name = (String)allfields.get(i);
-						try{
-							writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
-							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-							if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
-							if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
-							
-						}catch(Exception e){
-						}
-						current_requested = writeValue;
-					}
-					String current_field_name = (String)allfields.get(allfields.size()-1);
-*/					
 					String last_field_name = null;
 					StringTokenizer st = new StringTokenizer(key,".");
 					while(st.hasMoreTokens()){				
@@ -434,14 +446,42 @@ public void init(HashMap _content) throws bsControllerException{
 	
 	xmloutput=false;
 	jsonoutput=false;
+	boolean inputBase64 = (_content.get(bsController.CONST_ID_INPUTBASE64)!=null &&
+			(
+					_content.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
+					_content.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))		
+			)
+		);
 	
-	Object[] keys = _content.keySet().toArray();
-	for (int ii = 0; ii < keys.length; ii++){
-		String key = (String)keys[ii];
+//	Object[] keys = _content.keySet().toArray();
+//	for (int ii = 0; ii < keys.length; ii++){
+	for (Object elem :  _content.keySet()) {
+		String key = (String)elem;
+		
+//		String key = (String)keys[ii];
 		String value = (String)_content.get(key);
 		String format = (String)_content.get("$format_"+key);
 		String replaceOnBlank = (String)_content.get("$replaceOnBlank_"+key);
 		String replaceOnErrorFormat = (String)_content.get("$replaceOnErrorFormat_"+key);
+
+		if(inputBase64){
+			String charset = (_content.get("$REQUEST_CHARSET")==null || _content.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":_content.get("$REQUEST_CHARSET").toString();
+
+			try{
+				if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+			}catch(Exception e){}
+			try{
+				if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+			}catch(Exception e){}
+			try{
+				if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+			}catch(Exception e){}
+			try{
+				if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+			}catch(Exception e){
+			}
+		}
+		
 		
 		if(key.indexOf(".")==-1){
 			try{
@@ -486,30 +526,7 @@ public void init(HashMap _content) throws bsControllerException{
 			Object writeValue=null;
 			Object current_requested = (delegated==null)?this:delegated;
 
-/*
-  
-			StringTokenizer st = new StringTokenizer(key,".");
-			Vector allfields=new Vector();
-			while(st.hasMoreTokens())
-				allfields.add(st.nextToken());
-
-
-  
-			for(int i=0;i<allfields.size()-1;i++){
-				String current_field_name = (String)allfields.get(i);
-				try{
-					writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
-					if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-					if(writeValue==null && current_requested instanceof HashMap){
-						writeValue = ((HashMap)current_requested).get(current_field_name);
-					}
-				}catch(Exception e){
-				}
-				current_requested = writeValue;
-			}
-			String current_field_name = (String)allfields.get(allfields.size()-1);
-*/
-			
+		
 			String last_field_name = null;
 			StringTokenizer st = new StringTokenizer(key,".");
 			while(st.hasMoreTokens()){				

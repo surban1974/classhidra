@@ -22,4 +22,5 @@ public @interface Action {
 	String help() default "";
 	Redirect[] redirects() default {};
 	Transformation[] transformations() default {};
+	ActionCall[] calls() default {};
 }

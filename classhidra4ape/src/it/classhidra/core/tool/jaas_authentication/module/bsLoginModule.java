@@ -196,7 +196,7 @@ public class bsLoginModule implements LoginModule {
      private boolean bsValidate(String user, String pass) throws Exception {
         loadUser_config();
         boolean passwordMatch = false;
-        info_user _user = (info_user)((load_users)bsController.getUser_config()).get_user(user,pass);
+        info_user _user = ((load_users)bsController.getUser_config()).get_user(user,pass);
         if(_user!=null){
         	passwordMatch = true;
         	this.tempPrincipals.add(new bsPrincipal(_user.getMatriculation()));

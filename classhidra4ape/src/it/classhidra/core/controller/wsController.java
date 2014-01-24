@@ -75,7 +75,7 @@ public class wsController   {
  			}
 			
 		}
-		info_user _user = (info_user)((load_users)bsController.getUser_config()).get_user(user,password);	 
+		info_user _user = ((load_users)bsController.getUser_config()).get_user(user,password);	 
 	    if(_user!=null){
 	    	
 	    	auth_init auth = new auth_init();
@@ -117,6 +117,7 @@ public class wsController   {
 					"ws",
 					auth.get_user_ip(),
 					auth.get_matricola(),
+					auth.get_language(),
 					id_action,
 					null,
 					new Date(),
@@ -209,7 +210,6 @@ public class wsController   {
 				errors.add(ex.toString());
 			}catch(Throwable t){
 				errors.add(t.toString());
-			}finally{
 			}
 
 		}	
@@ -227,7 +227,7 @@ public class wsController   {
 		}
 		if(stat!=null){
 			stat.setFt(new Date());
-			putToStatisticProvider(stat);
+			bsController.putToStatisticProvider(stat);
 		}
 
 		return outputXML;
@@ -289,24 +289,5 @@ public class wsController   {
 		return null;
 	}
 	
-	public static void putToStatisticProvider(StatisticEntity stat){
-		if(bsController.getAppInit().get_statistic()!=null && bsController.getAppInit().get_statistic().toUpperCase().equals("TRUE")){
-			I_StatisticProvider statProvider = (I_StatisticProvider)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_PROVIDER);
-			if(statProvider==null){
-				if(bsController.getAppInit().get_statistic_provider()==null || bsController.getAppInit().get_statistic_provider().equals(""))
-					statProvider = new StatisticProvider_Simple();
-				else{
-					try{
-						statProvider = (I_StatisticProvider)Class.forName(bsController.getAppInit().get_statistic_provider()).newInstance();
-					}catch(Exception e){	
-						bsController.writeLog("ERROR instance Statistic Provider:"+bsController.getAppInit().get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
-					}
-				}
-				if(statProvider==null) statProvider = new StatisticProvider_Simple();
-				bsController.putToLocalContainer(bsConstants.CONST_ID_STATISTIC_PROVIDER,statProvider);
-			}
-			statProvider.addStatictic(stat);
-		}
-	}	
 	
 }

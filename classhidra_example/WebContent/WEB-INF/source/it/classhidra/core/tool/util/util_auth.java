@@ -32,18 +32,40 @@ public class util_auth {
 		if(obj_request==null || !(obj_request instanceof HttpServletRequest)) return;
 		HttpServletRequest request = (HttpServletRequest)obj_request;
 		
-		auth.set_user((request.getHeader("USER")==null)?"Anonimous":request.getHeader("USER"));
-		auth.set_ruolo((request.getHeader("RUOLO")==null)?"":request.getHeader("RUOLO"));
+		auth.set_user(
+				(request.getHeader("USER")==null)?
+						(request.getHeader("user")==null)?"Anonimous":request.getHeader("USER")
+				:request.getHeader("USER")
+		);
+		auth.set_ruolo(
+				(request.getHeader("RUOLO")==null)?
+						(request.getHeader("GROUP")==null)?
+								(request.getHeader("group")==null)?
+								""
+								:request.getHeader("group")
+						:request.getHeader("GROUP")
+				:request.getHeader("RUOLO")
+		);
 		
-		String _dominio = (request.getHeader("DOMINIO")==null)?"":request.getHeader("DOMINIO");
+		String _dominio = 	(request.getHeader("DOMINIO")==null)?
+								(request.getHeader("DOMAIN")==null)?
+										(request.getHeader("domain")==null)?
+										""
+										:request.getHeader("domain")
+								:request.getHeader("DOMAIN")
+							:request.getHeader("DOMINIO");
 		
 		auth.get_target_property().put(bsConstants.CONST_AUTH_TARGET_DOMINO, _dominio);
+		auth.get_target_property().put(bsConstants.CONST_AUTH_TARGET_DOMAIN, _dominio);
 		
 		auth.set_user_ip("["+request.getRemoteAddr()+"] ");
 		
-//		bsController.writeLog(request, "____RISOLUTION NELLA REQUEST = " + request.getParameter("risoluzione"),iStub.log_INFO);
-		auth.set_risoluzione((request.getParameter("risoluzione")==null||request.getParameter("risoluzione").equals(""))?"1024":request.getParameter("risoluzione"));
-//		bsController.writeLog(request, "____RISOLUTION = " + _risoluzione,iStub.log_INFO);
+		auth.set_risoluzione(
+				(request.getParameter("risoluzione")==null || request.getParameter("risoluzione").equals(""))?
+						(request.getParameter("risolution")==null || request.getParameter("risolution").equals(""))?
+						"1024"
+						:request.getParameter("risolution")
+				:request.getParameter("risoluzione"));
 		
 
 		Enumeration headerNames = request.getHeaderNames();

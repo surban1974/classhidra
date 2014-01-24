@@ -3,9 +3,9 @@ package it.classhidra.core.tool.log.statistic;
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class StatisticProvider_Simple implements I_StatisticProvider {
 
@@ -35,9 +35,9 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 		if(stack==null) return "";
 		else{
 			String result="";
-		    Iterator  it = stack.iterator();
+			ListIterator  it = stack.listIterator();
 		    while(it.hasNext()){
-		    	result+= ((StatisticEntity)it.next()).toXml()+"\n";
+		    	result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
 		    }
 		    return result;
 		}
@@ -62,9 +62,9 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 		if(stack==null) return "";
 		else{
 			String result="";
-		    Iterator  it = stack.iterator();
+		    ListIterator  it = stack.listIterator();
 		    while(it.hasNext()){
-		    	result+= ((StatisticEntity)it.next()).toXml()+"\n";
+		    	result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
 		    }
 		    return result;
 		}

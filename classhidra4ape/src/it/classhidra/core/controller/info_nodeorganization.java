@@ -1,6 +1,6 @@
 package it.classhidra.core.controller;
 
-import it.classhidra.core.controller.info_entity;
+
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;

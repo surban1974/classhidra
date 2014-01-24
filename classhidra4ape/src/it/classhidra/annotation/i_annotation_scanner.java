@@ -16,6 +16,8 @@ public interface i_annotation_scanner {
 	HashMap get_beans();
 
 	HashMap get_redirects();
+	
+	HashMap get_redirectsjustloaded();
 
 	HashMap get_transformationoutput();
 
@@ -26,5 +28,7 @@ public interface i_annotation_scanner {
 	String getAuth_error();
 
 	String getSession_error();
+	
+	
 
 }

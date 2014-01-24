@@ -32,7 +32,10 @@ public interface bsConstants {
 	public final static String CONST_ID_PATHCONFIG 						=	"application.path.config";
 	public final static String CONST_ID_PATHROOT 						=	"application.path.root";
 	public final static String CONST_ID 								=	"$id_action";
+	public final static String CONST_ID_CALL 							=	"$id_action_call";
+	public final static String CONST_ID_COMPLETE						=	"$id_action_complete";
 	public final static String CONST_ID_REQUEST_TYPE 					= 	"$request_type";
+	public final static String CONST_ID_EXEC_TYPE 						= 	"$exec_type";
 	public final static String CONST_ID_JS4AJAX 						=	"js4ajax";	
 	public final static String CONST_REQUEST_TYPE_FORWARD 				=	"$forward";
 	public final static String CONST_REQUEST_TYPE_INCLUDE 				=	"$include";
@@ -84,6 +87,7 @@ public interface bsConstants {
 	public final static String CONST_TAG_SYSTEMPROPERTY 				=	"SYSTEM.PROPERTY";
 	
 	public final static String CONST_AUTH_TARGET_DOMINO 				=	"DOMINO";
+	public final static String CONST_AUTH_TARGET_DOMAIN 				=	"DOMAIN";
 	public final static String CONST_AUTH_TARGET_BRANCH 				=	"BRANCH";
 	public final static String CONST_AUTH_TARGET_ISTITUTION   			=	"ISTITUTION";
 	
@@ -109,6 +113,8 @@ public interface bsConstants {
 	public final static String organization_id_xml 						= 	"application.organization.xml";
 	
 	public final static String CONST_SSOID								=	"ssoid";
+	
+	public final static String CONST_ID_INPUTBASE64						=	"$inputBase64";
 	public final static String CONST_ID_OUTPUT4SOAP						=	"$output4SOAP";
 	public final static String CONST_ID_OUTPUT4JSON						=	"$output4JSON";
 
@@ -138,6 +144,9 @@ public interface bsConstants {
 	public final static String CONST_DIRECTINDACTION_bsResource			=	"bsResource";
 	public final static String CONST_DIRECTINDACTION_bsStatistics		=	"bsStatistics";
 	public final static String CONST_DIRECTINDACTION_bsTransformation	=	"bsTransformation";
+	
+	public final static String CONST_ID_EXEC_TYPE_CLONED				= 	"cloned";
+
 
 
 	

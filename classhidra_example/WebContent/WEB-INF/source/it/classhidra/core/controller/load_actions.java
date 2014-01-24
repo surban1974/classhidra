@@ -401,153 +401,367 @@ public void loadFromAnnotations(){
 		auth_error = l_annotated.getAuth_error();	
 
 	Vector a_streams = new Vector(l_annotated.get_streams().values());
-
-	int stream_order=0;
-	HashMap _streams_order = new HashMap();
-	for(int k=0;k<a_streams.size();k++){
-		info_stream iStream = (info_stream)a_streams.get(k);
-		info_stream old_stream = (info_stream)_streams.get(iStream.getName());
-		if(old_stream!=null){
-			_streams.remove(old_stream.getName());
-			_streams_order.remove(Integer.valueOf(old_stream.getInt_order()));
-			info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
-			if(fromVinfo!=null)
-				v_info_streams.remove(fromVinfo);
-			Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
-			if(app_action.size()==0){
-				int l=0;
-				while(l< ((Vector)_streams_apply_to_actions.get("*")).size()){
-					info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get("*")).get(l);
-					if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get("*")).remove(l);
-					else l++;
-				}
-			}else{
-				for(int j=0;j<app_action.size();j++){
-					String key=(String)app_action.get(j);
+	if(a_streams.size()>0){
+		int stream_order=0;
+		HashMap _streams_order = new HashMap();
+		for(int k=0;k<a_streams.size();k++){
+			info_stream iStream = (info_stream)a_streams.get(k);
+			info_stream old_stream = (info_stream)_streams.get(iStream.getName());
+			if(old_stream!=null){
+				_streams.remove(old_stream.getName());
+				_streams_order.remove(Integer.valueOf(old_stream.getInt_order()));
+				info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
+				if(fromVinfo!=null)
+					v_info_streams.remove(fromVinfo);
+				Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+				if(app_action.size()==0){
 					int l=0;
-					while(l< ((Vector)_streams_apply_to_actions.get(key)).size()){
-						info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get(key)).get(l);
-						if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get(key)).remove(l);
+					while(l< ((Vector)_streams_apply_to_actions.get("*")).size()){
+						info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get("*")).get(l);
+						if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get("*")).remove(l);
 						else l++;
+					}
+				}else{
+					for(int j=0;j<app_action.size();j++){
+						String key=(String)app_action.get(j);
+						int l=0;
+						while(l< ((Vector)_streams_apply_to_actions.get(key)).size()){
+							info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get(key)).get(l);
+							if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get(key)).remove(l);
+							else l++;
+						}
+					}
+				}
+				
+			}
+			_streams.put(iStream.getName(),iStream);
+			if(iStream.getInt_order()==-1){
+				while(_streams_order.get(Integer.valueOf(stream_order))!=null) stream_order++;
+				_streams_order.put(Integer.valueOf(stream_order) , iStream.getName());
+				stream_order++;
+			}else{
+				_streams_order.put(Integer.valueOf(iStream.getInt_order()) , iStream.getName());
+				stream_order=iStream.getInt_order();
+				stream_order++;
+			}
+		}
+	
+		Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
+		for(int i=0;i<v_streams_order.size();i++){
+			info_stream current = (info_stream)_streams.get(_streams_order.get(v_streams_order.get(i)));
+			if(current!=null){
+				Vector app_action = new Vector(current.get_apply_to_action().keySet());
+				if(app_action.size()==0){
+					String key="*";
+					((Vector)_streams_apply_to_actions.get(key)).add(current);
+				}else{
+					for(int j=0;j<app_action.size();j++){
+						String key=(String)app_action.get(j);
+						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector());
+						((Vector)_streams_apply_to_actions.get(key)).add(current);
 					}
 				}
 			}
-			
 		}
-		_streams.put(iStream.getName(),iStream);
-		if(iStream.getInt_order()==-1){
-			while(_streams_order.get(Integer.valueOf(stream_order))!=null) stream_order++;
-			_streams_order.put(Integer.valueOf(stream_order) , iStream.getName());
-			stream_order++;
-		}else{
-			_streams_order.put(Integer.valueOf(iStream.getInt_order()) , iStream.getName());
-			stream_order=iStream.getInt_order();
-			stream_order++;
-		}
+		
+		//v_info_streams.addAll(new Vector(_streams.values()));
+		v_info_streams = (new Vector(_streams.values()));
+		v_info_streams = new util_sort().sort(v_info_streams,"int_order");
 	}
-
-	Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
-	for(int i=0;i<v_streams_order.size();i++){
-		info_stream current = (info_stream)_streams.get(_streams_order.get(v_streams_order.get(i)));
-		if(current!=null){
-			Vector app_action = new Vector(current.get_apply_to_action().keySet());
-			if(app_action.size()==0){
-				String key="*";
-				((Vector)_streams_apply_to_actions.get(key)).add(current);
-			}else{
-				for(int j=0;j<app_action.size();j++){
-					String key=(String)app_action.get(j);
-					if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector());
-					((Vector)_streams_apply_to_actions.get(key)).add(current);
-				}
-			}
-		}
-	}
-	
-	//v_info_streams.addAll(new Vector(_streams.values()));
-	v_info_streams = (new Vector(_streams.values()));
-	v_info_streams = new util_sort().sort(v_info_streams,"int_order");
-	
 	
 	Vector a_beans = new Vector(l_annotated.get_beans().values());
-	int max_int_order = -1;
-	if(v_info_beans!=null && v_info_beans.size()>0){
-		try{
-			max_int_order = ((info_bean)v_info_beans.get(v_info_beans.size()-1)).getInt_order();
-		}catch(Exception e){			
+	if(a_beans.size()>0){
+		int max_int_order = -1;
+		if(v_info_beans!=null && v_info_beans.size()>0){
+			try{
+				max_int_order = ((info_bean)v_info_beans.get(v_info_beans.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
 		}
+		if(max_int_order>-1)
+			a_beans = new util_sort().sort(a_beans,"int_order");
+			
+		for(int i=0;i<a_beans.size();i++){
+			if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(String.valueOf(max_int_order+1+i));
+			_beans.put(((info_bean)a_beans.get(i)).getName(), a_beans.get(i));
+		}
+		v_info_beans = (new Vector(_beans.values()));
+		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
 	}
-	if(max_int_order>-1)
-		a_beans = new util_sort().sort(a_beans,"int_order");
-		
-	for(int i=0;i<a_beans.size();i++){
-		if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(String.valueOf(max_int_order+1+i));
-		_beans.put(((info_bean)a_beans.get(i)).getName(), a_beans.get(i));
-	}
-	v_info_beans = (new Vector(_beans.values()));
-	v_info_beans = new util_sort().sort(v_info_beans,"int_order");
-	
 	
 	
 	Vector a_redirects = new Vector(l_annotated.get_redirects().values());
-	max_int_order = -1;
-	if(v_info_redirects!=null && v_info_redirects.size()>0){
-		try{
-			max_int_order = ((info_bean)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
-		}catch(Exception e){			
+	if(a_redirects.size()>0){
+		int max_int_order = -1;
+		if(v_info_redirects!=null && v_info_redirects.size()>0){
+			try{
+				max_int_order = ((info_bean)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
 		}
+		if(max_int_order>-1)
+			a_redirects = new util_sort().sort(a_redirects,"int_order");
+			
+		for(int i=0;i<a_redirects.size();i++){
+			if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(String.valueOf(max_int_order+1+i));
+			_redirects.put(((info_redirect)a_redirects.get(i)).getPath(), a_redirects.get(i));
+		}
+		v_info_redirects = (new Vector(_redirects.values()));
+		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
 	}
-	if(max_int_order>-1)
-		a_redirects = new util_sort().sort(a_redirects,"int_order");
-		
-	for(int i=0;i<a_redirects.size();i++){
-		if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(String.valueOf(max_int_order+1+i));
-		_redirects.put(((info_redirect)a_redirects.get(i)).getPath(), a_redirects.get(i));
-	}
-	v_info_redirects = (new Vector(_redirects.values()));
-	v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
-
 
 	Vector a_actions = new Vector(l_annotated.get_actions().values());
-	max_int_order = -1;
-	if(v_info_actions!=null && v_info_actions.size()>0){
-		try{
-			max_int_order = ((info_action)v_info_actions.get(v_info_actions.size()-1)).getInt_order();
-		}catch(Exception e){			
+	if(a_actions.size()>0){
+		int max_int_order = -1;
+		if(v_info_actions!=null && v_info_actions.size()>0){
+			try{
+				max_int_order = ((info_action)v_info_actions.get(v_info_actions.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
 		}
+		if(max_int_order>-1)
+			a_actions = new util_sort().sort(a_actions,"int_order");
+			
+		for(int i=0;i<a_actions.size();i++){
+			if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
+			_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
+		}
+		v_info_actions = (new Vector(_actions.values()));
+		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
 	}
-	if(max_int_order>-1)
-		a_actions = new util_sort().sort(a_actions,"int_order");
-		
-	for(int i=0;i<a_actions.size();i++){
-		if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
-		_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
-	}
-	v_info_actions = (new Vector(_actions.values()));
-	v_info_actions = new util_sort().sort(v_info_actions,"int_order");
-	
 	
 	Vector a_transformations = new Vector(l_annotated.get_transformationoutput().values());
-	max_int_order = -1;
-	if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
-		try{
-			max_int_order = ((info_transformation)v_info_transformationoutput.get(v_info_transformationoutput.size()-1)).getInt_order();
-		}catch(Exception e){			
+	if(a_transformations.size()>0){
+	int max_int_order = -1;
+		if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
+			try{
+				max_int_order = ((info_transformation)v_info_transformationoutput.get(v_info_transformationoutput.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
 		}
+		if(max_int_order>-1)
+			a_transformations = new util_sort().sort(a_transformations,"int_order");
+			
+		for(int i=0;i<a_transformations.size();i++){
+			if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(String.valueOf(max_int_order+1+i));
+			_transformationoutput.put(((info_transformation)a_transformations.get(i)).getName(), a_transformations.get(i));
+		}
+		v_info_transformationoutput = (new Vector(_transformationoutput.values()));
+		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
 	}
-	if(max_int_order>-1)
-		a_transformations = new util_sort().sort(a_transformations,"int_order");
-		
-	for(int i=0;i<a_transformations.size();i++){
-		if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(String.valueOf(max_int_order+1+i));
-		_transformationoutput.put(((info_transformation)a_transformations.get(i)).getName(), a_transformations.get(i));
-	}
-	v_info_transformationoutput = (new Vector(_transformationoutput.values()));
-	v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
-	
 	
 	
 }
+
+
+public info_entity loadFromAnnotations(info_entity iEntity){
+	
+
+	app_init ainit = bsController.getAppInit();
+	i_annotation_scanner l_annotated = null;
+	
+	if(ainit.get_annotation_scanner()==null || ainit.get_annotation_scanner().equals("")){
+		l_annotated = new annotation_scanner();
+	}else{
+		try{
+			l_annotated = (i_annotation_scanner)Class.forName(ainit.get_annotation_scanner()).newInstance();
+		}catch(Exception e){
+			new bsException("Load Error Annotation scaner: "+ainit.get_annotation_scanner(), iStub.log_ERROR);
+			new bsException(e.toString(), iStub.log_ERROR);
+			new bsException("Loading Default Annotation", iStub.log_INFO);
+			l_annotated = new annotation_scanner();
+		}
+	}
+	
+	if(l_annotated==null) l_annotated = new annotation_scanner();
+	bsController.writeLog("Start Load_actions with Annotation scaner: "+l_annotated.getClass().getName(),iStub.log_INFO);
+	
+	if(iEntity instanceof info_action)
+		l_annotated.loadAllObjects(((info_action)iEntity).getType()+".class", _redirects);
+	else if(iEntity instanceof info_bean)
+		l_annotated.loadAllObjects(((info_bean)iEntity).getType()+".class", _redirects);
+	else if(iEntity instanceof info_stream)
+		l_annotated.loadAllObjects(((info_stream)iEntity).getType()+".class", _redirects);
+	else if(iEntity instanceof info_transformation)
+		l_annotated.loadAllObjects(((info_transformation)iEntity).getType()+".class", _redirects);	
+	else return null;
+	
+	iEntity.setAnnotationLoaded(true);
+	
+	if(l_annotated.getError()!=null && !l_annotated.getError().equals(""))
+		error = l_annotated.getError();
+	if(l_annotated.getSession_error()!=null && !l_annotated.getSession_error().equals(""))
+		session_error = l_annotated.getSession_error();	
+	if(l_annotated.getAuth_error()!=null && !l_annotated.getAuth_error().equals(""))
+		auth_error = l_annotated.getAuth_error();	
+	
+
+	Vector a_streams = new Vector(l_annotated.get_streams().values());
+	if(a_streams.size()>0){
+		int stream_order=0;
+		HashMap _streams_order = new HashMap();
+		for(int k=0;k<a_streams.size();k++){
+			info_stream iStream = (info_stream)a_streams.get(k);
+			info_stream old_stream = (info_stream)_streams.get(iStream.getName());
+			if(old_stream!=null){
+				_streams.remove(old_stream.getName());
+				_streams_order.remove(Integer.valueOf(old_stream.getInt_order()));
+				info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
+				if(fromVinfo!=null)
+					v_info_streams.remove(fromVinfo);
+				Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+				if(app_action.size()==0){
+					int l=0;
+					while(l< ((Vector)_streams_apply_to_actions.get("*")).size()){
+						info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get("*")).get(l);
+						if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get("*")).remove(l);
+						else l++;
+					}
+				}else{
+					for(int j=0;j<app_action.size();j++){
+						String key=(String)app_action.get(j);
+						int l=0;
+						while(l< ((Vector)_streams_apply_to_actions.get(key)).size()){
+							info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get(key)).get(l);
+							if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get(key)).remove(l);
+							else l++;
+						}
+					}
+				}
+				
+			}
+			_streams.put(iStream.getName(),iStream);
+			if(iStream.getInt_order()==-1){
+				while(_streams_order.get(Integer.valueOf(stream_order))!=null) stream_order++;
+				_streams_order.put(Integer.valueOf(stream_order) , iStream.getName());
+				stream_order++;
+			}else{
+				_streams_order.put(Integer.valueOf(iStream.getInt_order()) , iStream.getName());
+				stream_order=iStream.getInt_order();
+				stream_order++;
+			}
+		}
+	
+		Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
+		for(int i=0;i<v_streams_order.size();i++){
+			info_stream current = (info_stream)_streams.get(_streams_order.get(v_streams_order.get(i)));
+			if(current!=null){
+				Vector app_action = new Vector(current.get_apply_to_action().keySet());
+				if(app_action.size()==0){
+					String key="*";
+					((Vector)_streams_apply_to_actions.get(key)).add(current);
+				}else{
+					for(int j=0;j<app_action.size();j++){
+						String key=(String)app_action.get(j);
+						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector());
+						((Vector)_streams_apply_to_actions.get(key)).add(current);
+					}
+				}
+			}
+		}
+		
+		//v_info_streams.addAll(new Vector(_streams.values()));
+		v_info_streams = (new Vector(_streams.values()));
+		v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+	}
+	
+	Vector a_beans = new Vector(l_annotated.get_beans().values());
+	if(a_beans.size()>0){
+		int max_int_order = -1;
+		if(v_info_beans!=null && v_info_beans.size()>0){
+			try{
+				max_int_order = ((info_bean)v_info_beans.get(v_info_beans.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
+		}
+		if(max_int_order>-1)
+			a_beans = new util_sort().sort(a_beans,"int_order");
+			
+		for(int i=0;i<a_beans.size();i++){
+			if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(String.valueOf(max_int_order+1+i));
+			_beans.put(((info_bean)a_beans.get(i)).getName(), a_beans.get(i));
+		}
+		v_info_beans = (new Vector(_beans.values()));
+		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+	}
+	
+	
+	
+	Vector a_redirects_loaded = new Vector(l_annotated.get_redirectsjustloaded().values());
+	if(a_redirects_loaded.size()>0){
+		Vector a_redirects = new Vector(l_annotated.get_redirects().values());
+		
+		int max_int_order = -1;
+		if(v_info_redirects!=null && v_info_redirects.size()>0){
+			try{
+				max_int_order = ((info_bean)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
+		}
+		if(max_int_order>-1)
+			a_redirects = new util_sort().sort(a_redirects,"int_order");
+			
+		for(int i=0;i<a_redirects.size();i++){
+			if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(String.valueOf(max_int_order+1+i));
+			_redirects.put(((info_redirect)a_redirects.get(i)).getPath(), a_redirects.get(i));
+		}
+		v_info_redirects = (new Vector(_redirects.values()));
+		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+	}
+
+
+	Vector a_actions = new Vector(l_annotated.get_actions().values());
+	if(a_actions.size()>0){
+		int max_int_order = -1;
+		if(v_info_actions!=null && v_info_actions.size()>0){
+			try{
+				max_int_order = ((info_action)v_info_actions.get(v_info_actions.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
+		}
+		if(max_int_order>-1)
+			a_actions = new util_sort().sort(a_actions,"int_order");
+			
+		for(int i=0;i<a_actions.size();i++){
+			if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
+			_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
+		}
+		v_info_actions = (new Vector(_actions.values()));
+		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+	}
+	
+	Vector a_transformations = new Vector(l_annotated.get_transformationoutput().values());
+	if(a_transformations.size()>0){
+		int max_int_order = -1;
+		if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
+			try{
+				max_int_order = ((info_transformation)v_info_transformationoutput.get(v_info_transformationoutput.size()-1)).getInt_order();
+			}catch(Exception e){			
+			}
+		}
+		if(max_int_order>-1)
+			a_transformations = new util_sort().sort(a_transformations,"int_order");
+			
+		for(int i=0;i<a_transformations.size();i++){
+			if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(String.valueOf(max_int_order+1+i));
+			_transformationoutput.put(((info_transformation)a_transformations.get(i)).getName(), a_transformations.get(i));
+		}
+		v_info_transformationoutput = (new Vector(_transformationoutput.values()));
+		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+	}
+	if(iEntity instanceof info_action)
+		return (info_entity)_actions.get(((info_action)iEntity).getPath());
+	else if(iEntity instanceof info_bean)
+		return (info_entity)_beans.get(((info_bean)iEntity).getName());
+	else if(iEntity instanceof info_stream)
+		return (info_entity)_streams.get(((info_stream)iEntity).getName());
+	else if(iEntity instanceof info_transformation)
+		return (info_entity)_transformationoutput.get(((info_transformation)iEntity).getName());	
+	else return null;
+	
+	
+}
+
 
 public void load_from_resources() {
 	load_from_resources("/config/"+bsController.CONST_XML_ACTIONS);
@@ -768,6 +982,7 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 	}else iAction = (info_action)_actions.get(id_action);
 
 
+
 //	info_action iAction = (info_action)((info_action)_actions.get(id_action)).clone();
 	info_bean iBean = (info_bean)_beans.get(iAction.getName());
 
@@ -784,6 +999,9 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 
 	if(!loadedFromProvider){
 		if(iAction.getType()!=null && !iAction.getType().equals("")){
+			if(iAction.getProperty("init").equalsIgnoreCase("annotation") && !iAction.isAnnotationLoaded())
+				iAction = (info_action)loadFromAnnotations(iAction);
+
 			try{
 				rAction = (i_action)Class.forName(iAction.getType()).newInstance();
 			}catch (Exception e) {
@@ -792,8 +1010,14 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 		}
 	}
 	if(rAction!=null){
+		
+		
 		rAction.set_infoaction(iAction);
-		if(iBean!=null) ((bean)rAction).set_infobean(iBean);
+		if(iBean!=null){
+			if(iBean.getProperty("init").equalsIgnoreCase("annotation") && !iBean.isAnnotationLoaded() && !iBean.getType().equals(""))
+				iBean = (info_bean)loadFromAnnotations(iBean);
+			((bean)rAction).set_infobean(iBean);
+		}
 		else ((bean)rAction).set_infobean(new info_bean());
 	}else{
 		iAction = new info_action();
@@ -844,6 +1068,9 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 		if(iStream==null || iStream.getType()==null || iStream.getType().equals("")) return rStream;
 
 		if(iStream.getType()!=null && !iStream.getType().equals("")){
+			if(iStream.getProperty("init").equalsIgnoreCase("annotation") && !iStream.isAnnotationLoaded())
+				iStream = (info_stream)loadFromAnnotations(iStream);
+			
 				try{
 					rStream = (i_stream)Class.forName(iStream.getType()).newInstance();
 				}catch (Exception e) {
@@ -851,7 +1078,9 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 				}
 		}
 	}
-	rStream.set_infostream(iStream);
+	if(rStream!=null)
+		rStream.set_infostream(iStream);
+	
 	return rStream;
 }
 
@@ -922,6 +1151,9 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 	if(!loadedFromProvider){
 
 		if(iBean.getType()!=null && !iBean.getType().equals("")){
+			if(iBean.getProperty("init").equalsIgnoreCase("annotation") && !iBean.isAnnotationLoaded())
+				iBean = (info_bean)loadFromAnnotations(iBean);
+
 			try{
 				Object obj = Class.forName(iBean.getType()).newInstance();
 				if(obj instanceof i_bean)
@@ -962,7 +1194,10 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 		}
 
 	}
-	rBean.set_infobean(iBean);
+	if(rBean!=null)
+		rBean.set_infobean(iBean);
+	
+	
 	return rBean;
 }
 
@@ -997,6 +1232,9 @@ public static i_transformation transformationFactory(String transformationName, 
 		if(iTransformation==null || iTransformation.getType()==null || iTransformation.getType().equals("")) return rTransformation;
 
 		if(iTransformation.getType()!=null && !iTransformation.getType().equals("")){
+//			if(iTransformation.getProperty("init").equalsIgnoreCase("annotation") && !iTransformation.isAnnotationLoaded())
+//				iTransformation = (info_transformation)loadFromAnnotations(iTransformation);
+
 				try{
 					rTransformation = (i_transformation)Class.forName(iTransformation.getType()).newInstance();
 				}catch (Exception e) {

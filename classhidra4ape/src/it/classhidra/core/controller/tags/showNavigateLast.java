@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -31,7 +31,7 @@ import it.classhidra.core.tool.util.util_format;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*; 
+import javax.servlet.jsp.tagext.*;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -70,11 +70,11 @@ public class showNavigateLast extends TagSupport{
 		parameters=null;
 		img_path=null;
 	}
-  
+
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		StringBuffer results = new StringBuffer("");
-		
+
 		try{
 			info_navigation	formInfoNavigation		= (request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION)==null)?new info_navigation():(info_navigation)request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION);
 
@@ -83,8 +83,8 @@ public class showNavigateLast extends TagSupport{
 			Vector sub_results_action = new Vector();
 			Vector sub_results_name = new Vector();
 
-			
-			while(iN!=null){ 	
+
+			while(iN!=null){
 				try{
 					String subLabel="";
 					String id = iN.getIAction().getPath();
@@ -94,16 +94,16 @@ public class showNavigateLast extends TagSupport{
 							sub_results.add(subLabel);
 							sub_results_action.add("goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"')");
 							sub_results_name.add(bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second());
-						}	
-					}	
-				}catch(Exception ex){			
+						}
+					}
+				}catch(Exception ex){
 				}
 				iN = iN.getChild();
-			}		
-			
+			}
+
 			int ind = -1;
-			
-			
+
+
 			if(ind==-1){
 				for(int i=0;i<sub_results.size();i++){
 					String subLabel=(String)sub_results.get(i);
@@ -112,43 +112,43 @@ public class showNavigateLast extends TagSupport{
 						if (styleClass != null) {
 							results.append(" class=\"");
 							results.append(styleClass);
-							results.append("\"");
+							results.append('"');
 						}
 						if (style != null) {
 							results.append(" style=\"");
 							results.append(style);
-							results.append("\"");
+							results.append('"');
 						}
-						results.append(">");
+						results.append('>');
 						if(i==0 || i==sub_results.size()-1){
 							if(i==0){
-								if(sub_results.size()>2){	
-									try{							
+								if(sub_results.size()>2){
+									try{
 										String sub_res_return = (String)sub_results_action.get(sub_results_name.size()-2);
 										sub_res_return = util_format.replace(sub_res_return,"goAction(","goReturn(");
 										results.append("<a class=\"page_section\" style=\"cursor:pointer;\" ><img src='"+img_path+"/menu/special/action_prev.gif' border='0' desc='"+sub_results_name.get(sub_results_name.size()-2)+"' onclick=\""+sub_res_return+"\" onmouseover='nlist_over(this);'></a>");
-									}catch(Exception ex){	
+									}catch(Exception ex){
 									}
-								}	
+								}
 								results.append("<a style=\"cursor:pointer;\" ><img src='"+img_path+"/menu/special/action_content.gif' border='0' desc='"+sub_results_name.get(i)+"' onclick=\""+sub_results_action.get(i)+"\" onmouseover='try{nlist_over(this)}catch(e){};'></a>");
 							}else{
 								results.append("<img src='"+img_path+"/menu/special/action_blank.gif' border='0'>");
 								results.append("<nobr><a style=\"cursor:pointer;\" onclick=\""+sub_results_action.get(i)+"\">"+sub_results_name.get(i)+"</a></nobr>");
-							}							
+							}
 						}else{
-							results.append("<a style=\"cursor:pointer;\" ><img src='"+img_path+"/menu/special/action.gif' border='0' desc='"+sub_results_name.get(i)+"' onclick=\""+sub_results_action.get(i)+"\" onmouseover='try{nlist_over(this)}catch(e){};'></a>");							
+							results.append("<a style=\"cursor:pointer;\" ><img src='"+img_path+"/menu/special/action.gif' border='0' desc='"+sub_results_name.get(i)+"' onclick=\""+sub_results_action.get(i)+"\" onmouseover='try{nlist_over(this)}catch(e){};'></a>");
 						}
 						results.append("</span>");
 					}
 				}
 			}
-				
+
 		}catch(Exception e){
-			
+
 		}
 		return results.toString();
-	}		
-	
+	}
+
 
 	public String getStyleClass() {
 		return styleClass;

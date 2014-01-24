@@ -107,6 +107,7 @@ public class servletBatchScheduling extends HttpServlet {
 
 
 	public static batch_init getConfiguration() {
+		if(configuration==null) configuration=new batch_init(); 
 		if(configuration.getLoadedFrom().trim().equals("")){
 			configuration=new batch_init();
 		}

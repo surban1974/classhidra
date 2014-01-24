@@ -1,7 +1,6 @@
 package it.classhidra.core.controller;
 
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.controller.i_externalloader;
+
 import it.classhidra.core.init.app_init;
 import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;

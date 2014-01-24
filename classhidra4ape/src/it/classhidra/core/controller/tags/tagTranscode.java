@@ -26,9 +26,11 @@ package it.classhidra.core.controller.tags;
 
 
 import it.classhidra.core.controller.action;
+import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.util.util_format;
@@ -127,6 +129,11 @@ public class tagTranscode extends TagSupport{
 					rightBean = formAction.get_bean();
 				if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
 				if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
+				try{
+					if(rightBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(nameRightBean).get_content();
+				}catch(Exception e){
+				}
+				
 				if(rightBean!=null){
 					if(methodRightBean==null || methodRightBean.equals("")) valueKey = rightBean;
 					else{
@@ -159,6 +166,11 @@ public class tagTranscode extends TagSupport{
 					rightBean = formAction.get_bean();
 				if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
 				if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
+				try{
+					if(rightBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(nameRightBean).get_content();
+				}catch(Exception e){
+				}
+				
 				if(rightBean!=null){
 					if(methodRightBean==null || methodRightBean.equals("")) valueKey = rightBean.toString();
 					else{

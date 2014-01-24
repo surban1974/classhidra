@@ -22,6 +22,12 @@ public class util_multipart {
 		int file_counter=0;
 		if(parametersMP==null){
 			parametersMP = new HashMap();
+			parametersMP.put("$REQUEST_CHARSET",req.getCharacterEncoding());
+			Enumeration headerNames = req.getHeaderNames();
+			while(headerNames.hasMoreElements()) {
+				String headerName = (String)headerNames.nextElement();
+				parametersMP.put(headerName,req.getHeader(headerName));
+			}
 			try{
 				MultipartParser mp = new MultipartParser(req, -1); 
 				MultipartData part;

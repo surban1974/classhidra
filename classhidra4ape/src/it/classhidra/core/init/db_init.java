@@ -142,6 +142,10 @@ public void init() {
 		while(valid){
 			db_init current = new db_init();
 			valid = current.init(property, Integer.valueOf(ids).toString());
+			if(!valid && ids==0){
+				ids++;
+				valid = current.init(property, Integer.valueOf(ids).toString());
+			}
 			if(valid && current.get_id()!=null) _another_db_init.put(current.get_id(),current);
 			ids++;
 		}

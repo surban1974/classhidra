@@ -50,4 +50,5 @@ public interface i_action extends Serializable{
 	void setCurrent_redirect(redirects redirect);
 	boolean isIncluded();
 	void setIncluded(boolean included);
+	java.lang.reflect.Method getMethodForCall(String annotation_name);
 }

@@ -87,6 +87,7 @@ public interface bsConstants {
 	public final static String CONST_TAG_SYSTEMPROPERTY 				=	"SYSTEM.PROPERTY";
 	
 	public final static String CONST_AUTH_TARGET_DOMINO 				=	"DOMINO";
+	public final static String CONST_AUTH_TARGET_DOMAIN 				=	"DOMAIN";
 	public final static String CONST_AUTH_TARGET_BRANCH 				=	"BRANCH";
 	public final static String CONST_AUTH_TARGET_ISTITUTION   			=	"ISTITUTION";
 	
@@ -112,6 +113,8 @@ public interface bsConstants {
 	public final static String organization_id_xml 						= 	"application.organization.xml";
 	
 	public final static String CONST_SSOID								=	"ssoid";
+	
+	public final static String CONST_ID_INPUTBASE64						=	"$inputBase64";
 	public final static String CONST_ID_OUTPUT4SOAP						=	"$output4SOAP";
 	public final static String CONST_ID_OUTPUT4JSON						=	"$output4JSON";
 

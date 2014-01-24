@@ -109,9 +109,9 @@ public class bsFilter implements Filter {
 				boolean elaborateBsCheck=true;
 				
 				if(url!=null){
-					if(url.indexOf("?")>-1){
+					if(url.indexOf("?")>-1)
 						url=url.substring(0,url.indexOf("?"));
-					}
+
 					if(bsController.getAppInit().get_extention_do().equals("")){
 						if(url.indexOf(".")>-1) elaborateBsCheck=false;
 					}else{
@@ -168,6 +168,7 @@ public class bsFilter implements Filter {
 									String.valueOf(request.getSession().getId()),
 									auth.get_user_ip(),
 									auth.get_matricola(),
+									auth.get_language(),
 									"WRAPPED",
 									null,
 									new Date(),
@@ -270,6 +271,7 @@ public class bsFilter implements Filter {
 									String.valueOf(request.getSession().getId()),
 									auth.get_user_ip(),
 									auth.get_matricola(),
+									auth.get_language(),
 									"REPORTPROVIDER",
 									null,
 									new Date(),
@@ -286,19 +288,22 @@ public class bsFilter implements Filter {
 						xmlSource = analizeXML4neoHort(xmlSource);
 
 						if(response.isCommitted()){
-							request.setAttribute("$source_stream",xmlSource);
-							request.getSession().getServletContext().getRequestDispatcher("/report_creator").include(request,response);
-
-//							response.getOutputStream().print("<center><img src=\"../images/wait.gif\"><form action=\"report_creator.bs\" method=\"POST\"><div style='visibility:hidden'><textarea name=\"$source_stream\" type=\"hidden\">"+normalXML(xmlSource)+"</textarea></div></form><script>document.forms[0].submit();</script>");
-	/*
-	  						iHort report = new iHort();
-	 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-							report.transformXMLtoReport(xmlSource,baos);
-
-							prepResponseContent(report.get_tagLibrery(),response);
-							baos.writeTo(response.getOutputStream());
-							baos.close();
-	*/
+							if(xmlSource!=null && xmlSource.indexOf("org.xml.sax.SAXParseException:")==0){
+							}else{
+								request.setAttribute("$source_stream",xmlSource);
+								request.getSession().getServletContext().getRequestDispatcher("/report_creator").include(request,response);
+	
+	//							response.getOutputStream().print("<center><img src=\"../images/wait.gif\"><form action=\"report_creator.bs\" method=\"POST\"><div style='visibility:hidden'><textarea name=\"$source_stream\" type=\"hidden\">"+normalXML(xmlSource)+"</textarea></div></form><script>document.forms[0].submit();</script>");
+		/*
+		  						iHort report = new iHort();
+		 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
+								report.transformXMLtoReport(xmlSource,baos);
+	
+								prepResponseContent(report.get_tagLibrery(),response);
+								baos.writeTo(response.getOutputStream());
+								baos.close();
+		*/
+							}
 						}else{
 							request.setAttribute("$source_stream",xmlSource);
 							request.getSession().getServletContext().getRequestDispatcher("/report_creator").forward(request,response);
@@ -405,18 +410,19 @@ public class bsFilter implements Filter {
 			if(	request.getMethod()!=null){
 				if(isIncluded) request.setAttribute(bsConstants.CONST_ID_REQUEST_TYPE, bsConstants.CONST_REQUEST_TYPE_INCLUDE);
 				
-				if(id_current==null){
-					try{
-						if(url.lastIndexOf("/actions")+8==url.length()) url+="/";
-						if(url.lastIndexOf("/")>-1) id_current = url.substring(url.lastIndexOf("/")+1);
-					}catch(Exception e){}
-				}
+
+				try{
+					if(url.lastIndexOf("/actions")+8==url.length()) url+="/";
+					if(url.lastIndexOf("/")>-1) id_current = url.substring(url.lastIndexOf("/")+1);
+				}catch(Exception e){}
+
 				if(id_current!=null){	
 					boolean checkExt=true;
 					if(bsController.getAppInit().get_extention_do()==null || bsController.getAppInit().get_extention_do().trim().equals("")){
 						checkExt=false;						
 					}
 					id_current=id_current.trim();
+					
 					if(checkExt){
 						int lastInOf = id_current.lastIndexOf(bsController.getAppInit().get_extention_do());
 						if(lastInOf>-1){
@@ -425,7 +431,7 @@ public class bsFilter implements Filter {
 								return null;
 							id_current=f_id_current;
 							
-							if(load_actions.get_actions().get(id_current)!=null)
+							if(bsController.getAction_config().get_actions().get(id_current)!=null)
 								return id_current;
 							else return null;
 						}
@@ -436,15 +442,22 @@ public class bsFilter implements Filter {
 						(id_current.equals("") && url.lastIndexOf("/")+1==url.length())
 					){
 						id_current = bsController.getAppInit().get_enterpoint();
-						if(load_actions.get_actions().get(id_current)!=null)
+						if(bsController.getAction_config().get_actions().get(id_current)!=null)
 							return id_current;
 						else return null;
 					}
 				}
 			}
-			if(load_actions.get_actions().get(id_current)!=null)
+			if(bsController.getAction_config().get_actions().get(id_current)!=null)
 				return id_current;
+			else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+				if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null)
+					return id_current;
+				else return null;
+			}
 			else return null;
+			
 
 		}
 		

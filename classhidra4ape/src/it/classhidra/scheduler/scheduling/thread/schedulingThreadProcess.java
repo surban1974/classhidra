@@ -20,7 +20,7 @@ import java.util.Date;
 
 public class schedulingThreadProcess extends Thread {
 
-    private static final long serialVersionUID = -1L;
+
     private boolean threadDone = false;
     private Date scan_time;
     private ProcessBatchEngine pbe;

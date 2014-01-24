@@ -26,9 +26,7 @@ public class job_date extends generic_batch implements i_batch,Serializable{
 		return null;
 	}
 
-	public void readInput(String xml) {
-		super.readInput(xml);
-	}
+
 
 	public String writeOutput() {
 		return super.writeOutput();

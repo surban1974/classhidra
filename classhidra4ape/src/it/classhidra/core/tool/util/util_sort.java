@@ -93,8 +93,8 @@ public Vector _clone_sort(Vector dati, Vector dati_cr) {
 
 		Object a[] = dati_cr.toArray();
 		Object a_index[] = index.toArray();
-			Object src_index[] = (Object[])a_index.clone();
-			Object src[] = (Object[])a.clone();
+			Object src_index[] = a_index.clone();
+			Object src[] = a.clone();
 			_clone_mergeSort(src, a, 0, a.length, src_index, a_index);
 		ListIterator li = dati_cr.listIterator();
 		ListIterator l_index = index.listIterator();
@@ -199,8 +199,8 @@ public static List _clone_sort(List dati, List dati_cr) {
 
 		Object a[] = dati_cr.toArray();
 		Object a_index[] = index.toArray();
-			Object src_index[] = (Object[])a_index.clone();
-			Object src[] = (Object[])a.clone();
+			Object src_index[] = a_index.clone();
+			Object src[] = a.clone();
 			_clone_mergeSort(src, a, 0, a.length, src_index, a_index);
 		ListIterator li = dati_cr.listIterator();
 		ListIterator l_index = index.listIterator();
@@ -329,8 +329,8 @@ private static void _clone_sortSelf(Vector dati, Vector dati_cr, int start, int 
 		for(int j=start;j<finish;j++)
 			a[j-start]= a_buf[j];
 		Object a_index[] = index.toArray();
-			Object src_index[] = (Object[])a_index.clone();
-			Object src[] = (Object[])a.clone();
+			Object src_index[] = a_index.clone();
+			Object src[] = a.clone();
 			_clone_mergeSort(src, a, 0, a.length, src_index, a_index);
 		ListIterator li = dati_cr.listIterator();
 		ListIterator l_index = index.listIterator();
@@ -384,8 +384,8 @@ private static void _clone_sortSelf(List dati, List dati_cr, int start, int fini
 		for(int j=start;j<finish;j++)
 			a[j-start]= a_buf[j];
 		Object a_index[] = index.toArray();
-			Object src_index[] = (Object[])a_index.clone();
-			Object src[] = (Object[])a.clone();
+			Object src_index[] = a_index.clone();
+			Object src[] = a.clone();
 			_clone_mergeSort(src, a, 0, a.length, src_index, a_index);
 		ListIterator li = dati_cr.listIterator();
 		ListIterator l_index = index.listIterator();

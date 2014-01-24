@@ -715,8 +715,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 							if(	cTransformation!=null &&
 									cTransformation.get_infotransformation()!=null &&
 									(
-										cTransformation.get_infotransformation().getEvent().toUpperCase().equals(info_transformation.CONST_EVENT_AFTER) ||
-										cTransformation.get_infotransformation().getEvent().toUpperCase().equals(info_transformation.CONST_EVENT_BOTH)
+										cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_AFTER) ||
+										cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BOTH)
 									)
 								){
 								cTransformation.setResponseHeader(request,response);
@@ -728,19 +728,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 							if(	cTransformation!=null &&
 								cTransformation.get_infotransformation()!=null &&
 								(
-									cTransformation.get_infotransformation().getEvent().toUpperCase().equals(info_transformation.CONST_EVENT_BEFORE) ||
-									cTransformation.get_infotransformation().getEvent().toUpperCase().equals(info_transformation.CONST_EVENT_BOTH)
+									cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BEFORE) ||
+									cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BOTH)
 								)
 							){
 								byte[] outTranformation = null;
-								if(cTransformation.get_infotransformation().getInputformat().toUpperCase().equals(info_transformation.CONST_INPUTFORMAT_BYTE)){
+								if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_BYTE)){
 									outTranformation = cTransformation.transform(output4BYTE, request);
 								}
-								if(cTransformation.get_infotransformation().getInputformat().toUpperCase().equals(info_transformation.CONST_INPUTFORMAT_FORM)){
+								if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_FORM)){
 									outTranformation = cTransformation.transform(action_instance.get_bean(), request);
 								}
-								if(	cTransformation.get_infotransformation().getInputformat().toUpperCase().equals(info_transformation.CONST_INPUTFORMAT_STRING) ||
-									cTransformation.get_infotransformation().getInputformat().toUpperCase().equals("")
+								if(	cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_STRING) ||
+									cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase("")
 								){
 									if(output4SOAP==null)
 										output4SOAP = util_beanMessageFactory.bean2xml(

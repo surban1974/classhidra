@@ -54,8 +54,8 @@ public class util_batch {
 					key_periodTime=_key_periodTime;
 				}
 
-				int int_key_periodTime = new Integer(key_periodTime).intValue();
-				int int_key_currentTime = new Integer(key_currentTime).intValue();
+				int int_key_periodTime = Integer.parseInt(key_periodTime);
+				int int_key_currentTime = Integer.parseInt(key_currentTime);
 				findFirst=true;
 				if(int_key_currentTime>int_key_periodTime){
 
@@ -126,8 +126,8 @@ public class util_batch {
 
 
 
-					int int_key_periodTime = new Integer(key_periodTime).intValue();
-					int int_key_currentTime = new Integer(key_currentTime).intValue();
+					int int_key_periodTime = Integer.parseInt(key_periodTime);
+					int int_key_currentTime = Integer.parseInt(key_currentTime);
 
 					pr.fixedTime[current]=int_key_periodTime;
 
@@ -137,7 +137,7 @@ public class util_batch {
 					}
 					else pr.nextTime[current]=int_key_periodTime;
 				}catch(Exception e){
-					pr.setDefault(current,new Integer(key_currentTime).intValue(),newTime);
+					pr.setDefault(current,Integer.parseInt(key_currentTime),newTime);
 				}
 				current++;
 			}

@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -30,13 +30,14 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*; 
+import javax.servlet.jsp.tagext.*;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -51,7 +52,7 @@ public class tagInput extends BodyTagSupport{
 	protected String style = null;
 	protected String title = null;
 	protected String dir=null;//"ltr"
-	
+
 	protected String type = null;//"text"
 	protected String readonly = null;//"readonly"
 	protected String size = null;
@@ -69,15 +70,36 @@ public class tagInput extends BodyTagSupport{
 	protected String value = null;
 	protected String ismap = null;//"ismap"
 	protected String maxlength = null;
-	
+
+	protected String autocomplete = null;
+	protected String autofocus = null;
+	protected String form = null;
+	protected String formaction = null;
+	protected String formenctype = null;
+	protected String formmethod = null;
+	protected String formnovalidate = null;
+	protected String formtarget = null;
+	protected String list = null;
+	protected String max = null;
+	protected String min = null;
+	protected String multiple = null;
+	protected String pattern = null;
+	protected String placeholder = null;
+	protected String required = null;
+	protected String step = null;
+
+
+
+
 	protected String formatInput = null;
 	protected String formatOutput = null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String toUpperCase = null;
-		
-	
-	
+	protected String toTrim = null;
+
+
+
 	protected String onclick = null;
 	protected String ondblclick = null;
 	protected String onhelp = null;
@@ -93,9 +115,25 @@ public class tagInput extends BodyTagSupport{
 	protected String onchange = null;
 	protected String onfocus = null;
 	protected String onselect = null;
-	
+
+
+
+	protected String oncontextmenu = null;
+	protected String onformchange = null;
+	protected String onforminput = null;
+	protected String oninput = null;
+	protected String oninvalid = null;
+	protected String ondrag = null;
+	protected String ondragend = null;
+	protected String ondragenter = null;
+	protected String ondragleave = null;
+	protected String ondragover = null;
+	protected String ondragstart = null;
+	protected String ondrop = null;
+	protected String onmousewheel = null;
+
 	protected String clear = null;
-	
+
 	protected String method_prefix=null;
 	protected String checkedvalue=null;
 	protected String replaceOnBlank=null;
@@ -111,11 +149,11 @@ public class tagInput extends BodyTagSupport{
 			throw new JspException(e.toString());
 		}
 		value=null;
-		return EVAL_BODY_INCLUDE; 
+		return EVAL_BODY_INCLUDE;
 	}
 
 	public void release() {
-		super.release();				
+		super.release();
 		bean=null;
 		name=null;
 		objId=null;
@@ -148,7 +186,24 @@ public class tagInput extends BodyTagSupport{
 		formatLanguage=null;
 		formatCountry=null;
 
-		
+		autocomplete = null;
+		autofocus = null;
+		form = null;
+		formaction = null;
+		formenctype = null;
+		formmethod = null;
+		formnovalidate = null;
+		formtarget = null;
+		list = null;
+		max = null;
+		min = null;
+		multiple = null;
+		pattern = null;
+		placeholder = null;
+		required = null;
+		step = null;
+
+
 		onclick=null;
 		ondblclick=null;
 		onhelp=null;
@@ -164,16 +219,31 @@ public class tagInput extends BodyTagSupport{
 		onchange = null;
 		onfocus = null;
 		onselect = null;
-		
+
+		oncontextmenu = null;
+		onformchange = null;
+		onforminput = null;
+		oninput = null;
+		oninvalid = null;
+		ondrag = null;
+		ondragend = null;
+		ondragenter = null;
+		ondragleave = null;
+		ondragover = null;
+		ondragstart = null;
+		ondrop = null;
+		onmousewheel = null;
+
 		clear = "false";
 		toUpperCase = null;
+		toTrim = null;
 		method_prefix=null;
 		checkedvalue=null;
-		
+
 		replaceOnBlank=null;
 		replaceOnErrorFormat=null;
 	}
-   
+
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action formAction=null;
@@ -183,17 +253,17 @@ public class tagInput extends BodyTagSupport{
 			if(pool!=null) formAction = (i_action)pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
-		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
-		if(formAction==null) formAction = new action(); 
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		if(formAction==null) formAction = new action();
 		if(bean==null) formBean = formAction.get_bean();
-		
+
 		if(method_prefix==null) method_prefix="get";
 		Object anotherBean = null;
 		Object writeValue=null;
-		
+
 //		value="";
-		
-		if(value==null){		
+
+		if(value==null){
 			if(bean==null && name!=null){
 				anotherBean = formBean;
 			}else{
@@ -212,10 +282,14 @@ public class tagInput extends BodyTagSupport{
 					}
 
 					if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
-				}catch(Exception e){	
+					try{
+						if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(bean).get_content();
+					}catch(Exception e){
+					}					
+				}catch(Exception e){
 				}
-			}				
-			
+			}
+
 
 			if(anotherBean!=null){
 				if(name==null){
@@ -223,126 +297,210 @@ public class tagInput extends BodyTagSupport{
 					name=bean;
 					try{
 						value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, writeValue);
-					}catch(Exception e){	 
+					}catch(Exception e){
 					}
 				}else{
 					try{
 						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);
-						if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);		 
+						if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
 					}catch(Exception e){}
-				}	
+				}
 			}else{
 				if(name==null && bean!=null) name=bean;
 			}
-		}	
-		
-		
+		}
+
+
 		StringBuffer results = new StringBuffer("<input ");
 		if(name!=null){
 			results.append(" name=\"");
 			results.append(name);
-			results.append("\"");
+			results.append('"');
 		}
 		if(objId!=null){
 			results.append(" id=\"");
 			results.append(objId);
-			results.append("\"");
+			results.append('"');
 		}else{
 			if(name!=null){
 				results.append(" id=\"");
 				results.append(name);
-				results.append("\"");
-			}			
+				results.append('"');
+			}
 		}
 		if (type != null) {
 			results.append(" type=\"");
 			results.append(type == null ? "text" : type);
-			results.append("\"");
+			results.append('"');
 		}
 		if (readonly != null) {
 			results.append(" readonly=\"");
 			results.append(readonly);
-			results.append("\"");
+			results.append('"');
 		}
 		if (size != null) {
 			results.append(" size=\"");
 			results.append(size);
-			results.append("\"");
+			results.append('"');
 		}
 		if (src != null) {
 			results.append(" src=\"");
 			results.append(src);
-			results.append("\"");
+			results.append('"');
 		}
 		if (tabindex != null) {
 			results.append(" tabindex=\"");
 			results.append(tabindex);
-			results.append("\"");
+			results.append('"');
 		}
 		if (usemap != null) {
 			results.append(" usemap=\"");
 			results.append(usemap);
-			results.append("\"");
+			results.append('"');
 		}
 		if (accesskey != null) {
 			results.append(" accesskey=\"");
 			results.append(accesskey);
-			results.append("\"");
+			results.append('"');
 		}
 		if (align != null) {
 			results.append(" align=\"");
 			results.append(align);
-			results.append("\"");
+			results.append('"');
 		}
 		if (alt != null) {
 			results.append(" alt=\"");
 			results.append(alt);
-			results.append("\"");
+			results.append('"');
 		}
 		if (border != null) {
 			results.append(" border=\"");
 			results.append(border);
-			results.append("\"");
+			results.append('"');
 		}
 		if (checked != null) {
 			results.append(" checked=\"");
 			results.append(checked);
-			results.append("\"");
+			results.append('"');
 		}
 		if (disabled != null) {
 			results.append(" disabled=\"");
 			results.append(disabled);
-			results.append("\"");
+			results.append('"');
 		}
 		if (width != null) {
 			results.append(" width=\"");
 			results.append(width);
-			results.append("\"");
+			results.append('"');
 		}
 		if (height != null) {
 			results.append(" height=\"");
 			results.append(height);
-			results.append("\"");
+			results.append('"');
 		}
 		if (ismap != null) {
 			results.append(" ismap=\"");
 			results.append(ismap);
-			results.append("\"");
+			results.append('"');
 		}
 		if (maxlength != null) {
 			results.append(" maxlength=\"");
 			results.append(maxlength);
-			results.append("\"");
+			results.append('"');
 		}
 
+
+
+		if (autocomplete != null) {
+			results.append(" autocomplete=\"");
+			results.append(autocomplete);
+			results.append('"');
+		}
+		if (autofocus != null) {
+			results.append(" autofocus=\"");
+			results.append(autofocus);
+			results.append('"');
+		}
+		if (form != null) {
+			results.append(" form=\"");
+			results.append(form);
+			results.append('"');
+		}
+		if (formaction != null) {
+			results.append(" formaction=\"");
+			results.append(formaction);
+			results.append('"');
+		}
+		if (formenctype != null) {
+			results.append(" formenctype=\"");
+			results.append(formenctype);
+			results.append('"');
+		}
+		if (formmethod != null) {
+			results.append(" formmethod=\"");
+			results.append(formmethod);
+			results.append('"');
+		}
+		if (formnovalidate != null) {
+			results.append(" formnovalidate=\"");
+			results.append(formnovalidate);
+			results.append('"');
+		}
+		if (formtarget != null) {
+			results.append(" formtarget=\"");
+			results.append(formtarget);
+			results.append('"');
+		}
+		if (list != null) {
+			results.append(" list=\"");
+			results.append(list);
+			results.append('"');
+		}
+		if (max != null) {
+			results.append(" max=\"");
+			results.append(max);
+			results.append('"');
+		}
+		if (min != null) {
+			results.append(" min=\"");
+			results.append(min);
+			results.append('"');
+		}
+		if (multiple != null) {
+			results.append(" multiple=\"");
+			results.append(multiple);
+			results.append('"');
+		}
+		if (pattern != null) {
+			results.append(" pattern=\"");
+			results.append(pattern);
+			results.append('"');
+		}
+		if (placeholder != null) {
+			results.append(" placeholder=\"");
+			results.append(placeholder);
+			results.append('"');
+		}
+		if (required != null) {
+			results.append(" required=\"");
+			results.append(required);
+			results.append('"');
+		}
+		if (step != null) {
+			results.append(" step=\"");
+			results.append(step);
+			results.append('"');
+		}
+
+
 		if(value!=null)
-			try{			
+			try{
 				results.append(" value=\"");
 				if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
 				if ( clear != null && clear.equalsIgnoreCase("true") && value.equalsIgnoreCase("0")) value="";
-				
+
 				results.append(value);
-				results.append("\"");
+				results.append('"');
 				if ( formBean != null &&
 					 type != null && (
 					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
@@ -350,125 +508,207 @@ public class tagInput extends BodyTagSupport{
 				{
 					results.append(" checked=\"checked\"");
 				}
-		}catch(Exception e){}	
+		}catch(Exception e){}
 
 		if (styleClass != null) {
 			results.append(" class=\"");
 			results.append(styleClass);
-			results.append("\"");
+			results.append('"');
 		}
 		if (style != null) {
 			results.append(" style=\"");
 			results.append(style);
-			results.append("\"");
+			results.append('"');
 		}
 		if (accept != null) {
 			results.append(" accept=\"");
 			results.append(accept);
-			results.append("\"");
+			results.append('"');
 		}
 		if (lang != null) {
 			results.append(" lang=\"");
 			results.append(lang);
-			results.append("\"");
+			results.append('"');
 		}
 		if (title != null) {
 			results.append(" title=\"");
 			results.append(title);
-			results.append("\"");
+			results.append('"');
 		}
 		if (dir != null) {
 			results.append(" dir=\"");
 			results.append(dir);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onclick != null) {
 			results.append(" onclick=\"");
 			results.append(onclick);
-			results.append("\"");
+			results.append('"');
 		}
 		if (ondblclick != null) {
 			results.append(" ondblclick=\"");
 			results.append(ondblclick);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onhelp != null) {
 			results.append(" onhelp=\"");
 			results.append(onhelp);
-			results.append("\"");
+			results.append('"');
 		}
-		
+
 		if (onkeydown != null) {
 			results.append(" onkeydown=\"");
 			results.append(onkeydown);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onkeypress != null) {
 			results.append(" onkeypress=\"");
 			results.append(onkeypress);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onkeyup != null) {
 			results.append(" onkeyup=\"");
 			results.append(onkeyup);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onmousedown != null) {
 			results.append(" onmousedown=\"");
 			results.append(onmousedown);
-			results.append("\"");
+			results.append('"');
 		}
 
 		if (onmousemove != null) {
 			results.append(" onmousemove=\"");
 			results.append(onmousemove);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onmouseout != null) {
 			results.append(" onmouseout=\"");
 			results.append(onmouseout);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onmouseover != null) {
 			results.append(" onmouseover=\"");
 			results.append(onmouseover);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onmouseup != null) {
 			results.append(" onmouseup=\"");
 			results.append(onmouseup);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onblur != null) {
 			results.append(" onblur=\"");
-			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))) results.append("this.value=trim(this.value); ");
-			else results.append("this.value=trim(this.value.toUpperCase()); ");
+			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))){
+				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE"))){
+				}else results.append("this.value=trim(this.value); ");
+			}
+			else{
+				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE")))
+					results.append("this.value.toUpperCase(); ");
+				else results.append("this.value=trim(this.value.toUpperCase()); ");
+			}
 			results.append(onblur);
-			results.append("\"");
+			results.append('"');
 		}else{
 			results.append(" onblur=\"");
-			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))) results.append("this.value=trim(this.value); ");
-			else results.append("this.value=trim(this.value.toUpperCase()); ");
-			results.append("\"");
+			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))){
+				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE"))){
+				}else results.append("this.value=trim(this.value); ");
+			}else{
+				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE")))
+					results.append("this.value.toUpperCase(); ");
+				else results.append("this.value=trim(this.value.toUpperCase()); ");
+			}
+			results.append('"');
 		}
-		
+
 		if (onchange != null) {
 			results.append(" onchange=\"");
 			results.append(onchange);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onfocus != null) {
 			results.append(" onfocus=\"");
 			results.append(onfocus);
-			results.append("\"");
+			results.append('"');
 		}
 		if (onselect != null) {
 			results.append(" onselect=\"");
 			results.append(onselect);
-			results.append("\"");
+			results.append('"');
 		}
-		results.append(">");
-		
+
+		if (oncontextmenu != null) {
+			results.append(" oncontextmenu=\"");
+			results.append(oncontextmenu);
+			results.append('"');
+		}
+		if (onformchange != null) {
+			results.append(" onformchange=\"");
+			results.append(onformchange);
+			results.append('"');
+		}
+		if (onforminput != null) {
+			results.append(" onforminput=\"");
+			results.append(onforminput);
+			results.append('"');
+		}
+		if (oninput != null) {
+			results.append(" oninput=\"");
+			results.append(oninput);
+			results.append('"');
+		}
+		if (oninvalid != null) {
+			results.append(" oninvalid=\"");
+			results.append(oninvalid);
+			results.append('"');
+		}
+
+		if (ondrag != null) {
+			results.append(" ondrag=\"");
+			results.append(ondrag);
+			results.append('"');
+		}
+		if (ondragend != null) {
+			results.append(" ondragend=\"");
+			results.append(ondragend);
+			results.append('"');
+		}
+		if (ondragenter != null) {
+			results.append(" ondragenter=\"");
+			results.append(ondragenter);
+			results.append('"');
+		}
+		if (ondragleave != null) {
+			results.append(" ondragleave=\"");
+			results.append(ondragleave);
+			results.append('"');
+		}
+		if (ondragover != null) {
+			results.append(" ondragover=\"");
+			results.append(ondragover);
+			results.append('"');
+		}
+		if (ondragstart != null) {
+			results.append(" ondragstart=\"");
+			results.append(ondragstart);
+			results.append('"');
+		}
+		if (ondrop != null) {
+			results.append(" ondrop=\"");
+			results.append(ondrop);
+			results.append('"');
+		}
+		if (onmousewheel != null) {
+			results.append(" onmousewheel=\"");
+			results.append(onmousewheel);
+			results.append('"');
+		}
+
+
+		results.append('>');
+
 		if(name!=null && formatInput!=null){
 			results.append("<input name=\"");
 			results.append("$format_"+name);
@@ -489,9 +729,9 @@ public class tagInput extends BodyTagSupport{
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(replaceOnErrorFormat);
 			results.append("\">");
-		}		
-		
-		
+		}
+
+
 		value=null;
 		return results.toString();
 	}
@@ -754,11 +994,11 @@ public class tagInput extends BodyTagSupport{
 	public void setFormatOutput(String string) {
 		formatOutput = string;
 	}
-	public String getClear() 
+	public String getClear()
 	{
 		return clear;
 	}
-	public void setClear(String string) 
+	public void setClear(String string)
 	{
 		clear = string;
 	}
@@ -815,6 +1055,246 @@ public class tagInput extends BodyTagSupport{
 
 	public void setFormatCountry(String formatCountry) {
 		this.formatCountry = formatCountry;
+	}
+
+	public String getToTrim() {
+		return toTrim;
+	}
+
+	public void setToTrim(String toTrim) {
+		this.toTrim = toTrim;
+	}
+
+	public String getOncontextmenu() {
+		return oncontextmenu;
+	}
+
+	public void setOncontextmenu(String oncontextmenu) {
+		this.oncontextmenu = oncontextmenu;
+	}
+
+	public String getOnformchange() {
+		return onformchange;
+	}
+
+	public void setOnformchange(String onformchange) {
+		this.onformchange = onformchange;
+	}
+
+	public String getOnforminput() {
+		return onforminput;
+	}
+
+	public void setOnforminput(String onforminput) {
+		this.onforminput = onforminput;
+	}
+
+	public String getOninput() {
+		return oninput;
+	}
+
+	public void setOninput(String oninput) {
+		this.oninput = oninput;
+	}
+
+	public String getOninvalid() {
+		return oninvalid;
+	}
+
+	public void setOninvalid(String oninvalid) {
+		this.oninvalid = oninvalid;
+	}
+
+	public String getOndrag() {
+		return ondrag;
+	}
+
+	public void setOndrag(String ondrag) {
+		this.ondrag = ondrag;
+	}
+
+	public String getOndragend() {
+		return ondragend;
+	}
+
+	public void setOndragend(String ondragend) {
+		this.ondragend = ondragend;
+	}
+
+	public String getOndragenter() {
+		return ondragenter;
+	}
+
+	public void setOndragenter(String ondragenter) {
+		this.ondragenter = ondragenter;
+	}
+
+	public String getOndragleave() {
+		return ondragleave;
+	}
+
+	public void setOndragleave(String ondragleave) {
+		this.ondragleave = ondragleave;
+	}
+
+	public String getOndragover() {
+		return ondragover;
+	}
+
+	public void setOndragover(String ondragover) {
+		this.ondragover = ondragover;
+	}
+
+	public String getOndragstart() {
+		return ondragstart;
+	}
+
+	public void setOndragstart(String ondragstart) {
+		this.ondragstart = ondragstart;
+	}
+
+	public String getOndrop() {
+		return ondrop;
+	}
+
+	public void setOndrop(String ondrop) {
+		this.ondrop = ondrop;
+	}
+
+	public String getOnmousewheel() {
+		return onmousewheel;
+	}
+
+	public void setOnmousewheel(String onmousewheel) {
+		this.onmousewheel = onmousewheel;
+	}
+
+	public String getAutocomplete() {
+		return autocomplete;
+	}
+
+	public void setAutocomplete(String autocomplete) {
+		this.autocomplete = autocomplete;
+	}
+
+	public String getAutofocus() {
+		return autofocus;
+	}
+
+	public void setAutofocus(String autofocus) {
+		this.autofocus = autofocus;
+	}
+
+	public String getForm() {
+		return form;
+	}
+
+	public void setForm(String form) {
+		this.form = form;
+	}
+
+	public String getFormaction() {
+		return formaction;
+	}
+
+	public void setFormaction(String formaction) {
+		this.formaction = formaction;
+	}
+
+	public String getFormenctype() {
+		return formenctype;
+	}
+
+	public void setFormenctype(String formenctype) {
+		this.formenctype = formenctype;
+	}
+
+	public String getFormmethod() {
+		return formmethod;
+	}
+
+	public void setFormmethod(String formmethod) {
+		this.formmethod = formmethod;
+	}
+
+	public String getFormnovalidate() {
+		return formnovalidate;
+	}
+
+	public void setFormnovalidate(String formnovalidate) {
+		this.formnovalidate = formnovalidate;
+	}
+
+	public String getFormtarget() {
+		return formtarget;
+	}
+
+	public void setFormtarget(String formtarget) {
+		this.formtarget = formtarget;
+	}
+
+	public String getList() {
+		return list;
+	}
+
+	public void setList(String list) {
+		this.list = list;
+	}
+
+	public String getMax() {
+		return max;
+	}
+
+	public void setMax(String max) {
+		this.max = max;
+	}
+
+	public String getMin() {
+		return min;
+	}
+
+	public void setMin(String min) {
+		this.min = min;
+	}
+
+	public String getMultiple() {
+		return multiple;
+	}
+
+	public void setMultiple(String multiple) {
+		this.multiple = multiple;
+	}
+
+	public String getPattern() {
+		return pattern;
+	}
+
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
+
+	public String getPlaceholder() {
+		return placeholder;
+	}
+
+	public void setPlaceholder(String placeholder) {
+		this.placeholder = placeholder;
+	}
+
+	public String getRequired() {
+		return required;
+	}
+
+	public void setRequired(String required) {
+		this.required = required;
+	}
+
+	public String getStep() {
+		return step;
+	}
+
+	public void setStep(String step) {
+		this.step = step;
 	}
 
 

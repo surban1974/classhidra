@@ -2,6 +2,7 @@ package it.classhidra.core.tool.db.pool;
 
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.init.db_init;
+import it.classhidra.core.tool.util.util_format;
 
 import java.sql.Connection;
 
@@ -20,11 +21,9 @@ public class db_pool_servlet extends HttpServlet   {
 			pool = (iConnectionPool)Class.forName(init.get_local_pool_provider()).newInstance();
 			pool.init(init);
 		}catch(Exception e){
-			if(bsController.getLogInit().get_Write2Concole().toLowerCase().equals("true")) 
-				System.out.println("DB_POOL_SERVLET:EXCEPTION:"+e.toString());
+			util_format.writeToConsole(bsController.getLogInit(),"DB_POOL_SERVLET:EXCEPTION:"+e.toString());
 		}catch(Throwable t){
-			if(bsController.getLogInit().get_Write2Concole().toLowerCase().equals("true")) 
-				System.out.println("DB_POOL_SERVLET:THROWABLE:"+t.toString());
+			util_format.writeToConsole(bsController.getLogInit(),"DB_POOL_SERVLET:THROWABLE:"+t.toString());
 		}
 	}
 	

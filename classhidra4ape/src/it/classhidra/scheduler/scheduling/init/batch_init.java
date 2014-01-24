@@ -179,7 +179,7 @@ public String get_sleep() {
 
 public long getLsleep() {
 	try{
-		return new Long(_sleep).longValue();
+		return Long.parseLong(_sleep);
 	}catch(Exception e){
 		return 0;
 	}

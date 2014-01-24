@@ -34,6 +34,8 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_navigation;
+import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
@@ -50,6 +52,10 @@ public class tagEqual extends  TagSupport {
 	protected String valueFromBean=null;
 	protected String method_prefix=null;
 	protected String field=null;
+	protected String formatOutput=null;
+	protected String formatLanguage=null;
+	protected String formatCountry=null;	
+	protected String ignoreCase =null;
 	
 	public int doStartTag() throws JspException {
 		if (condition())
@@ -69,6 +75,10 @@ public class tagEqual extends  TagSupport {
 		method_prefix=null;
 		valueFromBean=null;
 		field=null;
+		formatOutput=null;
+		formatLanguage=null;
+		formatCountry=null;		
+		ignoreCase=null;
 	}
 	
 	private boolean condition() throws JspException{
@@ -106,6 +116,11 @@ public class tagEqual extends  TagSupport {
 			}
 
 			if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
+			try{
+				if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(bean).get_content();
+			}catch(Exception e){
+			}
+
 			
 
 			if(anotherBean!=null){
@@ -157,10 +172,15 @@ public class tagEqual extends  TagSupport {
 			}
 		}
 		
+		try{
+			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
+		}catch (Exception e) {
+		}
 		
 		if(value==null && writeValue!=null) return true;
 		if(value==null || writeValue==null) return false;
 		if(writeValue.toString().equals(value)) return true;
+		if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true") && writeValue.toString().equalsIgnoreCase(value)) return true;
 		return false;
 	}
 	public String getName() {
@@ -204,6 +224,38 @@ public class tagEqual extends  TagSupport {
 
 	public void setValueFromBean(String valueFromBean) {
 		this.valueFromBean = valueFromBean;
+	}
+
+	public String getFormatOutput() {
+		return formatOutput;
+	}
+
+	public void setFormatOutput(String formatOutput) {
+		this.formatOutput = formatOutput;
+	}
+
+	public String getFormatLanguage() {
+		return formatLanguage;
+	}
+
+	public void setFormatLanguage(String formatLanguage) {
+		this.formatLanguage = formatLanguage;
+	}
+
+	public String getFormatCountry() {
+		return formatCountry;
+	}
+
+	public void setFormatCountry(String formatCountry) {
+		this.formatCountry = formatCountry;
+	}
+
+	public String getIgnoreCase() {
+		return ignoreCase;
+	}
+
+	public void setIgnoreCase(String ignoreCase) {
+		this.ignoreCase = ignoreCase;
 	}
 
 }

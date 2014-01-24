@@ -3,13 +3,13 @@ package it.classhidra.framework.web.components;
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Redirect;
+import it.classhidra.core.controller.action;
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.exception.bsControllerMessageException;
-import it.classhidra.core.tool.exception.message;
 import it.classhidra.core.tool.log.log_FilesFilter;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.controller.*;
-import it.classhidra.core.tool.util.*;
+import it.classhidra.core.tool.util.util_sort;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -17,8 +17,10 @@ import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.Vector;
 
-import javax.servlet.http.*;
-import javax.servlet.*;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @ActionMapping (
 		redirects={
@@ -105,26 +107,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	}
 	Vector ListLog = new Vector();
 
-	try{
-		File f=new File( bsController.getLogInit().get_LogPath());
-		log_FilesFilter filter = new log_FilesFilter();
-		File[] list = f.listFiles(filter);
-		if(list!=null){
-			for(int i=0;i<list.length;i++)
-				ListLog.add(new log_element(list[i].getAbsolutePath().replace('\\','/'),String.valueOf(list[i].lastModified())));
-		}
-	}catch(Exception e){	
-		message mess = new message();
-		mess.setTYPE("E");
-		mess.setDESC_MESS(e.toString());
-		new bsControllerMessageException(mess, request, iStub.log_ERROR);
-	}catch (Throwable e) {
-		message mess = new message();
-		mess.setTYPE("E");
-		mess.setDESC_MESS(e.toString());
-		new bsControllerMessageException(mess, request, iStub.log_ERROR);
-		
-
+	File f=new File( bsController.getLogInit().get_LogPath());
+	log_FilesFilter filter = new log_FilesFilter();
+	File[] list = f.listFiles(filter);
+	if(list!=null){
+		for(int i=0;i<list.length;i++)
+			ListLog.add(new log_element(list[i].getAbsolutePath().replace('\\','/'),String.valueOf(list[i].lastModified())));
 	}
 	ListLog = new util_sort().sort(ListLog,"Mod","D");
 	request.setAttribute("ListLog",ListLog);

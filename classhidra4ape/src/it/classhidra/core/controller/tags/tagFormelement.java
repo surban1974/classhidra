@@ -30,6 +30,7 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
@@ -54,6 +55,7 @@ public class tagFormelement extends TagSupport{
 	protected String method_prefix=null;
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
+	protected String normalASCII=null;
 
 
 
@@ -80,6 +82,7 @@ public class tagFormelement extends TagSupport{
 		formatLanguage=null;
 		formatCountry=null;
 		normalXML=null;
+		normalASCII=null;
 	}
   
 	protected String createTagBody() {
@@ -121,7 +124,10 @@ public class tagFormelement extends TagSupport{
 			}
 
 			if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
-
+			try{
+				if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(bean).get_content();
+			}catch(Exception e){
+			}
 			
 			if(anotherBean==null){
 				try{
@@ -159,7 +165,11 @@ public class tagFormelement extends TagSupport{
 		}
 		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
 			return util_xml.normalXML(results.toString(),null);
-		else return results.toString();
+		
+		if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))
+			return util_xml.normalASCII(results.toString());
+
+		return results.toString();
 	}		
 	
 
@@ -224,6 +234,14 @@ public class tagFormelement extends TagSupport{
 
 	public void setFormatCountry(String formatCountry) {
 		this.formatCountry = formatCountry;
+	}
+
+	public String getNormalASCII() {
+		return normalASCII;
+	}
+
+	public void setNormalASCII(String normalASCII) {
+		this.normalASCII = normalASCII;
 	}
 
 

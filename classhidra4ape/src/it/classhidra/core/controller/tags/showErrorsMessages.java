@@ -87,12 +87,12 @@ public class showErrorsMessages extends TagSupport{
 			if (styleClass != null) {
 				results.append(" class=\"");
 				results.append(styleClass);
-				results.append("\"");
+				results.append('"');
 			}
 			if (style != null) {
 				results.append(" style=\"");
 				results.append(style);
-				results.append("\"");
+				results.append('"');
 			}
 			if (styleClass == null && style==null)results.append(" width=500 ");			
 			results.append(">"+System.getProperty("line.separator"));

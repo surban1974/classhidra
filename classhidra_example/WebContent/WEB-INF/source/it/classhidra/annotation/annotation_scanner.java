@@ -43,6 +43,7 @@ public class annotation_scanner implements i_annotation_scanner {
 
 	protected HashMap _beans = new HashMap();
 	protected HashMap _redirects = new HashMap();
+	protected HashMap _redirectsjustloaded = new HashMap();
 	protected HashMap _transformationoutput = new HashMap();
 	
 	protected String error;
@@ -317,6 +318,7 @@ public class annotation_scanner implements i_annotation_scanner {
 
     			}
     			_redirects.put(bodyURI(iRedirect.getPath()),iRedirect);
+    			_redirectsjustloaded.put(bodyURI(iRedirect.getPath()),iRedirect);
 		    	
 		    }
 		    
@@ -543,5 +545,10 @@ public class annotation_scanner implements i_annotation_scanner {
 
 	public String getSession_error() {
 		return session_error;
+	}
+
+
+	public HashMap get_redirectsjustloaded() {
+		return _redirectsjustloaded;
 	}
 }

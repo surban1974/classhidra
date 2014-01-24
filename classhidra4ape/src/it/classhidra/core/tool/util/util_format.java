@@ -612,6 +612,8 @@ public static String makeFormatedString(String format, Object ref) throws Except
 
 
 public static String makeFormatedString(String format, String language,String country, Object ref) throws Exception{
+	if(ref==null) return null;	
+	if(format==null) return ref.toString();	
 	Locale locale = null;
 	try{
 		if(language!=null){
@@ -625,7 +627,7 @@ public static String makeFormatedString(String format, String language,String co
 	if(locale==null) return makeFormatedString(format, ref);
 	
 	
-	if(format==null) return ref.toString();	
+	
 	if(ref.getClass().isPrimitive()) return ref.toString();
 	if(	!(ref instanceof java.sql.Date) &&
 		!(ref instanceof java.util.Date) &&

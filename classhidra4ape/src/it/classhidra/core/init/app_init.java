@@ -57,6 +57,7 @@ public class app_init implements Serializable{
 	static public String id_pin							=	"application.pin";
 	static public String id_db_name 					=	"application.config.db";
 	static public String id_extention_do 				=	"application.extention.do";
+	static public String id_actioncall_separator 		=	"application.actioncall.separator";
 
 	
 	static public String id_transf_elaborationmode		=	"application.transformation.event.after.elaborationmode";
@@ -82,6 +83,7 @@ public class app_init implements Serializable{
 	private String _pin;
 	private String _db_name;
 	private String _extention_do;
+	private String _actioncall_separator;
 	private String _debug;
 	private String _statistic;
 	private String _statistic_provider;
@@ -171,6 +173,8 @@ public class app_init implements Serializable{
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
+			_actioncall_separator=(_actioncall_separator==null)?System.getProperty(id_actioncall_separator):_actioncall_separator;
+
 			_debug=(_debug==null)?System.getProperty(id_debug):_debug;
 			_statistic=(_statistic==null)?System.getProperty(id_statistic):_statistic;
 			_statistic_provider=(_statistic_provider==null)?System.getProperty(id_statistic_provider):_statistic_provider;
@@ -241,6 +245,7 @@ public class app_init implements Serializable{
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
 		_annotation_scanner=(_annotation_scanner==null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
 		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
+		_actioncall_separator=(_actioncall_separator==null)?property.getProperty(id_actioncall_separator):_actioncall_separator;
 		_debug=(_debug==null)?property.getProperty(id_debug):_debug;
 		_statistic=(_statistic==null)?property.getProperty(id_statistic):_statistic;
 		_statistic_provider=(_statistic_provider==null)?property.getProperty(id_statistic_provider):_statistic_provider;
@@ -494,6 +499,10 @@ public class app_init implements Serializable{
 
 	public String get_statistic_stacklength() {
 		return _statistic_stacklength;
+	}
+
+	public String get_actioncall_separator() {
+		return _actioncall_separator;
 	}
 
 }
