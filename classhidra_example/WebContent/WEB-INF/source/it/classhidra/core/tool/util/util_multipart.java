@@ -68,6 +68,7 @@ public class util_multipart {
 							current_file.put("content",fine);
 							current_file.put("contenttype",filePart.getContentType());
 							current_file.put("name",filePart.getFileName());
+							current_file.put("inputname",filePart.getName());
 							parametersMP.put("file"+file_counter,current_file);
 							file_counter++;
 						}

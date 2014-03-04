@@ -86,6 +86,7 @@ public class StatisticEntity implements Serializable{
 	
 	public String toXml(){
 		String result="<event ";
+		if(st!=null) result+="ld=\""+util_format.dataToString(st, "yyyy-MM-dd HH:mm")+"\" ";
 		if(session!=null) result+="s=\""+util_xml.normalXML(session, null)+"\" ";
 		if(ip!=null) result+="ip=\""+util_xml.normalXML(ip, null)+"\" ";
 		if(matriculation!=null) result+="m=\""+util_xml.normalXML(matriculation, null)+"\" ";
@@ -95,7 +96,7 @@ public class StatisticEntity implements Serializable{
 		if(st!=null) result+="st=\""+util_format.dataToString(st, "yyyyMMddHHmmssSSS")+"\" ";
 		if(ft!=null) result+="ft=\""+util_format.dataToString(ft, "yyyyMMddHHmmssSSS")+"\" ";
 		if(getDelta()>0) result+="d=\""+getDelta()+"\" ";
-		result+="/>";
+		result+="/>"; 
 		return result;		
 	}
 

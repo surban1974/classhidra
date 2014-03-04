@@ -191,7 +191,8 @@ public class bs_authentication_filters implements i_authentication_filter {
 		
 		if(auth!=null && (auth.get_actions_permitted()==null || auth.get_actions_permitted().size()==0)) return false;
 		boolean result = true;
-		if(	auth.get_actions_permitted().get(id_complete)==null){
+		info_action iAction_complete = (info_action)auth.get_actions_permitted().get(id_complete);
+		if(	iAction_complete==null){
 			if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
 				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
 //				String id_call=null;
@@ -206,7 +207,7 @@ public class bs_authentication_filters implements i_authentication_filter {
 						auth.get_actions_permitted().get(id_action)!=null &&
 						auth.get_actions_forbidden().get(id_complete)==null){}
 					else result = false;
-				}
+				}else result = false;
 			}else result = false;
 		}
 		return result;
@@ -229,8 +230,10 @@ public class bs_authentication_filters implements i_authentication_filter {
 		boolean result=true;
 		
 		String id_complete = _action.get_infoaction().getPath();
+		
+		info_action iAction_complete = (info_action)auth.get_actions_permitted().get(id_complete);
 
-		if(	auth.get_actions_permitted().get(id_complete)==null){
+		if(	iAction_complete==null){
 			if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
 				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
 //				String id_call=null;
@@ -244,16 +247,19 @@ public class bs_authentication_filters implements i_authentication_filter {
 					if(	id_action!=null &&
 						auth.get_actions_permitted().get(id_action)!=null &&
 						auth.get_actions_forbidden().get(id_complete)==null){
-						
-						if(	((info_action)auth.get_actions_permitted().get(id_action)).get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
-
+						info_action iAction = (info_action)auth.get_actions_permitted().get(id_action);
+						if(iAction==null) return false;
+						else{
+							if(	iAction.get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
+						}
 					}
 					else return false;
-				}
+				}else return false;
 				
 			}else return false;
+		}else{
+			if(	iAction_complete.get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
 		}
-		if(	((info_action)auth.get_actions_permitted().get(id_complete)).get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
 		return result;
 	}
 

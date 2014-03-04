@@ -62,6 +62,7 @@ public class tagTranscode extends TagSupport{
 	protected String method_prefix=null;
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
+	protected String normalASCII=null;
 
 
 
@@ -91,6 +92,7 @@ public class tagTranscode extends TagSupport{
 		formatLanguage=null;
 		formatCountry=null;
 		normalXML=null;
+		normalASCII=null;
 	}
   
 	protected String createTagBody() {
@@ -227,6 +229,9 @@ public class tagTranscode extends TagSupport{
 		}
 		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
 			return util_xml.normalXML(results.toString(),null);
+		if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))
+			return util_xml.normalASCII(results.toString());
+
 		else return results.toString();
 	}		
 	
@@ -347,6 +352,14 @@ public class tagTranscode extends TagSupport{
 
 	public void setKeyValue(String keyValue) {
 		this.keyValue = keyValue;
+	}
+
+	public String getNormalASCII() {
+		return normalASCII;
+	}
+
+	public void setNormalASCII(String normalASCII) {
+		this.normalASCII = normalASCII;
 	}
 }
 
