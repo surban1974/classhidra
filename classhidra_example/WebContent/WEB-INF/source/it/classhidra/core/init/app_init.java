@@ -69,7 +69,7 @@ public class app_init implements Serializable{
 	
 	static public String id_statistic					=	"application.statistic";
 	static public String id_statistic_provider			=	"application.statistic.provider";
-	static public String id_statistic_stacklength		= 	"application.statictic.stacklength";
+	static public String id_statistic_stacklength		= 	"application.statistic.stacklength";
 	
 	private String _path;
 	private String _path_root;

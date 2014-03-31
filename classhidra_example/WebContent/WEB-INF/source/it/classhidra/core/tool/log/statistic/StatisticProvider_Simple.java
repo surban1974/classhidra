@@ -37,7 +37,10 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 			String result="";
 			ListIterator  it = stack.listIterator();
 		    while(it.hasNext()){
-		    	result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
+		    	try{
+		    		result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
+		    	}catch (Exception e) {
+				}
 		    }
 		    return result;
 		}
@@ -64,7 +67,10 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 			String result="";
 		    ListIterator  it = stack.listIterator();
 		    while(it.hasNext()){
-		    	result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
+		    	try{
+		    		result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
+		    	}catch (Exception e) {
+				}
 		    }
 		    return result;
 		}
@@ -74,14 +80,15 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 		LinkedList stack = (LinkedList)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
 		if(stack!=null) stack.clear();		
 	}
+	
+	public void syncroAll(){
+	}
 
 	public List getEntities(String commandDefinedIntoProviderRelise) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getEntitiesAsXml(String commandDefinedIntoProviderRelise) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -203,6 +203,7 @@ public class tagTranscode extends TagSupport{
 			}
 			if(valueSource instanceof List){
 				writeValue = findElementFromList((List)valueSource, valueKey, inputField);
+				if(writeValue==null) writeValue = findElementFromListAsString((List)valueSource, valueKey, inputField);
 				if(outputField!=null){
 					try{
 						writeValue = util_reflect.prepareWriteValueForTag(writeValue,"get",outputField,null);					 
@@ -324,6 +325,29 @@ public class tagTranscode extends TagSupport{
 				if(elements.get(i) instanceof i_elementBase){
 					i_elementBase el = (i_elementBase)elements.get(i);
 					if(el!=null && valueKey.toString().equals(el.getCampoValue(field))) return el;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private static Object findElementFromListAsString(List elements, Object valueKey, String field){
+		if(valueKey==null || field==null) return null;
+		for(int i=0;i<elements.size();i++){
+			if(field==null){
+				if(elements.get(i)!=null && valueKey.toString().equals(elements.get(i).toString())) return elements.get(i);
+			}else{
+				if(elements.get(i) instanceof i_bean){
+					i_bean el = (i_bean)elements.get(i);
+					if(el!=null && el.get(field)!=null && valueKey.toString().equals(el.get(field).toString())) return el;
+				}
+				if(elements.get(i) instanceof i_elementDBBase){
+					i_elementDBBase el = (i_elementDBBase)elements.get(i);
+					if(el!=null && el.getCampoValue(field)!=null && valueKey.toString().equals(el.getCampoValue(field).toString())) return el;
+				}
+				if(elements.get(i) instanceof i_elementBase){
+					i_elementBase el = (i_elementBase)elements.get(i);
+					if(el!=null && el.getCampoValue(field)!=null && valueKey.toString().equals(el.getCampoValue(field).toString())) return el;
 				}
 			}
 		}

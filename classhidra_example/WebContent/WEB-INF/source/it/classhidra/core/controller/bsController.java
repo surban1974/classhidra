@@ -2041,6 +2041,27 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static void setUser_config(Object new_load_users) {
 		user_config = new_load_users;
 	}
+	
+	public static load_users checkUser_config4load_users(){
+		if(user_config==null){
+			setUser_config(new load_users());
+				try{
+					((load_users)user_config).setReadError(false);
+					((load_users)user_config).init();
+					if(((load_users)user_config).isReadError()) ((load_users)user_config).load_from_resources();
+					if(((load_users)user_config).isReadError()) ((load_users)user_config).init(getAppInit().get_path_config()+CONST_XML_USERS);
+					if(((load_users)user_config).isReadError()){
+						((load_users)user_config).setReadError(false);
+						((load_users)user_config).load_from_resources();
+						if(((load_users)user_config).isReadError()) user_config = null;
+					}
+				}catch(bsControllerException je){
+					user_config = null;
+				}
+		}
+		return (load_users)user_config;
+	}
+
 
 	public static String getIdApp() {
 		return idApp;

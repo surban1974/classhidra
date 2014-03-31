@@ -18,6 +18,7 @@ public class StatisticEntity implements Serializable{
 	private Throwable exception;
 	private Date st;
 	private Date ft;
+	private String bi;
 	HttpServletRequest request;
 	
 	public StatisticEntity(){
@@ -35,6 +36,10 @@ public class StatisticEntity implements Serializable{
 		st=_st;
 		ft=_ft;
 		request=_request;
+		if(request!=null){
+			bi = getBrowserInfo(request.getHeader("User-Agent"));
+		}
+		
 	}
 	
 	public String getSession() {
@@ -84,6 +89,53 @@ public class StatisticEntity implements Serializable{
 		return ft.getTime()-st.getTime();
 	}
 	
+	private String  getBrowserInfo( String information ){
+		if(information == null) return null;
+		try{
+		    String browsername = "";
+		    String browserversion = "";
+		    String browser = information;
+		    if (browser.contains("MSIE")){
+		      String subsString = browser.substring(browser.indexOf("MSIE"));
+		      String Info[] = (subsString.split(";")[0]).split(" ");
+		      browsername = Info[0];
+		      browserversion = Info[1];
+		    } else if (browser.contains("Firefox")){
+	
+		      String subsString = browser.substring(browser.indexOf("Firefox"));
+		      String Info[] = (subsString.split(" ")[0]).split("/");
+		      browsername = Info[0];
+		      browserversion = Info[1];
+		    } else if (browser.contains("Chrome")){
+	
+		      String subsString = browser.substring(browser.indexOf("Chrome"));
+		      String Info[] = (subsString.split(" ")[0]).split("/");
+		      browsername = Info[0];
+		      browserversion = Info[1];
+		    } else if (browser.contains("Opera")){
+	
+		      String subsString = browser.substring(browser.indexOf("Opera"));
+		      String Info[] = (subsString.split(" ")[0]).split("/");
+		      browsername = Info[0];
+		      browserversion = Info[1];
+		    } else if (browser.contains("Safari")){
+	
+		      String subsString = browser.substring(browser.indexOf("Safari"));
+		      String Info[] = (subsString.split(" ")[0]).split("/");
+		      browsername = Info[0];
+		      browserversion = Info[1];
+		    }
+		    return browsername + "-" + browserversion + ((information.indexOf("Mobile") != -1)?"-mobile":"");
+		}catch(Exception e){
+			return null;
+		}
+	  }
+	
+	
+	public String toString(){
+		return toXml();
+	}
+	
 	public String toXml(){
 		String result="<event ";
 		if(st!=null) result+="ld=\""+util_format.dataToString(st, "yyyy-MM-dd HH:mm")+"\" ";
@@ -94,8 +146,9 @@ public class StatisticEntity implements Serializable{
 		if(action!=null) result+="a=\""+util_xml.normalXML(action, null)+"\" ";
 		if(exception!=null) result+="e=\""+util_xml.normalXML(exception.toString(), null)+"\" ";
 		if(st!=null) result+="st=\""+util_format.dataToString(st, "yyyyMMddHHmmssSSS")+"\" ";
-		if(ft!=null) result+="ft=\""+util_format.dataToString(ft, "yyyyMMddHHmmssSSS")+"\" ";
+//		if(ft!=null) result+="ft=\""+util_format.dataToString(ft, "yyyyMMddHHmmssSSS")+"\" ";
 		if(getDelta()>0) result+="d=\""+getDelta()+"\" ";
+		if(bi!=null) result+="bi=\""+util_xml.normalXML(bi, null)+"\" ";
 		result+="/>"; 
 		return result;		
 	}
@@ -114,5 +167,13 @@ public class StatisticEntity implements Serializable{
 
 	public void setLang(String lang) {
 		this.lang = lang;
+	}
+
+	public String getBi() {
+		return bi;
+	}
+
+	public void setBi(String bi) {
+		this.bi = bi;
 	}
 }

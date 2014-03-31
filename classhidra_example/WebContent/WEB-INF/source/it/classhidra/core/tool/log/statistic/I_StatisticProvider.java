@@ -16,4 +16,5 @@ public interface I_StatisticProvider {
 	
 
 	void clearAll();
+	void syncroAll();
 }
