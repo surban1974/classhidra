@@ -11,4 +11,5 @@ public @interface ActionCall {
 	Entity entity() default @Entity;
 	String name();
 	String method() default "";
+	String navigated() default "true";
 }

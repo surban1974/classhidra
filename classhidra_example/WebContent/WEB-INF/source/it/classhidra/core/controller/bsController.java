@@ -458,6 +458,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 	
 	public static i_action getActionInstance(String id_action,String id_call, HttpServletRequest request, HttpServletResponse response) throws bsControllerException,ServletException, UnavailableException{
+		
 		boolean cloned = (request.getParameter(CONST_ID_EXEC_TYPE)==null)?false:request.getParameter(CONST_ID_EXEC_TYPE).equalsIgnoreCase(CONST_ID_EXEC_TYPE_CLONED);
 		
 		i_action action_instance = getAction_config().actionFactory(id_action,request.getSession(),request.getSession().getServletContext());
@@ -518,7 +519,42 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		action_instance.init(request,response);
 
-		setInfoNav_CurrentForm(action_instance,request);
+		info_call iCall = null;
+		Method iCallMethod = null;
+		
+		if(id_call!=null){
+			try{
+				iCall = (info_call)action_instance.get_infoaction().get_calls().get(id_call);
+				if(iCall==null){
+					Object[] method_call = action_instance.getMethodAndCall(id_call);
+					if(method_call!=null){
+						iCallMethod = (Method)method_call[0];
+						iCall =  (info_call)method_call[1];
+						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
+					}
+					
+/*					
+					iCallMethod = action_instance.getMethodForCall(id_call);
+					if(iCallMethod!=null){
+						iCall = new info_call();
+						iCall.setMethod(iCallMethod.getName());
+						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
+					}
+*/
+				}else{
+					try{
+						iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
+					}catch(Exception em){}
+				}				
+			}catch(Exception ex){
+				new bsControllerException(ex, iStub.log_ERROR);
+			}catch(Throwable th){
+				new bsControllerException(th, iStub.log_ERROR);
+			}				
+		}
+		
+		if(iCall!=null && iCall.getNavigated().equalsIgnoreCase("false")){			
+		}else setInfoNav_CurrentForm(action_instance,request);
 
 
 // ACTIONSEVICE
@@ -528,27 +564,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 				current_redirect = action_instance.syncroservice(request,response);
 			else current_redirect = action_instance.actionservice(request,response);
 		}else{
-//			boolean called=false;
 			try{
-				Method iCallMethod = null;
-				info_call iCall = (info_call)action_instance.get_infoaction().get_calls().get(id_call);
-				if(iCall==null){
-					iCallMethod = action_instance.getMethodForCall(id_call);
-					if(iCallMethod!=null){
-						iCall = new info_call();
-						iCall.setMethod(iCallMethod.getName());
-						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
-					}
-				}else{
-					try{
-						iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
-					}catch(Exception em){}
-				}
-	
-				if(iCallMethod!=null){
+				if(iCallMethod!=null)
 					current_redirect = (redirects)util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response});
-//					called=true;
-				}
+
 			}catch(Exception ex){
 				new bsControllerException(ex, iStub.log_ERROR);
 			}catch(Throwable th){
@@ -558,7 +577,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 // Mod 20130923 -- 
 //		if(current_redirect==null) return null;
 		action_instance.setCurrent_redirect(current_redirect);
-		setCurrentForm(action_instance,request);
+		
+		if(iCall!=null && iCall.getNavigated().equalsIgnoreCase("false")){	
+			try{
+				i_bean form = action_instance.get_bean();
+				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
+					HashMap fromSession = null;
+					fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+					if(fromSession==null){
+						fromSession = new HashMap();
+						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession);
+					}
+					fromSession.put(form.get_infobean().getName(),form);
+				}
+			}catch(Exception e){
+			}
+
+		}else setCurrentForm(action_instance,request);
+		
 
 		return action_instance;
 
@@ -1073,15 +1109,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 				if(action_instance.getCurrent_redirect()!=null){
-					info_stream blockStreamExit = performStream_ExitRS(_streams, id_action,action_instance, servletContext, request, response);
-					if(blockStreamExit!=null){
-						isException(action_instance, request);
-						if(stat!=null){
-							stat.setFt(new Date());
-							stat.setException(new Exception("Blocked by STREAM EXIT:["+blockStreamExit.getName()+"]"));
-							putToStatisticProvider(stat);
-						}					
-						return response;
+					
+					if( !action_instance.getCurrent_redirect().is_avoidPermissionCheck()){
+						info_stream blockStreamExit = performStream_ExitRS(_streams, id_action,action_instance, servletContext, request, response);
+						if(blockStreamExit!=null){
+							isException(action_instance, request);
+							if(stat!=null){
+								stat.setFt(new Date());
+								stat.setException(new Exception("Blocked by STREAM EXIT:["+blockStreamExit.getName()+"]"));
+								putToStatisticProvider(stat);
+							}					
+							return response;
+						}
 					}
 
 					request.removeAttribute(CONST_ID_REQUEST_TYPE);
@@ -1311,7 +1350,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(form.get_infoaction().getNavigated().equalsIgnoreCase("true")) go = true;
 		}catch(Exception ex){
 		}
-		if(!go){
+		if(!go || action.getCurrent_redirect()==null){
 			try{
 				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
 					HashMap fromSession = null;

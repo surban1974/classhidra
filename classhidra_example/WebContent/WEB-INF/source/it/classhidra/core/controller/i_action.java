@@ -51,4 +51,5 @@ public interface i_action extends Serializable{
 	boolean isIncluded();
 	void setIncluded(boolean included);
 	java.lang.reflect.Method getMethodForCall(String annotation_name);
+	Object[] getMethodAndCall(String annotation_name);
 }

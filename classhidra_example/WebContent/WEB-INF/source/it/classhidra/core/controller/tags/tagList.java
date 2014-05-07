@@ -544,6 +544,7 @@ public class tagList extends TagSupport{
 			}
 		}
 		results.append(">"+System.getProperty("line.separator"));
+results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-decoration: none;\">"+System.getProperty("line.separator"));
 
 		return results.toString();
 	}
@@ -624,6 +625,7 @@ public class tagList extends TagSupport{
 
 		results.append("</table>"+System.getProperty("line.separator"));
 		results.append(createSCRIPT_TagBody(v_values));
+results.append("</a>"+System.getProperty("line.separator"));
 		results.append("</div>"+System.getProperty("line.separator"));
 
 

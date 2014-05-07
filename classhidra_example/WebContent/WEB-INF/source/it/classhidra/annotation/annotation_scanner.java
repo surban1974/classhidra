@@ -435,6 +435,7 @@ public class annotation_scanner implements i_annotation_scanner {
     					info_call iCall = new info_call();
     					iCall.setName(annotationCall.name());
     					iCall.setMethod(annotationCall.method());
+    					iCall.setNavigated(annotationCall.navigated());
     					setEntity(iCall,annotationCall.entity());
     					if(iCall.getOrder().equals("")) iCall.setOrder(Integer.valueOf(i+1).toString());
     					iCall.setAnnotationLoaded(true);

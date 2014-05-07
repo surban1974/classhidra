@@ -128,5 +128,24 @@ public class action extends bean implements i_action, Serializable{
 		}
 		return result;
 	}
+	
+	public Object[] getMethodAndCall(String annotation_name){
+		info_call call=null;
+		java.lang.reflect.Method[] mtds = this.getClass().getMethods();
+		for(int i=0;i<mtds.length;i++){
+			java.lang.reflect.Method current = mtds[i];
+			try{
+				ActionCall a_call = current.getAnnotation(ActionCall.class);
+				if(a_call!=null && a_call.name().equals(annotation_name)){
+					call = new info_call();
+					call.setMethod(a_call.method());
+					call.setNavigated(a_call.navigated());
+					return new Object[]{current,call};
+				}
+			}catch (Exception e) {
+			}
+		}
+		return null;
+	}
 
 }
