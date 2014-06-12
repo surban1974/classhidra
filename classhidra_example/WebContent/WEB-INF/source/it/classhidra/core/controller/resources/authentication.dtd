@@ -13,3 +13,7 @@
 <!ATTLIST authentication-forbidden
 	externalloader CDATA #IMPLIED
 >
+<!ELEMENT authentication (relation*)>
+<!ATTLIST authentication
+	externalloader CDATA #IMPLIED
+>

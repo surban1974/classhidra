@@ -65,6 +65,10 @@ public class load_actions extends elementBase{
 	private String auth_error;
 	private String session_error;
 
+	private String listener_actions;
+	private String listener_beans;
+	private String listener_streams;
+	private String memoryInContainer_streams;
 
 
 	private Vector  v_info_actions;
@@ -258,6 +262,10 @@ public void reimposta(){
 	if(error==null) error="";
 	if(auth_error==null) auth_error="";
 	if(session_error==null) session_error="";
+	if(listener_actions==null) listener_actions="";
+	if(listener_beans==null) listener_beans="";
+	if(listener_streams==null) listener_streams="";
+	if(memoryInContainer_streams==null) memoryInContainer_streams="";
 	readOk_Resource=false;
 	readOk_Folder=false;
 	readOk_File=false;
@@ -399,7 +407,16 @@ public void loadFromAnnotations(){
 		session_error = l_annotated.getSession_error();	
 	if(l_annotated.getAuth_error()!=null && !l_annotated.getAuth_error().equals(""))
 		auth_error = l_annotated.getAuth_error();	
+	if(l_annotated.getListener_actions()!=null && !l_annotated.getListener_actions().equals(""))
+		listener_actions = l_annotated.getListener_actions();
+	if(l_annotated.getListener_beans()!=null && !l_annotated.getListener_beans().equals(""))
+		listener_beans = l_annotated.getListener_beans();
+	if(l_annotated.getListener_streams()!=null && !l_annotated.getListener_streams().equals(""))
+		listener_streams = l_annotated.getListener_streams();
+	if(l_annotated.getMemoryInContainer_streams()!=null && !l_annotated.getMemoryInContainer_streams().equals(""))
+		memoryInContainer_streams = l_annotated.getMemoryInContainer_streams();
 
+	
 	Vector a_streams = new Vector(l_annotated.get_streams().values());
 	if(a_streams.size()>0){
 		int stream_order=0;
@@ -594,7 +611,14 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 		session_error = l_annotated.getSession_error();	
 	if(l_annotated.getAuth_error()!=null && !l_annotated.getAuth_error().equals(""))
 		auth_error = l_annotated.getAuth_error();	
-	
+	if(l_annotated.getListener_actions()!=null && !l_annotated.getListener_actions().equals(""))
+		listener_actions = l_annotated.getListener_actions();
+	if(l_annotated.getListener_beans()!=null && !l_annotated.getListener_beans().equals(""))
+		listener_beans = l_annotated.getListener_beans();
+	if(l_annotated.getListener_streams()!=null && !l_annotated.getListener_streams().equals(""))
+		listener_streams = l_annotated.getListener_streams();	
+	if(l_annotated.getMemoryInContainer_streams()!=null && !l_annotated.getMemoryInContainer_streams().equals(""))
+		memoryInContainer_streams = l_annotated.getMemoryInContainer_streams();	
 
 	Vector a_streams = new Vector(l_annotated.get_streams().values());
 	if(a_streams.size()>0){
@@ -981,9 +1005,6 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 		}
 	}else iAction = (info_action)_actions.get(id_action);
 
-
-
-//	info_action iAction = (info_action)((info_action)_actions.get(id_action)).clone();
 	info_bean iBean = (info_bean)_beans.get(iAction.getName());
 
 
@@ -1007,10 +1028,39 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 			}catch (Exception e) {
 				bsController.writeLog("Load_action-> actionFactory error: "+e.toString(),iStub.log_ERROR);
 			}
+			
 		}
 	}
 	if(rAction!=null){
+		if(iAction.getListener()!=null && !iAction.getListener().equals("")){
+			try{
+				listener_action lAction= (listener_action)Class.forName(iAction.getListener()).newInstance();
+				if(lAction!=null) rAction.setListener_a(lAction);
+			}catch (Exception e) {
+				try{
+					listener_bean lAction= (listener_bean)Class.forName(iAction.getListener()).newInstance();
+					if(lAction!=null) ((i_bean)rAction).setListener_b(lAction);
+				}catch(Exception ex){
+				}
+			}				
+		}
+		if(rAction.getListener_a()==null && getListener_actions()!=null && !getListener_actions().equals("")){
+			try{
+				listener_action lAction= (listener_action)Class.forName(getListener_actions()).newInstance();
+				if(lAction!=null) rAction.setListener_a(lAction);
+			}catch (Exception e) {
+				try{
+					listener_bean lAction= (listener_bean)Class.forName(getListener_beans()).newInstance();
+					if(lAction!=null) ((i_bean)rAction).setListener_b(lAction);
+				}catch(Exception ex){
+				}
+			}				
+		}
 		
+		if(loadedFromProvider)
+			rAction.onPostInstanceFromProvider();
+		else rAction.onPostInstance();
+
 		
 		rAction.set_infoaction(iAction);
 		if(iBean!=null){
@@ -1036,7 +1086,18 @@ public i_stream streamFactory(String id_stream,ServletContext servletContext){
 	return streamFactory(id_stream,null,servletContext);
 }
 public i_stream streamFactory(String id_stream,HttpSession session,ServletContext servletContext){
-	i_stream rStream = new stream();
+	i_stream rStream = null;
+	if(memoryInContainer_streams.equalsIgnoreCase("true")){
+		HashMap container_streams_instance = (HashMap)bsController.getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		if(container_streams_instance==null){
+			container_streams_instance = new HashMap();
+			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
+		}
+		rStream = (i_stream)container_streams_instance.get(id_stream);
+		if(rStream!=null) return rStream;
+	}
+		
+	rStream = new stream();
 	info_stream iStream = null;
 
 	if(_streams==null || _streams.get(id_stream)==null){
@@ -1052,7 +1113,6 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 		}
 	}else iStream = (info_stream)_streams.get(id_stream);
 
-//	info_stream iStream = (info_stream)((info_stream)_streams.get(id_stream)).clone();
 
 
 	boolean loadedFromProvider=false;
@@ -1069,8 +1129,7 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 
 		if(iStream.getType()!=null && !iStream.getType().equals("")){
 			if(iStream.getProperty("init").equalsIgnoreCase("annotation") && !iStream.isAnnotationLoaded())
-				iStream = (info_stream)loadFromAnnotations(iStream);
-			
+				iStream = (info_stream)loadFromAnnotations(iStream);			
 				try{
 					rStream = (i_stream)Class.forName(iStream.getType()).newInstance();
 				}catch (Exception e) {
@@ -1079,7 +1138,35 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 		}
 	}
 	if(rStream!=null)
+		if(iStream.getListener()!=null && !iStream.getListener().equals("")){
+			try{
+				listener_stream lStream= (listener_stream)Class.forName(iStream.getListener()).newInstance();
+				if(lStream!=null) rStream.setListener_s(lStream);
+			}catch (Exception e) {
+			}				
+		}
+		if(rStream.getListener_s()==null && getListener_streams()!=null && !getListener_streams().equals("")){
+			try{
+				listener_stream lStream= (listener_stream)Class.forName(getListener_streams()).newInstance();
+				if(lStream!=null) rStream.setListener_s(lStream);
+			}catch (Exception e) {
+			}				
+		}
+		
+		if(loadedFromProvider)
+			rStream.onPostInstanceFromProvider();
+		else rStream.onPostInstance();
+		
 		rStream.set_infostream(iStream);
+		
+		if(memoryInContainer_streams.equalsIgnoreCase("true")){
+			HashMap container_streams_instance = (HashMap)bsController.getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+			if(container_streams_instance==null){
+				container_streams_instance = new HashMap();
+				bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
+			}
+			container_streams_instance.put(iStream.getName(), rStream);
+		}
 	
 	return rStream;
 }
@@ -1120,6 +1207,23 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 				rBean.get_infobean().setName(action_instance.get_infoaction().getName());
 				rBean.get_infobean().setType(action_instance.get_infoaction().getType());
 			}
+			if(rBean.get_infobean()!=null){
+				if(rBean.get_infobean().getListener()!=null && !rBean.get_infobean().getListener().equals("")){
+					try{
+						listener_bean lBean= (listener_bean)Class.forName(iBean.getListener()).newInstance();
+						if(lBean!=null) rBean.setListener_b(lBean);;
+					}catch (Exception e) {
+					}				
+				}
+				if(rBean.getListener_b()==null && getListener_beans()!=null && !getListener_beans().equals("")){
+					try{
+						listener_bean lBean= (listener_bean)Class.forName(getListener_beans()).newInstance();
+						if(lBean!=null) rBean.setListener_b(lBean);
+					}catch (Exception e) {
+					}				
+				}
+			}
+
 			return rBean;
 		}
 	}else iBean = (info_bean)_beans.get(id_bean);
@@ -1194,8 +1298,27 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 		}
 
 	}
-	if(rBean!=null)
+	if(rBean!=null){
+		if(iBean.getListener()!=null && !iBean.getListener().equals("")){
+			try{
+				listener_bean lBean= (listener_bean)Class.forName(iBean.getListener()).newInstance();
+				if(lBean!=null) rBean.setListener_b(lBean);;
+			}catch (Exception e) {
+			}				
+		}
+		if(rBean.getListener_b()==null && getListener_beans()!=null && !getListener_beans().equals("")){
+			try{
+				listener_bean lBean= (listener_bean)Class.forName(getListener_beans()).newInstance();
+				if(lBean!=null) rBean.setListener_b(lBean);
+			}catch (Exception e) {
+			}				
+		}
+		if(loadedFromProvider)
+			rBean.onPostInstanceFromProvider();
+		else rBean.onPostInstance();
+		
 		rBean.set_infobean(iBean);
+	}
 	
 	
 	return rBean;
@@ -1305,6 +1428,18 @@ private void readFormElements(Node node) throws Exception{
 //		}
 	}
 	if(node.getNodeName().equals("action-streams")){
+		try{
+			NamedNodeMap nnm = node.getAttributes();
+			if (nnm!=null){
+				for (int j=0;j<node.getAttributes().getLength();j++){
+					String paramName = node.getAttributes().item(j).getNodeName();
+					Node node_nnm =	nnm.getNamedItem(paramName);
+					if (node_nnm!=null) setCampoValue(paramName,node_nnm.getNodeValue());
+				}
+			}
+		}catch(Exception e){
+			new bsControllerException(e,iStub.log_DEBUG);
+		}		
 		int stream_order=0;
 		HashMap _streams_order = new HashMap();
 		for(int k=0;k<node.getChildNodes().getLength();k++){
@@ -1380,6 +1515,18 @@ private void readFormElements(Node node) throws Exception{
 
 	}
 	if(node.getNodeName().equals("form-beans")){
+		try{
+			NamedNodeMap nnm = node.getAttributes();
+			if (nnm!=null){
+				for (int j=0;j<node.getAttributes().getLength();j++){
+					String paramName = node.getAttributes().item(j).getNodeName();
+					Node node_nnm =	nnm.getNamedItem(paramName);
+					if (node_nnm!=null) setCampoValue(paramName,node_nnm.getNodeValue());
+				}
+			}
+		}catch(Exception e){
+			new bsControllerException(e,iStub.log_DEBUG);
+		}		
 		int order=0;
 		if(v_info_beans!=null && v_info_beans.size()>0){
 			try{
@@ -1567,8 +1714,12 @@ public String toXml(){
 		result+="<?xml version=\"1.0\" encoding=\""+xmlEncoding+"\"?>"+System.getProperty("line.separator");
 	result+="<action-config";
 	result+=" externalloader=\""+util_format.normaliseXMLText(externalloader)+"\"";
+
 	result+=">";
-	result+=System.getProperty("line.separator")+"   <action-streams>";
+	result+=System.getProperty("line.separator")+"   <action-streams";
+	if(listener_streams!=null && !listener_streams.trim().equals("")) result+=" listener_streams=\""+util_format.normaliseXMLText(listener_streams)+"\"";
+	if(memoryInContainer_streams!=null && !memoryInContainer_streams.trim().equals("")) result+=" memoryInContainer_streams=\""+util_format.normaliseXMLText(memoryInContainer_streams)+"\"";
+	result+=">";
 	if(v_info_streams!=null && v_info_streams.size()>0){
 		for(int i=0;i<v_info_streams.size();i++){
 			info_stream entity = (info_stream)v_info_streams.get(i);
@@ -1582,7 +1733,9 @@ public String toXml(){
 	}
 	result+=System.getProperty("line.separator")+"   </action-streams>";
 
-	result+=System.getProperty("line.separator")+"   <form-beans>";
+	result+=System.getProperty("line.separator")+"   <form-beans";
+	if(listener_beans!=null && !listener_beans.trim().equals("")) result+=" listener_beans=\""+util_format.normaliseXMLText(listener_beans)+"\"";
+	result+=">";	
 	if(v_info_beans!=null && v_info_beans.size()>0){
 		for(int i=0;i<v_info_beans.size();i++){
 			info_bean entity = (info_bean)v_info_beans.get(i);
@@ -1619,6 +1772,7 @@ public String toXml(){
 	if(error!=null && !error.trim().equals("")) result+=" error=\""+util_format.normaliseXMLText(error)+"\"";
 	if(auth_error!=null && !auth_error.trim().equals("")) result+=" auth_error=\""+util_format.normaliseXMLText(auth_error)+"\"";
 	if(session_error!=null && !session_error.trim().equals("")) result+=" session_error=\""+util_format.normaliseXMLText(session_error)+"\"";
+	if(listener_actions!=null && !listener_actions.trim().equals("")) result+=" listener_actions=\""+util_format.normaliseXMLText(listener_actions)+"\"";
 	result+=">";
 	if(v_info_actions!=null && v_info_actions.size()>0){
 		for(int i=0;i<v_info_actions.size();i++){
@@ -1760,10 +1914,38 @@ public void setReadOk_ExtLoader(boolean readOkExtLoader) {
 	readOk_ExtLoader = readOkExtLoader;
 }
 
+public String getListener_actions() {
+	return listener_actions;
+}
+
+public void setListener_actions(String listenerA) {
+	listener_actions = listenerA;
+}
+
+public String getListener_beans() {
+	return listener_beans;
+}
+
+public void setListener_beans(String listenerB) {
+	listener_beans = listenerB;
+}
+
+public String getListener_streams() {
+	return listener_streams;
+}
+
+public void setListener_streams(String listenerS) {
+	listener_streams = listenerS;
+}
 
 
+public String getMemoryInContainer_streams() {
+	return memoryInContainer_streams;
+}
 
-
+public void setMemoryInContainer_streams(String memoryInContainerStreams) {
+	memoryInContainer_streams = memoryInContainerStreams;
+}
 
 
 class load_actions_builder  implements  java.io.Serializable, Cloneable {
@@ -1963,6 +2145,15 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			session_error = l_annotated.getSession_error();	
 		if(l_annotated.getAuth_error()!=null && !l_annotated.getAuth_error().equals(""))
 			auth_error = l_annotated.getAuth_error();	
+
+		if(l_annotated.getListener_actions()!=null && !l_annotated.getListener_actions().equals(""))
+			listener_actions = l_annotated.getListener_actions();
+		if(l_annotated.getListener_beans()!=null && !l_annotated.getListener_beans().equals(""))
+			listener_beans = l_annotated.getListener_beans();
+		if(l_annotated.getListener_streams()!=null && !l_annotated.getListener_streams().equals(""))
+			listener_streams = l_annotated.getListener_streams();
+		if(l_annotated.getMemoryInContainer_streams()!=null && !l_annotated.getMemoryInContainer_streams().equals(""))
+			memoryInContainer_streams = l_annotated.getMemoryInContainer_streams();
 
 		Vector a_streams = new Vector(l_annotated.get_streams().values());
 
@@ -2304,5 +2495,15 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 		return _b_transformationoutput;
 	}
 }
+
+
+
+
+
+
+
+
+
+
 
 }

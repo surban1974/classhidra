@@ -48,7 +48,7 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 
-
+ 
 public class bean extends elementBeanBase implements i_bean  {
 	private static final long serialVersionUID = 3917073481415967577L;
 
@@ -67,6 +67,8 @@ public class bean extends elementBeanBase implements i_bean  {
 	private boolean binaryoutput=false;
 	private boolean virtual=false;
 	public int countActions;
+	
+	private listener_bean listener_b;
 	
 	private Object delegated;
 
@@ -94,6 +96,22 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		}
 	}
 
+	if(get_infoaction()!=null && get_infoaction().getReloadAfterNextNavigated()!=null && get_infoaction().getReloadAfterNextNavigated().equalsIgnoreCase("false")){
+		String id_prev = request.getParameter(bsConstants.CONST_BEAN_$NAVIGATION);
+		if(id_prev!=null && id_prev.indexOf(":")>-1){
+			id_prev = id_prev.substring(0,id_prev.indexOf(":"));
+			info_navigation nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+			if(nav!=null){
+				int level_prev = nav.findLevel(id_prev, 0);
+				int level_curr = nav.findLevel(get_infoaction().getPath(), 0);
+				if(level_curr<level_prev && level_curr!=-1) return;
+			}
+
+		
+		}
+
+	}
+	
 	if(request.getContentType()!=null && request.getContentType().indexOf("multipart")>-1){
 		initMultiPart(request);
 		return;
@@ -103,136 +121,139 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		if(initJsonPart(request)) return;
 	}
 	
-	
-	xmloutput=false;
-	jsonoutput=false;
-	boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
-			(
-					request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
-					request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))		
-			)
-		);
+	initNormal(request);
 
-	Enumeration en = request.getParameterNames();
-	while(en.hasMoreElements()){
-		String key = (String)en.nextElement();
-		String value = request.getParameter(key);
-		String format = request.getParameter("$format_"+key);
-		String replaceOnBlank = request.getParameter("$replaceOnBlank_"+key);
-		String replaceOnErrorFormat = request.getParameter("$replaceOnErrorFormat_"+key);
-		
-		if(inputBase64){
-			String charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
-			try{
-				if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
-			}catch(Exception e){}
-			try{
-				if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
-			}catch(Exception e){}
-			try{
-				if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
-			}catch(Exception e){}
-			try{
-				if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
-			}catch(Exception e){
-			}
-		}
-		
-		if(key.indexOf(".")==-1){
-			try{
-				Object makedValue=null;
-				if(format!=null){
-					if(delegated!=null){
-						makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-						if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-					}else{
-						makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-					}
-				}else{
-					if(delegated!=null){
-						makedValue=util_makeValue.makeValue1(delegated,value,key);
-						if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
-					}else{
-						makedValue=util_makeValue.makeValue1(this,value,key);
-					}
+}
+
+	public void initNormal(HttpServletRequest request) throws bsControllerException{
+		xmloutput=false;
+		jsonoutput=false;
+		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
+				(
+						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
+						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))		
+				)
+			);
+
+		Enumeration en = request.getParameterNames();
+		while(en.hasMoreElements()){
+			String key = (String)en.nextElement();
+			String value = request.getParameter(key);
+			String format = request.getParameter("$format_"+key);
+			String replaceOnBlank = request.getParameter("$replaceOnBlank_"+key);
+			String replaceOnErrorFormat = request.getParameter("$replaceOnErrorFormat_"+key);
+			
+			if(inputBase64){
+				String charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
+				try{
+					if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+				}catch(Exception e){}
+				try{
+					if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+				}catch(Exception e){}
+				try{
+					if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+				}catch(Exception e){}
+				try{
+					if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+				}catch(Exception e){
 				}
-				setCampoValueWithPoint(key,makedValue);
-			}catch(Exception e){
+			}
+			
+			if(key.indexOf(".")==-1){
 				try{
 					Object makedValue=null;
 					if(format!=null){
 						if(delegated!=null){
-							makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+							makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
+							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 						}else{
-							makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+							makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 						}
-					}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
-					setCampoValueWithPoint(key,makedValue);
-				}catch(Exception ex){
-					if(parametersFly==null) parametersFly = new HashMap();
-					if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
-				}
-			}
-		}else{
-			
-			Object writeValue=null;
-			Object current_requested = (delegated==null)?this:delegated;
-			
-			String last_field_name = null;
-			StringTokenizer st = new StringTokenizer(key,".");
-			while(st.hasMoreTokens()){				
-				if(st.countTokens()>1){
-					String current_field_name = st.nextToken();
-					try{
-						if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
-						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
-						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-						if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
-					}catch(Exception e){
+					}else{
+						if(delegated!=null){
+							makedValue=util_makeValue.makeValue1(delegated,value,key);
+							if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
+						}else{
+							makedValue=util_makeValue.makeValue1(this,value,key);
+						}
 					}
-					current_requested = writeValue;
-				}else{
-					last_field_name = st.nextToken();
-				}
-				writeValue = null;
-			}
-			
-			if(current_requested!=null){
-				try{
-					if(format!=null)
-						setCampoValuePoint(
-								current_requested,
-								last_field_name,
-								util_makeValue.makeFormatedValue1(
-											current_requested,
-											format,
-											value,
-											last_field_name,
-											replaceOnBlank,
-											replaceOnErrorFormat
-								)
-						);
-					else setCampoValuePoint(
-								current_requested,
-								last_field_name,
-								util_makeValue.makeValue1(current_requested,value,last_field_name)
-							);
+					setCampoValueWithPoint(key,makedValue);
 				}catch(Exception e){
 					try{
-						if(format!=null)
-							setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
-						else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
+						Object makedValue=null;
+						if(format!=null){
+							if(delegated!=null){
+								makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+								if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+							}else{
+								makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+							}
+						}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
+						setCampoValueWithPoint(key,makedValue);
 					}catch(Exception ex){
+						if(parametersFly==null) parametersFly = new HashMap();
+						if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
 					}
 				}
+			}else{
+				
+				Object writeValue=null;
+				Object current_requested = (delegated==null)?this:delegated;
+				
+				String last_field_name = null;
+				StringTokenizer st = new StringTokenizer(key,".");
+				while(st.hasMoreTokens()){				
+					if(st.countTokens()>1){
+						String current_field_name = st.nextToken();
+						try{
+							if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
+							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
+							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
+							if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
+						}catch(Exception e){
+						}
+						current_requested = writeValue;
+					}else{
+						last_field_name = st.nextToken();
+					}
+					writeValue = null;
+				}
+				
+				if(current_requested!=null){
+					try{
+						if(format!=null)
+							setCampoValuePoint(
+									current_requested,
+									last_field_name,
+									util_makeValue.makeFormatedValue1(
+												current_requested,
+												format,
+												value,
+												last_field_name,
+												replaceOnBlank,
+												replaceOnErrorFormat
+									)
+							);
+						else setCampoValuePoint(
+									current_requested,
+									last_field_name,
+									util_makeValue.makeValue1(current_requested,value,last_field_name)
+								);
+					}catch(Exception e){
+						try{
+							if(format!=null)
+								setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
+							else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
+						}catch(Exception ex){
+						}
+					}
+				}
+
+
 			}
-
-
 		}
 	}
-
-}
 
 
 	public void initMultiPart(HttpServletRequest request) throws bsControllerException{
@@ -1141,6 +1162,75 @@ public boolean getVirtual() {
 public void setVirtual(boolean virtual) {
 	this.virtual = virtual;
 }
+
+public listener_bean getListener_b() {
+	return listener_b;
+}
+
+public void setListener_b(listener_bean listener) {
+	this.listener_b = listener;
+	if(listener_b!=null) listener_b.setOwner(this);
+}
+
+public void onPostInit(HashMap content) {
+	if(listener_b!=null) listener_b.onPostInit(content);
+}
+
+public void onPostInit(HttpServletRequest request) {
+	if(listener_b!=null) listener_b.onPostInit(request);
+}
+
+public void onPostInit(i_bean anotherBean) {
+	if(listener_b!=null) listener_b.onPostInit(anotherBean);
+}
+
+public void onPostValidate(redirects redirect,HttpServletRequest request) {
+	if(listener_b!=null) listener_b.onPostValidate(redirect, request);
+}
+
+public void onPreInit(HashMap content) {
+	if(listener_b!=null) listener_b.onPreInit(content);
+}
+
+public void onPreInit(HttpServletRequest request) {
+	if(listener_b!=null) listener_b.onPreInit(request);
+}
+
+public void onPreInit(i_bean anotherBean) {
+	if(listener_b!=null) listener_b.onPreInit(anotherBean);
+}
+
+public void onPreValidate(HttpServletRequest request) {
+	if(listener_b!=null) listener_b.onPreValidate(request);
+}
+
+public void onPostInstance() {
+	if(listener_b!=null) listener_b.onPostInstance();
+}
+
+public void onPostInstanceFromProvider() {
+	if(listener_b!=null) listener_b.onPostInstanceFromProvider();
+}
+
+public void onAddToNavigation() {
+	if(listener_b!=null) listener_b.onAddToNavigation();
+}
+
+public void onGetFromNavigation() {
+	if(listener_b!=null) listener_b.onGetFromNavigation();
+}
+
+public void onAddToSession() {
+	if(listener_b!=null) listener_b.onAddToSession();
+}
+
+public void onGetFromSession() {
+	if(listener_b!=null) listener_b.onGetFromSession();
+}
+
+public void setOwner(i_bean owner) {
+}
+
 
 
 

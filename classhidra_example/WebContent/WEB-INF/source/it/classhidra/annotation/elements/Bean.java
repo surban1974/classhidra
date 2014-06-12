@@ -10,4 +10,5 @@ public @interface Bean {
 	String type() default "";
 	String name() default "";
 	String model() default "";
+	String listener() default "";
 }

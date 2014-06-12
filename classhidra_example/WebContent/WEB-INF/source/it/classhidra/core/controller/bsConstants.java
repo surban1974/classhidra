@@ -146,6 +146,8 @@ public interface bsConstants {
 	public final static String CONST_DIRECTINDACTION_bsTransformation	=	"bsTransformation";
 	
 	public final static String CONST_ID_EXEC_TYPE_CLONED				= 	"cloned";
+	
+	public final static String CONST_CONTAINER_STREAMS_INSTANCE			=	"$container_streams_instance";
 
 
 

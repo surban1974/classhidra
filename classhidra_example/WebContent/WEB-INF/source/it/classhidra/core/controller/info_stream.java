@@ -41,6 +41,7 @@ public class info_stream extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -1;
 	private String type;
 	private String name;
+	private String listener;
 
 	private HashMap _apply_to_action;
 	private Vector v_info_apply_to_action;
@@ -98,6 +99,7 @@ public class info_stream extends info_entity implements i_elementBase{
 	public void reimposta(){
 		type="";
 		name="";
+		listener="";
 		_apply_to_action=new HashMap();
 		v_info_apply_to_action=new Vector();
 
@@ -132,6 +134,7 @@ public class info_stream extends info_entity implements i_elementBase{
 		String result=System.getProperty("line.separator")+"      <stream";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(type!=null && !type.trim().equals("")) result+=" type=\""+util_format.normaliseXMLText(type)+"\"";
+		if(listener!=null && !listener.trim().equals("")) result+=" listener=\""+util_format.normaliseXMLText(listener)+"\"";
 		result+=super.toXml();
 		result+=">";
 		boolean isEntity=false;
@@ -157,5 +160,15 @@ public class info_stream extends info_entity implements i_elementBase{
 	public void setV_info_apply_to_action(Vector vInfoApplyToAction) {
 		v_info_apply_to_action = vInfoApplyToAction;
 	}
+
+	public String getListener() {
+		return listener;
+	}
+
+	public void setListener(String listener) {
+		this.listener = listener;
+	}
+	
+	
 
 }

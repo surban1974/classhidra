@@ -8,5 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Stream {
 	Entity entity() default @Entity;
 	String name() default "";
+	String listener() default "";
 	Apply_to_action[] applied() default {};
 }

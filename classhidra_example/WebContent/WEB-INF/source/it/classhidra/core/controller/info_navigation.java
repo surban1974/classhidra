@@ -106,6 +106,14 @@ public class info_navigation extends elementBase implements i_elementBase{
 			return null;
 		}
 	}
+	
+	public int findLevel(String _id, int level){
+		if(this.id.equals(_id)) return level;
+		else{
+			if(child!=null) return child.findLevel(_id,level+1);
+			return -1;
+		}
+	}
 
 	public info_navigation lastIRedirect(){
 		if(this.child==null){

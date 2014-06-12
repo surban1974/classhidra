@@ -1,4 +1,4 @@
-//---	23/01/2014 (compatible classHidra 1.4.8)
+//---	03/04/2014 (compatible classHidra 1.4.8)
 
 
 
@@ -289,24 +289,31 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction, callBackJs,
 		    	if (http_request.readyState == 4) {
 		            if (http_request.status == 200 ) {
 		            	if(callBackJs && callBackJs!=""){
-		            		eval(callBackJs + "(http_request,target)");
+		            		if (typeof callBackJs === "function") {
+		            			callBackJs(http_request,target);
+		            		}else{	
+		            			eval(callBackJs + "(http_request,target)");
+		            		}
 		            	}else{
 		            		document.getElementById(target).innerHTML=http_request.responseText;	
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
-		            		eval(afterJSFunction + "()");
+		            		if (typeof afterJSFunction === "function") {
+		            			afterJSFunction();
+		            		}
+		            		else{
+		            			eval(afterJSFunction + "()");
+		            		}
 		            	}	
-		            } else {
-		            	var error_mess = http_request.responseText;
-//		            	ajax_makeRequest("messages.bs?error_mess="+encodeURIComponent(error_mess)+"&data_rif="+new Date().getTime(),"idDivMessage");
-
 		            }
+		            http_request.close();
 		        } 
 	    	}catch(e){
 //	    		alert('There was a generic problem with callback_function():'+e.toString());
 	    	}
 
         };
+
 
 
         
@@ -561,16 +568,25 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 		    	if (http_request.readyState == 4) {
 		            if (http_request.status == 200 ) {
 		            	if(callBackJs && callBackJs!=""){
-		            		eval(callBackJs + "(http_request,target)");
+		            		if (typeof callBackJs === "function") {
+		            			callBackJs(http_request,target);
+		            		}else{	
+		            			eval(callBackJs + "(http_request,target)");
+		            		}
 		            	}else{
 		            		document.getElementById(target).innerHTML=http_request.responseText;	
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
-		            		eval(afterJSFunction + "()");
+		            		if (typeof afterJSFunction === "function") {
+		            			afterJSFunction();
+		            		}
+		            		else{
+		            			eval(afterJSFunction + "()");
+		            		}
 		            	}	
-		            } else {
-		            	var error_mess = http_request.responseText;
+		            	http_request.close();
 		            }
+		            http_request.close();
 		        } 
 	    	}catch(e){
 
@@ -851,15 +867,23 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 	    	try{
 		            if (http_request.status == 200 ) {
 		            	if(callBackJs && callBackJs!=""){
-		            		eval(callBackJs + "(http_request,target)");
+		            		if (typeof callBackJs === "function") {
+		            			callBackJs(http_request,target);
+		            		}else{	
+		            			eval(callBackJs + "(http_request,target)");
+		            		}
 		            	}else{
 		            		document.getElementById(target).innerHTML=http_request.responseText;	
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
-		            		eval(afterJSFunction + "()");
+		            		if (typeof afterJSFunction === "function") {
+		            			afterJSFunction();
+		            		}
+		            		else{
+		            			eval(afterJSFunction + "()");
+		            		}
 		            	}	
-		            } else {
-		            	var error_mess = http_request.responseText;
+		            	http_request.close();
 		            }
 	    	}catch(e){
 

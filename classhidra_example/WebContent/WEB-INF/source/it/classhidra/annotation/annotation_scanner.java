@@ -49,6 +49,10 @@ public class annotation_scanner implements i_annotation_scanner {
 	protected String error;
 	protected String auth_error;
 	protected String session_error;
+	protected String listener_actions;
+	protected String listener_beans;
+	protected String listener_streams;
+	protected String memoryInContainer_streams;
 
 	
 
@@ -197,6 +201,11 @@ public class annotation_scanner implements i_annotation_scanner {
 				error=annotationActionMapping.error();
 				session_error=annotationActionMapping.session_error();
 				auth_error=annotationActionMapping.auth_error();
+
+				listener_actions=annotationActionMapping.listener_actions();
+				listener_beans=annotationActionMapping.listener_beans();
+				listener_streams=annotationActionMapping.listener_streams();
+				memoryInContainer_streams=annotationActionMapping.memoryInContainer_streams();
 				
 				Stream[] streams = annotationActionMapping.streams();
 				if(streams!=null && streams.length>0){
@@ -261,6 +270,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	info_bean iBean = new info_bean();
 		    	iBean.setName(annotationBean.name());
 		    	iBean.setType(class_path);
+		    	iBean.setListener(annotationBean.listener());
 		    	setEntity(iBean,annotationBean.entity());
 		    	iBean.setAnnotationLoaded(true);
 		    	_beans.put(iBean.getName(),iBean);
@@ -331,10 +341,12 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iAction.setError(annotationAction.error());
 		    	iAction.setMemoryInSession(annotationAction.memoryInSession());
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
+		    	iAction.setReloadAfterNextNavigated(annotationAction.reloadAfterNextNavigated());
 		    	iAction.setNavigated(annotationAction.navigated());
 		    	iAction.setSyncro(annotationAction.syncro());
 		    	iAction.setStatistic(annotationAction.statistic());
 		    	iAction.setHelp(annotationAction.help());
+		    	iAction.setListener(annotationAction.listener());
 		    	setEntity(iAction,annotationAction.entity());
 		    	iAction.setAnnotationLoaded(true);
 		    	Redirect[] redirects = annotationAction.redirects();
@@ -466,6 +478,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	info_stream iStream = new info_stream();
 		    	iStream.setName(annotationStream.name());
 		    	iStream.setType(class_path);
+		    	iStream.setListener(annotationStream.listener());
 		    	setEntity(iStream,annotationStream.entity());
 		    	iStream.setAnnotationLoaded(true);
 		    	Apply_to_action[] applied = annotationStream.applied();
@@ -552,4 +565,27 @@ public class annotation_scanner implements i_annotation_scanner {
 	public HashMap get_redirectsjustloaded() {
 		return _redirectsjustloaded;
 	}
+
+
+	public String getListener_actions() {
+		return listener_actions;
+	}
+
+
+	public String getListener_beans() {
+		return listener_beans;
+	}
+
+
+	public String getListener_streams() {
+		return listener_streams;
+	}
+
+
+	public String getMemoryInContainer_streams() {
+		return memoryInContainer_streams;
+	}
+
+
+
 }

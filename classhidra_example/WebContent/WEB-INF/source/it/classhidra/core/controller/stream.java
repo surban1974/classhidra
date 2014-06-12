@@ -43,16 +43,20 @@ public class stream implements i_stream, Serializable{
 	private HttpServletRequest _request;
 	private i_stream _stream;
 	private info_stream _infostream;
+	private listener_stream listener_s;
 
 	
 	public stream(){
 		super();
 	}	
 	
-	public void init(HttpServletRequest request,	HttpServletResponse response) throws bsControllerException{
+	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		_request = request;
-		if(_stream!=null)
+		if(_stream!=null){
+			_stream.onPreInit(_request, response);
 			_stream.init(_request,response); 
+			_stream.onPostInit(_request, response);
+		}
 	}
 	public redirects streamservice_enter(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		return null;
@@ -96,5 +100,77 @@ public class stream implements i_stream, Serializable{
 
 		return rd;
 	}
+	
+	public listener_stream getListener_s() {
+		return listener_s;
+	}
+
+	public void setListener_s(listener_stream listenerS) {
+		listener_s = listenerS;
+		if(listener_s!=null) listener_s.setOwner(this);
+	}
+
+	public void onPostEnter(redirects redirect, HttpServletRequest request,HttpServletResponse response) {
+		if(listener_s!=null) listener_s.onPostEnter(redirect,request, response);
+	}
+
+	public void onPostExit(redirects redirect, HttpServletRequest request,HttpServletResponse response) {
+		if(listener_s!=null) listener_s.onPostExit(redirect,request, response);
+	}
+
+	public void onPostInit(HttpServletRequest request,HttpServletResponse response) {
+		if(listener_s!=null) listener_s.onPostInit(request, response);
+	}
+
+	public void onPostRedirect(RequestDispatcher rd) {
+		if(listener_s!=null) listener_s.onPostRedirect(rd);
+	}
+
+	public void onPreEnter(HttpServletRequest request,HttpServletResponse response) {
+		if(listener_s!=null) listener_s.onPreEnter(request, response);
+	}
+
+	public void onPreExit(HttpServletRequest request,HttpServletResponse response) {
+		if(listener_s!=null) listener_s.onPreExit(request, response);
+	}
+
+	public void onPreInit(HttpServletRequest request,HttpServletResponse response) {
+		if(listener_s!=null) listener_s.onPreInit(request, response);
+	}
+
+	public void onPreRedirect(redirects redirect,String idAction) {
+		if(listener_s!=null) listener_s.onPreRedirect(redirect, idAction);
+	}
+
+	public void onPostEnter(redirects redirect, HashMap content) {
+		if(listener_s!=null) listener_s.onPostEnter(redirect,content);
+	}
+
+	public void onPostExit(redirects redirect, HashMap content) {
+		if(listener_s!=null) listener_s.onPostExit(redirect,content);
+	}
+
+	public void onPreEnter(HashMap content) {
+		if(listener_s!=null) listener_s.onPreEnter(content);
+	}
+
+	public void onPreExit(HashMap content) {
+		if(listener_s!=null) listener_s.onPreExit(content);
+	}
+
+	public void onPostInstance() {
+		if(listener_s!=null) listener_s.onPostInstance();
+	}
+	
+	public void onPostInstanceFromProvider() {
+		if(listener_s!=null) listener_s.onPostInstanceFromProvider();
+	}	
+
+	public void setOwner(i_stream owner) {
+	}
+
+
+
+
 
 }

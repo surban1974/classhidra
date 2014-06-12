@@ -16,10 +16,12 @@ public @interface Action {
 	String error() default "";
 	String memoryInSession() default "";
 	String reloadAfterAction() default "";
+	String reloadAfterNextNavigated() default "";	
 	String navigated() default "";
 	String syncro() default "false";
 	String statistic() default "true";
 	String help() default "";
+	String listener() default "";
 	Redirect[] redirects() default {};
 	Transformation[] transformations() default {};
 	ActionCall[] calls() default {};

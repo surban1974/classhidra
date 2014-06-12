@@ -47,9 +47,11 @@ public class info_action extends info_entity implements i_elementBase{
 	private String error;
 	private String memoryInSession;
 	private String reloadAfterAction;
+	private String reloadAfterNextNavigated;
 	private String navigated;
 	private String help;
 	private String syncro;
+	private String listener;
 	private String statistic;
 
 
@@ -152,9 +154,11 @@ public class info_action extends info_entity implements i_elementBase{
 		wac="";
 		memoryInSession="";
 		reloadAfterAction="";
+		reloadAfterNextNavigated="";
 		navigated="";
 		help="";
 		syncro="false";
+		listener="";
 		statistic="true";
 
 
@@ -246,7 +250,13 @@ public class info_action extends info_entity implements i_elementBase{
 	public void setReloadAfterAction(String string) {
 		reloadAfterAction = string;
 	}
+	public String getReloadAfterNextNavigated() {
+		return reloadAfterNextNavigated;
+	}
 
+	public void setReloadAfterNextNavigated(String reloadAfterNextNavigated) {
+		this.reloadAfterNextNavigated = reloadAfterNextNavigated;
+	}
 	public String getNavigated() {
 		return navigated;
 	}
@@ -282,9 +292,11 @@ public class info_action extends info_entity implements i_elementBase{
 		if(redirect!=null && !redirect.trim().equals("")) result+=" redirect=\""+util_format.normaliseXMLText(redirect)+"\"";
 		if(navigated!=null && !navigated.trim().equals("")) result+=" navigated=\""+util_format.normaliseXMLText(navigated)+"\"";
 		if(syncro!=null && !syncro.trim().equals("")) result+=" syncro=\""+util_format.normaliseXMLText(syncro)+"\"";
+		if(listener!=null && !listener.trim().equals("")) result+=" listener=\""+util_format.normaliseXMLText(listener)+"\"";
 		
 		if(memoryInSession!=null && !memoryInSession.trim().equals("")) result+=" memoryInSession=\""+util_format.normaliseXMLText(memoryInSession)+"\"";
 		if(reloadAfterAction!=null && !reloadAfterAction.trim().equals("")) result+=" reloadAfterAction=\""+util_format.normaliseXMLText(reloadAfterAction)+"\"";
+		if(reloadAfterNextNavigated!=null && !reloadAfterNextNavigated.trim().equals("")) result+=" reloadAfterNextNavigated=\""+util_format.normaliseXMLText(reloadAfterNextNavigated)+"\"";
 		if(help!=null && !help.trim().equals("")) result+=" help=\""+util_format.normaliseXMLText(help)+"\"";
 		if(error!=null && !error.trim().equals("")) result+=" error=\""+util_format.normaliseXMLText(error)+"\"";
 		result+=super.toXml();
@@ -442,6 +454,16 @@ public class info_action extends info_entity implements i_elementBase{
 	public void setV_info_calls(Vector vInfoCalls) {
 		v_info_calls = vInfoCalls;
 	}
+
+	public String getListener() {
+		return listener;
+	}
+
+	public void setListener(String listener) {
+		this.listener = listener;
+	}
+
+
 
 
 
