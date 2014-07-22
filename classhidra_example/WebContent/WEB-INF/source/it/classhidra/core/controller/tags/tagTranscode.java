@@ -55,6 +55,7 @@ public class tagTranscode extends TagSupport{
 	protected String outputField = null;
 	protected String key = null;
 	protected String keyValue = null;
+	protected String showKeyAsDefaultValue = null;
 	protected String styleClass=null;
 	protected String formatOutput=null;
 	protected String formatLanguage=null;
@@ -85,6 +86,7 @@ public class tagTranscode extends TagSupport{
 		outputField=null;
 		key=null;
 		keyValue=null;
+		showKeyAsDefaultValue=null;
 		styleClass=null;
 		formatOutput=null;
 		method_prefix=null;
@@ -186,8 +188,9 @@ public class tagTranscode extends TagSupport{
 			}
 		}
 		
-		if(key==null && keyValue!=null){			
-			valueKey = keyValue;					 
+		if(key==null && keyValue!=null ){
+			if(showKeyAsDefaultValue==null || !showKeyAsDefaultValue.equalsIgnoreCase("false"))
+				valueKey = keyValue;					 
 		}		
 
 		if(valueSource!=null){
@@ -214,6 +217,7 @@ public class tagTranscode extends TagSupport{
 		
 		}
 
+		if(writeValue==null && valueKey!=null) writeValue=valueKey;
 		
 		if(writeValue!=null){
 			if(styleClass!=null){
@@ -384,6 +388,14 @@ public class tagTranscode extends TagSupport{
 
 	public void setNormalASCII(String normalASCII) {
 		this.normalASCII = normalASCII;
+	}
+
+	public String getShowKeyAsDefaultValue() {
+		return showKeyAsDefaultValue;
+	}
+
+	public void setShowKeyAsDefaultValue(String showKeyAsDefaultValue) {
+		this.showKeyAsDefaultValue = showKeyAsDefaultValue;
 	}
 }
 
