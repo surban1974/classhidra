@@ -328,5 +328,32 @@ public class util_blob {
 			return result;
 
 	   }
+	   
+	   public static String load_from_config_clear(String field,String db_name) throws Exception{
+		    String result = null;
+			String sql = "select content from "+ db_name+ " where id='"+field+"' and backup_tm is null ";
+			Connection conn=null;
+			Statement st=null;
+			ResultSet rs=null;
+			try{
+				
+					conn = new db_connection().getContent(false);
+					conn.setAutoCommit(false);
+					st = conn.createStatement();
+				rs = st.executeQuery(sql);
+				if(rs.next()){
+					result=rs.getString(1);
+				}
+				rs.close();
+
+			}catch(Exception e){
+				util_format.writeToConsole(null,"DBConfig Read Error name="+db_name+" :"+e.toString());
+				throw e;	
+			}finally{
+				db_connection.release(rs, st, conn);
+			}   
+			return result;
+
+	   }	   
 
 }

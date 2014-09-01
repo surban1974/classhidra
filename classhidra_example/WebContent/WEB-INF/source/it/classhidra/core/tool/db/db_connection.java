@@ -80,6 +80,35 @@ public Connection getContent() throws Exception{
 	return conn;
 }
 
+public Connection getContent(boolean writeException) throws Exception{
+	
+	Connection conn = null;
+	if(init.get_allwayone().equals("true"))
+		conn = (Connection)util_container.getContentAsObject(CONST_CONNECTION_LOCAL_CONTAINER);
+	
+	try{	
+		if(conn==null || conn.isClosed()){
+			conn = getFreeConnection(init); 
+			if(init.get_allwayone().equals("true")){
+				util_container.setContentAsObject(CONST_CONNECTION_LOCAL_CONTAINER, conn);
+				util_format.writeToConsole(bsController.getLogInit(),"APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode());	
+			}
+		}	
+	}catch(Exception e){
+		if(writeException)
+			throw new bsException(e, iStub.log_ERROR);
+		else 
+			util_format.writeToConsole(null,"GetDBFreeConnection:"+e.toString());
+	}catch(Throwable e){
+		if(writeException)
+			throw new bsException(e, iStub.log_ERROR);
+		else 
+			util_format.writeToConsole(null,"GetDBFreeConnection:"+e.toString());
+	}
+	
+	return conn;
+}
+
 public Connection getContentNoLog(){
 
 	Connection conn = null;

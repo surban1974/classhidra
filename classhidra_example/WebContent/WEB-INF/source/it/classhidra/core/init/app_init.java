@@ -82,6 +82,8 @@ public class app_init implements Serializable{
 	private String _init_loader;
 	private String _pin;
 	private String _db_name;
+	private boolean db_name_valid=true;
+	
 	private String _extention_do;
 	private String _actioncall_separator;
 	private String _debug;
@@ -108,6 +110,8 @@ public class app_init implements Serializable{
 	private String loadedFromSP="";
 	private Properties resources_path;
 	private Properties synonyms_path;
+	
+	
 	
 	public app_init(){
 		super();
@@ -503,6 +507,14 @@ public class app_init implements Serializable{
 
 	public String get_actioncall_separator() {
 		return _actioncall_separator;
+	}
+
+	public boolean isDb_name_valid() {
+		return db_name_valid;
+	}
+
+	public void setDb_name_valid(boolean dbNameValid) {
+		db_name_valid = dbNameValid;
 	}
 
 }

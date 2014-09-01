@@ -68,7 +68,7 @@ public void init() {
 
 	try{
 
-		if(ainit.get_db_name()!=null){
+		if(ainit.get_db_name()!=null && ainit.isDb_name_valid()){
 			if(initDB(ainit.get_path(),ainit.get_db_name())){
 				loadedFrom=ainit.get_db_name();
 				return;
@@ -223,6 +223,7 @@ public i_4Batch get4BatchManager(){
 public boolean initDB(String path, String db_name) throws bsControllerException, Exception{
 	
 	String propData = null;
+	
 	try{
 		propData = util_blob.load_from_config(path+"."+environment_id_property, db_name);
 		if(propData==null) propData = util_blob.load_from_config(environment_id_property, db_name);
