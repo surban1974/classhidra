@@ -47,6 +47,7 @@ public void reInit(i_bean another_bean);
 public boolean sql_getFromResultSet(java.sql.ResultSet rs);
 public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd);
 public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd, String prefisso);
+public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd, boolean log);
 public HashMap getFields();
 public void setFields(HashMap fields);
 public i_elementDBBase load_use_itself() throws Exception;

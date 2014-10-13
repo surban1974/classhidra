@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-public interface i_stream extends Serializable{
+public interface i_stream extends Serializable, listener_stream{
 	void init(HttpServletRequest request,HttpServletResponse response) throws bsControllerException;
 	redirects streamservice_enter(HttpServletRequest request, HttpServletResponse response) throws bsControllerException;
 	redirects streamservice_exit(HttpServletRequest request, HttpServletResponse response) throws bsControllerException;
@@ -45,5 +45,6 @@ public interface i_stream extends Serializable{
 	info_stream get_infostream();
 	void set_infostream(info_stream stream);
 	RequestDispatcher redirect(ServletContext scontext, redirects _redirect, String id_action) throws ServletException, UnavailableException;
-
+	listener_stream getListener_s();
+	void setListener_s(listener_stream listenerS);
 }

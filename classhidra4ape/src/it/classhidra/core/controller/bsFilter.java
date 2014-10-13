@@ -433,6 +433,12 @@ public class bsFilter implements Filter {
 							
 							if(bsController.getAction_config().get_actions().get(id_current)!=null)
 								return id_current;
+							else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+								char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+								if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null)
+									return id_current;
+								else return null;
+							}
 							else return null;
 						}
 					}
@@ -444,6 +450,12 @@ public class bsFilter implements Filter {
 						id_current = bsController.getAppInit().get_enterpoint();
 						if(bsController.getAction_config().get_actions().get(id_current)!=null)
 							return id_current;
+						else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+							char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+							if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null)
+								return id_current;
+							else return null;
+						}
 						else return null;
 					}
 				}

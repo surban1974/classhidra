@@ -41,6 +41,7 @@ public class info_bean extends info_entity implements i_elementBase{
 	private String type;
 	private String name;
 	private String model;
+	private String listener;
 
 	private HashMap _items;
 	private Vector v_info_items;
@@ -105,6 +106,7 @@ public class info_bean extends info_entity implements i_elementBase{
 		type="";
 		name="";
 		model="";
+		listener="";
 
 		_items=new HashMap();
 		v_info_items=new Vector();
@@ -140,6 +142,7 @@ public class info_bean extends info_entity implements i_elementBase{
 		if(type!=null && !type.trim().equals("")) result+=" type=\""+util_format.normaliseXMLText(type)+"\"";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(model!=null && !model.trim().equals("")) result+=" model=\""+util_format.normaliseXMLText(model)+"\"";
+		if(listener!=null && !listener.trim().equals("")) result+=" listener=\""+util_format.normaliseXMLText(listener)+"\"";
 		result+=super.toXml();
 		result+=">";
 		boolean isEntity=false;
@@ -167,6 +170,14 @@ public class info_bean extends info_entity implements i_elementBase{
 
 	public HashMap get_items() {
 		return _items;
+	}
+
+	public String getListener() {
+		return listener;
+	}
+
+	public void setListener(String listener) {
+		this.listener = listener;
 	}
 
 

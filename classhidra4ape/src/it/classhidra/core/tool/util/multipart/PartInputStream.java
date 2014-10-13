@@ -213,8 +213,7 @@ public class PartInputStream extends FilterInputStream {
    */
   public void close() throws IOException {
 	if (!eof) {
-	  while (read(buf, 0, buf.length) != -1)
-		; // do nothing
+	  while (read(buf, 0, buf.length) != -1); // do nothing
 	}
   }
 }

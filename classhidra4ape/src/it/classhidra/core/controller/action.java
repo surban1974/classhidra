@@ -42,18 +42,25 @@ public class action extends bean implements i_action, Serializable{
 //	private info_action _infoaction;
 	private redirects current_redirect;
 	private boolean included = false;
+	private listener_action listener_a;
 	
 	public action(){
 		super();
 	}	
 	
 	public void init(HttpServletRequest request,	HttpServletResponse response) throws bsControllerException{
-		if(_bean!=null)
+		if(_bean!=null){
+			_bean.onPreInit(request);
 			_bean.init(request); 
+			_bean.onPostInit(request);
+		}
 	}
 	public void init(HashMap wsParameters) throws bsControllerException{
-		if(_bean!=null)
-			_bean.init(wsParameters); 
+		if(_bean!=null){
+			_bean.onPreInit(wsParameters);
+			_bean.init(wsParameters);
+			_bean.onPostInit(wsParameters);
+		}
 	}	
 	public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException{
 		return new redirects(_infoaction.getRedirect());
@@ -128,5 +135,134 @@ public class action extends bean implements i_action, Serializable{
 		}
 		return result;
 	}
+	
+	public Object[] getMethodAndCall(String annotation_name){
+		info_call call=null;
+		java.lang.reflect.Method[] mtds = this.getClass().getMethods();
+		for(int i=0;i<mtds.length;i++){
+			java.lang.reflect.Method current = mtds[i];
+			try{
+				ActionCall a_call = current.getAnnotation(ActionCall.class);
+				if(a_call!=null && a_call.name().equals(annotation_name)){
+					call = new info_call();
+					call.setMethod(a_call.method());
+					call.setNavigated(a_call.navigated());
+					return new Object[]{current,call};
+				}
+			}catch (Exception e) {
+			}
+		}
+		return null;
+	}
+	
+	public listener_action getListener_a() {
+		return listener_a;
+	}
+
+	public void setListener_a(listener_action listenerA) {
+		listener_a = listenerA;
+		if(listener_a!=null) listener_a.setOwner((i_action)this);
+	}	
+
+	public void onPostActionservice(redirects redirect,HttpServletRequest request, HttpServletResponse response) {
+		if(listener_a!=null) listener_a.onPostActionservice(redirect,request, response);
+	}
+
+	public void onPostSyncroservice(redirects redirect,HttpServletRequest request, HttpServletResponse response) {
+		if(listener_a!=null) listener_a.onPostSyncroservice(redirect,request, response);
+	}
+
+	public void onPreActionservice(HttpServletRequest request, HttpServletResponse response) {
+		if(listener_a!=null) listener_a.onPreActionservice(request, response);
+	}
+
+	public void onPreSyncroservice(HttpServletRequest request, HttpServletResponse response) {
+		if(listener_a!=null) listener_a.onPreSyncroservice(request, response);
+	}
+
+	public void onPostInit(HttpServletRequest request, HttpServletResponse response) {
+		if(listener_a!=null) listener_a.onPostInit(request, response);
+	}
+
+	public void onPreInit(HttpServletRequest request, HttpServletResponse response) {
+		if(listener_a!=null) listener_a.onPreInit(request, response);
+	}
+
+	public void onPostActionservice(redirects redirect,HashMap content) {
+		if(listener_a!=null) listener_a.onPostActionservice(redirect,content);
+	}
+
+	public void onPostSyncroservice(redirects redirect,HashMap content) {
+		if(listener_a!=null) listener_a.onPostSyncroservice(redirect,content);
+	}
+
+	public void onPreActionservice(HashMap content) {
+		if(listener_a!=null) listener_a.onPreActionservice(content);
+	}
+
+	public void onPreSyncroservice(HashMap content) {
+		if(listener_a!=null) listener_a.onPreSyncroservice(content);
+	}
+
+	public void onPostSet_bean() {
+		if(listener_a!=null) listener_a.onPostSet_bean();
+	}
+
+	public void onPreSet_bean() {
+		if(listener_a!=null) listener_a.onPreSet_bean();
+	}
+
+	public void onPostSetCurrent_redirect() {
+		if(listener_a!=null) listener_a.onPostSetCurrent_redirect();
+	}
+
+	public void onPreSetCurrent_redirect() {
+		if(listener_a!=null) listener_a.onPreSetCurrent_redirect();
+	}
+
+	public void onPostRedirect(RequestDispatcher rd) {
+		if(listener_a!=null) listener_a.onPostRedirect(rd);
+	}
+
+	public void onPreRedirect() {	
+		if(listener_a!=null) listener_a.onPreRedirect();
+	}
+
+	public void onPostRedirectError(RequestDispatcher rd) {
+		if(listener_a!=null) listener_a.onPostRedirectError(rd);
+	}
+
+	public void onPreRedirectError() {
+		if(listener_a!=null) listener_a.onPreRedirectError();
+	}
+
+	public void onPostTransform(Object output) {
+		if(listener_a!=null) listener_a.onPostTransform(output);
+	}
+
+	public void onPreTransform(Object input) {
+		if(listener_a!=null) listener_a.onPreTransform(input);
+	}
+
+	public void onPostActionCall(redirects redirect,String idCall, HttpServletRequest request,HttpServletResponse response) {
+		if(listener_a!=null) listener_a.onPostActionCall(redirect,idCall, request, response);
+	}
+
+	public void onPreActionCall(String idCall, HttpServletRequest request, HttpServletResponse response) {
+		if(listener_a!=null) listener_a.onPreActionCall(idCall, request, response);		
+	}
+
+	public void onPostInstance() {
+		if(listener_a!=null) listener_a.onPostInstance();
+	}
+
+	public void onPostInstanceFromProvider() {
+		if(listener_a!=null) listener_a.onPostInstanceFromProvider();
+	}
+	
+	public void setOwner(i_action owner) {
+	}
+
+
 
 }

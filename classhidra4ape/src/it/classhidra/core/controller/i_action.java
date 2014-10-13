@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-public interface i_action extends Serializable{
+public interface i_action extends Serializable, listener_action{
 	void init(HttpServletRequest request,HttpServletResponse response) throws bsControllerException;
 	redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
 	redirects syncroservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
@@ -51,4 +51,7 @@ public interface i_action extends Serializable{
 	boolean isIncluded();
 	void setIncluded(boolean included);
 	java.lang.reflect.Method getMethodForCall(String annotation_name);
+	Object[] getMethodAndCall(String annotation_name);
+	listener_action getListener_a();
+	void setListener_a(listener_action listenerA);
 }

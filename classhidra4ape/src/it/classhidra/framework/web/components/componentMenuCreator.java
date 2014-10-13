@@ -7,6 +7,7 @@ import it.classhidra.annotation.elements.Entity;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_menu_element;
 import it.classhidra.core.controller.load_menu;
 import it.classhidra.core.controller.redirects;
@@ -15,6 +16,7 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.framework.web.beans.menu_element;
 
+import java.io.OutputStream;
 import java.io.Serializable;
 
 import javax.servlet.ServletException;
@@ -47,42 +49,88 @@ public class componentMenuCreator extends action implements i_action, Serializab
 
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-	element = prepareElement(request);
-	if(element!=null){
-
-		if(menu_id.equals("all")){
-			menu_element founded = new menu_element(element);
-			founded.setVisibilityAllChildren(true);
-			menu_id=founded.getInfo_menu().getId();
-			menu_html=founded.generateHTML(request);
-		}
-		if(menu_id.equals("nothing")){
-			menu_element founded = new menu_element(element);
-			founded.setVisibilityAllChildren(false);
-			founded.setVisible(true);
-			menu_id=founded.getInfo_menu().getId();
-			menu_html=founded.generateHTML(request);
-		}
-		if(menu_id.equals("")) menu_id="menu_level_0";
-
-		menu_element founded = 	new menu_element(
-				element.find(menu_id)
-				);
-		if(founded!=null){
-			if(menu_action.equals("visual_true")) founded.setVisibilityChildren(true);
-			if(menu_action.equals("visual_false")) founded.setVisibilityChildren(false);
-			menu_html=founded.generateHTML(request);
-		}
-
+	try{
+		element = prepareElement(request);
+		if(element!=null){
+	
+			boolean wasBlank=(menu_id==null || menu_id.trim().equals(""));
+			
+			if(menu_id.equals("all")){
+				menu_element founded = new menu_element(element);
+				founded.setVisibilityAllChildren(true);
+				menu_id=founded.getInfo_menu().getId();
+				menu_html=founded.generateHTML(request);
+			}
+			if(menu_id.equals("nothing")){
+				menu_element founded = new menu_element(element);
+				founded.setVisibilityAllChildren(false);
+				founded.setVisible(true);
+				menu_id=founded.getInfo_menu().getId();
+				menu_html=founded.generateHTML(request);
+			}
+			if(menu_id.equals("")) menu_id="menu_level_0";
+	
+			i_menu_element i_founded = element.find(menu_id);
+			if(i_founded!=null){
+				menu_element founded = 	new menu_element(
+						i_founded
+						);
+				if(founded!=null){
+					if(menu_action.equals("visual_true")){ 
+						founded.setVisible(true);
+						founded.setVisibilityChildren(true);
+					}
+					if(menu_action.equals("visual_false")){ 
+						founded.setVisible(true);
+						founded.setVisibilityChildren(false);
+					}
+					menu_html=founded.generateHTML(request);
+					if(!wasBlank){
+						String prefix = "<div id='"+menu_id+"'>";
+						if(menu_html.indexOf(prefix)==0){
+							menu_html = menu_html.substring(prefix.length());
+							menu_html = menu_html.substring(0,menu_html.length()-6);
+						}
+					}
+				}else{
+					menu_html="current not founded";
+				}
+			}else menu_html="current not founded";
+			
+	
+		}else menu_html="menu not founded";
+		
+	}catch(Exception e){
+		menu_html="EXCEPTION: "+e.toString();
+	}catch(Throwable e){
+		menu_html="THROWABLE: "+e.toString();
 	}
-	return new redirects(get_infoaction().getRedirect());
+	if(menu_html==null) menu_html="null";
+	menu_html="<!-- start -->"+menu_html+"<!-- finish -->";
+	try{
+		OutputStream out = response.getOutputStream();
+
+		out.write(menu_html.getBytes()); 
+	}catch(Exception e){
+	}
+
+	return null;
+
 }
 
 private i_menu_element prepareElement(HttpServletRequest request){
 	try{
-		componentMenuCreator fc = this;
-	
-		i_menu_element element = fc.getElement_menu_html();
+		boolean fromContent = false;
+		i_menu_element element = null;
+		i_bean content = bsController.getCurrentForm("content",request);
+		if(content!=null){
+			element = (i_menu_element)content.get("element_menu_html");
+			fromContent=true;
+		}else
+			element = getElement_menu_html();
+
+		
+		
 		if(element==null){
 			load_menu menu_config = new load_menu(new menu_element());
 			try{
@@ -98,7 +146,11 @@ private i_menu_element prepareElement(HttpServletRequest request){
 		element.calculate_potential_elements();
 		element.analyse_potential_group(true);
 		
-		fc.setElement_menu_html(element);
+		if(fromContent && content!=null)
+			content.set("element_menu_html", element);
+		else		
+			setElement_menu_html(element);
+		
 		return element;
 	}catch(Exception e){
 		bsController.writeLog("Load_current_menu error: "+e.toString(),iStub.log_ERROR);
@@ -166,6 +218,7 @@ public void setMenu_action(String string) {
 	public void setMenu_lang(String string) {
 		menu_lang = string;
 	}
+
 
 	public i_menu_element getElement_menu_html() {
 		return element_menu_html;

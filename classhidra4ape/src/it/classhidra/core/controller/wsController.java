@@ -29,9 +29,7 @@ import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
-import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
-import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_format;
@@ -171,13 +169,25 @@ public class wsController   {
 						 
 
 
+						action_instance.onPreSet_bean();
 						action_instance.set_bean(bean_instance); 
+						action_instance.onPostSet_bean();
 
+						action_instance.onPreInit(wsParameters);
 						action_instance.init(wsParameters);
+						action_instance.onPostInit(wsParameters);
+						
 						redirects redirect = null;
-						if(action_instance.get_infoaction().getSyncro().toLowerCase().equals("true"))
+						if(action_instance.get_infoaction().getSyncro().toLowerCase().equals("true")){
+							action_instance.onPreSyncroservice(wsParameters);
 							redirect = action_instance.syncroservice(wsParameters);
-						else redirect = action_instance.actionservice(wsParameters);
+							action_instance.onPostSyncroservice(redirect,wsParameters);
+						}else{
+							action_instance.onPreActionservice(wsParameters);
+							redirect = action_instance.actionservice(wsParameters);
+							action_instance.onPostActionservice(redirect,wsParameters);
+						}
+
 
 //						redirects redirect = action_instance.actionservice(wsParameters);			
 
@@ -238,7 +248,9 @@ public class wsController   {
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = bsController.getAction_config().streamFactory(iStream.getName());
 			if(currentStream!=null){
+				currentStream.onPreEnter(wsParameters);
 				redirects currentStreamRedirect = currentStream.streamservice_enter(wsParameters);
+				currentStream.onPostEnter(currentStreamRedirect,wsParameters);
 				if(currentStreamRedirect!=null){
 					throw new bsControllerException("BLOCKED from ENTER stream:"+currentStream.get_infostream().getName(),iStub.log_ERROR);
 				}
@@ -252,7 +264,9 @@ public class wsController   {
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = bsController.getAction_config().streamFactory(iStream.getName());
 			if(currentStream!=null){
+				currentStream.onPreExit(wsParameters);
 				redirects currentStreamRedirect = currentStream.streamservice_exit(wsParameters);
+				currentStream.onPostExit(currentStreamRedirect,wsParameters);
 				if(currentStreamRedirect!=null){
 					throw new bsControllerException("BLOCKED from EXIT stream:"+currentStream.get_infostream().getName(),iStub.log_ERROR);
 				}

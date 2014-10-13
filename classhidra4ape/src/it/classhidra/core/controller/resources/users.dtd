@@ -17,14 +17,17 @@
 	target CDATA #REQUIRED
 	wac_fascia CDATA #IMPLIED
 	comment CDATA #IMPLIED
+	property CDATA #IMPLIED
 >
 <!ELEMENT target EMPTY>
 <!ATTLIST target
 	comment CDATA #IMPLIED
 	name CDATA #REQUIRED
+	property CDATA #IMPLIED
 >
 <!ELEMENT group EMPTY>
 <!ATTLIST group
 	comment CDATA #IMPLIED
 	name CDATA #REQUIRED
+	property CDATA #IMPLIED
 >

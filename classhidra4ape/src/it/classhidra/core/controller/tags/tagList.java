@@ -66,6 +66,9 @@ public class tagList extends TagSupport{
 
 	protected String width = null;
 	protected String height = null;
+	
+	protected String min_width = null;
+	protected String min_height = null;
 
 	protected String tb_style = null;
 	protected String tb_styleClass = null;
@@ -394,6 +397,8 @@ public class tagList extends TagSupport{
 
 		width = null;
 		height = null;
+		min_width = null;
+		min_height = null;
 
 		bean = null;
 		propertys = null;
@@ -513,12 +518,16 @@ public class tagList extends TagSupport{
 
 			if(width!=null) results.append("width:"+width+ ((width.indexOf('%')==-1)?"px;":";"));
 			if(height!=null) results.append("height:"+height+((height.indexOf('%')==-1)?"px;":";"));
+			if(min_width!=null) results.append("min-width:"+min_width+ ((min_width.indexOf('%')==-1)?"px;":";"));
+			if(min_height!=null) results.append("min-height:"+min_height+((min_height.indexOf('%')==-1)?"px;":";"));
 			results.append('"');
 		}else{
 			results.append(" style=\"");
 			results.append("vertical-align:top;");
 			if(width!=null) results.append("width:"+width+((width.indexOf('%')==-1)?"px;":";"));
 			if(height!=null) results.append("height:"+height+((height.indexOf('%')==-1)?"px;":";"));
+			if(min_width!=null) results.append("min-width:"+min_width+ ((min_width.indexOf('%')==-1)?"px;":";"));
+			if(min_height!=null) results.append("min-height:"+min_height+((min_height.indexOf('%')==-1)?"px;":";"));
 			results.append('"');
 		}
 		if (onhelp != null) {
@@ -544,6 +553,7 @@ public class tagList extends TagSupport{
 			}
 		}
 		results.append(">"+System.getProperty("line.separator"));
+results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-decoration: none;\">"+System.getProperty("line.separator"));
 
 		return results.toString();
 	}
@@ -624,6 +634,7 @@ public class tagList extends TagSupport{
 
 		results.append("</table>"+System.getProperty("line.separator"));
 		results.append(createSCRIPT_TagBody(v_values));
+results.append("</a>"+System.getProperty("line.separator"));
 		results.append("</div>"+System.getProperty("line.separator"));
 
 
@@ -1399,6 +1410,26 @@ public class tagList extends TagSupport{
 		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
 		if(string.indexOf(";")==0) string = " "+ string;
 		td_width=string;
+	}
+
+
+	public String getMin_width() {
+		return min_width;
+	}
+
+
+	public void setMin_width(String minWidth) {
+		min_width = minWidth;
+	}
+
+
+	public String getMin_height() {
+		return min_height;
+	}
+
+
+	public void setMin_height(String minHeight) {
+		min_height = minHeight;
 	}
 }
 

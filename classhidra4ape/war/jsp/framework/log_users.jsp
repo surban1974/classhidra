@@ -16,7 +16,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 </jsp:include>	
 
-<div id="page" style=" width: 900; height: 530; background-color: white">
+<div id="page" style=" width: 1000; height: 530; background-color: white">
 <%@ include file="../included/content_page_header.jsp" %> 
 
 <table>

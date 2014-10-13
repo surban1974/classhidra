@@ -7,8 +7,12 @@ function elaborate_cd_point(objid,code){
 function menu(){
 	try{
 		var div = document.getElementById("menu_operation");
+		var div_page = document.getElementById("page");
 		var img = document.getElementById("menu_img");
 		var disp = div.style.display;
+		if(div && div_page){
+			div.style.height = div_page.offsetHeight-35; 
+		}
 		if(disp=="block"){
 			div.style.display="none";
 			img.src="images/menu/16_close.gif";

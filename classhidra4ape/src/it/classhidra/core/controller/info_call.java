@@ -23,7 +23,7 @@
 *********************************************************************************/
 package it.classhidra.core.controller;
 
-import java.util.HashMap;
+
 
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -37,6 +37,7 @@ public class info_call extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -605542733311006711L;
 	private String name;	
 	private String method;
+	private String navigated;
 	
 	public info_call(){
 		super();
@@ -71,6 +72,7 @@ public class info_call extends info_entity implements i_elementBase{
 	public void reimposta(){
 		name="";
 		method="";
+		navigated="";
 	}
 	public String getName() {
 		return name;
@@ -104,6 +106,14 @@ public class info_call extends info_entity implements i_elementBase{
 
 	public void setMethod(String method) {
 		this.method = method;
+	}
+
+	public String getNavigated() {
+		return navigated;
+	}
+
+	public void setNavigated(String navigated) {
+		this.navigated = navigated;
 	}
 
 

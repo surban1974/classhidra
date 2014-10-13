@@ -2794,7 +2794,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>    
-	  
+	<attribute>
+        <name>normalASCII</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	  
   </tag>      
   <tag>
     <name>into</name>

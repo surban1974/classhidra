@@ -145,8 +145,12 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 			middleAction.equals("groups")){	
 			if(user.equals("") && password.equals("")) user="anonimouse";
 	
-				login_Non_JAAS(auth, user, password, request);
-			if(auth==null || !auth.is_logged()){
+			if(!login_Non_JAAS(auth, user, password, request)){
+				request.getSession().removeAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
+				auth=null;
+			}
+//			if(auth==null || !auth.is_logged()){
+			if(auth==null){
 				new bsControllerMessageException("error_2",request,null,iStub.log_INFO,new String[]{user});
 				group="";
 				groups=new Vector();
@@ -193,7 +197,8 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 			try{
 				lang=auth.get_language();
 				auth.set_ruolo(group);			
-				auth.get_authentication_filter().validate_actionPermittedForbidden(auth);		
+				auth.get_authentication_filter().validate_actionPermittedForbidden(auth);	
+				auth.set_logged(true);
 			}catch(Exception e){
 			}
 			middleAction="";	
@@ -265,7 +270,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		    	}catch(Exception e){	    		
 		    	}
 		    	auth.get_user_property().putAll(_user.getProperties());
-		    	auth.set_logged(true);
+//		    	auth.set_logged(true);
 		    	util_usersInSession.addInSession(auth, request, new Date());
 		    	
 				new bsControllerException(
@@ -274,7 +279,8 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 	
 		    }else{
 		    	util_usersInSession.removeFromSession(auth, request);
-		    	auth.set_logged(false);	
+		    	
+//		    	auth.set_logged(false);	
 		    	return false;
 		    }
 		
@@ -290,7 +296,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 	    	return false;
 	    	
 	    }	
-	    auth.set_logged(true);
+//	    auth.set_logged(true);
 		return true;	
 		
 	}

@@ -89,33 +89,17 @@ div#footer_fixedbox{
 
 
 
-<div id="menu_operation" style="position:absolute; background-color:white; display: none;z-index: 1001; ">
-
-
-<jsp:include page="/jsp/included/panel_top.jsp">
-	<jsp:param name="panel-show-header" value="false" />
-	<jsp:param name="panel-show-close-button" value="false" /> 
-	<jsp:param name="panel-description" value="Menu" />	
-	<jsp:param name="panel-id" value="panel_Menu" />
-	<jsp:param name="panel-onclose" value="menu()" />	
-
-</jsp:include>	
-<div id="menu_operation_0" >
-
-</div>	
-<jsp:include page="/jsp/included/panel_bottom.jsp"/>	
+<div id="menu_operation" style="position:absolute; background-color:white; display: none;z-index: 1001;width:250px; height:100%; border-right: 1px solid silver;overflow: auto;padding: 5px;  ">
+	
 </div>	
 
 
-
+<bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">
 <script>
-ajax_makeRequest("menuCreator?menu_id=","menu_operation_0","JSAfter_showAsPopup","",false);
+ajax_makeRequest("menuCreator?menu_id=","menu_operation","JSAfter_showAsPopup","",false);
 //window.setTimeout("ajustPage1()", 500);
 </script>
-
-<bs:equal bean="REQUEST.PARAMETER" name="refreshMenu" value="true">
-<script>
-menu();
-</script>
 </bs:equal>
+
+
 

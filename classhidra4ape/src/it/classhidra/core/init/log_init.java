@@ -28,7 +28,6 @@ package it.classhidra.core.init;
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_file;
@@ -125,7 +124,7 @@ public void init() {
 	if(property==null){
 		if(property_name==null || property_name.equals("")){
 			try{
-				if(ainit.get_db_name()!=null){
+				if(ainit.get_db_name()!=null && ainit.isDb_name_valid()){
 					property = initDB(ainit);
 					if(property!=null){
 						loadedFrom=ainit.get_db_name();
@@ -215,20 +214,30 @@ public Properties initDB(app_init ainit) throws bsControllerException, Exception
 	else app_path+=".";
 	
 	String propertyData = null;
+	boolean dbValid = false;
+
+	
 	try{
-		propertyData = util_blob.load_from_config(
+		propertyData = util_blob.load_from_config_clear(
 				(ainit.getSynonyms_path().getProperty(app_path+bsController.log_id_property)==null)?app_path+bsController.log_id_property:ainit.getSynonyms_path().getProperty(app_path+bsController.log_id_property),
 				ainit.get_db_name());
+		dbValid=true;
 	}catch(Exception e){
-		new bsException(e);
+
+//		new bsException(e);
 	}
 	try{
-		if(propertyData==null) propertyData = util_blob.load_from_config(
+		if(propertyData==null) propertyData = util_blob.load_from_config_clear(
 				(ainit.getSynonyms_path().getProperty(bsController.log_id_property)==null)?bsController.log_id_property:ainit.getSynonyms_path().getProperty(bsController.log_id_property),
 				ainit.get_db_name());
+		dbValid=true;
 	}catch(Exception e){
-		new bsException(e);
+
+//		new bsException(e);
 	}
+	if(!dbValid)
+		ainit.setDb_name_valid(false);
+	
 	if(propertyData==null) return null;
 	
 	try{

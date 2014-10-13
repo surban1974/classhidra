@@ -212,6 +212,15 @@ TR.colTabSel{
 	padding:2px;
 }
 
+TR.colTabSel TD{
+	height:20px;
+	-moz-box-shadow: 1px 1px 6px silver;
+	-webkit-box-shadow: 1px 1px 6px silver;
+	box-shadow: 1px 1px 6px silver;
+	border-radius: 2px;	
+	padding: 2px;
+}
+
 TR.colTabF{
 
 
@@ -355,4 +364,24 @@ DIV.panel_section_content{
 	font-size:14px;
 }
 
+table.asPanel{
+	-moz-box-shadow: 1px 1px 6px gray;
+	-webkit-box-shadow: 1px 1px 6px gray;
+	box-shadow: 1px 1px 6px gray;
+	border-radius: 4px;	
+	padding:5px;
+	background_:-webkit-gradient(linear,0% 0%,0% 100%,from(rgba(255,255,255,1)),to(rgba(230,230,230,1)));
+	background_:-moz-linear-gradient(top,rgba(255,255,255,1),rgba(230,230,230,1)) fixed;
+
+}
+div.asPanel{
+	-moz-box-shadow: 1px 1px 6px gray;
+	-webkit-box-shadow: 1px 1px 6px gray;
+	box-shadow: 1px 1px 6px gray;
+	border-radius: 4px;	
+	padding:5px;
+	background_:-webkit-gradient(linear,0% 0%,0% 100%,from(rgba(255,255,255,1)),to(rgba(230,230,230,1)));
+	background_:-moz-linear-gradient(top,rgba(255,255,255,1),rgba(230,230,230,1)) fixed;
+
+}
 

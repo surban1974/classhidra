@@ -55,6 +55,7 @@ public class tagTranscode extends TagSupport{
 	protected String outputField = null;
 	protected String key = null;
 	protected String keyValue = null;
+	protected String showKeyAsDefaultValue = null;
 	protected String styleClass=null;
 	protected String formatOutput=null;
 	protected String formatLanguage=null;
@@ -62,6 +63,7 @@ public class tagTranscode extends TagSupport{
 	protected String method_prefix=null;
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
+	protected String normalASCII=null;
 
 
 
@@ -84,6 +86,7 @@ public class tagTranscode extends TagSupport{
 		outputField=null;
 		key=null;
 		keyValue=null;
+		showKeyAsDefaultValue=null;
 		styleClass=null;
 		formatOutput=null;
 		method_prefix=null;
@@ -91,6 +94,7 @@ public class tagTranscode extends TagSupport{
 		formatLanguage=null;
 		formatCountry=null;
 		normalXML=null;
+		normalASCII=null;
 	}
   
 	protected String createTagBody() {
@@ -184,8 +188,9 @@ public class tagTranscode extends TagSupport{
 			}
 		}
 		
-		if(key==null && keyValue!=null){			
-			valueKey = keyValue;					 
+		if(key==null && keyValue!=null ){
+			if(showKeyAsDefaultValue==null || !showKeyAsDefaultValue.equalsIgnoreCase("false"))
+				valueKey = keyValue;					 
 		}		
 
 		if(valueSource!=null){
@@ -201,6 +206,7 @@ public class tagTranscode extends TagSupport{
 			}
 			if(valueSource instanceof List){
 				writeValue = findElementFromList((List)valueSource, valueKey, inputField);
+				if(writeValue==null) writeValue = findElementFromListAsString((List)valueSource, valueKey, inputField);
 				if(outputField!=null){
 					try{
 						writeValue = util_reflect.prepareWriteValueForTag(writeValue,"get",outputField,null);					 
@@ -211,6 +217,7 @@ public class tagTranscode extends TagSupport{
 		
 		}
 
+		if(writeValue==null && valueKey!=null) writeValue=valueKey;
 		
 		if(writeValue!=null){
 			if(styleClass!=null){
@@ -227,6 +234,9 @@ public class tagTranscode extends TagSupport{
 		}
 		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
 			return util_xml.normalXML(results.toString(),null);
+		if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))
+			return util_xml.normalASCII(results.toString());
+
 		else return results.toString();
 	}		
 	
@@ -324,6 +334,29 @@ public class tagTranscode extends TagSupport{
 		}
 		return null;
 	}
+	
+	private static Object findElementFromListAsString(List elements, Object valueKey, String field){
+		if(valueKey==null || field==null) return null;
+		for(int i=0;i<elements.size();i++){
+			if(field==null){
+				if(elements.get(i)!=null && valueKey.toString().equals(elements.get(i).toString())) return elements.get(i);
+			}else{
+				if(elements.get(i) instanceof i_bean){
+					i_bean el = (i_bean)elements.get(i);
+					if(el!=null && el.get(field)!=null && valueKey.toString().equals(el.get(field).toString())) return el;
+				}
+				if(elements.get(i) instanceof i_elementDBBase){
+					i_elementDBBase el = (i_elementDBBase)elements.get(i);
+					if(el!=null && el.getCampoValue(field)!=null && valueKey.toString().equals(el.getCampoValue(field).toString())) return el;
+				}
+				if(elements.get(i) instanceof i_elementBase){
+					i_elementBase el = (i_elementBase)elements.get(i);
+					if(el!=null && el.getCampoValue(field)!=null && valueKey.toString().equals(el.getCampoValue(field).toString())) return el;
+				}
+			}
+		}
+		return null;
+	}
 
 	public String getInputField() {
 		return inputField;
@@ -347,6 +380,22 @@ public class tagTranscode extends TagSupport{
 
 	public void setKeyValue(String keyValue) {
 		this.keyValue = keyValue;
+	}
+
+	public String getNormalASCII() {
+		return normalASCII;
+	}
+
+	public void setNormalASCII(String normalASCII) {
+		this.normalASCII = normalASCII;
+	}
+
+	public String getShowKeyAsDefaultValue() {
+		return showKeyAsDefaultValue;
+	}
+
+	public void setShowKeyAsDefaultValue(String showKeyAsDefaultValue) {
+		this.showKeyAsDefaultValue = showKeyAsDefaultValue;
 	}
 }
 

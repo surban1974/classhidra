@@ -1,6 +1,8 @@
 package it.classhidra.core.controller;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -56,10 +58,54 @@ public class bs_authentication_filters implements i_authentication_filter {
 					hAllowedActions = (HashMap)((HashMap)bsController.getAuth_config().get_targets_allowed().get(_target)).get(_role);
 				}catch(Exception e){
 				}
+				
+
 
 				try{
 					permited_current = (HashMap)util_cloner.clone(permited_all);
 				}catch(Exception e){
+				}
+				
+				if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+					char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+
+					if(hActions!=null){
+						Iterator it = hActions.entrySet().iterator();
+						while (it.hasNext()) {
+							Map.Entry pairs = (Map.Entry)it.next();
+							String key = pairs.getKey().toString();
+							if(key.indexOf(separator)>-1 &&
+								permited_current.get(key)==null){
+								String id_action=key.substring(0,key.indexOf(separator));
+								info_action ia = (info_action)permited_current.get(id_action);
+								if(ia!=null){
+									try{
+										permited_current.put(key, util_cloner.clone(ia));
+									}catch(Exception e){
+									}
+								}
+							}
+						}
+					}
+					if(hAllowedActions!=null){
+						Iterator it = hAllowedActions.entrySet().iterator();
+						while (it.hasNext()) {
+							Map.Entry pairs = (Map.Entry)it.next();
+							String key = pairs.getKey().toString();
+							if(key.indexOf(separator)>-1 &&
+								permited_current.get(key)==null){
+								String id_action=key.substring(0,key.indexOf(separator));
+								info_action ia = (info_action)permited_current.get(id_action);
+								if(ia!=null){
+									try{
+										permited_current.put(key, util_cloner.clone(ia));
+									}catch(Exception e){
+									}
+								}
+							}
+						}
+					}
+					
 				}
 				
 				if(hActions!=null){
@@ -115,15 +161,6 @@ public class bs_authentication_filters implements i_authentication_filter {
 															String ir_path = ir.getPath();
 															((info_redirect)permited_current_redirects.get(ir_path)).setAllowedSection(false);
 														}
-/*														
-														ir.get_sections().remove(keys_sections.get(k));
-														ir_a.get_sections().remove(keys_sections.get(k));
-														if(keys_sections.get(k).equals("*")){
-															String ir_path = ir.getPath();
-															permited_current_auth_redirects.remove(keys_redirect.get(j));
-															permited_current_redirects.remove(ir_path);
-														}
-*/														
 													}
 												}
 											}

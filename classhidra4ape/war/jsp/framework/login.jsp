@@ -18,7 +18,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 </jsp:include>	
 
-<div id="page" style=" width: 900; height: 530; background-color: white; ">
+<div id="page" style=" width: 1000; height: 530; background-color: white; ">
 <%@ include file="../included/content_page_header.jsp" %>
 
 <center>
@@ -90,7 +90,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 							<td width="150" class="signOnLabel"><bs:message code="login_3" defaultValue="Ruoli"/>&nbsp;&nbsp;&nbsp;</td>
 						</tr>								
 						<tr>
-							<td width="300" style="border-left: solid 1px silver;">
+							<td width="300" >
 					
 										<bs:list
 											addHiddenInput="false" 
@@ -99,7 +99,8 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 											key_values="code"
 											propertys="code;" 
 											tr_onclick="runSubmit('content')"
-											tr_styleClass="colTab1"	
+											tr_styleClass="rowSignOn"	
+											td_style="font-size: 14px; height:24px"											
 											styleClass="divLists0"	
 											tb_width="100%"
 											width="300"
@@ -171,7 +172,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 								<td width="1%">&nbsp;</td>
 								<td width="1%" ><script>ObjectDraw("page1","button",16,"","showAsIFrame('jsp/help/Manuale.pdf',900,550)","page_section_active","help.gif","images/menu/","",true,24,"35");</script></td>
 								<td width="1%">&nbsp;</td>
-								<td  width="1%" align="right"><script>ObjectDraw("page1","button",15,"&nbsp;New from version 1.4.3&nbsp;&nbsp;","showAsIFrame('jsp/help/news.pdf',900,550)","page_section_active","","images/menu/","",true,24);</script></td>
+								<td  width="1%" align="right"><script>ObjectDraw("page1","button",15,"&nbsp;New from version 1.4.3&nbsp;...&nbsp;1.4.9&nbsp;","showAsIFrame('jsp/help/news.pdf',900,550)","page_section_active","","images/menu/","",true,24);</script></td>
 
 								<td width="100%" align="center">&nbsp;</td>
 							

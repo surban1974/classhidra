@@ -126,12 +126,18 @@ public class util_usersInSession {
 			}
 
 			HashMap h_user_container = (HashMap)bsController.getFromLocalContainer(CONST_APP_USER_CONTAINER);
+			String session_id = request.getSession().getId();
 			if(h_user_container!=null){
-				h_user_container.remove(request.getSession().getId());
+				HttpSession session_instance = (HttpSession)h_user_container.get(session_id);
+				if(session_instance!=null){
+					try{
+						session_instance.invalidate();
+					}catch(Exception einv){				
+					}	
+				}
+				h_user_container.remove(session_id);
 			}
-
 		}catch (Exception e) {
-
 		}
 		
 	}

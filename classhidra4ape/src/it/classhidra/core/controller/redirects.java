@@ -37,16 +37,30 @@ public class redirects implements Serializable{
 	private String _uri;	
 	private String _transformationName;
 	private String _uriError;
+	private boolean _avoidPermissionCheck=false;
 	
 	public redirects(String uri){		
 		super();
 		_uri = uri;
 	}
 	
+	public redirects(String uri, boolean avoidPermissionCheck){		
+		super();
+		_uri = uri;
+		_avoidPermissionCheck = avoidPermissionCheck;
+	}
+	
 	public redirects(String uri, String transformationName){		
 		super();
 		_uri = uri;
 		_transformationName=transformationName;
+	}	
+	
+	public redirects(String uri, String transformationName, boolean avoidPermissionCheck){				
+		super();
+		_uri = uri;
+		_transformationName=transformationName;
+		_avoidPermissionCheck = avoidPermissionCheck;
 	}	
 	
 	public String getRedirectUri(info_action _infoaction) {
@@ -82,6 +96,9 @@ public class redirects implements Serializable{
 			_infoaction.get_redirects().get("*")!=null){
 			rd = scontext.getRequestDispatcher(transformURI(_uri));
 		}	
+		if(rd==null && _avoidPermissionCheck){
+			rd = scontext.getRequestDispatcher(transformURI(_uri));
+		}
 		return rd;
 	}
 	public RequestDispatcher redirectError(ServletContext scontext, info_action _infoaction) throws ServletException, UnavailableException{
@@ -179,6 +196,14 @@ public class redirects implements Serializable{
 
 	public void set_transformationName(String transformationName) {
 		_transformationName = transformationName;
+	}
+
+	public boolean is_avoidPermissionCheck() {
+		return _avoidPermissionCheck;
+	}
+
+	public void set_avoidPermissionCheck(boolean avoidPermissionCheck) {
+		_avoidPermissionCheck = avoidPermissionCheck;
 	}
 
 }

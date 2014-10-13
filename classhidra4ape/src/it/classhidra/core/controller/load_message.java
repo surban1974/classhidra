@@ -27,7 +27,6 @@ package it.classhidra.core.controller;
 import it.classhidra.core.init.app_init;
 import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.exception.message;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
@@ -120,7 +119,7 @@ public void init() throws bsControllerException{
 
 	try{
 
-		if(ainit.get_db_name()!=null){
+		if(ainit.get_db_name()!=null && ainit.isDb_name_valid()){
 			if(initDB(ainit)){
 				loadedFrom=ainit.get_db_name();
 				return;
@@ -362,20 +361,27 @@ public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 		else app_path+=".";
 		
 		String xmlData = null;
+		boolean dbValid = false;
+		
 		try{
 			xmlData = util_blob.load_from_config(
 					(ainit.getSynonyms_path().getProperty(app_path+bsController.messages_id_xml)==null)?app_path+bsController.messages_id_xml:ainit.getSynonyms_path().getProperty(app_path+bsController.messages_id_xml),
 					ainit.get_db_name());
+			dbValid=true;
 		}catch(Exception e){
-			new bsException(e);
+
 		}
 		try{
 			if(xmlData==null) xmlData = util_blob.load_from_config(
 					(ainit.getSynonyms_path().getProperty(bsController.messages_id_xml)==null)?bsController.messages_id_xml:ainit.getSynonyms_path().getProperty(bsController.messages_id_xml),
 					ainit.get_db_name());
+			dbValid=true;
 		}catch(Exception e){
-			new bsException(e);
+
 		}
+		if(!dbValid)
+			ainit.setDb_name_valid(false);
+		
 		if(xmlData==null) return false;
 
 		Document documentXML = null;

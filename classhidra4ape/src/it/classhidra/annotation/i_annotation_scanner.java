@@ -29,6 +29,12 @@ public interface i_annotation_scanner {
 
 	String getSession_error();
 	
+	public String getListener_actions();
+
+	public String getListener_beans();
+
+	public String getListener_streams();
 	
+	public String getMemoryInContainer_streams();
 
 }

@@ -212,6 +212,9 @@ public boolean sql_getFromResultSet(java.sql.ResultSet rs){
 	return result;
 }
 public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd){
+	return sql_getFromResultSet(rs, rsmd,true);
+}
+public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd, boolean log){
 	if(rs==null) return false;
 	try{
 		java.lang.reflect.Method[] mths = this.getClass().getMethods();
@@ -235,7 +238,7 @@ public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMet
 					}catch(Exception exc){
 					}
 				}
-				sql_getColumnFromResultSet(rs,rsmd,rsmd.getColumnName(i),class_name);
+				sql_getColumnFromResultSet(rs,rsmd,rsmd.getColumnName(i),class_name,log);
 			}
 		}
 	}catch(Exception e){
@@ -289,8 +292,11 @@ public String get_real_column_method(String column_name){
 	}
 	return set_column_method;
 }
-
 public boolean sql_getColumnFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd, String column_name, String column_class_name){
+	return sql_getColumnFromResultSet(rs, rsmd, column_name, column_class_name, true);
+}
+
+public boolean sql_getColumnFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd, String column_name, String column_class_name, boolean log){
 	try{
 
 
@@ -300,7 +306,7 @@ public boolean sql_getColumnFromResultSet(java.sql.ResultSet rs, java.sql.Result
 			try{
 				Object[] par = new Object[1];
 				par[0] = rs.getObject(column_name);
-				if(util_reflect.setValue(this,"set"+column_method,par))
+				if(util_reflect.setValue(this,"set"+column_method,par,log))
 					return true;
 
 			}catch(Exception ex){
