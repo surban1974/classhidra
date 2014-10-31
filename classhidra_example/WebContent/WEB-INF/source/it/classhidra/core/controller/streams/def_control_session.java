@@ -24,7 +24,7 @@ public class def_control_session extends stream implements i_stream{
 				String id_action = (String)request.getAttribute(bsController.CONST_ID);
 				if(id_action!=null){
 					info_action i_a = (info_action)load_actions.get_actions().get(id_action);
-					if(i_a!=null && i_a.getProperty("allway").equals("public")){
+					if(i_a!=null && (i_a.getProperty("allway").equals("public") || i_a.getProperty("always").equals("public"))){
 						return super.streamservice_enter(request, response);
 					}
 				}

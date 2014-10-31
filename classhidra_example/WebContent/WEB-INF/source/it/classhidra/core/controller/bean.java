@@ -62,9 +62,12 @@ public class bean extends elementBeanBase implements i_bean  {
 	public String js4ajax="false";
 	public boolean refresh=false;
 	private boolean xmloutput=false;
+	private String xmloutput_encoding="";
 	private boolean jsonoutput=false;
+	private String jsonoutput_encoding="";
 	private boolean transformationoutput=false;
 	private boolean binaryoutput=false;
+	private String binaryoutput_encoding="";
 	private boolean virtual=false;
 	public int countActions;
 	
@@ -1231,7 +1234,37 @@ public void onGetFromSession() {
 public void setOwner(i_bean owner) {
 }
 
+public String getXmloutput_encoding() {
+	return xmloutput_encoding;
+}
 
+public void setXmloutput_encoding(String xmloutputEncoding) {
+	xmloutput_encoding = xmloutputEncoding;
+}
+
+public String getJsonoutput_encoding() {
+	return jsonoutput_encoding;
+}
+
+public void setJsonoutput_encoding(String jsonoutputEncoding) {
+	jsonoutput_encoding = jsonoutputEncoding;
+}
+
+public String getBinaryoutput_encoding() {
+	return binaryoutput_encoding;
+}
+
+public void setBinaryoutput_encoding(String binaryoutputEncoding) {
+	binaryoutput_encoding = binaryoutputEncoding;
+}
+
+public boolean convert2xml(){
+	return false;
+}
+
+public boolean convert2json(){
+	return false;
+}
 
 
 }

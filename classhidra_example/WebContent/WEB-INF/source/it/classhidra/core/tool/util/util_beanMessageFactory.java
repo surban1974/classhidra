@@ -743,11 +743,11 @@ public class util_beanMessageFactory {
 
 		if (input==null) return input;
 
-		try{
-			input = new String(input.getBytes(),"utf8");
-		}catch(Exception e){
-			input="";
-		}
+//		try{
+//			input = new String(input.getBytes(),"utf8");
+//		}catch(Exception e){
+//			input="";
+//		}
 
 		String result="";
 		if (input.indexOf("&")>-1 ||

@@ -52,6 +52,7 @@ import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_sort;
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.ObjectOutputStream;
@@ -766,7 +767,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 										true);
 
 							try{
-								response.getOutputStream().print(output4SOAP);
+								if(action_instance.get_bean().getXmloutput_encoding()!=null && !action_instance.get_bean().getXmloutput_encoding().equals(""))
+									response.getOutputStream().write(output4SOAP.getBytes(action_instance.get_bean().getXmloutput_encoding()));
+								else response.getOutputStream().write(output4SOAP.getBytes());
 								return new Object[]{response,Boolean.valueOf(true)};
 							}catch(Exception e){
 								throw new bsControllerException("Controller generic redirect error. Print Bean as XML. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
@@ -781,7 +784,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 										);
 
 							try{
-								response.getOutputStream().print(output4JSON);
+								if(action_instance.get_bean().getJsonoutput_encoding()!=null && !action_instance.get_bean().getJsonoutput_encoding().equals(""))
+									response.getOutputStream().write(output4JSON.getBytes(action_instance.get_bean().getJsonoutput_encoding()));
+								else response.getOutputStream().write(output4JSON.getBytes());
 								return new Object[]{response,Boolean.valueOf(true)};
 							}catch(Exception e){
 								throw new bsControllerException("Controller generic redirect error. Print Bean as JSON. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);

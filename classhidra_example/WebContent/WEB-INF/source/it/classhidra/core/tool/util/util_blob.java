@@ -354,6 +354,71 @@ public class util_blob {
 			}   
 			return result;
 
-	   }	   
+	   }	
+	   
+	   public static int update_db_element(Connection ext_conn, String sql) throws Exception{
+		   int result = 0;
+			i_elementDBBase clone_element = null;
+			Connection conn=null;
+			Statement st=null;
+
+			try{
+				if(ext_conn==null){
+					db_init init = new db_init();
+					init.init();
+					conn = new db_connection().getContent(init);
+					conn.setAutoCommit(false);
+				}else conn=ext_conn;	
+				st = conn.createStatement();
+				result = st.executeUpdate(sql);
+				conn.commit();
+
+			}catch(Exception e){
+				new bsException(e,"ERROR");
+				throw e;	
+			}finally{
+				
+				db_connection.release(st, null);
+				if(ext_conn==null) db_connection.release( null, conn);
+			}   
+			return result;
+	     }	  
+	   
+	   public static i_elementDBBase update_db_element(i_elementDBBase element,Connection ext_conn, String sql_upd) throws Exception{
+		   int cnt = 0;
+			if(element==null) return null;
+			Connection conn=null;
+			Statement st=null;
+
+			try{
+				if(ext_conn==null){
+					db_init init = new db_init();
+					init.init();
+					conn = new db_connection().getContent(init);
+					conn.setAutoCommit(false);
+				}else conn=ext_conn;	
+				st = conn.createStatement();
+				cnt = st.executeUpdate(sql_upd);
+				conn.commit();
+
+			}catch(Exception e){
+				new bsException(e,"ERROR");
+				throw e;	
+			}finally{
+				
+				db_connection.release(st, null);
+				if(ext_conn==null) db_connection.release( null, conn);
+			} 
+			if(cnt>0){
+				i_elementDBBase clone_element = null;
+				try{
+					clone_element = (i_elementDBBase)util_cloner.clone(element);
+				}catch(Exception ex){				
+				}
+
+				return load_db_element(clone_element, ext_conn);
+			}else return null;
+
+	     }		   
 
 }
