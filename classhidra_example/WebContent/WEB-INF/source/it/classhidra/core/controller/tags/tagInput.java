@@ -138,6 +138,8 @@ public class tagInput extends BodyTagSupport{
 	protected String checkedvalue=null;
 	protected String replaceOnBlank=null;
 	protected String replaceOnErrorFormat=null;
+	
+	protected String solveBeanName=null;
 
 	public int doStartTag() throws JspException {
 		StringBuffer results = new StringBuffer();
@@ -242,6 +244,8 @@ public class tagInput extends BodyTagSupport{
 
 		replaceOnBlank=null;
 		replaceOnErrorFormat=null;
+		
+		solveBeanName=null;
 	}
 
 	protected String createTagBody() {
@@ -260,6 +264,16 @@ public class tagInput extends BodyTagSupport{
 		if(method_prefix==null) method_prefix="get";
 		Object anotherBean = null;
 		Object writeValue=null;
+		
+		String prefixName=null;
+		
+		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null && ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean)!=null){
+			prefixName = ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean).toString();
+		}
+		if(prefixName==null)
+			prefixName=name;
+		else prefixName+="."+name;
+
 
 //		value="";
 
@@ -314,7 +328,9 @@ public class tagInput extends BodyTagSupport{
 		StringBuffer results = new StringBuffer("<input ");
 		if(name!=null){
 			results.append(" name=\"");
-			results.append(name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append(prefixName);
+			else results.append(name);
 			results.append('"');
 		}
 		if(objId!=null){
@@ -324,7 +340,9 @@ public class tagInput extends BodyTagSupport{
 		}else{
 			if(name!=null){
 				results.append(" id=\"");
-				results.append(name);
+				if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+					results.append(prefixName);
+				else results.append(name);
 				results.append('"');
 			}
 		}
@@ -382,6 +400,27 @@ public class tagInput extends BodyTagSupport{
 			results.append(" checked=\"");
 			results.append(checked);
 			results.append('"');
+		}else{
+			
+			if ( formBean != null &&
+					 type != null && (
+					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 checkedvalue !=null &&
+					 (solveBeanName==null || !solveBeanName.equalsIgnoreCase("true")) &&
+					 checkedvalue.equalsIgnoreCase(formBean.get(name).toString()))
+				
+					results.append(" checked=\"checked\"");
+
+			if ( formBean != null &&
+					 type != null && (
+					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 checkedvalue !=null &&
+					 (solveBeanName!=null && solveBeanName.equalsIgnoreCase("true")) &&
+					 checkedvalue.equalsIgnoreCase(formBean.get(prefixName).toString()))
+				
+					results.append(" checked=\"checked\"");
+			
+
 		}
 		if (disabled != null) {
 			results.append(" disabled=\"");
@@ -504,11 +543,24 @@ public class tagInput extends BodyTagSupport{
 				if ( formBean != null &&
 					 type != null && (
 					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 (solveBeanName==null || !solveBeanName.equalsIgnoreCase("true")) &&
 					 checkedvalue.equalsIgnoreCase(formBean.get(name).toString()))
-				{
+
 					results.append(" checked=\"checked\"");
-				}
+
+				if ( formBean != null &&
+						 type != null && (
+						 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+						 (solveBeanName!=null && solveBeanName.equalsIgnoreCase("true")) &&
+						 checkedvalue.equalsIgnoreCase(formBean.get(prefixName).toString()))
+
+						results.append(" checked=\"checked\"");
+				
+				
+
 		}catch(Exception e){}
+		
+		
 
 		if (styleClass != null) {
 			results.append(" class=\"");
@@ -705,27 +757,37 @@ public class tagInput extends BodyTagSupport{
 			results.append(onmousewheel);
 			results.append('"');
 		}
+		results.append(" $modelWire=\"");
+		results.append("input:"+prefixName);
+		results.append('"');
 
 
+		
 		results.append('>');
 
 		if(name!=null && formatInput!=null){
 			results.append("<input name=\"");
-			results.append("$format_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$format_"+prefixName);
+			else results.append("$format_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(formatInput);
 			results.append("\">");
 		}
 		if(name!=null && replaceOnBlank!=null){
 			results.append("<input name=\"");
-			results.append("$replaceOnBlank_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$replaceOnBlank_"+prefixName);
+			else results.append("$replaceOnBlank_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(replaceOnBlank);
 			results.append("\">");
 		}
 		if(name!=null && replaceOnErrorFormat!=null){
 			results.append("<input name=\"");
-			results.append("$replaceOnErrorFormat_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$replaceOnErrorFormat_"+prefixName);
+			else results.append("$replaceOnErrorFormat_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(replaceOnErrorFormat);
 			results.append("\">");
@@ -733,6 +795,7 @@ public class tagInput extends BodyTagSupport{
 
 
 		value=null;
+		prefixName=null;
 		return results.toString();
 	}
 	public String getAccept() {
@@ -1295,6 +1358,14 @@ public class tagInput extends BodyTagSupport{
 
 	public void setStep(String step) {
 		this.step = step;
+	}
+
+	public String getSolveBeanName() {
+		return solveBeanName;
+	}
+
+	public void setSolveBeanName(String solveBeanName) {
+		this.solveBeanName = solveBeanName;
 	}
 
 

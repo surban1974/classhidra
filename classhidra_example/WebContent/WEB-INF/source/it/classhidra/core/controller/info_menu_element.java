@@ -16,6 +16,7 @@ public class info_menu_element extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -4335618503251976686L;
 	public String id;
 	public String action;
+	public String auth_action;
 	public String descr;
 	public String mess_id;
 	public String img;
@@ -102,6 +103,7 @@ public class info_menu_element extends info_entity implements i_elementBase{
 	public void reimposta(){
 		id="";
 		action="menuCreator";
+		auth_action="";
 		descr="";
 		mess_id="";
 		img="";
@@ -121,6 +123,8 @@ public class info_menu_element extends info_entity implements i_elementBase{
 		String result=System.getProperty("line.separator")+spaces+"<element";
 		result+=" id=\""+util_format.normaliseXMLText(getId())+"\"";
 		result+=" action=\""+util_format.normaliseXMLText(getAction())+"\"";
+		if(auth_action!=null && auth_action.trim().length()>0)
+			result+=" auth_action=\""+util_format.normaliseXMLText(getAuth_action())+"\"";
 		result+=" descr=\""+util_format.normaliseXMLText(getDescr())+"\"";
 		result+=" mess_id=\""+util_format.normaliseXMLText(getMess_id())+"\"";
 		result+=" img=\""+util_format.normaliseXMLText(getImg())+"\"";
@@ -179,6 +183,10 @@ public class info_menu_element extends info_entity implements i_elementBase{
 	public void setImg(String string) {
 		img = string;
 	}
+	
+	public void setImg(Object string) {
+		if(string!=null && string instanceof String) img = (String)string;
+	}	
 
 	public void setMess_id(String string) {
 		mess_id = string;
@@ -216,6 +224,12 @@ public class info_menu_element extends info_entity implements i_elementBase{
 	}
 	public void setExternalloader(String externalloader) {
 		this.externalloader = externalloader;
+	}
+	public String getAuth_action() {
+		return auth_action;
+	}
+	public void setAuth_action(String authAction) {
+		auth_action = authAction;
 	}
 
 

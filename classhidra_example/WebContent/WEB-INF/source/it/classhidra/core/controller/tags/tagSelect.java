@@ -74,7 +74,14 @@ public class tagSelect extends tagInput{
 
 		Object writeValue=null;
 
-
+		String prefixName=null;
+		
+		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null && ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean)!=null){
+			prefixName = ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean).toString();
+		}
+		if(prefixName==null)
+			prefixName=name;
+		else prefixName+="."+name;
 
 //		if(value==null){
 			if(bean==null && name!=null){
@@ -124,7 +131,9 @@ public class tagSelect extends tagInput{
 		StringBuffer results = new StringBuffer("<select ");
 		if(name!=null){
 			results.append(" name=\"");
-			results.append(name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append(prefixName);
+			else results.append(name);
 			results.append('"');
 		}
 		if(objId!=null){
@@ -134,7 +143,9 @@ public class tagSelect extends tagInput{
 		}else{
 			if(name!=null){
 				results.append(" id=\"");
-				results.append(name);
+				if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+					results.append(prefixName);
+				else results.append(name);
 				results.append('"');
 			}
 		}
@@ -426,32 +437,42 @@ public class tagSelect extends tagInput{
 			results.append(onmousewheel);
 			results.append('"');
 		}
-
+		
+		results.append(" $modelWire=\"");
+		results.append("select:"+prefixName);
+		results.append('"');
 
 		results.append('>');
 
 		if(name!=null && formatInput!=null){
 			results.append("<input name=\"");
-			results.append("$format_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$format_"+prefixName);
+			else results.append("$format_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(formatInput);
 			results.append("\">");
 		}
-
 		if(name!=null && replaceOnBlank!=null){
 			results.append("<input name=\"");
-			results.append("$replaceOnBlank_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$replaceOnBlank_"+prefixName);
+			else results.append("$replaceOnBlank_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(replaceOnBlank);
 			results.append("\">");
 		}
 		if(name!=null && replaceOnErrorFormat!=null){
 			results.append("<input name=\"");
-			results.append("$replaceOnErrorFormat_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$replaceOnErrorFormat_"+prefixName);
+			else results.append("$replaceOnErrorFormat_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(replaceOnErrorFormat);
 			results.append("\">");
 		}
+		
+		prefixName=null;
 		return results.toString();
 	}
 	public int doStartTag() throws JspException {

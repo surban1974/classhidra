@@ -39,6 +39,8 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 
@@ -210,7 +212,8 @@ public void init(HttpServletRequest request) throws bsControllerException{
 					if(st.countTokens()>1){
 						String current_field_name = st.nextToken();
 						try{
-							if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
+							if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+							if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
 							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 							if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
@@ -417,7 +420,9 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 								if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
-								if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
+
 							}catch(Exception e){
 							}
 							current_requested = writeValue;
@@ -559,9 +564,8 @@ public void init(HashMap _content) throws bsControllerException{
 					try{
 						writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-						if(writeValue==null && current_requested instanceof HashMap){
-							writeValue = ((HashMap)current_requested).get(current_field_name);
-						}
+						if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+						if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
 					}catch(Exception e){
 					}
 					current_requested = writeValue;
@@ -635,8 +639,8 @@ public void reInit(i_elementDBBase _i_el) {
 }
 
 public void setCampoValuePoint(Object req, String nome, Object value) throws Exception{
-	if(req instanceof HashMap){
-		((HashMap)req).put(nome, value);
+	if(req instanceof Map){
+		((Map)req).put(nome, value);
 	}else{
 		Object[] par = new Object[1];
 		par[0]=value;
