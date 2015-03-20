@@ -751,7 +751,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 					String output4SOAP = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4SOAP);
-					String output4JSON = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4SOAP);
+					String output4JSON = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4JSON);
 
 					byte[] output4BYTE = (byte[])action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4BYTE);
 

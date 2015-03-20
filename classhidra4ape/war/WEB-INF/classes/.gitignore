@@ -1,0 +1,11 @@
+/META-INF/
+/application/
+/classhidra_app.properties
+/classhidra_auth.properties
+/classhidra_db.properties
+/classhidra_log.properties
+/classhidra_scheduler.properties
+/config/
+/it/
+/log4j.properties
+/stubs/
