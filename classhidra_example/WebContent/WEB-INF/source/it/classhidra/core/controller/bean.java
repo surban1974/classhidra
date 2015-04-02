@@ -1235,6 +1235,15 @@ public void onGetFromSession() {
 	if(listener_b!=null) listener_b.onGetFromSession();
 }
 
+public void onAddToLastInstance() {
+	if(listener_b!=null) listener_b.onAddToLastInstance();	
+}
+
+
+public void onGetFromLastInstance() {
+	if(listener_b!=null) listener_b.onGetFromLastInstance();
+}
+
 public void setOwner(i_bean owner) {
 }
 
@@ -1269,6 +1278,7 @@ public boolean convert2xml(){
 public boolean convert2json(){
 	return false;
 }
+
 
 
 }

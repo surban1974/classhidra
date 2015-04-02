@@ -35,7 +35,9 @@ public interface listener_bean {
 	void onAddToNavigation();
 	void onGetFromNavigation();
 	void onAddToSession();
+	void onAddToLastInstance();
 	void onGetFromSession();
+	void onGetFromLastInstance();
 	
 	void onPostInit(HttpServletRequest request);
 	void onPostInit(HashMap _content);

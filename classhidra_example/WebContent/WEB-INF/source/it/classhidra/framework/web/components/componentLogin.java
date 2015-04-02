@@ -2,12 +2,18 @@ package it.classhidra.framework.web.components;
 
 
 import it.classhidra.annotation.elements.Action;
-
 import it.classhidra.annotation.elements.ActionMapping;
-import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Redirect;
-import it.classhidra.core.controller.*;
+import it.classhidra.core.controller.action;
+import it.classhidra.core.controller.bean;
+import it.classhidra.core.controller.bsConstants;
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_nodeorganization;
+import it.classhidra.core.controller.load_organization;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
@@ -20,15 +26,16 @@ import it.classhidra.core.tool.util.util_usersInSession;
 import it.classhidra.framework.web.beans.option_element;
 import it.classhidra.framework.web.integration.i_module_integration;
 
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.servlet.http.*;
-import javax.servlet.*;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @ActionMapping (
 		redirects={
@@ -44,8 +51,8 @@ import javax.servlet.*;
 						name="formLogin",
 						redirect="/jsp/framework/login.jsp",
 						navigated="true",
-						memoryInSession="true",
-						reloadAfterAction="false",
+						memoryInSession="false",
+						reloadAfterAction="true",
 						help="/jsp/help/help_login.html",
 						entity=@Entity(
 								property="allway:public"
@@ -56,7 +63,7 @@ import javax.servlet.*;
 		}
 )
 
-@Bean (	name="formLogin")
+//@Bean (	name="formLogin")
 
 
 

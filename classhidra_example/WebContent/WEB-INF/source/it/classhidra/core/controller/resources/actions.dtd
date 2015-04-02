@@ -54,6 +54,7 @@
 	redirect CDATA #IMPLIED
 	navigated (true | false) #IMPLIED
 	memoryInSession (true | false) #IMPLIED
+	memoryAsLastInstance (true | false) #IMPLIED
 	reloadAfterAction (true | false) #IMPLIED
 	reloadAfterNextNavigated (true | false) #IMPLIED
 	property CDATA #IMPLIED

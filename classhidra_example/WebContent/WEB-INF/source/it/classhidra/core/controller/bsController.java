@@ -478,7 +478,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 			else
 				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext(),action_instance);
 			if(bean_instance!=null){
-				if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")) bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
+				if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
+					bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
+				if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true"))
+					bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
 				bean_instance.reimposta();
 			}
 
@@ -503,6 +506,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
 				bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
+			if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true"))
+				bean_instance.setCurrent_auth( bsController.checkAuth_init(request));			
 
 			if(	action_instance instanceof i_bean &&
 					(
@@ -555,15 +560,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 						iCall =  (info_call)method_call[1];
 						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
 					}
-
-/*
-					iCallMethod = action_instance.getMethodForCall(id_call);
-					if(iCallMethod!=null){
-						iCall = new info_call();
-						iCall.setMethod(iCallMethod.getName());
-						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
-					}
-*/
 				}else{
 					try{
 						iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
@@ -625,8 +621,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 					if(form!=null)
 						form.onAddToSession();
-					fromSession.put(form.get_infobean().getName(),form);
+// Mod 20150402 --					
+//					fromSession.put(form.get_infobean().getName(),form);
+					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null)
+						fromSession.put(form.get_infoaction().getPath(),form);
 				}
+				if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
+					if(form!=null)
+						form.onAddToLastInstance();
+					request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
+				}				
 			}catch(Exception e){
 			}
 
@@ -672,7 +676,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 				else
 					bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext(),prev_action_instance);
 				if(bean_instance_clone!=null){
-					if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")) bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
+					if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")) 
+						bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
+					if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")) 
+						bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
+					
 					bean_instance_clone.reimposta();
 				}
 			}else{
@@ -687,7 +695,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 					bean_instance_clone.init(request);
 					bean_instance_clone.onPostInit(request);
 				}
-				if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")) bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
+				if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")) 
+					bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
+				if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")) 
+					bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));				
 				bean_instance_clone.onPreValidate(request);
 				redirects validate_redirect = bean_instance_clone.validate(request);
 				bean_instance_clone.onPostValidate(validate_redirect,request);
@@ -1370,24 +1381,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 		try{
-/*
-			i_action action_instance = getAction_config().actionFactory(id_current,request.getSession(),request.getSession().getServletContext());
-			String inSession = action_instance.get_infoaction().getMemoryInSession().toLowerCase();
-			if(inSession.equals("true")){
-				HashMap fromSession = null;
-				fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
-				return (i_bean)fromSession.get(action_instance.get_infoaction().getName());
-			}
-*/
 			info_action infoAction = (info_action)getAction_config().get_actions().get(id_current);
 			if(	infoAction.getMemoryInSession().equalsIgnoreCase("true")){
 				i_bean content = (i_bean)
 					((HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION))
-					.get(infoAction.getName());
+					.get(infoAction.getPath());
 				if(content!=null)
 					content.onGetFromSession();
 				return content;
 			}
+			if(	infoAction.getMemoryAsLastInstance().equalsIgnoreCase("true")){
+				i_bean content = (i_bean)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE);
+				if(	content!=null &&
+					content.get_infoaction()!=null &&
+					content.get_infoaction().getPath()!=null &&
+					content.get_infoaction().getPath().equals(infoAction.getPath()))
+					content.onGetFromLastInstance();
+				return content;
+			}			
 		}catch(Exception e){
 			if( e instanceof java.lang.NullPointerException){
 			}else new bsControllerException(e,iStub.log_DEBUG);
@@ -1445,8 +1456,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 					if(form!=null)
 						form.onAddToSession();
-					fromSession.put(form.get_infobean().getName(),form);
+					// Mod 20150402 --					
+//					fromSession.put(form.get_infobean().getName(),form);
+					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null)
+						fromSession.put(form.get_infoaction().getPath(),form);
 				}
+				if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
+					if(form!=null)
+						form.onAddToLastInstance();
+					request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
+				}				
+				
 			}catch(Exception e){
 			}
 			return;
@@ -1462,24 +1482,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 				else request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
 			}catch(Exception e){
 			}
-/*
-			if(request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)!=null){
-				info_navigation nav = new info_navigation();
-				try{
-					nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
-					((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).add(nav);
-				}catch(Exception e){
-				}
-			}else{
-				info_navigation nav = new info_navigation();
-				try{
-					nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
-					request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
-				}catch(Exception e){
-				}
-			}
-*/
-//			request.setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTION, form);
 		}
 	}
 

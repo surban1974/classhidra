@@ -3,7 +3,6 @@ package it.classhidra.framework.web.components;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
-import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
@@ -47,7 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 			}
 )
 
-@Bean (	name="formAmanager")
+//@Bean (	name="formAmanager")
 
 @Action (
 	path="amanager",
@@ -56,7 +55,8 @@ import javax.servlet.http.HttpServletResponse;
 	navigated="true",
 	syncro="true",
     memoryInSession="false",
-    reloadAfterAction="false",
+    memoryAsLastInstance="true",
+    reloadAfterAction="true",
 	redirects={
 			@Redirect(	
 				auth_id="amn_id",

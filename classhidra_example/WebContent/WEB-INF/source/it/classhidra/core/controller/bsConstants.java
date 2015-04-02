@@ -68,6 +68,7 @@ public interface bsConstants {
 	public final static String CONST_BEAN_$AUTHENTIFICATION 			=	"$authentication";
 	public final static String CONST_BEAN_$NAVIGATION 					=	"$navigation";
 	public final static String CONST_BEAN_$ONLYINSSESSION 				=	"$onlyinssession";
+	public final static String CONST_BEAN_$ONLYASLASTINSTANCE			=	"$onlyaslastinstance";
 
 	public final static String CONST_SERVICE_$PARENT_POINTOFLAUNCH 		=	"$parent_pointOfLaunch";
 	public final static String CONST_SERVICE_$CHILD_POINTOFRETURN 		=	"$child_pointOfReturn";

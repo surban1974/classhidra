@@ -177,7 +177,7 @@
                 	redirect="/jsp/framework/content.jsp"
                 	type="application.web.actions.actionContent"
                 	navigated="true"
-                	memoryInSession="true"
+                	memoryInSession="false"
                 	reloadAfterAction="true">
         	</action> 
         	
@@ -186,7 +186,7 @@
                 	redirect="/jsp/pages/sendmail.jsp"
                 	type="application.web.actions.actionSendMail"
                 	navigated="true"
-                	memoryInSession="true"
+                	memoryInSession="false"
                 	reloadAfterAction="true">
                  
         	</action>  
@@ -194,7 +194,7 @@
 		<action path="about"
                 	redirect="/jsp/pages/about.jsp"
                  	navigated="true"
-                	memoryInSession="true"
+                	memoryInSession="false"
                 	reloadAfterAction="true">
                  
         	</action>          	    
