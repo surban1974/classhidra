@@ -689,7 +689,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>
-	
+    <attribute>
+        <name>asyncUpdate</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
 	
   </tag>
 
@@ -1032,7 +1036,12 @@
         <name>solveBeanName</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+    <attribute>
+        <name>asyncUpdate</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>		
   </tag>
 
 

@@ -140,6 +140,7 @@ public class tagInput extends BodyTagSupport{
 	protected String replaceOnErrorFormat=null;
 	
 	protected String solveBeanName=null;
+	protected String asyncUpdate=null;
 
 	public int doStartTag() throws JspException {
 		StringBuffer results = new StringBuffer();
@@ -246,6 +247,7 @@ public class tagInput extends BodyTagSupport{
 		replaceOnErrorFormat=null;
 		
 		solveBeanName=null;
+		asyncUpdate=null;
 	}
 
 	protected String createTagBody() {
@@ -274,6 +276,7 @@ public class tagInput extends BodyTagSupport{
 			prefixName=name;
 		else prefixName+="."+name;
 
+		String asyncUpdateUrl=null;
 
 //		value="";
 
@@ -325,6 +328,57 @@ public class tagInput extends BodyTagSupport{
 		}
 
 
+		
+		if(asyncUpdate!=null && !asyncUpdate.equalsIgnoreCase("false")){
+			try{
+				asyncUpdateUrl=formAction.get_infoaction().getPath();
+				if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+					if(!asyncUpdate.equalsIgnoreCase("true"))
+						asyncUpdateUrl+=bsController.getAppInit().get_actioncall_separator()+asyncUpdate+"?";
+					else
+						asyncUpdateUrl+=bsController.getAppInit().get_actioncall_separator()+"asyncupdate?";
+				}else asyncUpdateUrl+="?";
+				asyncUpdateUrl+="middleAction=undef&";
+				if(name!=null){
+					if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+						asyncUpdateUrl+=prefixName+"='+this.value+'&target="+prefixName+"&";
+					else asyncUpdateUrl+=name+"='+this.value+'&target="+name+"&";
+					
+					if(formatInput!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$format_"+prefixName+"="+formatInput+"&";
+						else asyncUpdateUrl+="$format_"+name+"="+formatInput+"&";
+					}
+					if(formatOutput!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatOutput_"+prefixName+"="+formatOutput+"&";
+						else asyncUpdateUrl+="$formatOutput_"+name+"="+formatOutput+"&";
+					}	
+					if(formatLanguage!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatLanguage_"+prefixName+"="+formatLanguage+"&";
+						else asyncUpdateUrl+="$formatLanguage_"+name+"="+formatLanguage+"&";
+					}
+					if(formatCountry!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatCountry_"+prefixName+"="+formatCountry+"&";
+						else asyncUpdateUrl+="$formatCountry_"+name+"="+formatCountry+"&";
+					}					
+					if(replaceOnBlank!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$replaceOnBlank_"+prefixName+"="+replaceOnBlank+"&";
+						else asyncUpdateUrl+="$replaceOnBlank_"+name+"="+replaceOnBlank+"&";
+					}
+					if(replaceOnErrorFormat!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$replaceOnErrorFormat_"+prefixName+"="+replaceOnErrorFormat+"&";
+						else asyncUpdateUrl+="$replaceOnErrorFormat_"+name+"="+replaceOnErrorFormat+"&";
+					}
+				}
+			}catch(Exception e){
+			}
+		}
+		
 		StringBuffer results = new StringBuffer("<input ");
 		if(name!=null){
 			results.append(" name=\"");
@@ -677,9 +731,18 @@ public class tagInput extends BodyTagSupport{
 
 		if (onchange != null) {
 			results.append(" onchange=\"");
+			if(asyncUpdateUrl!=null)
+				results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
 			results.append(onchange);
 			results.append('"');
+		}else{
+			if(asyncUpdateUrl!=null){
+				results.append(" onchange=\"");
+				results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+				results.append('"');
+			}
 		}
+		
 		if (onfocus != null) {
 			results.append(" onfocus=\"");
 			results.append(onfocus);
@@ -1366,6 +1429,14 @@ public class tagInput extends BodyTagSupport{
 
 	public void setSolveBeanName(String solveBeanName) {
 		this.solveBeanName = solveBeanName;
+	}
+
+	public String getAsyncUpdate() {
+		return asyncUpdate;
+	}
+
+	public void setAsyncUpdate(String asyncUpdate) {
+		this.asyncUpdate = asyncUpdate;
 	}
 
 

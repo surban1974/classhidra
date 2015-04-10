@@ -37,6 +37,7 @@ import it.classhidra.core.tool.util.util_tag;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -82,6 +83,8 @@ public class tagSelect extends tagInput{
 		if(prefixName==null)
 			prefixName=name;
 		else prefixName+="."+name;
+		
+		String asyncUpdateUrl=null;
 
 //		if(value==null){
 			if(bean==null && name!=null){
@@ -128,6 +131,59 @@ public class tagSelect extends tagInput{
 				}
 			}
 //		}
+			
+		
+			if(asyncUpdate!=null && !asyncUpdate.equalsIgnoreCase("false")){
+				try{
+					asyncUpdateUrl=formAction.get_infoaction().getPath();
+					if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+						if(!asyncUpdate.equalsIgnoreCase("true"))
+							asyncUpdateUrl+=bsController.getAppInit().get_actioncall_separator()+asyncUpdate+"?";
+						else
+							asyncUpdateUrl+=bsController.getAppInit().get_actioncall_separator()+"asyncupdate?";
+					}else asyncUpdateUrl+="?";
+					asyncUpdateUrl+="middleAction=undef&";
+					if(name!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+=prefixName+"='+this.value+'&target="+prefixName+"&";
+						else asyncUpdateUrl+=name+"='+this.value+'&target="+name+"&";
+						
+						if(formatInput!=null){
+							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+								asyncUpdateUrl+="$format_"+prefixName+"="+formatInput+"&";
+							else asyncUpdateUrl+="$format_"+name+"="+formatInput+"&";
+						}
+						if(formatOutput!=null){
+							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+								asyncUpdateUrl+="$formatOutput_"+prefixName+"="+formatOutput+"&";
+							else asyncUpdateUrl+="$formatOutput_"+name+"="+formatOutput+"&";
+						}	
+						if(formatLanguage!=null){
+							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+								asyncUpdateUrl+="$formatLanguage_"+prefixName+"="+formatLanguage+"&";
+							else asyncUpdateUrl+="$formatLanguage_"+name+"="+formatLanguage+"&";
+						}
+						if(formatCountry!=null){
+							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+								asyncUpdateUrl+="$formatCountry_"+prefixName+"="+formatCountry+"&";
+							else asyncUpdateUrl+="$formatCountry_"+name+"="+formatCountry+"&";
+						}					
+						if(replaceOnBlank!=null){
+							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+								asyncUpdateUrl+="$replaceOnBlank_"+prefixName+"="+replaceOnBlank+"&";
+							else asyncUpdateUrl+="$replaceOnBlank_"+name+"="+replaceOnBlank+"&";
+						}
+						if(replaceOnErrorFormat!=null){
+							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+								asyncUpdateUrl+="$replaceOnErrorFormat_"+prefixName+"="+replaceOnErrorFormat+"&";
+							else asyncUpdateUrl+="$replaceOnErrorFormat_"+name+"="+replaceOnErrorFormat+"&";
+						}
+					}
+				}catch(Exception e){
+				}
+			}
+	
+			
 		StringBuffer results = new StringBuffer("<select ");
 		if(name!=null){
 			results.append(" name=\"");
@@ -353,11 +409,16 @@ public class tagSelect extends tagInput{
 		}
 		if (onchange != null) {
 			results.append(" onchange=\"");
-			results.append("this.value=this[this.selectedIndex].value; "+onchange);
+			results.append("this.value=this[this.selectedIndex].value;");
+			if(asyncUpdateUrl!=null)
+				results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+			results.append(onchange);			
 			results.append('"');
 		}else{
 			results.append(" onchange=\"");
-			results.append("this.value = this[this.selectedIndex].value; ");
+			results.append("this.value = this[this.selectedIndex].value;");
+			if(asyncUpdateUrl!=null)
+				results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
 			results.append('"');
 		}
 		if (onfocus != null) {
