@@ -18,6 +18,14 @@ public class util_file {
 			result=true;
 		return result;
 	}
+	public static boolean appendByteToFile( byte[] bytes, String path ) throws Exception {
+		boolean result = false;
+			FileOutputStream fileOutputStream = new FileOutputStream(path, true);
+			fileOutputStream.write(bytes);
+			fileOutputStream.close();
+			result=true;
+		return result;
+	}	
 	 public static byte[] getBytesFromFile(String path) throws Exception {
 		 File file = new File(path);
 		 return getBytesFromFile(file);

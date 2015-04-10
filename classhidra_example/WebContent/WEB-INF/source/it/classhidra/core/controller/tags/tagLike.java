@@ -174,17 +174,33 @@ public class tagLike extends  TagSupport {
 			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
 		}catch (Exception e) {
 		}		
-		if(value==null && writeValue!=null) return true;
+		if(value==null && writeValue!=null){
+			if(getParent()!=null && getParent() instanceof tagSwitch)
+				((tagSwitch)getParent()).setConditionBreak(true);
+			return true;
+		}
 		if(value==null || writeValue==null) return false;
 		if(upperCase!=null && upperCase.toLowerCase().equals("true")){
-			if(writeValue.toString().toUpperCase().indexOf(value)>-1) return true;
+			if(writeValue.toString().toUpperCase().indexOf(value)>-1){
+				if(getParent()!=null && getParent() instanceof tagSwitch)
+					((tagSwitch)getParent()).setConditionBreak(true);
+				return true;
+			}
 			else return false;
 		}else{
 			if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true")){
-				if(writeValue.toString().toUpperCase().indexOf(value.toUpperCase())>-1) return true;
+				if(writeValue.toString().toUpperCase().indexOf(value.toUpperCase())>-1){
+					if(getParent()!=null && getParent() instanceof tagSwitch)
+						((tagSwitch)getParent()).setConditionBreak(true);
+					return true;
+				}
 				else return false;
 			}else{
-				if(writeValue.toString().indexOf(value)>-1) return true;
+				if(writeValue.toString().indexOf(value)>-1){
+					if(getParent()!=null && getParent() instanceof tagSwitch)
+						((tagSwitch)getParent()).setConditionBreak(true);
+					return true;
+				}
 				else return false;	
 			}
 		}

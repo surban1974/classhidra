@@ -1,6 +1,6 @@
 /**
-* Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
+* Creation date: (10/04/2015)
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
 */
 
 /********************************************************************************
@@ -26,35 +26,27 @@ package it.classhidra.core.controller.tags;
 
 
 
-import java.util.HashMap;
-import java.util.StringTokenizer;
-
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_navigation;
-import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 
 
-public class tagLess extends  TagSupport {
+public class tagNotIsNull extends  TagSupport {
 	private static final long serialVersionUID = 1L;
 	protected String bean=null;
 	protected String name=null;
-	protected String value=null;
-	protected String valueFromBean=null;
 	protected String method_prefix=null;
-	protected String field=null;
-	protected String formatOutput=null;
-	protected String formatLanguage=null;
-	protected String formatCountry=null;
 	
 	public int doStartTag() throws JspException {
 		if (condition())
@@ -70,15 +62,10 @@ public class tagLess extends  TagSupport {
 		super.release();
 		bean = null;
 		name = null;
-		value = null;
 		method_prefix=null;
-		valueFromBean=null;
-		field=null;
-		formatOutput=null;
-		formatLanguage=null;
-		formatCountry=null;	
-	}
 
+	}
+	
 	private boolean condition() throws JspException{
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action formAction=null;
@@ -95,8 +82,9 @@ public class tagLess extends  TagSupport {
 		if(method_prefix==null) method_prefix="get";
 		Object writeValue=null;
 		Object anotherBean = null;
-		if(bean==null && name!=null){			
-			anotherBean = formBean;
+		if(bean==null && name!=null){
+
+			anotherBean = formBean;			
 			writeValue = util_reflect.prepareWriteValueForTag(formBean,method_prefix,name,null);
 		}else{
 			if(name!=null){
@@ -118,73 +106,27 @@ public class tagLess extends  TagSupport {
 			}catch(Exception e){
 			}
 
+			
+
 			if(anotherBean!=null){
 				if(name==null) writeValue = anotherBean.toString();
 				else{
 					try{
-						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);
+						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);					 
 					}catch(Exception e){
 					}
-				}
-			}
+				}	
+			}		 		
 		}
+		
 
-		if(field!=null ){
-			try{
-				value = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,field,null).toString();
-			}catch(Exception e){
-			}
-		}
 
-		if(valueFromBean!=null ){
-			try{
-				Object rightBean = null;
-				String nameRightBean = "";
-				String methodRightBean = "";
-				StringTokenizer st = new StringTokenizer(valueFromBean,".");
-
-				while(st.hasMoreTokens()){
-					String current = st.nextToken();
-					if(nameRightBean.equals("")) nameRightBean=current;
-					else{
-						if(methodRightBean.equals("")) methodRightBean=current;
-						else methodRightBean+="."+current;
-					}
-				}
-
-				if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
-				if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
-				if(rightBean!=null){
-					if(methodRightBean==null || methodRightBean.equals("")) value = rightBean.toString();
-					else{
-						try{
-							value = util_reflect.prepareWriteValueForTag(rightBean,"get",methodRightBean,null).toString();
-						}catch(Exception e){
-						}
-					}
-				}
-			}catch(Exception e){
-			}
-		}
-		try{
-			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
-		}catch (Exception e) {
-		}		
-		if(value==null && writeValue!=null){
+		
+		if(writeValue!=null){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
 				((tagSwitch)getParent()).setConditionBreak(true);
 			return true;
 		}
-		if(value==null || writeValue==null) return false;
-		try{
-			if(Double.valueOf(writeValue.toString()).doubleValue()< Double.valueOf(value).doubleValue()){
-				if(getParent()!=null && getParent() instanceof tagSwitch)
-					((tagSwitch)getParent()).setConditionBreak(true);
-				return true;
-			}
-		}catch(Exception e){
-		}
-
 		return false;
 	}
 	public String getName() {
@@ -196,14 +138,8 @@ public class tagLess extends  TagSupport {
 	public String getBean() {
 		return bean;
 	}
-	public String getValue() {
-		return value;
-	}
 	public void setBean(String string) {
 		bean = string;
-	}
-	public void setValue(String string) {
-		value = string;
 	}
 
 	public String getMethod_prefix() {
@@ -212,46 +148,6 @@ public class tagLess extends  TagSupport {
 
 	public void setMethod_prefix(String string) {
 		method_prefix = string;
-	}
-
-	public String getField() {
-		return field;
-	}
-
-	public void setField(String string) {
-		field = string;
-	}
-
-	public String getValueFromBean() {
-		return valueFromBean;
-	}
-
-	public void setValueFromBean(String valueFromBean) {
-		this.valueFromBean = valueFromBean;
-	}
-
-	public String getFormatOutput() {
-		return formatOutput;
-	}
-
-	public void setFormatOutput(String formatOutput) {
-		this.formatOutput = formatOutput;
-	}
-
-	public String getFormatLanguage() {
-		return formatLanguage;
-	}
-
-	public void setFormatLanguage(String formatLanguage) {
-		this.formatLanguage = formatLanguage;
-	}
-
-	public String getFormatCountry() {
-		return formatCountry;
-	}
-
-	public void setFormatCountry(String formatCountry) {
-		this.formatCountry = formatCountry;
 	}
 
 }

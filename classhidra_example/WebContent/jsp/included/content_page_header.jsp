@@ -23,11 +23,13 @@ div#footer_fixedbox{
 
 	<table cellpadding="0" cellspacing="0" width="100%" bgcolor="white">
 		<tr>
+		
 <bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">
 			<td width="0%" background="images/corners/panel_t.gif" onclick="menu()" valign="middle" style="cursor: pointer">
 				<img id="menu_img" src="images/menu/16_close.gif" border="0" height="13"></img>&nbsp;
 			</td>
-</bs:equal>			
+</bs:equal>
+	
 			<td  width="100%" background="images/corners/panel_t.gif" valign="middle">
 				<div style="100%">
 					<div id="fixedbox_show_navigate_story" style=" overflow: hidden;">

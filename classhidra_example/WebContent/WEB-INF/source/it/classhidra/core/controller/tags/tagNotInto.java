@@ -172,17 +172,33 @@ public class tagNotInto extends  TagSupport {
 			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
 		}catch (Exception e) {
 		}		
-		if(value==null && writeValue==null) return true;
+		if(value==null && writeValue==null){
+			if(getParent()!=null && getParent() instanceof tagSwitch)
+				((tagSwitch)getParent()).setConditionBreak(true);
+			return true;
+		}
 		if(writeValue==null || value==null) return false;
 		if(upperCase!=null && upperCase.equalsIgnoreCase("true")){
-			if(value.toString().toUpperCase().indexOf(writeValue.toString())==-1) return true;
+			if(value.toString().toUpperCase().indexOf(writeValue.toString())==-1){
+				if(getParent()!=null && getParent() instanceof tagSwitch)
+					((tagSwitch)getParent()).setConditionBreak(true);
+				return true;
+			}
 			else return false;
 		}else{
 			if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true")){
-				if(value.toString().toUpperCase().indexOf(writeValue.toString().toUpperCase())==-1) return true;
+				if(value.toString().toUpperCase().indexOf(writeValue.toString().toUpperCase())==-1){
+					if(getParent()!=null && getParent() instanceof tagSwitch)
+						((tagSwitch)getParent()).setConditionBreak(true);
+					return true;
+				}
 				else return false;
 			}else{
-				if(value.toString().indexOf(writeValue.toString())==-1) return true;
+				if(value.toString().indexOf(writeValue.toString())==-1){
+					if(getParent()!=null && getParent() instanceof tagSwitch)
+						((tagSwitch)getParent()).setConditionBreak(true);
+					return true;
+				}
 				else return false;	
 			}
 		}
