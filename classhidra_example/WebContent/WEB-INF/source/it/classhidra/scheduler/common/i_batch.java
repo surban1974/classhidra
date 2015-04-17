@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 
 
-public interface i_batch {
+public interface i_batch extends listener_batch{
 	public void readInput(String xml);
 	public String execute() throws Exception;	
 	public String writeOutput();
