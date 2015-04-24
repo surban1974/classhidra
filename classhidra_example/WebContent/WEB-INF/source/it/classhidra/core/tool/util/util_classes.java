@@ -382,6 +382,33 @@ public class util_classes {
 	
 	    return result;
 	}	
+	
+	public static ArrayList getResourcesAsByte(String rsname, byte[] separator) throws ClassNotFoundException { 
+		if(rsname==null || rsname.trim().equals("")) return null;
+		ArrayList result = new ArrayList();
+		
+		ArrayList array = new ArrayList();
+
+		try{
+			array = util_classes.getResources(rsname);
+			for(int i=0;i<array.size();i++){
+				String property_name =  "";
+				if(rsname.charAt(rsname.length()-1)=='/')
+					property_name = rsname+array.get(i);
+				else property_name = rsname+"/"+array.get(i);
+				try{
+					if(i!=0 && separator!=null)
+						result.add(separator);
+					result.add(getResourceAsByte(property_name));
+				}catch(Exception e){
+				}
+			}
+
+		}catch(Exception e){
+			util_format.writeToConsole(bsController.getLogInit(),"LoadMessages: Array.ERROR:"+e.toString());
+		}
+		return result;
+	}
 
 	
 }

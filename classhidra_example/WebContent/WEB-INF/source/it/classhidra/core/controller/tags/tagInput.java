@@ -141,6 +141,7 @@ public class tagInput extends BodyTagSupport{
 	
 	protected String solveBeanName=null;
 	protected String asyncUpdate=null;
+	protected String asyncUpdateJsFunction=null;
 
 	public int doStartTag() throws JspException {
 		StringBuffer results = new StringBuffer();
@@ -248,6 +249,7 @@ public class tagInput extends BodyTagSupport{
 		
 		solveBeanName=null;
 		asyncUpdate=null;
+		asyncUpdateJsFunction=null;
 	}
 
 	protected String createTagBody() {
@@ -731,14 +733,19 @@ public class tagInput extends BodyTagSupport{
 
 		if (onchange != null) {
 			results.append(" onchange=\"");
-			if(asyncUpdateUrl!=null)
-				results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+			if(asyncUpdateUrl!=null){
+				if(asyncUpdateJsFunction!=null)
+					results.append(asyncUpdateJsFunction+"('"+asyncUpdateUrl+"',this.name);");
+				else results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+			}
 			results.append(onchange);
 			results.append('"');
 		}else{
 			if(asyncUpdateUrl!=null){
 				results.append(" onchange=\"");
-				results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+				if(asyncUpdateJsFunction!=null)
+					results.append(asyncUpdateJsFunction+"('"+asyncUpdateUrl+"',this.name);");
+				else results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
 				results.append('"');
 			}
 		}
@@ -1437,6 +1444,14 @@ public class tagInput extends BodyTagSupport{
 
 	public void setAsyncUpdate(String asyncUpdate) {
 		this.asyncUpdate = asyncUpdate;
+	}
+
+	public String getAsyncUpdateJsFunction() {
+		return asyncUpdateJsFunction;
+	}
+
+	public void setAsyncUpdateJsFunction(String asyncUpdateJsScript) {
+		this.asyncUpdateJsFunction = asyncUpdateJsScript;
 	}
 
 

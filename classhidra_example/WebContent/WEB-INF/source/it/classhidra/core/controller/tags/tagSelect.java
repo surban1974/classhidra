@@ -410,16 +410,21 @@ public class tagSelect extends tagInput{
 		if (onchange != null) {
 			results.append(" onchange=\"");
 			results.append("this.value=this[this.selectedIndex].value;");
-			if(asyncUpdateUrl!=null)
-				results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+			if(asyncUpdateUrl!=null){
+				if(asyncUpdateJsFunction!=null)
+					results.append(asyncUpdateJsFunction+"('"+asyncUpdateUrl+"',this.name);");
+				else results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+			}
 			results.append(onchange);			
 			results.append('"');
 		}else{
-			results.append(" onchange=\"");
-			results.append("this.value = this[this.selectedIndex].value;");
-			if(asyncUpdateUrl!=null)
-				results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
-			results.append('"');
+			if(asyncUpdateUrl!=null){
+				results.append(" onchange=\"");
+				if(asyncUpdateJsFunction!=null)
+					results.append(asyncUpdateJsFunction+"('"+asyncUpdateUrl+"',this.name);");
+				else results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+				results.append('"');
+			}
 		}
 		if (onfocus != null) {
 			results.append(" onfocus=\"");
