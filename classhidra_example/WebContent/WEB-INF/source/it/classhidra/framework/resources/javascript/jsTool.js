@@ -919,6 +919,11 @@ function draw_tabs_div(id,bool,height,prefix){
 								document.getElementById(pref+"div_page_tab_"+id).style.height=height;
 						}
 						document.getElementById(pref+"div_page_tab_"+id).style.display="block";
+						try{
+							if(document.getElementById("page_tab"))
+								document.getElementById("page_tab").value=id;
+						}catch(e){
+						}
 						tab.className="page_tab_section";
 					}
 				}
@@ -1306,7 +1311,7 @@ function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction){
 		document.body.appendChild(tmp_container);
 
 		if(document.getElementById("tmp_container")){
-			ajax_makeRequest(	"jsp/included/page_popup.jsp",
+			ajax_makeRequest(	"popup?type=page",
 								"tmp_container",
 								function(http_request,target){
 									if(http_request.status == 200){
@@ -1978,15 +1983,31 @@ function showAlertAsPopup(label){
 	ajustPanel();
 
 		try{
-			ajax_makeRequest(
-					"jsp/framework/viewalert.jsp",
+			
+			var f_exec_alert = function(http_request,target){
+				document.getElementById(target).innerHTML=http_request.responseText;
+				document.getElementById("confirm_label").innerHTML = label;
+			}	
+			
+			ajax_makeRequest(	
+					"popup?type=confirm",
 					"content_body_Panel_Popup",
-					"",
 					function(http_request,target){
-						document.getElementById(target).innerHTML=http_request.responseText;
-						document.getElementById("confirm_label").innerHTML = label;
+						if(http_request.status == 200){
+							f_exec_alert;
+						}else{
+							ajax_makeRequest(
+									"jsp/framework/viewalert.jsp",
+									"content_body_Panel_Popup",
+									"",
+									f_exec_alert,
+									false);
+						}
 					},
-					false);
+					"",
+					false
+			);		
+			
 		}catch(e){
 		}
 
@@ -2086,45 +2107,63 @@ function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo){
 	ajustPanel();
 
 	try{
-		ajax_makeRequest(
-				"jsp/framework/viewconfirm.jsp",
+
+		var f_exec_confirm = function(http_request,target){
+
+			document.getElementById(target).innerHTML=http_request.responseText;
+			document.getElementById("confirm_label").innerHTML = label;
+			if(document.getElementById("action_ok")){
+				document.getElementById("action_ok").onclick = callOk;
+				if(labelBtnOk){
+					document.getElementById("action_ok").innerHTML = labelBtnOk;
+					document.getElementById("action_ok").style.width=labelBtnOk.length*10;
+				}
+			}
+			if(document.getElementById("action_confirm")){
+				document.getElementById("action_confirm").onclick = callOk;
+				if(labelBtnOk){
+					document.getElementById("action_confirm").innerHTML = labelBtnOk;
+					document.getElementById("action_confirm").style.width=labelBtnOk.length*10;
+				}
+			}	
+			if(document.getElementById("action_ko")){
+				if(labelBtnKo){
+
+					document.getElementById("action_ko").innerHTML = labelBtnKo;
+					document.getElementById("action_ko").style.width=labelBtnKo.length*10;
+					document.getElementById("action_ko").onclick = callKo;
+
+				}else{
+					try{
+						var element = document.getElementById('action_ko');
+						element.outerHTML = '';
+						delete element;
+					}catch(e){
+					}							
+				}
+			}
+		}
+		
+		ajax_makeRequest(	
+				"popup?type=confirm",
 				"content_body_Panel_Popup",
-				"",
 				function(http_request,target){
-					document.getElementById(target).innerHTML=http_request.responseText;
-					document.getElementById("confirm_label").innerHTML = label;
-					if(document.getElementById("action_ok")){
-						document.getElementById("action_ok").onclick = callOk;
-						if(labelBtnOk){
-							document.getElementById("action_ok").innerHTML = labelBtnOk;
-							document.getElementById("action_ok").style.width=labelBtnOk.length*10;
-						}
-					}
-					if(document.getElementById("action_confirm")){
-						document.getElementById("action_confirm").onclick = callOk;
-						if(labelBtnOk){
-							document.getElementById("action_confirm").innerHTML = labelBtnOk;
-							document.getElementById("action_confirm").style.width=labelBtnOk.length*10;
-						}
-					}	
-					if(document.getElementById("action_ko")){
-						if(labelBtnKo){
-	
-							document.getElementById("action_ko").innerHTML = labelBtnKo;
-							document.getElementById("action_ko").style.width=labelBtnKo.length*10;
-							document.getElementById("action_ko").onclick = callKo;
-	
-						}else{
-							try{
-								var element = document.getElementById('action_ko');
-								element.outerHTML = '';
-								delete element;
-							}catch(e){
-							}							
-						}
+					if(http_request.status == 200){
+						f_exec_confirm;
+					}else{
+						ajax_makeRequest(
+								"jsp/framework/viewconfirm.jsp",
+								"content_body_Panel_Popup",
+								"",
+								f_exec_confirm,
+								false
+							);	
 					}
 				},
-				false);	
+				"",
+				false
+		);		
+		
 	}catch(e){
 	}
 
