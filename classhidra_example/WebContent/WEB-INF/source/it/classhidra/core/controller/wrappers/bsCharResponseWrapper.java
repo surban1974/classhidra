@@ -2,7 +2,7 @@
 package it.classhidra.core.controller.wrappers;
 
 import java.io.CharArrayWriter;
-
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +20,7 @@ public class bsCharResponseWrapper  extends a_ResponseWrapper implements i_Respo
         output = new CharArrayWriter();
     }
 
-    public PrintWriter getWriter() {
+    public PrintWriter getWriter() throws IOException{
         return new PrintWriter(output);
     }
     

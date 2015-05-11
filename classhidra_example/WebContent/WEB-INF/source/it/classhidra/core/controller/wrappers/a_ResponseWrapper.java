@@ -1,6 +1,7 @@
 
 package it.classhidra.core.controller.wrappers;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +14,7 @@ public abstract class a_ResponseWrapper  extends HttpServletResponseWrapper impl
 		super(response);
 	}
 
-	public abstract PrintWriter getWriter();
+	public abstract PrintWriter getWriter() throws IOException;
 	public abstract String toString();
 	public abstract byte[] getData();
 

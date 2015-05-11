@@ -105,6 +105,8 @@ public interface i_bean extends i_elementBeanBase,listener_bean{
 	void setDelegated(Object delegated);
 	boolean getVirtual();
 	void setVirtual(boolean virtual);
+	boolean getGzipoutput();
+	void setGzipoutput(boolean gzipoutput);
 	
 	listener_bean getListener_b();
 	void setListener_b(listener_bean listener);

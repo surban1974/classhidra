@@ -71,6 +71,7 @@ public class bean extends elementBeanBase implements i_bean  {
 	private boolean binaryoutput=false;
 	private String binaryoutput_encoding="";
 	private boolean virtual=false;
+	private boolean gzipoutput=false;
 	public int countActions;
 	
 	private listener_bean listener_b;
@@ -1170,6 +1171,14 @@ public void setVirtual(boolean virtual) {
 	this.virtual = virtual;
 }
 
+public boolean getGzipoutput() {
+	return gzipoutput;
+}
+
+public void setGzipoutput(boolean gzipoutput) {
+	this.gzipoutput = gzipoutput;
+}
+
 public listener_bean getListener_b() {
 	return listener_b;
 }
@@ -1278,6 +1287,8 @@ public boolean convert2xml(){
 public boolean convert2json(){
 	return false;
 }
+
+
 
 
 
