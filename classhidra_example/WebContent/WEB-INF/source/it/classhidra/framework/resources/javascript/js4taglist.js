@@ -1,6 +1,6 @@
 /**
-* Name: List.js (tagList.java)
-* Version: 1.4.10.11 (compatible classHidra 1.4.10.11)
+* Name: List.js (support for tagList.java)
+* Version: 1.4.10.14 (compatible classHidra 1.4.10.14)
 * Creation date: (21/04/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */

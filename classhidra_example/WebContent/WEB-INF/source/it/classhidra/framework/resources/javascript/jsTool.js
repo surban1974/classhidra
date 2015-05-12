@@ -1,7 +1,7 @@
 /**
 * Name: jsTool.js
-* Version: 1.4.10.11 (compatible classHidra 1.4.10.11)
-* Creation date: (21/04/2015)
+* Version: 1.4.10.14 (compatible classHidra 1.4.10.14)
+* Creation date: (12/05/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
@@ -777,11 +777,16 @@ function goViewExtend(){
 				document.forms[0].current_div_width.value=obj_div.style.width;
 			}else{
 				document.getElementById("current_div_width").value=obj_div.style.width;
-				if(document.forms[0].action.indexOf("?")>-1)
-					document.forms[0].action=document.forms[0].action+"&current_div_width="+document.getElementById("current_div_width").value;
-				else
-					document.forms[0].action=document.forms[0].action+"?current_div_width="+document.getElementById("current_div_width").value;		
+				if(document.forms[0].action.indexOf("?")>-1){
+					if(document.forms[0].action.indexOf("current_div_width")>-1)
+						document.forms[0].action = document.forms[0].action.replace(/(current_div_width=)[^\&]+/, '$1' + document.getElementById("current_div_width").value)
+					else					
+						document.forms[0].action=document.forms[0].action+"&current_div_width="+document.getElementById("current_div_width").value;
+				}else
+					document.forms[0].action=document.forms[0].action+"?current_div_width="+document.getElementById("current_div_width").value;	
+				
 			}
+
 			obj_div.style.width="100%";
 			document.getElementById("button_view_extend").style.display="none";
 			document.getElementById("button_view_reduce").style.display="block";
@@ -807,12 +812,15 @@ function goViewReduce(){
 			}else{
 				obj_div.style.width=document.getElementById("current_div_width").value;
 				document.getElementById("current_div_width").value="";				
-				if(document.forms[0].action.indexOf("?")>-1)
-					document.forms[0].action=document.forms[0].action+"&current_div_width="+document.getElementById("current_div_width").value;
-				else
-					document.forms[0].action=document.forms[0].action+"?current_div_width="+document.getElementById("current_div_width").value;		
+				if(document.forms[0].action.indexOf("?")>-1){
+					if(document.forms[0].action.indexOf("current_div_width")>-1)
+						document.forms[0].action = document.forms[0].action.replace(/(current_div_width=)[^\&]+/, '$1' + document.getElementById("current_div_width").value)
+					else					
+						document.forms[0].action=document.forms[0].action+"&current_div_width="+document.getElementById("current_div_width").value;
+				}else
+					document.forms[0].action=document.forms[0].action+"?current_div_width=";		
 			}				
-			
+
 			document.getElementById("button_view_extend").style.display="block";
 			document.getElementById("button_view_reduce").style.display="none";
 		}catch(e){
