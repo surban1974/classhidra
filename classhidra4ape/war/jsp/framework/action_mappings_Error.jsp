@@ -65,7 +65,7 @@ for(int i=0;i<$listmessages.size();i++){
 
 <%} %>
 			<tr>
-				<td colspan="2" align="center" style="cursor: pointer;" onclick="goAction('login.bs?middleAction=clear')">
+				<td colspan="2" align="center" style="cursor: pointer;" onclick="goAction('login?middleAction=clear')">
 					<table cellpadding="0" cellspacing="0" >
 					<tr>
 					<td>
@@ -138,7 +138,7 @@ for(int i=0;i<$listmessages.size();i++){
 }
 %>		
 	<tr>
-		<td colspan="2" align="center" style="cursor: pointer;" onclick="goAction('login.bs')">
+		<td colspan="2" align="center" style="cursor: pointer;" onclick="goAction('login?')">
 			<table cellpadding="0" cellspacing="0">
 			<tr>
 			<td>

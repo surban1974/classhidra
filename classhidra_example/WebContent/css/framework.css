@@ -95,7 +95,7 @@ TD.labelContent{
 	
 	vertical-align: middle;
 	text-align: left;
-	display: inline-block;
+	display_: inline-block;
 	height: 24px;
 	color: #5F9AD8;
 	margin: 0;
@@ -353,6 +353,47 @@ DIV.panel_section_content{
 	border-right:none;
 	border-top:none;
 	font-size:14px;
+}
+
+table.asPanel{
+	-moz-box-shadow: 1px 1px 6px gray;
+	-webkit-box-shadow: 1px 1px 6px gray;
+	box-shadow: 1px 1px 6px gray;
+	border-radius: 4px;	
+	padding:5px;
+
+}
+
+
+
+div.asPanel{
+	-moz-box-shadow: 1px 1px 6px gray;
+	-webkit-box-shadow: 1px 1px 6px gray;
+	box-shadow: 1px 1px 6px gray;
+	border-radius: 4px;	
+	padding:5px;
+	background_:-webkit-gradient(linear,0% 0%,0% 100%,from(rgba(255,255,255,1)),to(rgba(230,230,230,1)));
+	background_:-moz-linear-gradient(top,rgba(255,255,255,1),rgba(230,230,230,1)) fixed;
+
+}
+TD.buttonAsJsSmall{
+	background-image: url(../images/menu/button_center_n.gif);
+	cursor:pointer;	
+	height: 20px;
+	
+	vertical-align: middle;
+	text-align: center;
+	color: black;	
+	font-family_: "Maven Pro", Arial, sans-serif;
+	font-style: normal;	
+	border-color: silver;
+	font-weight: bold;
+	padding: 0 3px 0 3px;
+	border-radius: 4px;
+	
+}
+TD.buttonAsJsSmall:hover{
+	background-image: url(../images/menu/button_center_o.gif);
 }
 
 

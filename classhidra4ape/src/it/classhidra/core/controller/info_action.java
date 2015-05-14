@@ -46,6 +46,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String redirect;
 	private String error;
 	private String memoryInSession;
+	private String memoryAsLastInstance;
 	private String reloadAfterAction;
 	private String reloadAfterNextNavigated;
 	private String navigated;
@@ -153,6 +154,7 @@ public class info_action extends info_entity implements i_elementBase{
 		error="";
 		wac="";
 		memoryInSession="";
+		memoryAsLastInstance="";
 		reloadAfterAction="";
 		reloadAfterNextNavigated="";
 		navigated="";
@@ -295,6 +297,8 @@ public class info_action extends info_entity implements i_elementBase{
 		if(listener!=null && !listener.trim().equals("")) result+=" listener=\""+util_format.normaliseXMLText(listener)+"\"";
 		
 		if(memoryInSession!=null && !memoryInSession.trim().equals("")) result+=" memoryInSession=\""+util_format.normaliseXMLText(memoryInSession)+"\"";
+		if(memoryAsLastInstance!=null && !memoryAsLastInstance.trim().equals("")) result+=" memoryAsLastInstance=\""+util_format.normaliseXMLText(memoryAsLastInstance)+"\"";
+
 		if(reloadAfterAction!=null && !reloadAfterAction.trim().equals("")) result+=" reloadAfterAction=\""+util_format.normaliseXMLText(reloadAfterAction)+"\"";
 		if(reloadAfterNextNavigated!=null && !reloadAfterNextNavigated.trim().equals("")) result+=" reloadAfterNextNavigated=\""+util_format.normaliseXMLText(reloadAfterNextNavigated)+"\"";
 		if(help!=null && !help.trim().equals("")) result+=" help=\""+util_format.normaliseXMLText(help)+"\"";
@@ -459,8 +463,16 @@ public class info_action extends info_entity implements i_elementBase{
 		return listener;
 	}
 
-	public void setListener(String listener) {
-		this.listener = listener;
+	public void setListener(String _listener) {
+		this.listener = _listener;
+	}
+
+	public String getMemoryAsLastInstance() {
+		return memoryAsLastInstance;
+	}
+
+	public void setMemoryAsLastInstance(String _memoryAsLastInstance) {
+		this.memoryAsLastInstance = _memoryAsLastInstance;
 	}
 
 

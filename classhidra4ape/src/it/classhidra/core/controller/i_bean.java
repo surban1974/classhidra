@@ -89,16 +89,24 @@ public interface i_bean extends i_elementBeanBase,listener_bean{
 	
 	boolean getXmloutput();
 	void setXmloutput(boolean xmloutput);
+	String getXmloutput_encoding();
+	void setXmloutput_encoding(String xmloutputEncoding);
 	boolean getJsonoutput();
 	void setJsonoutput(boolean jsonoutput);
+	String getJsonoutput_encoding();
+	void setJsonoutput_encoding(String jsonoutputEncoding);
 	boolean getTransformationoutput();
 	void setTransformationoutput(boolean transformationoutput);
 	boolean getBinaryoutput();
 	void setBinaryoutput(boolean binaryoutput);
+	String getBinaryoutput_encoding();
+	void setBinaryoutput_encoding(String binaryoutputEncoding);
 	Object getDelegated();
 	void setDelegated(Object delegated);
 	boolean getVirtual();
 	void setVirtual(boolean virtual);
+	boolean getGzipoutput();
+	void setGzipoutput(boolean gzipoutput);
 	
 	listener_bean getListener_b();
 	void setListener_b(listener_bean listener);

@@ -8,6 +8,14 @@
 			<param-name>CharacterEncoding</param-name>
 			<param-value>ISO-8859-1</param-value>
 		</init-param>
+		<init-param>
+			<param-name>ExcludedUrl</param-name>
+			<param-value>/javascript2012/;/css/;/images/;</param-value>
+		</init-param>	
+		<init-param>
+			<param-name>ExcludedPattern</param-name>
+			<param-value>^(?!.*/neohort/).*\.jsp$</param-value>
+		</init-param>		
 	</filter>
 	<filter-mapping>
 		<filter-name>bsFilter</filter-name>
@@ -23,6 +31,7 @@
    	 	<dispatcher>FORWARD</dispatcher>
     	<dispatcher>INCLUDE</dispatcher>  		
 	</filter-mapping>
+
 	
 
 	

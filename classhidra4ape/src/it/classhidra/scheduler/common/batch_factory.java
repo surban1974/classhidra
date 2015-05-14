@@ -19,7 +19,9 @@ public class batch_factory {
 		
 		try{
 			result = (i_batch)Class.forName(cls_batch).newInstance();
+			result.onBeforeReadInput(xml);
 			result.readInput(xml);
+			result.onAfterReadInput(xml);
 		}catch(Exception e){
 			
 		}

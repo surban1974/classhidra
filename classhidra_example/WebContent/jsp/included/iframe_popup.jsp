@@ -17,7 +17,7 @@ style="z-index: 9999; position: absolute; top: 0; left: 0; width: 100%; height: 
 
 <td align="center" >
 
-<jsp:include page="/jsp/included/panel_top.jsp">
+<jsp:include page="../included/panel_top.jsp">
 	<jsp:param name="panel-show-header" value="true" />
 	<jsp:param name="panel-show-close-button" value="true" /> 
 	<jsp:param name="panel-show-max-button" value="true" /> 
@@ -28,7 +28,7 @@ style="z-index: 9999; position: absolute; top: 0; left: 0; width: 100%; height: 
 
 <iframe id="content_body_IFrame_Popup" style=" border: thin 0px silver; z-index: 999; background-color: silver; vertical-align: middle; <%=panel_div_style %>"></iframe>
 
-<jsp:include page="/jsp/included/panel_bottom.jsp"/>
+<jsp:include page="../included/panel_bottom.jsp"/>
 </td>
 
 </tr>

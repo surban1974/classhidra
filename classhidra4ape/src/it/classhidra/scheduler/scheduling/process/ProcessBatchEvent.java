@@ -13,7 +13,6 @@ import it.classhidra.framework.web.integration.i_module_integration;
 import it.classhidra.scheduler.common.generic_batch;
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
-
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
 import it.classhidra.scheduler.scheduling.init.batch_init;
@@ -24,9 +23,11 @@ import it.classhidra.scheduler.util.util_batch;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+//import java.util.Vector;
+import java.util.List;
 
 
 
@@ -102,16 +103,24 @@ public class ProcessBatchEvent  {
 
 				
 				if(currentBatchClass!=null){
+					currentBatchClass.onBeforeReadInput(common_area);
 					currentBatchClass.readInput(common_area);
-
+					currentBatchClass.onAfterReadInput(common_area);
 					try{
+						currentBatchClass.onBeforeExecute();
 						currentBatchClass.execute();
+						currentBatchClass.onAfterExecute();
 
 						log.setWriteLog(currentBatchClass.isWriteLog());
 						h_common_area.putAll(currentBatchClass.getInput());
 						h_common_area.putAll(currentBatchClass.getOutput());
 						common_area = generic_batch.map2xml(h_common_area);
+						
+						currentBatchClass.onBeforeWriteOutput();
 						output = currentBatchClass.writeOutput();
+						currentBatchClass.onAfterWriteOutput();
+						
+						
 						log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+output);
 						if(currentBatchClass.getExit().equals("OK")){
 							log.setSt_exec(new Integer(db_batch_log.STATE_OK));
@@ -122,13 +131,14 @@ public class ProcessBatchEvent  {
 					}catch (Exception e) {
 						log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+e.toString());
 						log.setSt_exec(new Integer(db_batch_log.STATE_KO));
+						currentBatchClass.onErrorExecute();
 					}
 
 					log.setTm_fin(new Timestamp(new Date().getTime()));
 					batch.setSt_exec(log.getSt_exec());
 
 				}else{
-					Vector child_batch = new Vector();
+					List child_batch = new ArrayList();
 					
 					i_4Batch m4b = binit.get4BatchManager();
 					HashMap form = new HashMap();
@@ -136,8 +146,9 @@ public class ProcessBatchEvent  {
 					form.put("cd_btch", batch.getCd_btch());
 					form.put("state", new Short(db_batch.STATE_NORMAL));
 					try{
-						child_batch = (Vector)m4b.operation(i_module_integration.o_FINDFORMLIST, form);
-					}catch(Exception e){					
+						child_batch = (List)m4b.operation(i_module_integration.o_FINDFORMLIST, form);
+					}catch(Exception e){
+						e.toString();
 					}
 						
 					for(int i=0;i<child_batch.size();i++){
@@ -168,18 +179,18 @@ public class ProcessBatchEvent  {
 			else batch.setState(new Integer(db_batch.STATE_NORMAL));
 			if(batch.getCd_p_btch()==null || batch.getCd_p_btch().equals("")){
 
-				if(batch.getSt_exec().shortValue()==0 && batch.getPeriod()!=null && !batch.getPeriod().equals("")){
+				if(batch.getSt_exec().shortValue()==db_batch.STATE_NORMAL && batch.getPeriod()!=null && !batch.getPeriod().equals("")){
 					try{
-						Date rec = new java.util.Date();
-						long currentTimeL=rec.getTime();
-						long recT = rec.getTime()+60000;
-						util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"));
-
-						
 						if(recalc){
+							Date rec = new java.util.Date();
+							long currentTimeL=rec.getTime();
+							long recT = rec.getTime()+60*1000;
+							util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000);
+						
 							long nextScanTimeL=servletBatchScheduling.getThProcess().getPbe().getNextScanTime().getTime();
 							long delta = nextScanTimeL - currentTimeL;
-							long deltaTmp = batch.getTm_next().getTime() - recT;
+//							long deltaTmp = batch.getTm_next().getTime() - recT;
+							long deltaTmp = batch.getTm_next().getTime() - new Date().getTime();
 							if(delta>0 && 0 <= deltaTmp && deltaTmp <= delta){
 								batch.setState(new Integer(db_batch.STATE_SCHEDULED));
 	
@@ -189,10 +200,16 @@ public class ProcessBatchEvent  {
 										batch,
 										servletBatchScheduling.getThProcess().getPbe());
 								t_ev.start();
+							}else{
+								new bsException("BatchEngine:reScheduling after exec->false: batch->"+batch.getCd_btch()+": delta->"+delta+": deltaTmp->"+deltaTmp, iStub.log_WARN);
 							}
 						}
+
 					}catch (Exception e) {
 					}			
+				}else{
+					if(batch.getSt_exec().shortValue()==db_batch.STATE_NORMAL)
+						new bsException("BatchEngine:reScheduling after exec->false: batch->"+batch.getCd_btch()+": state->"+batch.getSt_exec().shortValue()+": period->"+batch.getPeriod(), iStub.log_WARN);
 				}
 			}
 			
@@ -231,14 +248,19 @@ public class ProcessBatchEvent  {
 		try{
 
 			conn = new db_connection().getContent();
+			conn.setAutoCommit(false);
 			st = conn.createStatement();
 
 			batch.setState(state);
 
 			st.execute(batch.sql_Update(batch));
-
+			conn.commit();
 
 		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
 			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}finally{
 			db_connection.release(null, st, conn);

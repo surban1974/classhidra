@@ -40,7 +40,8 @@
                 type="it.application.actionTest"
                 redirect="/jsp/test.jsp"
                 navigated="true"
-                memoryInSession="true"
+                memoryInSession="false"
+                memoryAsLastInstance="false"
                 reloadAfterAction="true"
                 help="/help/help_test.html"
                 property="allway:public">

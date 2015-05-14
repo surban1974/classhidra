@@ -385,3 +385,22 @@ div.asPanel{
 
 }
 
+TD.buttonAsJsSmall{
+	background-image: url(../images/menu/button_center_n.gif);
+	cursor:pointer;	
+	height: 20px;
+	
+	vertical-align: middle;
+	text-align: center;
+	color: black;	
+	font-family_: "Maven Pro", Arial, sans-serif;
+	font-style: normal;	
+	border-color: silver;
+	font-weight: bold;
+	padding: 0 3px 0 3px;
+	border-radius: 4px;
+	
+}
+TD.buttonAsJsSmall:hover{
+	background-image: url(../images/menu/button_center_o.gif);
+}

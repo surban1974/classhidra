@@ -2,6 +2,8 @@ package it.classhidra.scheduler.util;
 
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
+import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -11,7 +13,8 @@ import java.util.Vector;
 
 public class util_batch {
 
-
+	private final static String CONST_EVERY = "every";
+	
 	public static HashMap readInput(String xml){
 		HashMap result = new HashMap();
 
@@ -94,64 +97,122 @@ public class util_batch {
 		return newTime;
 	}
 
-
-
+	
 	public static String calcolatePeriod(String currentTime, String periodTime){
+		return calcolatePeriod(currentTime, periodTime, 0, null);
+	}
+	
+	public static String calcolatePeriod(String currentTime, String periodTime, long increased, db_batch batch){
 
 //currentTime = "2011-12-11-09-51";
-
-		boolean increment=true;
-		int maxcycle=0;
-
-		String newTime=currentTime;
-		period pr = new period();
-		while(increment && maxcycle<100){
-			increment=false;
-			int current=0;
-			StringTokenizer st_currentTime = new StringTokenizer(newTime,"-");
-			StringTokenizer st_periodTime = new StringTokenizer(periodTime,"-");
-
-
-
-
-			while(st_periodTime.hasMoreTokens()){
-
-
-				String key_periodTime = st_periodTime.nextToken();
-				String key_currentTime = st_currentTime.nextToken();
-
-
-
-				try{
-
-
-
-					int int_key_periodTime = Integer.parseInt(key_periodTime);
-					int int_key_currentTime = Integer.parseInt(key_currentTime);
-
-					pr.fixedTime[current]=int_key_periodTime;
-
-					if(int_key_currentTime>int_key_periodTime){
-						pr.setIncrement(current, int_key_periodTime,currentTime);
-						increment=true;
+		if(periodTime.toLowerCase().indexOf(CONST_EVERY)==0){
+			long addmillis = -1;
+			StringTokenizer st=new StringTokenizer(periodTime);
+			if(st.hasMoreTokens()){
+				if(st.nextToken().equalsIgnoreCase(CONST_EVERY)){
+					if(st.hasMoreTokens()){
+						try{
+							addmillis = new Long(st.nextToken()).longValue()*1000;
+						}catch(Exception e){							
+						}
+						if(addmillis>-1){
+							if(st.hasMoreTokens()){
+								switch (st.nextToken().trim().charAt(0)) {
+								case 's':									
+									break;
+								case 'm':	
+									addmillis=addmillis*60;
+									break;
+								case 'h':	
+									addmillis=addmillis*60*60;
+									break;	
+								case 'd':	
+									addmillis=addmillis*60*60*24;
+									break;	
+								case 'w':	
+									addmillis=addmillis*60*60*24*7;
+									break;							
+								default:
+									break;
+								}
+							}
+						}
 					}
-					else pr.nextTime[current]=int_key_periodTime;
-				}catch(Exception e){
-					pr.setDefault(current,Integer.parseInt(key_currentTime),newTime);
 				}
-				current++;
 			}
-			newTime = pr.toNewTime();
-			maxcycle++;
-		}
+			String newTime=currentTime;
+			if(addmillis>-1){
+				try{
+					long deltaWithlastExec = 0;
+					addmillis = addmillis-increased;
+					if(batch!=null && batch.getTm_last()!=null){
+						deltaWithlastExec = util_format.stringToData(newTime, "yyyy-MM-dd-HH-mm").getTime()-batch.getTm_last().getTime();
+						if(deltaWithlastExec>0 && deltaWithlastExec<addmillis)
+							addmillis = addmillis - deltaWithlastExec;
+					}
+					newTime = util_format.dataToString(new Date(util_format.stringToData(newTime, "yyyy-MM-dd-HH-mm").getTime()+addmillis), "yyyy-MM-dd-HH-mm");
+				}catch(Exception e){					
+				}
+			}
+			return newTime;
+		}else{
 
-		return newTime;
+			boolean increment=true;
+			int maxcycle=0;
+	
+			String newTime=currentTime;
+			period pr = new period();
+			while(increment && maxcycle<100){
+				increment=false;
+				int current=0;
+				StringTokenizer st_currentTime = new StringTokenizer(newTime,"-");
+				StringTokenizer st_periodTime = new StringTokenizer(periodTime,"-");
+	
+	
+	
+	
+				while(st_periodTime.hasMoreTokens()){
+	
+	
+					String key_periodTime = st_periodTime.nextToken();
+					String key_currentTime = st_currentTime.nextToken();
+	
+	
+	
+					try{
+	
+	
+	
+						int int_key_periodTime = Integer.parseInt(key_periodTime);
+						int int_key_currentTime = Integer.parseInt(key_currentTime);
+	
+						pr.fixedTime[current]=int_key_periodTime;
+	
+						if(int_key_currentTime>int_key_periodTime){
+							pr.setIncrement(current, int_key_periodTime,currentTime);
+							increment=true;
+						}
+						else pr.nextTime[current]=int_key_periodTime;
+					}catch(Exception e){
+						pr.setDefault(current,Integer.parseInt(key_currentTime),newTime);
+					}
+					current++;
+				}
+				newTime = pr.toNewTime();
+				maxcycle++;
+			}
+	
+			return newTime;
+		}
 	}
 
-
 	public static boolean reCalcNextTime(db_batch el, String currentTime) throws Exception{
+		return reCalcNextTime(el, currentTime, 0);
+	}
 
-		String newNextTime=calcolatePeriod(currentTime, el.getPeriod().trim());
+	public static boolean reCalcNextTime(db_batch el, String currentTime, long increased) throws Exception{
+
+		String newNextTime=calcolatePeriod(currentTime, el.getPeriod().trim(),increased, el);
 		newNextTime = util_format.dataToString(util_format.stringToData(newNextTime, "yyyy-MM-dd-HH-mm"), "yyyy-MM-dd-HH-mm");
 		String oldNextTime=null;
 		if(el.getTm_next()!=null)
@@ -170,6 +231,18 @@ public class util_batch {
 		}
 
 	}
+	
+	public static schedulingThreadEvent findFromPbe(ProcessBatchEngine pbe, String cd_code){
+		if(pbe!=null){
+			for(int i=0;i<pbe.getContainer_threadevents().size();i++){
+				schedulingThreadEvent current = (schedulingThreadEvent)pbe.getContainer_threadevents().get(i);
+				if(current!=null && current.getBatch()!=null && current.getBatch().getCd_btch().equalsIgnoreCase(cd_code))
+					return current;
+			}
+		}
+		return null;
+	}
+	
 
 
 }

@@ -44,11 +44,14 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 public class tagBean extends TagSupport{
 	private static final long serialVersionUID = 1L;
+	public static final String CONST_HEAP_BEANS = "HEAP_BEANS";
 	protected String name = null;
 	protected String source=null;
 	protected String property=null;
 	protected String index=null;
 	protected String method_prefix=null;
+	
+	protected String prefixName=null;
 
 	public int doStartTag() throws JspException {
 		try{
@@ -80,6 +83,19 @@ public class tagBean extends TagSupport{
 					if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(source).get_content();
 				}catch(Exception e){
 				}
+				
+				if(anotherBean!=null){
+					
+					HashMap pool_seq = (HashMap)request.getAttribute(CONST_HEAP_BEANS);
+					if(pool_seq!=null){
+						String foundedPrefixName = (String)pool_seq.get(source);
+						if(foundedPrefixName!=null)
+							prefixName=foundedPrefixName;
+						else prefixName=source;					
+					}else prefixName=source;
+					
+				}
+				
 			}
 
 			if(anotherBean==null) return EVAL_BODY_INCLUDE;
@@ -87,6 +103,9 @@ public class tagBean extends TagSupport{
 			Object obj = null;
 			if(property!=null){
 				obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,null);
+				if(prefixName!=null)
+					prefixName+=property;
+				else prefixName=property;
 			}else obj = anotherBean;
 			if(obj!=null && index!=null){
 				if(index.toUpperCase().equals("SEQUENCE")){
@@ -96,6 +115,8 @@ public class tagBean extends TagSupport{
 						}
 					}catch(Exception e){
 					}
+					if(prefixName!=null)
+						prefixName+="."+index;
 				}
 
 				Object second_obj=null;
@@ -119,6 +140,15 @@ public class tagBean extends TagSupport{
 				}
 			}
 			request.setAttribute(name,obj);
+			if(prefixName!=null){
+				HashMap pool_seq = (HashMap)request.getAttribute(CONST_HEAP_BEANS);
+				if(pool_seq==null){
+					pool_seq=new HashMap();
+					request.setAttribute(CONST_HEAP_BEANS,pool_seq);
+				}
+				pool_seq.put(name, prefixName);	
+			}
+			prefixName=null;
 		}catch(Exception e){
 		}
 		return EVAL_BODY_INCLUDE;
@@ -132,6 +162,8 @@ public class tagBean extends TagSupport{
 		source=null;
 		property=null;
 		method_prefix=null;
+		
+		prefixName=null;
 	}
 	public String getName() {
 		return name;
@@ -164,6 +196,14 @@ public class tagBean extends TagSupport{
 
 	public void setMethod_prefix(String string) {
 		method_prefix = string;
+	}
+
+	public String getPrefixName() {
+		return prefixName;
+	}
+
+	public void setPrefixName(String prefixName) {
+		this.prefixName = prefixName;
 	}
 
 }

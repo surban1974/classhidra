@@ -8,7 +8,7 @@ if(mess_description==null && mess_id!=null){
 	mess_description = it.classhidra.core.controller.bsController.writeLabel(request,mess_id,mess_id,null);
 }
 %>		</td>
-	</tr>
+	</tr> 
 			
 				
 </table>

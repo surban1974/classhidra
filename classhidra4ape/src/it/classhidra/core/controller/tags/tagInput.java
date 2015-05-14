@@ -138,6 +138,10 @@ public class tagInput extends BodyTagSupport{
 	protected String checkedvalue=null;
 	protected String replaceOnBlank=null;
 	protected String replaceOnErrorFormat=null;
+	
+	protected String solveBeanName=null;
+	protected String asyncUpdate=null;
+	protected String asyncUpdateJsFunction=null;
 
 	public int doStartTag() throws JspException {
 		StringBuffer results = new StringBuffer();
@@ -242,6 +246,10 @@ public class tagInput extends BodyTagSupport{
 
 		replaceOnBlank=null;
 		replaceOnErrorFormat=null;
+		
+		solveBeanName=null;
+		asyncUpdate=null;
+		asyncUpdateJsFunction=null;
 	}
 
 	protected String createTagBody() {
@@ -260,6 +268,17 @@ public class tagInput extends BodyTagSupport{
 		if(method_prefix==null) method_prefix="get";
 		Object anotherBean = null;
 		Object writeValue=null;
+		
+		String prefixName=null;
+		
+		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null && ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean)!=null){
+			prefixName = ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean).toString();
+		}
+		if(prefixName==null)
+			prefixName=name;
+		else prefixName+="."+name;
+
+		String asyncUpdateUrl=null;
 
 //		value="";
 
@@ -311,10 +330,63 @@ public class tagInput extends BodyTagSupport{
 		}
 
 
+		
+		if(asyncUpdate!=null && !asyncUpdate.equalsIgnoreCase("false")){
+			try{
+				asyncUpdateUrl=formAction.get_infoaction().getPath();
+				if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+					if(!asyncUpdate.equalsIgnoreCase("true"))
+						asyncUpdateUrl+=bsController.getAppInit().get_actioncall_separator()+asyncUpdate+"?";
+					else
+						asyncUpdateUrl+=bsController.getAppInit().get_actioncall_separator()+"asyncupdate?";
+				}else asyncUpdateUrl+="?";
+				asyncUpdateUrl+="middleAction=undef&";
+				if(name!=null){
+					if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+						asyncUpdateUrl+=prefixName+"='+this.value+'&target="+prefixName+"&";
+					else asyncUpdateUrl+=name+"='+this.value+'&target="+name+"&";
+					
+					if(formatInput!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$format_"+prefixName+"="+formatInput+"&";
+						else asyncUpdateUrl+="$format_"+name+"="+formatInput+"&";
+					}
+					if(formatOutput!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatOutput_"+prefixName+"="+formatOutput+"&";
+						else asyncUpdateUrl+="$formatOutput_"+name+"="+formatOutput+"&";
+					}	
+					if(formatLanguage!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatLanguage_"+prefixName+"="+formatLanguage+"&";
+						else asyncUpdateUrl+="$formatLanguage_"+name+"="+formatLanguage+"&";
+					}
+					if(formatCountry!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatCountry_"+prefixName+"="+formatCountry+"&";
+						else asyncUpdateUrl+="$formatCountry_"+name+"="+formatCountry+"&";
+					}					
+					if(replaceOnBlank!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$replaceOnBlank_"+prefixName+"="+replaceOnBlank+"&";
+						else asyncUpdateUrl+="$replaceOnBlank_"+name+"="+replaceOnBlank+"&";
+					}
+					if(replaceOnErrorFormat!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$replaceOnErrorFormat_"+prefixName+"="+replaceOnErrorFormat+"&";
+						else asyncUpdateUrl+="$replaceOnErrorFormat_"+name+"="+replaceOnErrorFormat+"&";
+					}
+				}
+			}catch(Exception e){
+			}
+		}
+		
 		StringBuffer results = new StringBuffer("<input ");
 		if(name!=null){
 			results.append(" name=\"");
-			results.append(name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append(prefixName);
+			else results.append(name);
 			results.append('"');
 		}
 		if(objId!=null){
@@ -324,7 +396,9 @@ public class tagInput extends BodyTagSupport{
 		}else{
 			if(name!=null){
 				results.append(" id=\"");
-				results.append(name);
+				if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+					results.append(prefixName);
+				else results.append(name);
 				results.append('"');
 			}
 		}
@@ -382,6 +456,27 @@ public class tagInput extends BodyTagSupport{
 			results.append(" checked=\"");
 			results.append(checked);
 			results.append('"');
+		}else{
+			
+			if ( formBean != null &&
+					 type != null && (
+					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 checkedvalue !=null &&
+					 (solveBeanName==null || !solveBeanName.equalsIgnoreCase("true")) &&
+					 checkedvalue.equalsIgnoreCase(formBean.get(name).toString()))
+				
+					results.append(" checked=\"checked\"");
+
+			if ( formBean != null &&
+					 type != null && (
+					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 checkedvalue !=null &&
+					 (solveBeanName!=null && solveBeanName.equalsIgnoreCase("true")) &&
+					 checkedvalue.equalsIgnoreCase(formBean.get(prefixName).toString()))
+				
+					results.append(" checked=\"checked\"");
+			
+
 		}
 		if (disabled != null) {
 			results.append(" disabled=\"");
@@ -504,11 +599,24 @@ public class tagInput extends BodyTagSupport{
 				if ( formBean != null &&
 					 type != null && (
 					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 (solveBeanName==null || !solveBeanName.equalsIgnoreCase("true")) &&
 					 checkedvalue.equalsIgnoreCase(formBean.get(name).toString()))
-				{
+
 					results.append(" checked=\"checked\"");
-				}
+
+				if ( formBean != null &&
+						 type != null && (
+						 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+						 (solveBeanName!=null && solveBeanName.equalsIgnoreCase("true")) &&
+						 checkedvalue.equalsIgnoreCase(formBean.get(prefixName).toString()))
+
+						results.append(" checked=\"checked\"");
+				
+				
+
 		}catch(Exception e){}
+		
+		
 
 		if (styleClass != null) {
 			results.append(" class=\"");
@@ -625,9 +733,23 @@ public class tagInput extends BodyTagSupport{
 
 		if (onchange != null) {
 			results.append(" onchange=\"");
+			if(asyncUpdateUrl!=null){
+				if(asyncUpdateJsFunction!=null)
+					results.append(asyncUpdateJsFunction+"('"+asyncUpdateUrl+"',this.name);");
+				else results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+			}
 			results.append(onchange);
 			results.append('"');
+		}else{
+			if(asyncUpdateUrl!=null){
+				results.append(" onchange=\"");
+				if(asyncUpdateJsFunction!=null)
+					results.append(asyncUpdateJsFunction+"('"+asyncUpdateUrl+"',this.name);");
+				else results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
+				results.append('"');
+			}
 		}
+		
 		if (onfocus != null) {
 			results.append(" onfocus=\"");
 			results.append(onfocus);
@@ -705,27 +827,37 @@ public class tagInput extends BodyTagSupport{
 			results.append(onmousewheel);
 			results.append('"');
 		}
+		results.append(" $modelWire=\"");
+		results.append("input:"+prefixName);
+		results.append('"');
 
 
+		
 		results.append('>');
 
 		if(name!=null && formatInput!=null){
 			results.append("<input name=\"");
-			results.append("$format_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$format_"+prefixName);
+			else results.append("$format_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(formatInput);
 			results.append("\">");
 		}
 		if(name!=null && replaceOnBlank!=null){
 			results.append("<input name=\"");
-			results.append("$replaceOnBlank_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$replaceOnBlank_"+prefixName);
+			else results.append("$replaceOnBlank_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(replaceOnBlank);
 			results.append("\">");
 		}
 		if(name!=null && replaceOnErrorFormat!=null){
 			results.append("<input name=\"");
-			results.append("$replaceOnErrorFormat_"+name);
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$replaceOnErrorFormat_"+prefixName);
+			else results.append("$replaceOnErrorFormat_"+name);
 			results.append("\" type=\"hidden\" value=\"");
 			results.append(replaceOnErrorFormat);
 			results.append("\">");
@@ -733,6 +865,7 @@ public class tagInput extends BodyTagSupport{
 
 
 		value=null;
+		prefixName=null;
 		return results.toString();
 	}
 	public String getAccept() {
@@ -1295,6 +1428,30 @@ public class tagInput extends BodyTagSupport{
 
 	public void setStep(String step) {
 		this.step = step;
+	}
+
+	public String getSolveBeanName() {
+		return solveBeanName;
+	}
+
+	public void setSolveBeanName(String solveBeanName) {
+		this.solveBeanName = solveBeanName;
+	}
+
+	public String getAsyncUpdate() {
+		return asyncUpdate;
+	}
+
+	public void setAsyncUpdate(String asyncUpdate) {
+		this.asyncUpdate = asyncUpdate;
+	}
+
+	public String getAsyncUpdateJsFunction() {
+		return asyncUpdateJsFunction;
+	}
+
+	public void setAsyncUpdateJsFunction(String asyncUpdateJsScript) {
+		this.asyncUpdateJsFunction = asyncUpdateJsScript;
 	}
 
 

@@ -30,6 +30,7 @@ import it.classhidra.core.controller.wrappers.a_ResponseWrapper;
 import it.classhidra.core.controller.wrappers.responseWrapperFactory;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
@@ -38,7 +39,8 @@ import it.classhidra.core.tool.util.util_format;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -55,6 +57,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class bsFilter implements Filter {
 	private FilterConfig config = null;
+	public final static String CONST_INIT_EXCLUDEDURL 						= "ExcludedUrl";
+	public final static String CONST_INIT_EXCLUDEDPATTERN					= "ExcludedPattern";
 	public final static String CONST_INIT_CONTENT_TYPE 						= "ContentType";
 	public final static String CONST_INIT_CHARACTER_ENCODING 				= "CharacterEncoding";
 
@@ -71,15 +75,26 @@ public class bsFilter implements Filter {
 			ServletResponse resp,
 			FilterChain chain)
 			throws ServletException, IOException {
+			
+	        if (req == null || resp == null) {
+	            chain.doFilter(req, resp);
+	            return;
+	        }			
 
 			if(req instanceof HttpServletRequest && resp instanceof HttpServletResponse){
 
 				HttpServletRequest request = (HttpServletRequest)req;
 				HttpServletResponse response = (HttpServletResponse)resp;
 
+				String url="";
+				url = (String)request.getAttribute("javax.servlet.include.request_uri");
+				if(url==null)	url = request.getRequestURI();
 				
+				if (url==null) {
+		            chain.doFilter(req, resp);
+		            return;
+		        }	
 
-				
 				String def_ContentType = config.getInitParameter(CONST_INIT_CONTENT_TYPE);
 				String def_CharacterEncoding = config.getInitParameter(CONST_INIT_CHARACTER_ENCODING);
 				if(def_ContentType!=null){
@@ -100,12 +115,46 @@ public class bsFilter implements Filter {
 					request.setCharacterEncoding(def_CharacterEncoding);
 					response.setHeader("Content-Transfer-Encoding",def_CharacterEncoding);
 					response.setCharacterEncoding(def_CharacterEncoding);
-				}				
+				}					
+				
+				String def_ExcludedUrl = config.getInitParameter(CONST_INIT_EXCLUDEDURL);
+				String def_ExcludedPattern = config.getInitParameter(CONST_INIT_EXCLUDEDPATTERN);
+				if((def_ExcludedUrl!=null || def_ExcludedPattern!=null) && url!=null){
+					boolean mustExclude=false;
+					if(def_ExcludedUrl!=null){
+						String[] excluded = def_ExcludedUrl.split(";");
+						int i=0;
+					 
+						while(i<excluded.length && !mustExclude){
+							String current = excluded[i];
+							if(url.indexOf(current)>-1) 
+								mustExclude=true;
+							i++;
+						}
+					}
+					if(def_ExcludedPattern!=null && !mustExclude){
+						try{
+							Pattern excludedPattern = Pattern.compile(def_ExcludedPattern);
+							Matcher excludedMatcher = excludedPattern.matcher(url);
+							if (excludedMatcher.find())
+								mustExclude=true;
+								
+						}catch(Exception e){
+							new bsException("ExcludedPattern ->"+def_ExcludedPattern+": "+e.toString(),iStub.log_ERROR);
+						}
+					}
+						 
+					if(mustExclude){
+						chain.doFilter(req, resp);
+			            return;
+					}
+				}
+
+				
+			
 				
 				String id_bs = null;
-				String url="";
-				url = (String)request.getAttribute("javax.servlet.include.request_uri");
-				if(url==null)	url = request.getRequestURI();
+
 				boolean elaborateBsCheck=true;
 				
 				if(url!=null){
@@ -131,10 +180,12 @@ public class bsFilter implements Filter {
 					try{
 						chain.doFilter(req, resp);
 					}catch(Exception e){
+						new bsException("Chain url->"+url+": "+e.toString(),iStub.log_ERROR);
 						if(request.getAttribute(bsController.CONST_BEAN_$ERRORACTION)==null) request.setAttribute(bsController.CONST_BEAN_$ERRORACTION, e.toString());
 						else request.setAttribute(bsController.CONST_BEAN_$ERRORACTION, request.getAttribute(bsController.CONST_BEAN_$ERRORACTION) + ";" +e.toString());
 						
 					}catch(Throwable t){
+						new bsException("Chain url->"+url+": "+t.toString(),iStub.log_ERROR);
 						if(request.getAttribute(bsController.CONST_BEAN_$ERRORACTION)==null) request.setAttribute(bsController.CONST_BEAN_$ERRORACTION, t.toString());
 						else request.setAttribute(bsController.CONST_BEAN_$ERRORACTION, request.getAttribute(bsController.CONST_BEAN_$ERRORACTION) + ";" +t.toString());
 						
@@ -214,7 +265,9 @@ public class bsFilter implements Filter {
 
 							    		 
 									}catch(Exception e){
+										new bsException("BS Transformation: "+e.toString(),iStub.log_ERROR);
 									}catch(Throwable t){
+										new bsException("BS Transformation: "+t.toString(),iStub.log_ERROR);
 									}
 								}
 							}else{
@@ -233,11 +286,13 @@ public class bsFilter implements Filter {
 					}
 					
 				}catch(Exception e){	
+					new bsException("BS Elaborate: "+e.toString(),iStub.log_ERROR);
 					if(request.getAttribute(bsController.CONST_BEAN_$ERRORACTION)==null) request.setAttribute(bsController.CONST_BEAN_$ERRORACTION, e.toString());
 					else request.setAttribute(bsController.CONST_BEAN_$ERRORACTION, request.getAttribute(bsController.CONST_BEAN_$ERRORACTION) + ";" +e.toString());
 					new bsControllerException("Filter sendRedirect error.  ->" +e.toString(),iStub.log_ERROR);
 
 				}catch(Throwable t){	
+					new bsException("BS Elaborate: "+t.toString(),iStub.log_ERROR);
 					if(request.getAttribute(bsController.CONST_BEAN_$ERRORACTION)==null) request.setAttribute(bsController.CONST_BEAN_$ERRORACTION, t.toString());
 					else request.setAttribute(bsController.CONST_BEAN_$ERRORACTION, request.getAttribute(bsController.CONST_BEAN_$ERRORACTION) + ";" +t.toString());
 					new bsControllerException("Filter sendRedirect error.  ->" +t.toString(),iStub.log_ERROR);
@@ -310,10 +365,13 @@ public class bsFilter implements Filter {
 						}
 						return true;
 					}catch(Exception ex){
+						new bsException("neoHort Elaborate: "+ex.toString(),iStub.log_ERROR);
 						stat.setException(ex);
 						try{
 							response.getWriter().write(ex.toString());
-						}catch(Exception exp){}
+						}catch(Exception exp){
+							new bsException("neoHort Elaborate: "+exp.toString(),iStub.log_ERROR);
+						}
 					}
 					if(stat!=null){
 						stat.setFt(new Date());

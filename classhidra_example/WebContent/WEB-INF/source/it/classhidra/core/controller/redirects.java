@@ -28,6 +28,7 @@ import it.classhidra.core.tool.util.util_format;
 
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 
 
 public class redirects implements Serializable{ 
@@ -38,6 +39,7 @@ public class redirects implements Serializable{
 	private String _transformationName;
 	private String _uriError;
 	private boolean _avoidPermissionCheck=false;
+	private String description;
 	
 	public redirects(String uri){		
 		super();
@@ -167,6 +169,11 @@ public class redirects implements Serializable{
 		return uri;
 	}
 	
+	public void decodeMessage(HttpServletRequest request){
+		if(this._inforedirect!=null && (description==null || description.equals("")))
+			description = (bsController.writeLabel(request,this._inforedirect.getMess_id(),this._inforedirect.getDescr(),null));
+	}	
+	
 	public void set_uriError(String string) {
 		_uriError = string;
 	}
@@ -204,6 +211,14 @@ public class redirects implements Serializable{
 
 	public void set_avoidPermissionCheck(boolean avoidPermissionCheck) {
 		_avoidPermissionCheck = avoidPermissionCheck;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

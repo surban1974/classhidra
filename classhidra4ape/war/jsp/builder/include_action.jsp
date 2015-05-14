@@ -68,6 +68,15 @@
 								</td>
 							</tr>
 							<tr>
+								<td width="0%" class="page_section">memoryAsLastInstance:</td>
+								<td width="100%" id="action|<bs:formelement name="selected_action.path"/>|||memoryAsLastInstance">
+									<bs:select name="selected_action.memoryAsLastInstance" style="border: solid 1px silver; width: 100%" onchange="updateValue(this,'memoryAsLastInstance')" onfocus="makeFocus(this)">									
+										<bs:options property="elements_true_false" value="code"  label="desc" />
+									</bs:select>
+								</td>
+							</tr>
+							
+							<tr>
 								<td width="0%" class="page_section">reloadAfterAction:</td>
 								<td width="100%" id="action|<bs:formelement name="selected_action.path"/>|||reloadAfterAction">
 									<bs:select name="selected_action.reloadAfterAction" style="border: solid 1px silver; width: 100%" onchange="updateValue(this,'reloadAfterAction')" onfocus="makeFocus(this)">									

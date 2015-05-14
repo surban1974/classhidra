@@ -15,7 +15,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 </jsp:include>	
 
-<div id="page" style=" width: 1000; height: 530; background-color: white;">
+<div id="page" style=" width: 900; height: 530; background-color: white; overflow: auto;">
 
 
 
@@ -31,10 +31,18 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 <table>
 <tr>
+	<td>
+		<table cellspacing="0" cellpadding="0">
+			<tr>
+				<td  width="0%"  height="20"><img src="images/corners/vb_left.gif" border="0"/></td>
+				<td  height="20" style="background-image:url('images/corners/vb_center.gif')" align="center" width="0%" ><nobr><span class="title_section"><bs:formelement name="current_redirect.description"/></span></nobr></td>
+				<td  width="0%"  height="20"><img src="images/corners/vb_right.gif" border="0"/></td>
+			</tr>
+		</table>
+	</td>	
 <bs:notEqual name="mode" value="relation">
-<!-- 	<td align="center"><script>ObjectDraw("page1","button",1,"syncro","runSubmit('syncro')","page_section","","images/menu/","",true,24,"35");</script></td>
- -->
-	<td align="center"><script>ObjectDraw("page1","button",3,"peview/load new","showAsPopup('amanager?middleAction=preview',950,480)","page_section","","images/menu/","",true,24,"35");</script></td>
+	<td align="center"><script>ObjectDraw("page1","button",1,"syncro","runSubmit('syncro')","page_section","","images/menu/","",true,24,"35");</script></td>
+	<td align="center"><script>ObjectDraw("page1","button",3,"peview/load new","showAsPopup('amanager?middleAction=preview',900,530)","page_section","","images/menu/","",true,24,"35");</script></td>
 	<td id="general">
 	<table  cellspacing="0">
 		<tr>
@@ -49,8 +57,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 </bs:notEqual>
 <bs:equal name="mode" value="relation">
-<!-- 	<td align="center"><script>ObjectDraw("page1","button",1,"syncro","runSubmit('syncro_auth')","page_section","","images/menu/","",true,24,"35");</script></td>
- -->	<td align="center"><script>ObjectDraw("page1","button",3,"peview/load new","showAsPopup('amanager?middleAction=preview_auth',950,480)","page_section","","images/menu/","",true,24,"35");</script></td>
+	
+	<td align="center"><script>ObjectDraw("page1","button",1,"syncro","runSubmit('syncro_auth')","page_section","","images/menu/","",true,24,"35");</script></td>
+	<td align="center"><script>ObjectDraw("page1","button",3,"peview/load new","showAsPopup('amanager?middleAction=preview_auth',950,480)","page_section","","images/menu/","",true,24,"35");</script></td>
 	<td>
 	<table  cellspacing="0">
 		<tr>
@@ -90,11 +99,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <bs:input type="hidden" name="mode"/>
 
 
-<div id="canvas_report" style=" width:900px;height:450px; 
-	overflow: scroll; 
-"
-   	
->
+
 <table class="tableBodyTabb" border="0" id="canvas_table" >
 <tr>
 	<td style="border: dashed 1px silver">
@@ -304,7 +309,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 </table>
 	
 	
-</div>
+
 
 
 

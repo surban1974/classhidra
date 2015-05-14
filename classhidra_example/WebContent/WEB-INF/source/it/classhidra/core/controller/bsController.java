@@ -423,16 +423,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 					byte[] output = null;
 					ArrayList resources = null;
 					if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromResources)){
-						output = util_classes.getResourceAsByte("it/classhidra/core/controller/resources/"+loadSrc);
-						if(output==null)
-							resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
-
+						if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework)){
+							if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
+								resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
+							else
+								util_classes.getResourceAsByte("it/classhidra/core/controller/resources/"+loadSrc);
+							if(output==null)
+								resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);							
+						}
 					}
 					if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework)){
-						output = util_classes.getResourceAsByte("it/classhidra/framework/resources/"+loadSrc);	
-						if(output==null)
+						if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
 							resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes());
-						
+						else
+							output = util_classes.getResourceAsByte("it/classhidra/framework/resources/"+loadSrc);	
+						if(output==null)
+							resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes());						
 					}
 					
 					if(output!=null || resources!=null){
@@ -661,10 +667,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 				new bsControllerException(th, iStub.log_ERROR);
 			}
 		}
+		
 // Mod 20130923 --
 //		if(current_redirect==null) return null;
 		action_instance.onPreSetCurrent_redirect();
 		action_instance.setCurrent_redirect(current_redirect);
+		if(action_instance.getCurrent_redirect()!=null)
+			action_instance.getCurrent_redirect().decodeMessage(request);		
 		action_instance.onPostSetCurrent_redirect();
 
 		if(iCall!=null && iCall.getNavigated().equalsIgnoreCase("false")){
@@ -1449,9 +1458,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(	content!=null &&
 					content.get_infoaction()!=null &&
 					content.get_infoaction().getPath()!=null &&
-					content.get_infoaction().getPath().equals(infoAction.getPath()))
-					content.onGetFromLastInstance();
-				return content;
+					content.get_infoaction().getPath().equals(infoAction.getPath())){
+						content.onGetFromLastInstance();
+						return content;
+				}
 			}			
 		}catch(Exception e){
 			if( e instanceof java.lang.NullPointerException){

@@ -29,6 +29,7 @@ package it.classhidra.core.controller;
 import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_format;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -39,7 +40,6 @@ import javax.servlet.*;
 public class action extends bean implements i_action, Serializable{
 	private static final long serialVersionUID = -6220391111031079562L;
 	private i_bean _bean;
-//	private info_action _infoaction;
 	private redirects current_redirect;
 	private boolean included = false;
 	private listener_action listener_a;
@@ -74,28 +74,49 @@ public class action extends bean implements i_action, Serializable{
 	public synchronized redirects syncroservice(HashMap wsParameters) throws  bsControllerException{
 		return actionservice(wsParameters);
 	}
-	
 	public void actionBeforeRedirect(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 	}
+
+	@ActionCall (name="asyncupdate", navigated="false")
+	public redirects asyncupdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
+
+		String target=request.getParameter("target");
+		String formatOutput=request.getParameter("$formatOutput_"+target);
+		String formatLanguage=request.getParameter("$formatLanguage_"+target);
+		String formatCountry=request.getParameter("$formatCountry_"+target);
+		String replaceOnBlank=request.getParameter("$replaceOnBlank_"+target);
+		String replaceOnErrorFormat=request.getParameter("$replaceOnErrorFormat_"+target);
+		
+		Object writeValue = get_bean().get(target);
+		String value = null;
+		try{
+			value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
+			if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");			
+		}catch(Exception e){
+			if(replaceOnErrorFormat != null)
+				value = replaceOnErrorFormat;
+		}
+		
+
+		try{
+			if(value!=null)
+				response.getOutputStream().write(new String("document.getElementById('"+target+"').value='"+value+"';").getBytes());
+			else response.getOutputStream().write(new String("void();").getBytes());
+		}catch(Exception ex){
+		}
+		return null;
+	}
+	
 	public i_bean get_bean() {
 		if(_bean!=null && _bean.getClass().getName().equals(this.getClass().getName())) return this;
 		if(_bean==null) return this;
 		return _bean;
 	}
-/*
-	public info_action get_infoaction() {
-		return _infoaction;
-	}
-*/	
+	
 	public void set_bean(i_bean form) {
 		_bean = form;
 		if(_bean!=null) _bean.set_infoaction(_infoaction);
 	}
-/*	
-	public void set_infoaction(info_action action) {
-		_infoaction = action;
-	}
-*/	
 	public redirects getCurrent_redirect() {
 		return current_redirect;
 	}
@@ -137,21 +158,33 @@ public class action extends bean implements i_action, Serializable{
 	}
 	
 	public Object[] getMethodAndCall(String annotation_name){
+		return getMethodAndCall(this.getClass(), annotation_name);
+	}
+	
+	private Object[] getMethodAndCall(Class cls, String annotation_name){
 		info_call call=null;
-		java.lang.reflect.Method[] mtds = this.getClass().getMethods();
+		java.lang.reflect.Method[] mtds = cls.getMethods();
 		for(int i=0;i<mtds.length;i++){
 			java.lang.reflect.Method current = mtds[i];
 			try{
 				ActionCall a_call = current.getAnnotation(ActionCall.class);
 				if(a_call!=null && a_call.name().equals(annotation_name)){
 					call = new info_call();
-					call.setMethod(a_call.method());
-					call.setNavigated(a_call.navigated());
+					call.setName(a_call.name());
+					if(a_call.method()==null || a_call.method().equals(""))
+						call.setMethod(current.getName());
+					else
+						call.setMethod(a_call.method());
+					if(a_call.navigated()==null || a_call.navigated().equals(""))
+						call.setNavigated("false");
+					else call.setNavigated(a_call.navigated());
 					return new Object[]{current,call};
 				}
 			}catch (Exception e) {
 			}
 		}
+		if(!cls.equals(action.class) && cls.getSuperclass()!=null)
+			return getMethodAndCall(cls.getSuperclass(), annotation_name);
 		return null;
 	}
 	

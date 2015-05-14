@@ -9,6 +9,10 @@ div#footer_fixedbox{
   left: 0;
   
   }
+  
+
+  
+
 
 </style>
 
@@ -76,8 +80,17 @@ div#footer_fixedbox{
 							<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",400,"","goAction('<bs:formelement bean="navigationLast" name="IAction.path"/>.bs?middleAction=reload')","page_section","reload.gif","images/menu/","","false", 24);</script></td>
 						</bs:equal>
 <bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">						
-						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",401,"","goAction('minimizer?middleAction=close')","page_section","save.gif","images/menu/","","false", 24);</script></td>
+						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",401,"","if(document.getElementById('$action')){goAction('minimizer?middleAction=close&source='+document.getElementById('$action').value);}else{goAction('minimizer?middleAction=close&source=');}","page_section","save.gif","images/menu/","","false", 24);</script></td>
 </bs:equal>
+			<td id="page_img_minimize" align="right" valign="middle" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');display:none;">
+				<img src="images/corners/minimize.gif" border="0" 
+				onclick="showAsPanelNormal('page');try{afterShowAsPanelNormal('page');}catch(e){}">
+			</td>
+			<td id="page_img_maximize" align="right" valign="middle" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');">
+				<img src="images/corners/maximize.gif" border="0" 
+				onclick="showAsPanelMax('page');try{afterShowAsPanelMax('page');}catch(e){}">
+			</td>
+
 						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",45,"","goAction('login?middleAction=reload')","page_section","close.gif","images/menu/","","false", 24);</script></td>
 				    </tr>
 				</table>
@@ -102,9 +115,7 @@ div#footer_fixedbox{
 	<jsp:param name="panel-onclose" value="menu()" />	
 
 </jsp:include>	
-<div id="menu_operation_0" >
-
-</div>	
+<div id="menu_operation_0" style=" padding: 5px;"></div>	
 <jsp:include page="/jsp/included/panel_bottom.jsp"/>	
 </div>	
 

@@ -56,11 +56,15 @@
 </head>
 
 
-
+<!--
+__deprecated 
 <script language="javascript" src="javascript2012/tool.js"></script>
 <script language="javascript" src="javascript2012/light_menu.js"></script>
 <script language="javascript" src="javascript2012/js4ajax.js"></script>
 <script language="javascript" src="javascript2012/List.js"></script>
+ -->
+ <script type="text/javascript" src="Controller?$action=bsLoadFromFramework&src=javascript/&type=text/javascript&cache=100000"></script>
+
 <link  href="css/framework.css" rel="stylesheet" type="text/css"/>
 
 

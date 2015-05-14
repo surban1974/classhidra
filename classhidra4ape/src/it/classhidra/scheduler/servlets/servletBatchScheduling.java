@@ -92,10 +92,10 @@ public class servletBatchScheduling extends HttpServlet {
 			for(int i=0; i<thProcess.getPbe().getContainer_threadevents().size();i++){
 				schedulingThreadEvent ste =  (schedulingThreadEvent)thProcess.getPbe().getContainer_threadevents().get(i);
 				if(ste.getStateThread()==0){
+					ste.setThreadDone(true);
 					ste.setStateThread(2);				
 				}
 				ste.interrupt();
-//				container.remove(keys.get(i));
 			}
 
 		}catch (Exception e) {

@@ -70,6 +70,18 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 				}
 			}
 			if(forbiden.get(key)==null){
+				if(key.lastIndexOf("\"")>-1) key=key.substring(key.lastIndexOf("\"")+1,key.length());
+				if(key.lastIndexOf("'")>-1) key=key.substring(key.lastIndexOf("\"")+1,key.length());
+				if(key.lastIndexOf("(")>-1) key=key.substring(key.lastIndexOf("\"")+1,key.length());
+				if(key.lastIndexOf(" ")>-1) key=key.substring(key.lastIndexOf("\"")+1,key.length());
+			}
+			if(forbiden.get(key)==null){
+				String key_auth = founded.getInfo_menu().getAuth_action();
+				if(key_auth!=null && key_auth.trim().length()>0)
+					key=key_auth;
+			}
+
+			if(forbiden.get(key)==null){
 				buf.add(founded);
 				founded.authentication_clear(forbiden);
 			}

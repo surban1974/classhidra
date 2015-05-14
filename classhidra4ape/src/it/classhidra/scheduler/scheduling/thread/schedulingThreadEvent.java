@@ -1,10 +1,13 @@
 package it.classhidra.scheduler.scheduling.thread;
 
+import it.classhidra.core.tool.util.util_cloner;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEvent;
+import it.classhidra.scheduler.util.util_batch;
 
 import java.util.Date;
+
 
 
 
@@ -20,6 +23,7 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 	private db_batch batch;
 	private int state;
 	private Date exec_time;
+	private Date realExec_time;
 	private ProcessBatchEngine pbe;
 
 
@@ -30,7 +34,10 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 	public schedulingThreadEvent(long _delta_time, db_batch _batch, ProcessBatchEngine _pbe ) {
 		super();
 		delta_time = _delta_time;
-		batch = _batch;
+		try{
+			batch = (db_batch)util_cloner.clone(_batch);
+		}catch(Exception e){
+		}
 		threadDone=false;
 		state=0;
 		pbe=_pbe;
@@ -40,7 +47,24 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 
 	public void run() {
 		
-			if(pbe!=null) pbe.getContainer_threadevents().add(this);
+		if(pbe!=null){
+			
+			schedulingThreadEvent ste_mem =  util_batch.findFromPbe(pbe, batch.getCd_btch());
+			if(ste_mem!=null ){
+				if(ste_mem.getBatch()!=null && ste_mem.getBatch().getState()==db_batch.STATE_INEXEC){
+					state=2;
+					threadDone=true;
+					Thread.currentThread().interrupt();
+					return;
+				}
+				ste_mem.setStateThread(2);	
+				ste_mem.setThreadDone(true);
+				ste_mem.interrupt();
+			}
+			
+			pbe.getContainer_threadevents().add(this);
+		}
+		
 		try{
 			if(delta_time>0){
 				threadDone=true;
@@ -51,20 +75,25 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 				state=1;
 				ProcessBatchEvent p_ev = new ProcessBatchEvent();
 				p_ev.launch(batch.getCd_ist(),batch.getCd_btch());
+				realExec_time=new Date();
 				state=2;
-			}
-			try{
-				pbe.getContainer_threadevents().remove(this);
-			}catch(Exception e){
 			}
 
 		} catch (InterruptedException e) {
 			state=2;			
 			Thread.currentThread().interrupt();
-			pbe.getContainer_threadevents().remove(this);
+		} finally {
+			if(pbe!=null){
+				schedulingThreadEvent ste_mem =  util_batch.findFromPbe(pbe, batch.getCd_btch());
+				if(ste_mem!=null && ste_mem.hashCode()==this.hashCode())
+					pbe.getContainer_threadevents().remove(ste_mem);
+			}
 		}
-
 	}
+
+
+	
+	
 
 
 	public boolean isThreadDone() {
@@ -92,5 +121,13 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 	public void interrupt() {
 		super.interrupt();
 		pbe.getContainer_threadevents().remove(this);
+	}
+
+	public void setThreadDone(boolean threadDone) {
+		this.threadDone = threadDone;
+	}
+
+	public Date getRealExec_time() {
+		return realExec_time;
 	}
 }

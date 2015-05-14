@@ -170,12 +170,19 @@ public class tagLess extends  TagSupport {
 			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
 		}catch (Exception e) {
 		}		
-		if(value==null && writeValue!=null) return true;
+		if(value==null && writeValue!=null){
+			if(getParent()!=null && getParent() instanceof tagSwitch)
+				((tagSwitch)getParent()).setConditionBreak(true);
+			return true;
+		}
 		if(value==null || writeValue==null) return false;
 		try{
-			if(Double.valueOf(writeValue.toString()).doubleValue()< Double.valueOf(value).doubleValue()) return true;
+			if(Double.valueOf(writeValue.toString()).doubleValue()< Double.valueOf(value).doubleValue()){
+				if(getParent()!=null && getParent() instanceof tagSwitch)
+					((tagSwitch)getParent()).setConditionBreak(true);
+				return true;
+			}
 		}catch(Exception e){
-
 		}
 
 		return false;

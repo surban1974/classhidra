@@ -19,7 +19,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2" align="center" style="cursor: pointer;" onclick="goAction('login.bs?middleAction=clear')">
+				<td colspan="2" align="center" style="cursor: pointer;" onclick="goAction('login?middleAction=clear')">
 					<table cellpadding="0" cellspacing="0">
 					<tr>
 					<td>
@@ -64,7 +64,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;  "
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2" align="center" style="cursor: pointer;" onclick="goAction('login.bs?middleAction=clear')">
+				<td colspan="2" align="center" style="cursor: pointer;" onclick="goAction('login?middleAction=clear')">
 					<table cellpadding="0" cellspacing="0">
 					<tr>
 					<td>

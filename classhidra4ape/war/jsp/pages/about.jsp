@@ -17,7 +17,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 	<jsp:param name="panel-onclose" value="window.close();" />
 </jsp:include>	
 
-<div id="page" style=" width: 1000; height: 530; background-color: white">
+<div id="page" style=" width: 900; height: 530; background-color: white">
 <%@ include file="../included/content_page_header.jsp" %>
 
 <center>
@@ -30,39 +30,45 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <jsp:include page="/jsp/included/panel_top.jsp"/>
 	<table>
 		<tr>
-			<td rowspan="6"
-						valign="middle" 
+			<td 		valign="middle" 
 						align="center" 
 						width="150"
 						
 						style="border-right-style: solid;border-right-width: 1px ; border-right-color: #D5E5F7"
 			><img src="images/logo.gif" border="0" ></td>
-			<td align="right" width="" class="labelLeft"><nobr><b><bs:message code="about_1" defaultValue="Application"/>:</b></nobr></td>
-			<td class="labelContent"> ClassHidra Framework</td>
-		</tr>	
-		<tr>
-			<td align="right" width="" class="labelLeft"><nobr><b><bs:message code="about_2" defaultValue="Version"/>:</b></nobr></td>
-			<td class="labelContent"> 1.4.10.ape</td>
-		</tr>	
-		<tr>
-			<td align="right" width="" class="labelLeft"><nobr><b><bs:message code="about_3" defaultValue="Author"/>:</b></nobr></td>
-			<td class="labelContent"> Svyatoslav Urbanovych </td>
-		</tr>	
-		<tr>
-			<td align="right" width="" class="labelLeft"><nobr><b><bs:message code="about_4" defaultValue="EMail"/>:</b></nobr></td>
-			<td class="labelContent"> Svyatoslav.Urbanovych@gmail.com </td>
-		</tr>
-		<tr>
-			<td align="right" width="" class="labelLeft"><nobr><b><bs:message code="about_6" defaultValue="Storage"/>:</b></nobr></td>
-			<td class="labelContent"> http://sourceforge.net/projects/classhidra/ </td>
-		</tr>	
-			
-		<tr>
-			<td align="right" width="" class="labelLeft"><nobr><b><bs:message code="about_5" defaultValue="Description"/>:</b></nobr></td>
-			<td class="labelContent"><nobr> ClassHidra, Java open-source ModelViewController implementation.<br> Servlets and JSP technology. Web Application Development.<br> Integrated with Spring from v.1.2.0(classhigra2spring plugin)</nobr> </td>
-		</tr>	
+			<td>
+				<table >
+					<tr>
+						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_1" defaultValue="Application"/>:</b></nobr></td>
+						<td class="labelContent" width="400px"> ClassHidra Framework</td>
+					</tr>	
+					<tr>
+						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_2" defaultValue="Version"/>:</b></nobr></td>
+						<td class="labelContent" width="400px"> 1.4.11.ape</td>
+					</tr>	
+					<tr>
+						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_3" defaultValue="Author"/>:</b></nobr></td>
+						<td class="labelContent" width="400px"> Svyatoslav Urbanovych </td>
+					</tr>	
+					<tr>
+						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_4" defaultValue="EMail"/>:</b></nobr></td>
+						<td class="labelContent" width="400px"> Svyatoslav.Urbanovych@gmail.com </td>
+					</tr>
+					<tr>
+						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_6" defaultValue="Storage"/>:</b></nobr></td>
+						<td class="labelContent" width="400px"> http://sourceforge.net/projects/classhidra/ </td>
+					</tr>	
+						
+					<tr>
+						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_5" defaultValue="Description"/>:</b></nobr></td>
+						<td class="labelContent" width="400px"><nobr> ClassHidra, Java open-source ModelViewController implementation.<br> Servlets and JSP technology. Web Application Development.<br> Integrated with Spring from v.1.2.0(classhigra2spring plugin)</nobr> </td>
+					</tr>	
+					
+					
+				</table>
+			</td>
 		
-		
+		</tr>	
 	</table>
 <jsp:include page="/jsp/included/panel_bottom.jsp"/>
 </td>

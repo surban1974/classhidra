@@ -9,6 +9,10 @@ div#footer_fixedbox{
   left: 0;
   
   }
+  
+
+  
+
 
 </style>
 
@@ -23,11 +27,13 @@ div#footer_fixedbox{
 
 	<table cellpadding="0" cellspacing="0" width="100%" bgcolor="white">
 		<tr>
+		
 <bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">
 			<td width="0%" background="images/corners/panel_t.gif" onclick="menu()" valign="middle" style="cursor: pointer">
 				<img id="menu_img" src="images/menu/16_close.gif" border="0" height="13"></img>&nbsp;
 			</td>
-</bs:equal>			
+</bs:equal>
+	
 			<td  width="100%" background="images/corners/panel_t.gif" valign="middle">
 				<div style="100%">
 					<div id="fixedbox_show_navigate_story" style=" overflow: hidden;">
@@ -74,8 +80,17 @@ div#footer_fixedbox{
 							<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",400,"","goAction('<bs:formelement bean="navigationLast" name="IAction.path"/>.bs?middleAction=reload')","page_section","reload.gif","images/menu/","","false", 24);</script></td>
 						</bs:equal>
 <bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">						
-						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",401,"","goAction('minimizer?middleAction=close')","page_section","save.gif","images/menu/","","false", 24);</script></td>
+						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",401,"","if(document.getElementById('$action')){goAction('minimizer?middleAction=close&source='+document.getElementById('$action').value);}else{goAction('minimizer?middleAction=close&source=');}","page_section","save.gif","images/menu/","","false", 24);</script></td>
 </bs:equal>
+			<td id="page_img_minimize" align="right" valign="middle" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');display:none;">
+				<img src="images/corners/minimize.gif" border="0" 
+				onclick="showAsPanelNormal('page');try{afterShowAsPanelNormal('page');}catch(e){}">
+			</td>
+			<td id="page_img_maximize" align="right" valign="middle" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');">
+				<img src="images/corners/maximize.gif" border="0" 
+				onclick="showAsPanelMax('page');try{afterShowAsPanelMax('page');}catch(e){}">
+			</td>
+
 						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",45,"","goAction('login?middleAction=reload')","page_section","close.gif","images/menu/","","false", 24);</script></td>
 				    </tr>
 				</table>
@@ -89,17 +104,31 @@ div#footer_fixedbox{
 
 
 
-<div id="menu_operation" style="position:absolute; background-color:white; display: none;z-index: 1001;width:250px; height:100%; border-right: 1px solid silver;overflow: auto;padding: 5px;  ">
-	
+<div id="menu_operation" style="position:absolute; background-color:white; display: none;z-index: 1001; ">
+
+
+<jsp:include page="/jsp/included/panel_top.jsp">
+	<jsp:param name="panel-show-header" value="false" />
+	<jsp:param name="panel-show-close-button" value="false" /> 
+	<jsp:param name="panel-description" value="Menu" />	
+	<jsp:param name="panel-id" value="panel_Menu" />
+	<jsp:param name="panel-onclose" value="menu()" />	
+
+</jsp:include>	
+<div id="menu_operation_0" style=" padding: 5px;"></div>	
+<jsp:include page="/jsp/included/panel_bottom.jsp"/>	
 </div>	
 
 
-<bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">
+
 <script>
-ajax_makeRequest("menuCreator?menu_id=","menu_operation","JSAfter_showAsPopup","",false);
+ajax_makeRequest("menuCreator?menu_id=","menu_operation_0","JSAfter_showAsPopup","",false);
 //window.setTimeout("ajustPage1()", 500);
 </script>
+
+<bs:equal bean="REQUEST.PARAMETER" name="refreshMenu" value="true">
+<script>
+menu();
+</script>
 </bs:equal>
-
-
 

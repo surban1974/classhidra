@@ -4,7 +4,6 @@ package it.classhidra.scheduler.scheduling.implementation.mysql;
 import it.classhidra.core.tool.db.db_connection;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_format;
-
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
@@ -13,7 +12,8 @@ import it.classhidra.scheduler.util.util_batch;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
+
 
 
 public class db_4Batch implements i_4Batch  {
@@ -54,7 +54,7 @@ public class db_4Batch implements i_4Batch  {
 
 	private Object operation_FINDFORMLIST(HashMap form) throws Exception{
 
-		Vector elements = null;
+		List elements = null;
 		if(form!=null && form.get("operation")!=null && form.get("operation").equals("log")){
 			elements = util_blob.load_db_elements(new db_batch_log(), null, sql_batch.sql_LoadBatchLog(form));
 
@@ -103,7 +103,7 @@ public class db_4Batch implements i_4Batch  {
 			original.setTm_next(null);
 
 			try{
-				util_batch.reCalcNextTime(original, util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm"));
+				util_batch.reCalcNextTime(original, util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm"),0);
 			}catch(Exception e){
 			}
 			st.execute(original.sql_Update(original));
@@ -135,7 +135,7 @@ public class db_4Batch implements i_4Batch  {
 			st = conn.createStatement();
 
 			try{
-				util_batch.reCalcNextTime(inserted, util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm"));
+				util_batch.reCalcNextTime(inserted, util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm"),0);
 			}catch(Exception e){
 			}
 

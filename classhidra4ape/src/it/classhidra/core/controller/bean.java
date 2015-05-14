@@ -39,12 +39,15 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
+
 
 
  
@@ -61,10 +64,14 @@ public class bean extends elementBeanBase implements i_bean  {
 	public String js4ajax="false";
 	public boolean refresh=false;
 	private boolean xmloutput=false;
+	private String xmloutput_encoding="";
 	private boolean jsonoutput=false;
+	private String jsonoutput_encoding="";
 	private boolean transformationoutput=false;
 	private boolean binaryoutput=false;
+	private String binaryoutput_encoding="";
 	private boolean virtual=false;
+	private boolean gzipoutput=false;
 	public int countActions;
 	
 	private listener_bean listener_b;
@@ -206,7 +213,8 @@ public void init(HttpServletRequest request) throws bsControllerException{
 					if(st.countTokens()>1){
 						String current_field_name = st.nextToken();
 						try{
-							if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
+							if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+							if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
 							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 							if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
@@ -413,7 +421,9 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 								if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
-								if(writeValue==null && current_requested instanceof HashMap) writeValue = ((HashMap)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
+
 							}catch(Exception e){
 							}
 							current_requested = writeValue;
@@ -555,9 +565,8 @@ public void init(HashMap _content) throws bsControllerException{
 					try{
 						writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-						if(writeValue==null && current_requested instanceof HashMap){
-							writeValue = ((HashMap)current_requested).get(current_field_name);
-						}
+						if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+						if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
 					}catch(Exception e){
 					}
 					current_requested = writeValue;
@@ -631,8 +640,8 @@ public void reInit(i_elementDBBase _i_el) {
 }
 
 public void setCampoValuePoint(Object req, String nome, Object value) throws Exception{
-	if(req instanceof HashMap){
-		((HashMap)req).put(nome, value);
+	if(req instanceof Map){
+		((Map)req).put(nome, value);
 	}else{
 		Object[] par = new Object[1];
 		par[0]=value;
@@ -1162,6 +1171,14 @@ public void setVirtual(boolean virtual) {
 	this.virtual = virtual;
 }
 
+public boolean getGzipoutput() {
+	return gzipoutput;
+}
+
+public void setGzipoutput(boolean gzipoutput) {
+	this.gzipoutput = gzipoutput;
+}
+
 public listener_bean getListener_b() {
 	return listener_b;
 }
@@ -1227,8 +1244,50 @@ public void onGetFromSession() {
 	if(listener_b!=null) listener_b.onGetFromSession();
 }
 
+public void onAddToLastInstance() {
+	if(listener_b!=null) listener_b.onAddToLastInstance();	
+}
+
+
+public void onGetFromLastInstance() {
+	if(listener_b!=null) listener_b.onGetFromLastInstance();
+}
+
 public void setOwner(i_bean owner) {
 }
+
+public String getXmloutput_encoding() {
+	return xmloutput_encoding;
+}
+
+public void setXmloutput_encoding(String xmloutputEncoding) {
+	xmloutput_encoding = xmloutputEncoding;
+}
+
+public String getJsonoutput_encoding() {
+	return jsonoutput_encoding;
+}
+
+public void setJsonoutput_encoding(String jsonoutputEncoding) {
+	jsonoutput_encoding = jsonoutputEncoding;
+}
+
+public String getBinaryoutput_encoding() {
+	return binaryoutput_encoding;
+}
+
+public void setBinaryoutput_encoding(String binaryoutputEncoding) {
+	binaryoutput_encoding = binaryoutputEncoding;
+}
+
+public boolean convert2xml(){
+	return false;
+}
+
+public boolean convert2json(){
+	return false;
+}
+
 
 
 

@@ -46,16 +46,10 @@
 
 
 <div id="<%=panel_id%>"  style="z-index:10000;  <%=panel_div_style %>">
-<table cellspacing="0" cellpadding="0" border="0" style="<%=panel_table_style %>">
-	<tr >						
-		<td style="background-image:url('images/corners/normal/corner_t_l.gif');filter: alpha(opacity=65);opacity: 0.65;" width="4"  height="5"></td>
-		<td style="background-image:url('images/corners/normal/corner_t.gif');filter: alpha(opacity=65);opacity: 0.65;" height="5"></td>
-		<td style="background-image:url('images/corners/normal/corner_t_r.gif');filter: alpha(opacity=65);opacity: 0.65;" width="6"  height="5"></td>
-	</tr>	
+<table cellspacing="0" cellpadding="0"  style="padding: 1px; border: solid 1px silver;<%=panel_table_style %>" class="asPanel">
 <%if(show_header){%>	
 	<tr >						
-		<td style="background-image:url('images/corners/normal/corner_l.gif');filter: alpha(opacity=65);opacity: 0.65;" width="4" height="4"></td>
-		<td  style="background-image:url('images/corners/panel_t.gif')">
+		<td  style="background-image:url('images/corners/panel_t.gif')"> 
 		
 			<table width="100%" cellspacing="0" cellpadding="0" >
 			<tr >
@@ -67,17 +61,17 @@
 			</td>
 		
 <%if(show_close_button){%>	
-			<td id="<%=panel_id%>_img_minimize" align="right" valign="top" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');display:none;">
+			<td id="<%=panel_id%>_img_minimize" class="buttonAsJsSmall" align="center" valign="top"  width="22px" style="width:22px;display:none;">
 				<img src="images/corners/minimize.gif" border="0" 
 				onclick="showAsPanelNormal('<%=panel_id%>');try{afterShowAsPanelNormal('<%=panel_id%>');}catch(e){}">
 			</td>
-			<td id="<%=panel_id%>_img_maximize" align="right" valign="top" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');">
+			<td id="<%=panel_id%>_img_maximize" class="buttonAsJsSmall" align="center" valign="top" width="22px" style="width:22px">
 				<img src="images/corners/maximize.gif" border="0" 
 				onclick="showAsPanelMax('<%=panel_id%>');try{afterShowAsPanelMax('<%=panel_id%>');}catch(e){}">
 			</td>
 <%if(!block_close_button){%>				
 		
-			<td id="<%=panel_id%>_img_close" align="right" valign="top" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');">
+			<td id="<%=panel_id%>_img_close" class="buttonAsJsSmall" align="center" valign="top"  width="22px" style="width:22px">
 				<img src="images/corners/close.gif" border="0" 
 				onclick="<%=panel_onclose %>">
 			</td>
@@ -86,9 +80,7 @@
 			</tr>
 			</table>
 		</td>
-		<td style="background-image:url('images/corners/normal/corner_r.gif');filter: alpha(opacity=65);opacity: 0.65;" width="6"  height="4"></td>
 	</tr>				
 <%} %>			
 	<tr >						
-		<td style="background-image:url('images/corners/normal/corner_l.gif');filter: alpha(opacity=65);opacity: 0.65;" width="4" height="4"><img src="images/decor/blank_trans.gif" border="0" width="4"></td>
-		<td>
+		<td> 

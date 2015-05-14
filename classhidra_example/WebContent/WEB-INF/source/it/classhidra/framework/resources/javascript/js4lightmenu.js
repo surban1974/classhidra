@@ -1,6 +1,6 @@
 /**
 * Name: light_menu.js
-* Version: 1.4.10.14 (compatible classHidra 1.4.10.14)
+* Version: 1.4.11 (compatible classHidra 1.4.11)
 * Creation date: (21/04/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */

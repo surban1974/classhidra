@@ -150,25 +150,45 @@ public class tagFormelement extends TagSupport{
 				}	
 			}		 		
 		}		
+		
+		String prefixName=null;
+		
+		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null && ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean)!=null){
+			prefixName = ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean).toString();
+		}
+		if(prefixName==null)
+			prefixName=name;
+		else prefixName+="."+name;
+		
 		if(writeValue!=null){
 			if(styleClass!=null){
 				results.append(" <span class=\"");
 				results.append(styleClass);
-				results.append("\">");
+				results.append('"');
+
+				results.append(" $modelWire=\"");
+				results.append("formelement:"+prefixName);
+				results.append('"');				
+				
+				results.append(">");
 			}
 			try{
 				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
 				if(replaceOnBlank != null) writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
 			}catch(Exception e){}	
-			results.append(writeValue);			
+			
+
+			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
+				results.append(util_xml.normalXML((writeValue==null)?"":writeValue.toString(),null));	
+			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
+				results.append(util_xml.normalASCII((writeValue==null)?"":writeValue.toString()));	
+			else	
+				results.append(writeValue);			
 			if(styleClass!=null) results.append(" </span>");
 		}
-		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
-			return util_xml.normalXML(results.toString(),null);
-		
-		if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))
-			return util_xml.normalASCII(results.toString());
 
+
+		prefixName=null;
 		return results.toString();
 	}		
 	

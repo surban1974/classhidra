@@ -177,10 +177,22 @@ public class tagEqual extends  TagSupport {
 		}catch (Exception e) {
 		}
 		
-		if(value==null && writeValue!=null) return true;
+		if(value==null && writeValue!=null){
+			if(getParent()!=null && getParent() instanceof tagSwitch)
+				((tagSwitch)getParent()).setConditionBreak(true);
+			return true;
+		}
 		if(value==null || writeValue==null) return false;
-		if(writeValue.toString().equals(value)) return true;
-		if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true") && writeValue.toString().equalsIgnoreCase(value)) return true;
+		if(writeValue.toString().equals(value)){
+			if(getParent()!=null && getParent() instanceof tagSwitch)
+				((tagSwitch)getParent()).setConditionBreak(true);
+			return true;
+		}
+		if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true") && writeValue.toString().equalsIgnoreCase(value)){
+			if(getParent()!=null && getParent() instanceof tagSwitch)
+				((tagSwitch)getParent()).setConditionBreak(true);
+			return true;
+		}
 		return false;
 	}
 	public String getName() {

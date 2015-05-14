@@ -22,7 +22,7 @@ public class bsByteArrayResponseWrapper extends a_ResponseWrapper implements i_R
       return new FilterServletOutputStream(output);
     }
   
-    public PrintWriter getWriter() {
+    public PrintWriter getWriter() throws IOException{
       return new PrintWriter(getOutputStream(),true);
     }
 
@@ -42,47 +42,43 @@ public class bsByteArrayResponseWrapper extends a_ResponseWrapper implements i_R
         public DataOutputStream stream; 
           
           public FilterServletOutputStream() { 
-          output = new ByteArrayOutputStream(); 
-          stream = new DataOutputStream(output); 
+        	  output = new ByteArrayOutputStream(); 
+        	  stream = new DataOutputStream(output); 
           } 
 
           public FilterServletOutputStream(ByteArrayOutputStream Pout) { 
-            output = Pout; 
-            stream = new DataOutputStream(output); 
-            } 
+        	  output = Pout; 
+        	  stream = new DataOutputStream(output); 
+          } 
 
          
           public void write(int b) throws IOException  { 
-            stream.write(b); 
+        	  stream.write(b); 
           } 
           
          
-         public void write(byte b[]) 
-            throws IOException 
-          { 
-         stream.write(b); 
-          } 
+         public void write(byte b[]) throws IOException { 
+        	 stream.write(b); 
+         } 
           
          
-          public void write( byte buf[], int offset, int len) 
-            throws IOException 
-          { 
-         stream.write(buf, offset, len); 
+          public void write( byte buf[], int offset, int len) throws IOException { 
+        	  stream.write(buf, offset, len); 
           }   
           
          
           public void flush() throws IOException  { 
-            stream.flush(); 
+        	  stream.flush(); 
           } 
           
          
           public void close() throws IOException  { 
-            stream.close(); 
+        	  stream.close(); 
           } 
           
           
           public ByteArrayOutputStream getBuffer()   { 
-            return output; 
+        	  return output; 
           } 
           
           

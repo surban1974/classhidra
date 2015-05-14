@@ -93,6 +93,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 	
 	
 	public abstract String execute() throws Exception;	
+	
 	public String writeOutput(){
 		return map2xml(output);
 	}
@@ -227,4 +228,47 @@ public abstract class generic_batch implements i_batch,Serializable{
 	public void setDb(db_batch db) {
 		this.db = db;
 	}
+	
+	
+	public void onBeforeReadInput(String xml) {
+	}
+
+	
+	public void onAfterReadInput(String xml) {
+	}
+
+	
+	public String onBeforeExecute() {
+		return null;
+	}
+
+	
+	public String onAfterExecute() {
+		return null;
+	}
+
+	
+	public String onErrorExecute() {
+		return null;
+	}
+
+	
+	public String onBeforeWriteOutput() {
+		return null;
+	}
+
+	
+	public String onAfterWriteOutput() {
+		return null;
+	}
+
+	
+	public int getOrder() {
+		return 0;
+	}
+
+	
+	public String getDescription() {
+		return null;
+	}	
 }

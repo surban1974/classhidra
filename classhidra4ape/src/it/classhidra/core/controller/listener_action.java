@@ -29,7 +29,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface listener_action extends listener_bean{
+public interface listener_action {
 	void onPreInit(HttpServletRequest request, HttpServletResponse response);
 	void onPreInit(HashMap _content);
 	void onPreActionservice(HttpServletRequest request, HttpServletResponse response);

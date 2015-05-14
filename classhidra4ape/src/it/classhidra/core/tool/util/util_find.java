@@ -59,12 +59,10 @@ public class util_find {
 			if(elements.get(i) instanceof i_bean){
 				i_bean el = (i_bean)elements.get(i);
 				if(el!=null && obj_value.toString().equals(el.get(key).toString())) result.add(el);
-			}
-			if(elements.get(i) instanceof i_elementDBBase){
+			}else if(elements.get(i) instanceof i_elementDBBase){
 				i_elementDBBase el = (i_elementDBBase)elements.get(i);
 				if(el!=null && obj_value.toString().equals(el.getCampoValue(key).toString())) result.add(el);
-			}
-			if(elements.get(i) instanceof i_elementBase){
+			}else if(elements.get(i) instanceof i_elementBase){
 				i_elementBase el = (i_elementBase)elements.get(i);
 				if(el!=null && obj_value.toString().equals(el.getCampoValue(key).toString())) result.add(el);
 			}
@@ -79,12 +77,10 @@ public class util_find {
 			if(elements.get(i) instanceof i_bean){
 				i_bean el = (i_bean)elements.get(i);
 				if(el!=null && obj_value.equals(el.get(key))) result.add(el);
-			}
-			if(elements.get(i) instanceof i_elementDBBase){
+			}else if(elements.get(i) instanceof i_elementDBBase){
 				i_elementDBBase el = (i_elementDBBase)elements.get(i);
 				if(el!=null && obj_value.equals(el.getCampoValue(key))) result.add(el);
-			}
-			if(elements.get(i) instanceof i_elementBase){
+			}else if(elements.get(i) instanceof i_elementBase){
 				i_elementBase el = (i_elementBase)elements.get(i);
 				if(el!=null && obj_value.equals(el.getCampoValue(key))) result.add(el);
 			}			
@@ -183,8 +179,7 @@ public class util_find {
 					}
 					if(isEqual) result.add(el);
 				}
-			}
-			if(elements.get(i) instanceof i_elementDBBase){
+			}else if(elements.get(i) instanceof i_elementDBBase){
 				i_elementDBBase el = (i_elementDBBase)elements.get(i);
 				if(el!=null){
 					boolean isEqual=true;
@@ -193,8 +188,7 @@ public class util_find {
 					}
 					if(isEqual) result.add(el);
 				}
-			}
-			if(elements.get(i) instanceof i_elementBase){
+			}else if(elements.get(i) instanceof i_elementBase){
 				i_elementBase el = (i_elementBase)elements.get(i);
 				if(el!=null){
 					boolean isEqual=true;
@@ -221,8 +215,7 @@ public class util_find {
 					}
 					if(isEqual) result.add(el);
 				}
-			}
-			if(elements.get(i) instanceof i_elementDBBase){
+			}else if(elements.get(i) instanceof i_elementDBBase){
 				i_elementDBBase el = (i_elementDBBase)elements.get(i);
 				if(el!=null){
 					boolean isEqual=true;
@@ -231,8 +224,7 @@ public class util_find {
 					}
 					if(isEqual) result.add(el);
 				}
-			}
-			if(elements.get(i) instanceof i_elementBase){
+			}else if(elements.get(i) instanceof i_elementBase){
 				i_elementBase el = (i_elementBase)elements.get(i);
 				if(el!=null){
 					boolean isEqual=true;
@@ -298,12 +290,10 @@ public class util_find {
 			if(elements.get(i) instanceof i_bean){
 				i_bean el = (i_bean)elements.get(i);
 				if(el!=null && obj_value.toString().equals(el.get(key).toString())) result.add(el);
-			}
-			if(elements.get(i) instanceof i_elementDBBase){
+			}else if(elements.get(i) instanceof i_elementDBBase){
 				i_elementDBBase el = (i_elementDBBase)elements.get(i);
 				if(el!=null && obj_value.toString().equals(el.getCampoValue(key).toString())) result.add(el);
-			}
-			if(elements.get(i) instanceof i_elementBase){
+			}else if(elements.get(i) instanceof i_elementBase){
 				i_elementBase el = (i_elementBase)elements.get(i);
 				if(el!=null && obj_value.toString().equals(el.getCampoValue(key).toString())) result.add(el);
 			}
@@ -318,12 +308,10 @@ public class util_find {
 			if(elements.get(i) instanceof i_bean){
 				i_bean el = (i_bean)elements.get(i);
 				if(el!=null && obj_value.equals(el.get(key))) result.add(el);
-			}
-			if(elements.get(i) instanceof i_elementDBBase){
+			}else if(elements.get(i) instanceof i_elementDBBase){
 				i_elementDBBase el = (i_elementDBBase)elements.get(i);
 				if(el!=null && obj_value.equals(el.getCampoValue(key))) result.add(el);
-			}
-			if(elements.get(i) instanceof i_elementBase){
+			}else if(elements.get(i) instanceof i_elementBase){
 				i_elementBase el = (i_elementBase)elements.get(i);
 				if(el!=null && obj_value.equals(el.getCampoValue(key))) result.add(el);
 			}			
@@ -422,8 +410,7 @@ public class util_find {
 					}
 					if(isEqual) result.add(el);
 				}
-			}
-			if(elements.get(i) instanceof i_elementDBBase){
+			}else if(elements.get(i) instanceof i_elementDBBase){
 				i_elementDBBase el = (i_elementDBBase)elements.get(i);
 				if(el!=null){
 					boolean isEqual=true;
@@ -432,8 +419,7 @@ public class util_find {
 					}
 					if(isEqual) result.add(el);
 				}
-			}
-			if(elements.get(i) instanceof i_elementBase){
+			}else if(elements.get(i) instanceof i_elementBase){
 				i_elementBase el = (i_elementBase)elements.get(i);
 				if(el!=null){
 					boolean isEqual=true;
@@ -460,8 +446,7 @@ public class util_find {
 					}
 					if(isEqual) result.add(el);
 				}
-			}
-			if(elements.get(i) instanceof i_elementDBBase){
+			}else if(elements.get(i) instanceof i_elementDBBase){
 				i_elementDBBase el = (i_elementDBBase)elements.get(i);
 				if(el!=null){
 					boolean isEqual=true;
@@ -470,8 +455,7 @@ public class util_find {
 					}
 					if(isEqual) result.add(el);
 				}
-			}
-			if(elements.get(i) instanceof i_elementBase){
+			}else if(elements.get(i) instanceof i_elementBase){
 				i_elementBase el = (i_elementBase)elements.get(i);
 				if(el!=null){
 					boolean isEqual=true;

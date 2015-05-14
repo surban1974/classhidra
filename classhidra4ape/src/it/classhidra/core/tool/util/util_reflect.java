@@ -514,10 +514,43 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 
 	if(requested instanceof String ) return requested;
 
+	HashMap syn = null;;
+	if(field_name.indexOf("'")>-1){
+		syn = new HashMap();
+		String tmp ="";
+		String field ="";
+		boolean startAp=false;
+		int cnt=0;
+		for(int i=0;i<field_name.length();i++){
+			if(field_name.charAt(i)=='\''){
+				if(startAp){
+					tmp+="$"+cnt+"$";
+					syn.put("$"+cnt+"$", field);
+					cnt++;
+					startAp=false;
+					field="";
+				}else{
+					startAp=true;
+					field="";
+				}
+			}else{
+				if(startAp)
+					field+=field_name.charAt(i);
+				else
+					tmp+=field_name.charAt(i);				
+			}				
+		}
+		field_name=tmp;
+	}
+	
 	StringTokenizer st = new StringTokenizer(field_name,".");
 	Object current_requested = requested;
 	while(st.hasMoreTokens()){
 		String current_field_name = st.nextToken();
+		
+		if(syn!=null && syn.get(current_field_name)!=null)
+			current_field_name=(String)syn.get(current_field_name);
+		
 		int int4list=-1;
 		try{
 			if(current_requested!=null && current_requested instanceof AbstractList){

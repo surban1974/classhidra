@@ -340,6 +340,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iAction.setRedirect(annotationAction.redirect());
 		    	iAction.setError(annotationAction.error());
 		    	iAction.setMemoryInSession(annotationAction.memoryInSession());
+		    	iAction.setMemoryAsLastInstance(annotationAction.memoryAsLastInstance());
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
 		    	iAction.setReloadAfterNextNavigated(annotationAction.reloadAfterNextNavigated());
 		    	iAction.setNavigated(annotationAction.navigated());

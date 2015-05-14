@@ -31,7 +31,7 @@ public class def_control_permission extends stream implements i_stream{
 		String id_action = (String)request.getAttribute(bsController.CONST_ID);
 		
 		info_action i_a = (info_action)bsController.getAction_config().get_actions().get(id_action);
-		if(i_a!=null && i_a.getProperty("allway").equals("public"))
+		if(i_a!=null && (i_a.getProperty("allway").equalsIgnoreCase("public") || i_a.getProperty("always").equalsIgnoreCase("public")))
 			return super.streamservice_enter(request, response);
 		
 		if(	!auth.get_authentication_filter().check_actionIsPermitted(auth,id_action)){
@@ -60,7 +60,7 @@ public class def_control_permission extends stream implements i_stream{
 		}
 		String id_complete = (String)request.getAttribute(bsController.CONST_ID_COMPLETE);		
 		i_action action_instance = (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
-		if(action_instance!=null && action_instance.get_infoaction()!=null && action_instance.get_infoaction().getProperty("allway").equals("public")){
+		if(action_instance!=null && action_instance.get_infoaction()!=null && (action_instance.get_infoaction().getProperty("allway").equalsIgnoreCase("public") || action_instance.get_infoaction().getProperty("always").equalsIgnoreCase("public"))){
 		}else{
 			if(	action_instance!=null &&
 				auth!=null &&
