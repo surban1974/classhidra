@@ -1,6 +1,6 @@
 /**
 * Name: jsTool.js
-* Version: 1.4.11.1 (compatible classHidra 1.4.11)
+* Version: 1.4.11 (compatible classHidra 1.4.11)
 * Creation date: (12/05/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
@@ -1252,10 +1252,8 @@ function showAsIFrame(action,panel_width,panel_height,scroll){
 	}catch(e){
 	}
 
-//	document.getElementById("content_IFrame_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_IFrame_Popup").style.display="block";
-	document.getElementById("content_IFrame_Popup").style.position="fixed";
-	document.getElementById("content_IFrame_Popup").style.display="block";	
+	document.getElementById("content_IFrame_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_IFrame_Popup").style.display="block";
 
 
 
@@ -1361,16 +1359,15 @@ function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction){
 	}catch(e){
 	}
 
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -1469,15 +1466,14 @@ function showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,after
 		}
 	}catch(e){
 	}
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -1571,15 +1567,13 @@ function showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,af
 	}catch(e){
 	}
 
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -1673,16 +1667,15 @@ function showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction
 	}catch(e){
 	}
 
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -1784,15 +1777,14 @@ function showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,
 		}
 	}catch(e){
 	}
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -1886,15 +1878,13 @@ function showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scro
 	}catch(e){
 	}
 
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -1983,16 +1973,15 @@ function showAlertAsPopup(label){
 
 
 
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -2108,16 +2097,15 @@ function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo){
 	}
 
 
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -2483,13 +2471,13 @@ function closePanel(panel_id){
 		document.getElementById(id_body).innerHTML='';
 
 	}
-//	if(panel_id=="panel_Popup" || panel_id=="panel_IFrame"){
-//		var vPanel_Popup = mPanel_Popup.get(panel_id);
-//		if(vPanel_Popup!=null){
-//			document.body.style.overflowX=vPanel_Popup.pscrollx;
-//			document.body.style.overflowY=vPanel_Popup.pscrolly;
-//		}
-//	}
+	if(panel_id=="panel_Popup" || panel_id=="panel_IFrame"){
+		var vPanel_Popup = mPanel_Popup.get(panel_id);
+		if(vPanel_Popup!=null){
+			document.body.style.overflowX=vPanel_Popup.pscrollx;
+			document.body.style.overflowY=vPanel_Popup.pscrolly;
+		}
+	}
 	try{
 		mPanel_Popup.remove(panel_id);
 	}catch(e){
@@ -2502,10 +2490,16 @@ function closePanel(panel_id){
 }
 
 function hideScrollPanel(panel_Popup){
-//	panel_Popup.pscrollx=document.body.style.overflowX;
-//	panel_Popup.pscrolly=document.body.style.overflowY;
-//	document.body.style.overflowX="hidden";
-//	document.body.style.overflowY="hidden";
+	panel_Popup.pscrollx=document.body.style.overflowX;
+	panel_Popup.pscrolly=document.body.style.overflowY;
+
+
+
+	document.body.style.overflowX="hidden";
+	document.body.style.overflowY="hidden";
+	
+
+
 }
 
 
