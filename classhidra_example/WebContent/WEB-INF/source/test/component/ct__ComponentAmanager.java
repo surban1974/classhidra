@@ -20,7 +20,7 @@ public class ct__ComponentAmanager {
 			
 			componentAmanager comp = null;
 			try{
-				comp = (componentAmanager)util_beanMessageFactory.message2bean(util_file.getBytesFromFile("c:/inputComponentAmanager.xml"));
+				comp = (componentAmanager)util_beanMessageFactory.message2bean(util_file.getBytesFromFile("c:/tmp/inputComponentAmanager.xml"));
 			}catch(Exception e){
 			}
 			
@@ -48,7 +48,7 @@ public class ct__ComponentAmanager {
 			
 			util_file.writeByteToFile(
 					util_beanMessageFactory.bean2message(comp,"componentAmanager",true).getBytes(),
-					"c:/outputComponentAmanager.xml"
+					"c:/tmp/outputComponentAmanager.xml"
 			);		
 			
 		}catch(Exception e){

@@ -1,7 +1,7 @@
 /**
 * Name: jsTool.js
 * Version: 1.4.11.1 (compatible classHidra 1.4.11)
-* Creation date: (12/05/2015)
+* Creation date: (25/05/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
@@ -1251,10 +1251,12 @@ function showAsIFrame(action,panel_width,panel_height,scroll){
 		}
 	}catch(e){
 	}
-
-//	document.getElementById("content_IFrame_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_IFrame_Popup").style.display="block";
-	document.getElementById("content_IFrame_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_IFrame_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_IFrame_Popup").style.display="block";
+	}else{
+		document.getElementById("content_IFrame_Popup").style.position="fixed";
+	}
 	document.getElementById("content_IFrame_Popup").style.display="block";	
 
 
@@ -1361,9 +1363,13 @@ function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction){
 	}catch(e){
 	}
 
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}else{
+		document.getElementById("content_Panel_Popup").style.position="fixed";
+	}
+	
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 
@@ -1469,9 +1475,12 @@ function showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,after
 		}
 	}catch(e){
 	}
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}else{
+		document.getElementById("content_Panel_Popup").style.position="fixed";
+	}
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 	try{
@@ -1570,10 +1579,12 @@ function showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,af
 		}
 	}catch(e){
 	}
-
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}else{
+		document.getElementById("content_Panel_Popup").style.position="fixed";
+	}
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 	try{
@@ -1672,10 +1683,12 @@ function showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction
 		}
 	}catch(e){
 	}
-
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}else{
+		document.getElementById("content_Panel_Popup").style.position="fixed";
+	}
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 
@@ -1784,9 +1797,12 @@ function showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,
 		}
 	}catch(e){
 	}
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}else{
+		document.getElementById("content_Panel_Popup").style.position="fixed";
+	}
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 	try{
@@ -1885,10 +1901,12 @@ function showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scro
 		}
 	}catch(e){
 	}
-
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}else{
+		document.getElementById("content_Panel_Popup").style.position="fixed";
+	}
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 	try{
@@ -1982,10 +2000,12 @@ function showAlertAsPopup(label){
 	}
 
 
-
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}else{
+		document.getElementById("content_Panel_Popup").style.position="fixed";
+	}
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 
@@ -2107,17 +2127,20 @@ function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo){
 	}catch(e){
 	}
 
-
-//	document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
-//	document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
-	document.getElementById("content_Panel_Popup").style.position="fixed";
+	if(IE4){
+		document.getElementById("content_Panel_Popup").style.top=document.body.scrollTop;
+		document.getElementById("content_Panel_Popup").style.left=document.body.scrollLeft;
+	}else{
+		document.getElementById("content_Panel_Popup").style.position="fixed";
+	}
 	document.getElementById("content_Panel_Popup").style.display="block";
 
 
 	try{
 		if(vPanel_NotPopup.zIndex>-1){
 			document.getElementById("content_Panel_Popup").style.zIndex=(vPanel_NotPopup.zIndex+1)/1;
-//			document.getElementById("content_Panel_Popup").style.position="absolute";
+			if(IE4)
+				document.getElementById("content_Panel_Popup").style.position="absolute";
 		}
 	}catch(e){
 	}
@@ -2483,13 +2506,15 @@ function closePanel(panel_id){
 		document.getElementById(id_body).innerHTML='';
 
 	}
-//	if(panel_id=="panel_Popup" || panel_id=="panel_IFrame"){
-//		var vPanel_Popup = mPanel_Popup.get(panel_id);
-//		if(vPanel_Popup!=null){
-//			document.body.style.overflowX=vPanel_Popup.pscrollx;
-//			document.body.style.overflowY=vPanel_Popup.pscrolly;
-//		}
-//	}
+	if(IE4){
+		if(panel_id=="panel_Popup" || panel_id=="panel_IFrame"){
+			var vPanel_Popup = mPanel_Popup.get(panel_id);
+			if(vPanel_Popup!=null){
+				document.body.style.overflowX=vPanel_Popup.pscrollx;
+				document.body.style.overflowY=vPanel_Popup.pscrolly;
+			}
+		}
+	}
 	try{
 		mPanel_Popup.remove(panel_id);
 	}catch(e){
@@ -2502,10 +2527,12 @@ function closePanel(panel_id){
 }
 
 function hideScrollPanel(panel_Popup){
-//	panel_Popup.pscrollx=document.body.style.overflowX;
-//	panel_Popup.pscrolly=document.body.style.overflowY;
-//	document.body.style.overflowX="hidden";
-//	document.body.style.overflowY="hidden";
+	if(IE4){
+		panel_Popup.pscrollx=document.body.style.overflowX;
+		panel_Popup.pscrolly=document.body.style.overflowY;
+		document.body.style.overflowX="hidden";
+		document.body.style.overflowY="hidden";
+	}
 }
 
 
@@ -2556,6 +2583,14 @@ function ajustPageInHeader(){
 }
 
 function ajustMenuPanel(){
+	if(IE4){
+		try{
+			window.innerHeight = window.innerHeight || document.documentElement.clientHeight;
+			window.innerWidth = window.innerWidth || document.documentElement.clientWidth;
+		}catch(e){
+			
+		}			
+	}
 	var div = document.getElementById("menu_left");
 	if(div){
 		var hasHScroll = document.body.scrollWidth > document.body.clientWidth;
@@ -2568,6 +2603,14 @@ function ajustMenuPanel(){
 }
 
 function ajustMenuPanel_ar(){
+	if(IE4){
+		try{
+			window.innerHeight = window.innerHeight || document.documentElement.clientHeight;
+			window.innerWidth = window.innerWidth || document.documentElement.clientWidth;
+		}catch(e){
+			
+		}			
+	}	
 	var div = document.getElementById("menu_left");
 	if(div){
 		var hasHScroll = document.body.scrollWidth > document.body.clientWidth;
