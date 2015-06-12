@@ -3,15 +3,24 @@ package pool;
 import it.classhidra.core.tool.db.pool.iConnectionForPool;
 import it.classhidra.core.tool.db.pool.iConnectionPool;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Properties;
+
 
 public class LocalMySqlConnectionForPool implements Connection, iConnectionForPool {
 
@@ -101,9 +110,7 @@ public class LocalMySqlConnectionForPool implements Connection, iConnectionForPo
         conn.rollback();
     }
 
-    /* (non-Javadoc)
-	 * @see pool.iConnectionForPool#isClosed()
-	 */
+
     public boolean isClosed() throws SQLException {
         return conn.isClosed();
     }
@@ -230,5 +237,59 @@ public class LocalMySqlConnectionForPool implements Connection, iConnectionForPo
 
 	public void setTypeMap(Map arg0) throws SQLException {
 		conn.setTypeMap(arg0);		
+	}
+
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
+		return conn.isWrapperFor(arg0);
+	}
+
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
+		return conn.unwrap(arg0);
+	}
+
+	public Array createArrayOf(String arg0, Object[] arg1) throws SQLException {
+		return conn.createArrayOf(arg0, arg1);
+	}
+
+	public Blob createBlob() throws SQLException {
+		return conn.createBlob();
+	}
+
+	public Clob createClob() throws SQLException {
+		return conn.createClob();
+	}
+
+	public NClob createNClob() throws SQLException {
+		return conn.createNClob();
+	}
+
+	public SQLXML createSQLXML() throws SQLException {
+		return conn.createSQLXML();
+	}
+
+	public Struct createStruct(String arg0, Object[] arg1) throws SQLException {
+		return conn.createStruct(arg0, arg1);
+	}
+
+	public Properties getClientInfo() throws SQLException {
+		return conn.getClientInfo();
+	}
+
+	public String getClientInfo(String arg0) throws SQLException {
+		return conn.getClientInfo(arg0);
+	}
+
+	public boolean isValid(int arg0) throws SQLException {
+		return conn.isValid(arg0);
+	}
+
+	public void setClientInfo(Properties arg0) throws SQLClientInfoException {
+		conn.setClientInfo(arg0);
+		
+	}
+
+	public void setClientInfo(String arg0, String arg1) throws SQLClientInfoException {
+		conn.setClientInfo(arg0,arg1);
+		
 	}
 }
