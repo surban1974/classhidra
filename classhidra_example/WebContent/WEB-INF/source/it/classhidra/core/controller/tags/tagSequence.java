@@ -35,10 +35,12 @@ import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -49,6 +51,10 @@ public class tagSequence extends  TagSupport {
 	protected String bean=null;
 	protected String name=null;
 	protected String method_prefix=null;
+	protected String startIndex=null;
+	protected String startIndexFromBean=null;
+	protected String finishIndex=null;
+	protected String finishIndexFromBean=null;	
 	protected Object sequence=null;
 	protected int index = 0;
 	protected int size = 0;
@@ -88,7 +94,7 @@ public class tagSequence extends  TagSupport {
 			Object anotherBean=null;
 			if(bean==null && name!=null){
 				anotherBean = formBean;
-			}else{
+			}else if(bean!=null){
 				if(name!=null){
 					if(bean.equals(bsConstants.CONST_TAG_REQUESTPARAMETER)) anotherBean = request.getParameter(name);
 					if(bean.equals(bsConstants.CONST_TAG_SYSTEMPROPERTY)) anotherBean = System.getProperty(name);
@@ -117,7 +123,44 @@ public class tagSequence extends  TagSupport {
 					}catch(Exception e){
 					}
 				}	
-			}		 	
+			}
+		
+			else{
+				int startSeq=-1;
+				int finishSeq=-1;
+				try{
+					if(startIndex!=null)
+						startSeq = new Integer(startIndex.toString().trim()).intValue();
+				}catch(Exception e){
+				}
+				if(startSeq==-1 && startIndexFromBean!=null){
+					try{
+						startSeq = new Integer(util_reflect.prepareWriteValueFromBean(startIndexFromBean, request,(formAction==null)?formBean:formAction.get_bean()).toString().trim()).intValue();
+					}catch(Exception e){
+					}
+				}
+				
+				try{
+					if(finishIndex!=null)
+						finishSeq = new Integer(finishIndex.toString().trim()).intValue();
+				}catch(Exception e){
+				}	
+				if(finishSeq==-1 && finishIndexFromBean!=null){
+					try{
+						finishSeq = new Integer(util_reflect.prepareWriteValueFromBean(finishIndexFromBean, request,(formAction==null)?formBean:formAction.get_bean()).toString().trim()).intValue();
+					}catch(Exception e){
+					}
+				}				
+				
+				if(startSeq!=-1 && finishSeq!=-1 && startSeq<finishSeq){
+					sequence = new ArrayList();
+					for(int i=startSeq;i<=finishSeq;i++)
+						((ArrayList)sequence).add(new Integer(i));
+					size=((List)sequence).size();
+				}
+				
+			}
+		
 //		}
 		
 		if (condition())
@@ -127,6 +170,8 @@ public class tagSequence extends  TagSupport {
 	}
 	
 	
+
+
 
 	
 	public int doEndTag() throws JspException {
@@ -138,6 +183,10 @@ public class tagSequence extends  TagSupport {
 		name = null;
 		index = 0;
 		sequence = null;
+		startIndex=null;
+		startIndexFromBean=null;
+		finishIndex=null;
+		finishIndexFromBean=null;		
 	}
 	
 	private boolean condition() throws JspException{
@@ -205,5 +254,38 @@ public class tagSequence extends  TagSupport {
 	public void setPair(boolean pair) {
 		this.pair = pair;
 	}
+
+	public String getStartIndex() {
+		return startIndex;
+	}
+
+	public void setStartIndex(String startIndex) {
+		this.startIndex = startIndex;
+	}
+
+	public String getStartIndexFromBean() {
+		return startIndexFromBean;
+	}
+
+	public void setStartIndexFromBean(String startIndexFromBean) {
+		this.startIndexFromBean = startIndexFromBean;
+	}
+
+	public String getFinishIndex() {
+		return finishIndex;
+	}
+
+	public void setFinishIndex(String finishIndex) {
+		this.finishIndex = finishIndex;
+	}
+
+	public String getFinishIndexFromBean() {
+		return finishIndexFromBean;
+	}
+
+	public void setFinishIndexFromBean(String finishIndexFromBean) {
+		this.finishIndexFromBean = finishIndexFromBean;
+	}
+
 
 }

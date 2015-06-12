@@ -35,6 +35,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -98,7 +99,29 @@ public class tagBean extends TagSupport{
 				
 			}
 
-			if(anotherBean==null) return EVAL_BODY_INCLUDE;
+			
+			if(anotherBean==null){
+				if(index!=null && index.equalsIgnoreCase("SEQUENCE") && getParent()!=null && getParent() instanceof tagSequence){
+					try{
+
+						request.setAttribute(name,((List)((tagSequence)getParent()).getSequence()).get(((tagSequence)getParent()).getIndex()));
+						if(prefixName!=null){
+							HashMap pool_seq = (HashMap)request.getAttribute(CONST_HEAP_BEANS);
+							if(pool_seq==null){
+								pool_seq=new HashMap();
+								request.setAttribute(CONST_HEAP_BEANS,pool_seq);
+							}
+							pool_seq.put(name, prefixName);	
+						}
+						prefixName=null;
+						
+					}catch(Exception e){
+
+					}
+				}
+				
+				return EVAL_BODY_INCLUDE;
+			}
 
 			Object obj = null;
 			if(property!=null){
@@ -108,7 +131,7 @@ public class tagBean extends TagSupport{
 				else prefixName=property;
 			}else obj = anotherBean;
 			if(obj!=null && index!=null){
-				if(index.toUpperCase().equals("SEQUENCE")){
+				if(index.equalsIgnoreCase("SEQUENCE")){
 					try{
 						if(getParent()!=null && getParent() instanceof tagSequence){
 							index = String.valueOf(((tagSequence)getParent()).getIndex());

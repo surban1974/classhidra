@@ -1,6 +1,7 @@
 package it.classhidra.core.tool.util;
 
 
+import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_navigation;
@@ -16,6 +17,8 @@ import java.util.AbstractList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class util_reflect {
 
@@ -624,6 +627,51 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 
 	return writeValue;
 }
+
+public static Object prepareWriteValueFromBean(String fromBean, HttpServletRequest request, i_bean formBean){
+	Object result=null;
+	if(fromBean!=null ){
+		try{
+			Object rightBean = null;
+			String nameRightBean = "";
+			String methodRightBean = "";
+			StringTokenizer st = new StringTokenizer(fromBean,".");
+			
+			while(st.hasMoreTokens()){
+				String current = st.nextToken();
+				if(nameRightBean.equals("")) nameRightBean=current;
+				else{
+					if(methodRightBean.equals("")) methodRightBean=current;
+					else methodRightBean+="."+current;
+				}
+			}
+			
+			if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
+			if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
+			try{
+				if(rightBean==null) rightBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(nameRightBean).get_content();
+			}catch(Exception e){
+			}			
+			if(rightBean==null){
+				methodRightBean = nameRightBean+"."+methodRightBean;
+				nameRightBean = "";
+				rightBean = formBean;					
+			}				
+			if(rightBean!=null){
+				if(methodRightBean==null || methodRightBean.equals("")) result = rightBean.toString();
+				else{
+					try{
+						result = util_reflect.prepareWriteValueForTag(rightBean,"get",methodRightBean,null).toString();					 
+					}catch(Exception e){
+					}
+				}	
+			}		 		
+		}catch(Exception e){
+		}
+	}
+	return result;
+}
+
 
 
 @Deprecated

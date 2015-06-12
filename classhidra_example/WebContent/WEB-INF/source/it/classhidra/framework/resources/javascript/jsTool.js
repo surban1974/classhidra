@@ -751,17 +751,30 @@ function goPageN(page){
 
 }
 
-function goPage_ajax(frmName,add,afterJSFunction){
-		document.getElementById(frmName).middleAction.value="page";
-		document.getElementById(frmName).current_page.value=(document.getElementById(frmName).current_page.value/1+add/1);
+function goPage_ajax(frmName,add,afterJSFunction,target){
+	document.getElementById(frmName).middleAction.value="page";
+	document.getElementById(frmName).current_page.value=(document.getElementById(frmName).current_page.value/1+add/1);
+	if(target){
+		if(target!="")
+			ajax_submit(document.getElementById(frmName),target,afterJSFunction);
+		else	
+			ajax_submit(document.getElementById(frmName),'content_body_Panel_Popup',afterJSFunction);
+	}else	
 		ajax_submit(document.getElementById(frmName),'content_body_Panel_Popup',afterJSFunction);
 }
 
-function goPageN_ajax(frmName,page,afterJSFunction){
+function goPageN_ajax(frmName,page,afterJSFunction,target){
 	document.getElementById(frmName).middleAction.value="page";
 	document.getElementById(frmName).current_page.value=page;
-	ajax_submit(document.getElementById(frmName),'content_body_Panel_Popup',afterJSFunction);
+	if(target){
+		if(target!="")
+			ajax_submit(document.getElementById(frmName),target,afterJSFunction);
+		else ajax_submit(document.getElementById(frmName),'content_body_Panel_Popup',afterJSFunction);
+	}else	
+		ajax_submit(document.getElementById(frmName),'content_body_Panel_Popup',afterJSFunction);
 }
+
+
 
 function goViewExtend(){
 	var list_of_div = document.getElementsByTagName("div");

@@ -343,38 +343,38 @@ public class tagInput extends BodyTagSupport{
 				asyncUpdateUrl+="middleAction=undef&";
 				if(name!=null){
 					if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-						asyncUpdateUrl+=prefixName+"='+this.value+'&target="+prefixName+"&";
-					else asyncUpdateUrl+=name+"='+this.value+'&target="+name+"&";
+						asyncUpdateUrl+=prefixName+"='+this.value+'&target="+util_format.normaliseURLParameter(prefixName)+"&";
+					else asyncUpdateUrl+=name+"='+this.value+'&target="+util_format.normaliseURLParameter(name)+"&";
 					
 					if(formatInput!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-							asyncUpdateUrl+="$format_"+prefixName+"="+formatInput+"&";
-						else asyncUpdateUrl+="$format_"+name+"="+formatInput+"&";
+							asyncUpdateUrl+="$format_"+prefixName+"="+util_format.normaliseURLParameter(formatInput)+"&";
+						else asyncUpdateUrl+="$format_"+name+"="+util_format.normaliseURLParameter(formatInput)+"&";
 					}
 					if(formatOutput!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-							asyncUpdateUrl+="$formatOutput_"+prefixName+"="+formatOutput+"&";
-						else asyncUpdateUrl+="$formatOutput_"+name+"="+formatOutput+"&";
+							asyncUpdateUrl+="$formatOutput_"+prefixName+"="+util_format.normaliseURLParameter(formatOutput)+"&";
+						else asyncUpdateUrl+="$formatOutput_"+name+"="+util_format.normaliseURLParameter(formatOutput)+"&";
 					}	
 					if(formatLanguage!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-							asyncUpdateUrl+="$formatLanguage_"+prefixName+"="+formatLanguage+"&";
-						else asyncUpdateUrl+="$formatLanguage_"+name+"="+formatLanguage+"&";
+							asyncUpdateUrl+="$formatLanguage_"+prefixName+"="+util_format.normaliseURLParameter(formatLanguage)+"&";
+						else asyncUpdateUrl+="$formatLanguage_"+name+"="+util_format.normaliseURLParameter(formatLanguage)+"&";
 					}
 					if(formatCountry!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-							asyncUpdateUrl+="$formatCountry_"+prefixName+"="+formatCountry+"&";
-						else asyncUpdateUrl+="$formatCountry_"+name+"="+formatCountry+"&";
+							asyncUpdateUrl+="$formatCountry_"+prefixName+"="+util_format.normaliseURLParameter(formatCountry)+"&";
+						else asyncUpdateUrl+="$formatCountry_"+name+"="+util_format.normaliseURLParameter(formatCountry)+"&";
 					}					
 					if(replaceOnBlank!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-							asyncUpdateUrl+="$replaceOnBlank_"+prefixName+"="+replaceOnBlank+"&";
-						else asyncUpdateUrl+="$replaceOnBlank_"+name+"="+replaceOnBlank+"&";
+							asyncUpdateUrl+="$replaceOnBlank_"+prefixName+"="+util_format.normaliseURLParameter(replaceOnBlank)+"&";
+						else asyncUpdateUrl+="$replaceOnBlank_"+name+"="+util_format.normaliseURLParameter(replaceOnBlank)+"&";
 					}
 					if(replaceOnErrorFormat!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-							asyncUpdateUrl+="$replaceOnErrorFormat_"+prefixName+"="+replaceOnErrorFormat+"&";
-						else asyncUpdateUrl+="$replaceOnErrorFormat_"+name+"="+replaceOnErrorFormat+"&";
+							asyncUpdateUrl+="$replaceOnErrorFormat_"+prefixName+"="+util_format.normaliseURLParameter(replaceOnErrorFormat)+"&";
+						else asyncUpdateUrl+="$replaceOnErrorFormat_"+name+"="+util_format.normaliseURLParameter(replaceOnErrorFormat)+"&";
 					}
 				}
 			}catch(Exception e){

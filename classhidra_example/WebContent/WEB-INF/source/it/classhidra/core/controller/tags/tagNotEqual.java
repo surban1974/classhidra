@@ -27,7 +27,10 @@ package it.classhidra.core.controller.tags;
 
 
 import java.util.HashMap;
-import java.util.StringTokenizer;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -37,11 +40,7 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
-import it.classhidra.core.tool.util.util_tag;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*; 
+import it.classhidra.core.tool.util.util_tag; 
 
 public class tagNotEqual extends  TagSupport {
 	private static final long serialVersionUID = -1L;
@@ -138,6 +137,8 @@ public class tagNotEqual extends  TagSupport {
 
 		if(valueFromBean!=null ){
 			try{
+				value = util_reflect.prepareWriteValueFromBean(valueFromBean, request, (formAction==null)?formBean:formAction.get_bean()).toString();
+/*				
 				Object rightBean = null;
 				String nameRightBean = "";
 				String methodRightBean = "";
@@ -162,7 +163,8 @@ public class tagNotEqual extends  TagSupport {
 						}catch(Exception e){
 						}
 					}	
-				}		 		
+				}	
+*/					 		
 			}catch(Exception e){
 			}
 		}
