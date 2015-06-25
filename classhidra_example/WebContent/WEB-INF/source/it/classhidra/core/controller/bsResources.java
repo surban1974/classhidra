@@ -29,6 +29,8 @@ package it.classhidra.core.controller;
 import it.classhidra.core.tool.util.util_classes;
 
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -46,16 +48,13 @@ public class bsResources extends HttpServlet implements bsConstants  {
 
 	public void service(HttpServletRequest request, HttpServletResponse response)throws ServletException, UnavailableException {
 		String id=request.getParameter("id");
-		if(id!=null){
+		if(	id!=null &&
+			!(id.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromResources) || id.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework))	
+		){
 			byte[] content = null;
 			try{
-				
 				String property_name = "resources/"+ id;
-
 				InputStream is = null;
-
-
-
 			    try {
 			    	is = this.getClass().getResourceAsStream(property_name);
 			    	if(is!=null){
@@ -63,20 +62,109 @@ public class bsResources extends HttpServlet implements bsConstants  {
 			    	}
 			    }catch (Exception e) {
 			    }finally {
-			    	try {
-
+			    	try {	
 			    		if (is != null) is.close();
 			    	}catch (Exception e) {
 			    	}
 				}
-
+	
 				if(content!=null)
-					response.getOutputStream().write(content);
-			}catch(Exception ex){
+					writeToResponse(content,response);
+			}catch(Exception ex){				
+				writeToResponse("<![CDATA[ ERROR LOAD RESOURCE ID: "+id+" -> "+ex.toString()+" ]]>","UTF-8",response);
 			}
+		}
+		
+		if(id!=null &&
+			(id.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromResources) || id.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework))	
+		){
+			String loadSrc = request.getParameter(CONST_DIRECTINDACTION_bsLoadSrc);
+			if(loadSrc==null) return;
+			String loadType = request.getParameter(CONST_DIRECTINDACTION_bsLoadType);
+	
+			try{
+				byte[] output = null;
+				ArrayList resources = null;
+				if(id.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromResources)){
+					if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
+						resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
+					else
+						util_classes.getResourceAsByte("it/classhidra/core/controller/resources/"+loadSrc);
+					if(output==null)
+						resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);							
+				}
+				if(id.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework)){
+					if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
+						resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes());
+					else
+						output = util_classes.getResourceAsByte("it/classhidra/framework/resources/"+loadSrc);	
+					if(output==null)
+						resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes());						
+				}
+						
+				if(output!=null || resources!=null){
+					if(loadType!=null)
+						response.setContentType(loadType);
+					setCache((HttpServletResponse)response, request.getParameter(bsController.CONST_DIRECTINDACTION_bsLoadCache));
+				}
+						
+				if(output!=null){						
+					writeToResponse(output,response);
+				}
+				if(resources!=null){
+					if(loadType!=null)
+						response.setContentType(loadType);
+					 OutputStream os = response.getOutputStream();
+					 for(int i=0;i<resources.size();i++)
+						 os.write((byte[])resources.get(i));
+		    		 os.flush();
+		    		 os.close();
+				}					
+			}catch(Exception ex){	
+				writeToResponse("<![CDATA[ ERROR LOAD RESOURCE ID: "+id+" -> "+ex.toString()+" ]]>","UTF-8",response);
+			}
+			return;
+		}
+	}
+	
+	private static void writeToResponse(String output, String encoding, HttpServletResponse response){
+		try{
+			OutputStream os = response.getOutputStream();
+			if(output!=null){
+				if(encoding!=null)
+					os.write(output.getBytes(encoding));
+				else 
+					os.write(output.getBytes());
+			}
+   		 	os.flush();
+   		 	os.close();
+		}catch(Exception e){			
+		}
+	}
+	
+	private static void writeToResponse(byte[] output, HttpServletResponse response){
+		try{
+			OutputStream os = response.getOutputStream();
+			if(output!=null){
+				os.write(output);
+			}
+   		 	os.flush();
+   		 	os.close();
+		}catch(Exception e){			
+		}
+	}	
+	
+	private static void setCache(HttpServletResponse response, String cacheInSec){
+		if(cacheInSec==null) return;
+		try{
+			final int CACHE_DURATION_IN_SECOND = Integer.valueOf(cacheInSec);
+			long now = System.currentTimeMillis();
+			((HttpServletResponse)response).addHeader("Cache-Control", "max-age=" + CACHE_DURATION_IN_SECOND);
+			((HttpServletResponse)response).addHeader("Cache-Control", "must-revalidate");//optional
+			((HttpServletResponse)response).setDateHeader("Last-Modified", now);
+			((HttpServletResponse)response).setDateHeader("Expires", now + CACHE_DURATION_IN_SECOND  * 1000);
+		}catch(Exception e){
 		}
 
 	}
-	
-
 }

@@ -204,14 +204,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static void resourcesInit(){
 
 		if(getAppInit()!=null && getAppInit().get_init_loader()!=null && !getAppInit().get_init_loader().equals("")){
-			try{
-				i_externalloader initloader = (i_externalloader)Class.forName(getAppInit().get_init_loader().trim()).newInstance();
-				initloader.load();
-				bsController.setToLocalContainer(app_init.id_init_loader,initloader);
-			}catch(Exception ex){
-				new bsControllerException(ex, iStub.log_ERROR);
-			}catch (Throwable  th) {
-				new bsControllerException(th, iStub.log_ERROR);
+			i_externalloader initloader = null;
+			if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+				try{
+					initloader = (i_externalloader)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), null);
+					initloader.load();
+				}catch(Exception e){
+				}
+			}
+			if(initloader==null){			
+				try{
+					initloader = (i_externalloader)Class.forName(getAppInit().get_init_loader().trim()).newInstance();
+					initloader.load();
+					bsController.setToLocalContainer(app_init.id_init_loader,initloader);
+				}catch(Exception ex){
+					new bsControllerException(ex, iStub.log_ERROR);
+				}catch (Throwable  th) {
+					new bsControllerException(th, iStub.log_ERROR);
+				}
 			}
 		}
 
@@ -268,14 +278,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 		if(getAppInit()!=null && getAppInit().get_external_loader()!=null && !getAppInit().get_external_loader().equals("")){
-			try{
-				i_externalloader externalloader = (i_externalloader)Class.forName(getAppInit().get_external_loader().trim()).newInstance();
-				externalloader.load();
-				bsController.setToLocalContainer(app_init.id_external_loader,externalloader);
-			}catch(Exception ex){
-				new bsControllerException(ex, iStub.log_ERROR);
-			}catch (Throwable  th) {
-				new bsControllerException(th, iStub.log_ERROR);
+			i_externalloader externalloader = null;
+			if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+				try{
+					externalloader = (i_externalloader)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_external_loader, getAppInit().get_external_loader().trim(), null);
+					externalloader.load();
+				}catch(Exception e){
+				}
+			}
+			if(externalloader==null){			
+				try{
+					externalloader = (i_externalloader)Class.forName(getAppInit().get_external_loader().trim()).newInstance();
+					externalloader.load();
+					bsController.setToLocalContainer(app_init.id_external_loader,externalloader);
+				}catch(Exception ex){
+					new bsControllerException(ex, iStub.log_ERROR);
+				}catch (Throwable  th) {
+					new bsControllerException(th, iStub.log_ERROR);
+				}
 			}
 		}
 
@@ -374,7 +394,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				try{
 					String content = "Resource<br>";
 					content+="APP_INIT="+getAppInit().getLoadedFrom()+"<br>";
-					content+="AUTH_INIT="+new auth_init().getLoadedFrom()+"<br>";
+					content+="AUTH_INIT="+checkAuth_init(request).getLoadedFrom()+"<br>";
 					content+="LOG_INIT="+getLogInit().getLoadedFrom()+"<br>";
 					content+="DB_INIT="+getDbInit().getLoadedFrom()+"<br>";
 					content+="ACTIONS_LOAD="+getAction_config().getLoadedFrom()+"<br>";
@@ -423,14 +443,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 					byte[] output = null;
 					ArrayList resources = null;
 					if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromResources)){
-						if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework)){
-							if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
-								resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
-							else
-								util_classes.getResourceAsByte("it/classhidra/core/controller/resources/"+loadSrc);
-							if(output==null)
-								resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);							
-						}
+						if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
+							resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
+						else
+							util_classes.getResourceAsByte("it/classhidra/core/controller/resources/"+loadSrc);
+						if(output==null)
+							resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);							
 					}
 					if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework)){
 						if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
@@ -448,7 +466,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 					
 					if(output!=null){						
-						
 						 OutputStream os = response.getOutputStream();
 			    		 os.write(output);
 			    		 os.flush();
@@ -883,7 +900,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							if(cTransformation==null || cTransformation.get_infotransformation()==null)
 								cTransformation = action_instance.get_infoaction().transformationFactory(action_instance.getCurrent_redirect().get_transformationName(),request.getSession().getServletContext());
 							if(cTransformation==null)
-								cTransformation = action_config.transformationFactory(action_instance.getCurrent_redirect().get_transformationName(),request.getSession().getServletContext());
+								cTransformation = getAction_config().transformationFactory(action_instance.getCurrent_redirect().get_transformationName(),request.getSession().getServletContext());
 
 
 							if(	cTransformation!=null &&
@@ -1390,7 +1407,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static info_stream performStream_EnterRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 		for(int i=0;i<_streams.size();i++){
 			info_stream iStream = (info_stream)_streams.get(i);
-			i_stream currentStream = action_config.streamFactory(iStream.getName(),request.getSession(), servletContext);
+			i_stream currentStream = getAction_config().streamFactory(iStream.getName(),request.getSession(), servletContext);
 			if(currentStream!=null){
 				currentStream.onPreEnter(request, response);
 				redirects currentStreamRedirect = currentStream.streamservice_enter(request, response);
@@ -1413,7 +1430,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static info_stream performStream_ExitRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 		for(int i=_streams.size()-1;i>-1;i--){
 			info_stream iStream = (info_stream)_streams.get(i);
-			i_stream currentStream = action_config.streamFactory(iStream.getName(), request.getSession(), servletContext);
+			i_stream currentStream = getAction_config().streamFactory(iStream.getName(), request.getSession(), servletContext);
 			if(currentStream!=null){
 				currentStream.onPreExit(request, response);
 				redirects currentStreamRedirect = currentStream.streamservice_exit(request, response);
@@ -1432,7 +1449,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static i_bean getCurrentForm(String id_current,HttpServletRequest request){
 		if(id_current==null) return null;
 
-		info_navigation fromNav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+		info_navigation fromNav = getFromInfoNavigation(null, request);
 		if(fromNav!=null){
 			info_navigation nav = fromNav.find(id_current);
 			if(nav!=null){
@@ -1487,12 +1504,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 		info_navigation nav = new info_navigation();
 		try{
 			nav.init(form.get_infoaction(),null,new info_service(request),null);
-			info_navigation fromNav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+			info_navigation fromNav = getFromInfoNavigation(null, request);
 
 			if(fromNav!=null)
 				fromNav.add(nav);
 			else
-				request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
+				setToInfoNavigation(nav, request);
 		}catch(Exception e){
 			new bsControllerException(e,iStub.log_DEBUG);
 		}
@@ -1538,24 +1555,83 @@ public class bsController extends HttpServlet implements bsConstants  {
 			try{
 				info_navigation nav = new info_navigation();
 				nav.init(form.get_infoaction(),action.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
-				info_navigation fromNav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+				info_navigation fromNav = getFromInfoNavigation(null, request);
 				if(fromNav!=null){
 					if(form!=null) form.onAddToNavigation();
 					fromNav.add(nav);
 				}
-				else request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
+				else setToInfoNavigation(nav, request);
 			}catch(Exception e){
 			}
 		}
 	}
 
 	public static info_navigation getFromInfoNavigation(String id,HttpServletRequest request){
-		info_navigation nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
-		if(nav==null) return null;
+		
+		info_navigation nav = null;
+		if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("")){
+			try{
+				if(!getAction_config().getInstance_navigated().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$NAVIGATION, getAction_config().getInstance_navigated(), request.getSession().getServletContext());
+					nav = (info_navigation)wrapper.getInstance();
+				}
+			}catch(Exception e){
+			}
+		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+			try{
+				if(!getAction_config().getInstance_navigated().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$NAVIGATION, getAction_config().getInstance_navigated(), request.getSession().getServletContext());
+					nav = (info_navigation)wrapper.getInstance();
+				}
+			}catch(Exception e){
+			}
+		}
+			
+		if(nav==null)
+			nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+		if(nav==null) 
+			return null;
+		if(id==null) 
+			return nav;
 		return nav.find(id);
 	}
 
+	public static boolean setToInfoNavigation(info_navigation nav,HttpServletRequest request){
+		try{
+			if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("")){
+				try{
+					if(!getAction_config().getInstance_navigated().equals("")){
+						bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$NAVIGATION, getAction_config().getInstance_navigated(), request.getSession().getServletContext());
+						wrapper.setInstance(nav);
+						return true;
+					}
+				}catch(Exception e){
+				}
+			}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+				try{
+					if(!getAction_config().getInstance_navigated().equals("")){
+						bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$NAVIGATION, getAction_config().getInstance_navigated(), request.getSession().getServletContext());
+						wrapper.setInstance(nav);
+						return true;
+					}
+				}catch(Exception e){
+				}
+			}
 
+			request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
+	
+	public static Object getProperty(String key, HttpServletRequest request){
+		if(key==null) return null;
+		else if(key.equals(bsConstants.CONST_BEAN_$NAVIGATION))
+			return getFromInfoNavigation(null, request);
+		else 
+			return getFromLocalContainer(key);
+	}
 
 	private static void service_mountLog(){
 		logInit = new log_init();
@@ -1564,7 +1640,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(	logInit.get_LogPath()==null || logInit.get_LogPath().equals("") &&
 				logInit.get_LogStub()==null || logInit.get_LogStub().equals("")	){
 				try{
-					Object transf = Class.forName("it.classhidra.core.tool.exception.bsIntegrator").newInstance();
+					Object transf = null;
+					if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+						try{
+							transf = util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  "it.classhidra.core.tool.exception.bsIntegrator", "it.classhidra.core.tool.exception.bsIntegrator", null);
+						}catch(Exception e){
+						}
+					}
+					
+					if(transf == null)		
+						transf =Class.forName("it.classhidra.core.tool.exception.bsIntegrator").newInstance();
+					
 					logInit = (log_init)util_reflect.getValue(transf, "getLogInit", null);
 				}catch(Exception e){
 				}catch(Throwable t){
@@ -1573,7 +1659,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		if(logInit.get_LogGenerator()!=null && !logInit.get_LogGenerator().equals("")){
 			try{
-				logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+				if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+					try{
+						logG = (i_log_generator)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  logInit.get_LogGenerator(), logInit.get_LogGenerator(), null);
+					}catch(Exception e){
+						logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+					}
+				}else
+					logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+				
 				logG.setInit(logInit);
 				return;
 			}catch(Exception e){
@@ -1993,13 +2087,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 
-	public static auth_init checkAuth_init(HttpServletRequest request) throws ServletException, UnavailableException {
+	public static auth_init checkAuth_init(HttpServletRequest request) {
 		auth_init auth = null;
 		if(request.getSession().getAttribute(CONST_BEAN_$AUTHENTIFICATION)==null){
-			auth = new auth_init();
+//			auth = new auth_init();
+			
 			try{
+				auth = (auth_init)util_reflect.getInstanceForNameFromProvider(new String[]{getAppInit().get_cdi_provider()}, auth_init.class.getName());
 				auth.init(request);
-			}catch(bsException je){}
+			}catch(bsException je){				
+			}catch(Exception e){				
+			}
 			request.getSession().setAttribute(CONST_BEAN_$AUTHENTIFICATION,auth);
 		}
 		auth = (auth_init)request.getSession().getAttribute(CONST_BEAN_$AUTHENTIFICATION);
@@ -2131,27 +2229,35 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static void putToStatisticProvider(StatisticEntity stat){
 		if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true")){
-			I_StatisticProvider statProvider = (I_StatisticProvider)local_container.get(CONST_ID_STATISTIC_PROVIDER);
+			I_StatisticProvider statProvider = (I_StatisticProvider) getFromLocalContainer(CONST_ID_STATISTIC_PROVIDER);
 			if(statProvider==null){
-				if(appInit.get_statistic_provider()==null || appInit.get_statistic_provider().equals(""))
+				if(getAppInit().get_statistic_provider()==null || getAppInit().get_statistic_provider().equals(""))
 					statProvider = new StatisticProvider_Simple();
 				else{
-					try{
-						statProvider = (I_StatisticProvider)Class.forName(appInit.get_statistic_provider()).newInstance();
-					}catch(Exception e){
-						writeLog("ERROR instance Statistic Provider:"+appInit.get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
+					if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+						try{
+							statProvider = (I_StatisticProvider)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_statistic_provider,getAppInit().get_statistic_provider(), null);
+						}catch(Exception e){
+						}
+					}
+					if(statProvider==null){
+						try{
+							statProvider = (I_StatisticProvider)Class.forName(getAppInit().get_statistic_provider()).newInstance();
+						}catch(Exception e){
+							writeLog("ERROR instance Statistic Provider:"+getAppInit().get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
+						}
 					}
 				}
 				if(statProvider==null) statProvider = new StatisticProvider_Simple();
-				local_container.put(CONST_ID_STATISTIC_PROVIDER,statProvider);
+				putToLocalContainer(CONST_ID_STATISTIC_PROVIDER,statProvider);
 			}
 			statProvider.addStatictic(stat);
 		}
 	}
 
 	public static I_StatisticProvider getStatisticProvider(){
-		if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true"))
-			return (I_StatisticProvider)local_container.get(CONST_ID_STATISTIC_PROVIDER);
+		if(getAppInit().get_statistic()!=null && getAppInit().get_statistic().equalsIgnoreCase("true"))
+			return (I_StatisticProvider) getFromLocalContainer(CONST_ID_STATISTIC_PROVIDER);
 		return null;
 	}
 
@@ -2299,18 +2405,94 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static Object getFromLocalContainer(String key) {
+		if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("")){
+			try{
+				if(!getAction_config().getInstance_local_container().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
+					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
+					return map.get(key);
+				}
+			}catch(Exception e){
+			}
+		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+			try{
+				if(!getAction_config().getInstance_local_container().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
+					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
+					return map.get(key);
+				}
+			}catch(Exception e){
+			}
+		}
 		return local_container.get(key);
 	}
 
 	public static Object removeFromLocalContainer(String key) {
+		if(getAction_config()!=null && getAction_config().getProvider()!=null){
+			try{
+				if(!getAction_config().getInstance_local_container().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
+					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
+					map.remove(key);
+				}
+			}catch(Exception e){
+			}
+		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+			try{
+				if(!getAction_config().getInstance_local_container().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
+					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
+					return map.get(key);
+				}
+			}catch(Exception e){
+			}
+		}
 		return local_container.remove(key);
 	}
 
 	public static void setToLocalContainer(String key, Object value) {
+		if(getAction_config()!=null && getAction_config().getProvider()!=null){
+			try{
+				if(!getAction_config().getInstance_local_container().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
+					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
+					map.putIfAbsent(key,value);
+				}
+			}catch(Exception e){
+			}
+		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+			try{
+				if(!getAction_config().getInstance_local_container().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
+					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
+					map.putIfAbsent(key,value);
+				}
+			}catch(Exception e){
+			}
+		}
 		local_container.putIfAbsent(key,value);
 	}
 
 	public static void putToLocalContainer(String key, Object value) {
+		if(getAction_config()!=null && getAction_config().getProvider()!=null){
+			try{
+				if(!getAction_config().getInstance_local_container().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
+					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
+					map.put(key,value);
+				}
+			}catch(Exception e){
+			}
+		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+			try{
+				if(!getAction_config().getInstance_local_container().equals("")){
+					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
+					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
+					map.put(key,value);
+				}
+			}catch(Exception e){
+			}
+		}
 		local_container.put(key,value);
 	}
 

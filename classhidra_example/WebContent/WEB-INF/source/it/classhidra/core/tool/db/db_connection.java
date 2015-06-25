@@ -33,6 +33,7 @@ import it.classhidra.core.tool.util.util_container;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -43,7 +44,10 @@ import javax.sql.DataSource;
 
 
 
-public class db_connection{ 
+public class db_connection implements Serializable{ 
+
+	private static final long serialVersionUID = 1L;
+
 	public static String CONST_CONNECTION_LOCAL_CONTAINER="CONST_CONNECTION_LOCAL_CONTAINER";
 
 //	private Connection conn;

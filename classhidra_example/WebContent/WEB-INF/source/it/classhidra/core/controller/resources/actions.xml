@@ -1,4 +1,8 @@
-<action-config>  
+<action-config
+		provider=""
+        instance_navigated=""
+        instance_local_container=""
+>  
 	<action-streams>
 		<stream name="def_control_session" type="it.classhidra.core.controller.streams.def_control_session" system="true"/>
 		<stream name="def_control_permission" type="it.classhidra.core.controller.streams.def_control_permission" system="true">
@@ -33,7 +37,11 @@
 		<form-redirect path="/jsp/test.jsp" descr="Test" mess_id="mess_id_for_test"/>	
  -->		
 	</form-redirects>
-	<action-mappings error="" auth_error="" session_error="">	
+	<action-mappings 
+		error="" 
+		auth_error="" 
+		session_error=""
+	>	
 <!-- 	
 		<action path="test"
                 name="formTest"

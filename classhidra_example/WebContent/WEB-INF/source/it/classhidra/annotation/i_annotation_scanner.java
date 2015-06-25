@@ -36,5 +36,11 @@ public interface i_annotation_scanner {
 	public String getListener_streams();
 	
 	public String getMemoryInContainer_streams();
+	
+	public String getProvider();
+	
+	public String getInstance_navigated();
+
+	public String getInstance_local_container();
 
 }

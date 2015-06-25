@@ -32,6 +32,7 @@ import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
+import it.classhidra.core.tool.util.util_cloner;
 
 
 public class info_navigation extends elementBase implements i_elementBase{
@@ -75,6 +76,29 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this._content = content;
 		this.iService = iService;
 	}
+	
+	public void reInit(info_navigation second) throws bsControllerException{
+		if(second==null) return;
+		this.iAction = second.getIAction();
+		this.iRedirect = second.getIRedirect();
+		this.id = second.getId();
+		this._content = second.get_content();
+		this.iService = second.getIService();
+		this.parent = second.getParent();
+		this.child = second.getChild();
+	}	
+	
+	public void reInitClone(info_navigation clone) throws Exception{
+		if(clone==null) return;
+		info_navigation second = (info_navigation)util_cloner.clone(clone);
+		this.iAction = second.getIAction();
+		this.iRedirect = second.getIRedirect();
+		this.id = second.getId();
+		this._content = second.get_content();
+		this.iService = second.getIService();
+		this.parent = second.getParent();
+		this.child = second.getChild();
+	}		
 	
 	public info_navigation get(String _id){
 		if(this.id.equals(_id)) return this;

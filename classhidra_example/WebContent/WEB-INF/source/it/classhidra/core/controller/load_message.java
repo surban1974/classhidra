@@ -32,6 +32,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_xml;
 
 import java.io.BufferedReader;
@@ -94,7 +95,7 @@ public void init() throws bsControllerException{
 	
 	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)Class.forName(ainit.get_external_loader()).newInstance();
+			i_externalloader extl= (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, ainit.get_external_loader());
 			reInit(extl);
 		}catch(Exception e){
 			bsController.writeLog("Load_messages from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
@@ -106,7 +107,7 @@ public void init() throws bsControllerException{
 
 	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)Class.forName(this.getExternalloader()).newInstance();
+			i_externalloader extl= (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, this.getExternalloader());
 			reInit(extl);
 		}catch(Exception e){
 			bsController.writeLog("Load_messages from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);

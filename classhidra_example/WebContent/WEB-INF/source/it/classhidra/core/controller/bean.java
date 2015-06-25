@@ -54,29 +54,29 @@ import sun.misc.BASE64Encoder;
 public class bean extends elementBeanBase implements i_bean  {
 	private static final long serialVersionUID = 3917073481415967577L;
 
-	private info_bean _infobean;
+	protected info_bean _infobean;
 	protected info_action _infoaction;
-	private auth_init current_auth;
-	private HashMap parametersMP;
-	private HashMap parametersFly;
-	public String $id_returnPointOfService;
-	public String middleAction;
-	public String js4ajax="false";
-	public boolean refresh=false;
-	private boolean xmloutput=false;
-	private String xmloutput_encoding="";
-	private boolean jsonoutput=false;
-	private String jsonoutput_encoding="";
-	private boolean transformationoutput=false;
-	private boolean binaryoutput=false;
-	private String binaryoutput_encoding="";
-	private boolean virtual=false;
-	private boolean gzipoutput=false;
-	public int countActions;
+	protected auth_init current_auth;
+	protected HashMap parametersMP;
+	protected HashMap parametersFly;
+	protected String $id_returnPointOfService;
+	protected String middleAction;
+	protected String js4ajax="false";
+	protected boolean refresh=false;
+	protected boolean xmloutput=false;
+	protected String xmloutput_encoding="";
+	protected boolean jsonoutput=false;
+	protected String jsonoutput_encoding="";
+	protected boolean transformationoutput=false;
+	protected boolean binaryoutput=false;
+	protected String binaryoutput_encoding="";
+	protected boolean virtual=false;
+	protected boolean gzipoutput=false;
+	protected int countActions;
 	
-	private listener_bean listener_b;
+	protected listener_bean listener_b;
 	
-	private Object delegated;
+	protected Object delegated;
 
 
 
@@ -106,7 +106,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		String id_prev = request.getParameter(bsConstants.CONST_BEAN_$NAVIGATION);
 		if(id_prev!=null && id_prev.indexOf(":")>-1){
 			id_prev = id_prev.substring(0,id_prev.indexOf(":"));
-			info_navigation nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+			info_navigation nav = bsController.getFromInfoNavigation(null, request);
 			if(nav!=null){
 				int level_prev = nav.findLevel(id_prev, 0);
 				int level_curr = nav.findLevel(get_infoaction().getPath(), 0);

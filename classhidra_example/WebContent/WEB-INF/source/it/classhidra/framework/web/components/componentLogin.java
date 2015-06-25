@@ -22,6 +22,7 @@ import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_usersInSession;
 import it.classhidra.framework.web.beans.option_element;
 import it.classhidra.framework.web.integration.i_module_integration;
@@ -219,7 +220,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		    
 		    i_module_integration imi = null;
 		    try{
-		    	imi = (i_module_integration)Class.forName(module_integration).newInstance();
+		    	imi = (i_module_integration)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, module_integration);
 		    }catch(Exception e){		    	
 		    }
 	

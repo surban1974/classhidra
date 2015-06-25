@@ -54,6 +54,7 @@ public class app_init implements Serializable{
 	static public String id_load_res_mode				= 	"application.load.resource.mode";
 	static public String id_external_loader				= 	"application.external_loader.class";
 	static public String id_init_loader					= 	"application.init_loader.class";
+	static public String id_cdi_provider				= 	"application.cdi.provider.class";
 	static public String id_pin							=	"application.pin";
 	static public String id_db_name 					=	"application.config.db";
 	static public String id_extention_do 				=	"application.extention.do";
@@ -80,6 +81,7 @@ public class app_init implements Serializable{
 	private String _load_res_mode;
 	private String _external_loader;
 	private String _init_loader;
+	private String _cdi_provider;
 	private String _pin;
 	private String _db_name;
 	private boolean db_name_valid=true;
@@ -174,6 +176,7 @@ public class app_init implements Serializable{
 			_nav_excluded=(_nav_excluded==null)?System.getProperty(id_nav_excluded):_nav_excluded;
 			_external_loader=(_external_loader==null)?System.getProperty(id_external_loader):_external_loader;
 			_init_loader=(_init_loader==null)?System.getProperty(id_init_loader):_init_loader;
+			_cdi_provider=(_cdi_provider==null)?System.getProperty(id_cdi_provider):_cdi_provider;
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
@@ -245,6 +248,7 @@ public class app_init implements Serializable{
 		_nav_excluded=(_nav_excluded==null)?property.getProperty(id_nav_excluded):_nav_excluded;
 		_external_loader=(_external_loader==null)?property.getProperty(id_external_loader):_external_loader;
 		_init_loader=(_init_loader==null)?property.getProperty(id_init_loader):_init_loader;
+		_cdi_provider=(_cdi_provider==null)?property.getProperty(id_cdi_provider):_cdi_provider;
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
 		_annotation_scanner=(_annotation_scanner==null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
@@ -515,6 +519,14 @@ public class app_init implements Serializable{
 
 	public void setDb_name_valid(boolean dbNameValid) {
 		db_name_valid = dbNameValid;
+	}
+
+	public String get_cdi_provider() {
+		return _cdi_provider;
+	}
+
+	public void set_init_loader(String _init_loader) {
+		this._init_loader = _init_loader;
 	}
 
 }

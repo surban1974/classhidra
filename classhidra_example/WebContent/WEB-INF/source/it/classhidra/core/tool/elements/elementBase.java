@@ -34,8 +34,8 @@ import it.classhidra.core.tool.util.*;
 
 public abstract class elementBase implements i_elementBase, java.io.Serializable, Cloneable {
 private static final long serialVersionUID = 1L;
-public String nameTable = "";
-public String namePackage = "";
+protected String nameTable = "";
+protected String namePackage = "";
 
 public elementBase() {
 	super();

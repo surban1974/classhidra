@@ -39,8 +39,8 @@ import java.util.HashMap;
 
 public abstract class elementDBBase extends elementBase implements i_elementDBBase, i_elementBase,  java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	public HashMap fields;
-	public HashMap hashDatas;
+	protected HashMap fields;
+	protected HashMap hashDatas;
 
 public boolean control(){
 	return false;

@@ -26,25 +26,23 @@ package it.classhidra.core.controller.tags;
 
 
 
-import it.classhidra.core.controller.action;
-import it.classhidra.core.controller.bsConstants;
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.controller.i_action;
-import it.classhidra.core.controller.i_bean;
-import it.classhidra.core.controller.info_navigation;
-import it.classhidra.core.tool.util.util_reflect;
-import it.classhidra.core.tool.util.util_tag;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+
+import it.classhidra.core.controller.action;
+import it.classhidra.core.controller.bsConstants;
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.tool.util.util_reflect;
+import it.classhidra.core.tool.util.util_tag;
 
 public class tagSequence extends  TagSupport {
 	private static final long serialVersionUID = 1L;
@@ -109,9 +107,10 @@ public class tagSequence extends  TagSupport {
 				}
 				if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
 				try{
-					if(anotherBean==null) anotherBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(bean).get_content();
+					if(anotherBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(bean).get_content();
 				}catch(Exception e){
 				}
+				if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
 			}
 			
 			if(anotherBean!=null){

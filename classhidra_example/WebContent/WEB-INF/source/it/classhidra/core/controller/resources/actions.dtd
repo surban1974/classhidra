@@ -73,3 +73,7 @@
 	session_error CDATA #IMPLIED
 	listener CDATA #IMPLIED>
 <!ELEMENT action-config (action-streams,form-beans,form-redirects,action-mappings)>
+<!ATTLIST action-mappings 
+	provider CDATA #IMPLIED
+	instance_navigated CDATA #IMPLIED
+	instance_local_container CDATA #IMPLIED>

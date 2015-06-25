@@ -76,7 +76,9 @@ public class showNavigateLast extends TagSupport{
 		StringBuffer results = new StringBuffer("");
 
 		try{
-			info_navigation	formInfoNavigation		= (request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION)==null)?new info_navigation():(info_navigation)request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION);
+			info_navigation	formInfoNavigation		= bsController.getFromInfoNavigation(null, request);
+			if(formInfoNavigation==null)
+				formInfoNavigation = new info_navigation();
 
 			info_navigation iN = formInfoNavigation;
 			Vector sub_results = new Vector();

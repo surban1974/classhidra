@@ -84,7 +84,7 @@ public class util_usersInSession {
 				if(auth.get_user_property().get(CONST_LOGIN_IP)==null) auth.get_user_property().put(CONST_LOGIN_IP, auth.get_user_ip());
 				if(auth.get_user_property().get(CONST_LOGIN_SESSION_ID)==null) auth.get_user_property().put(CONST_LOGIN_SESSION_ID, request.getSession().getId());
 				
-				info_navigation	formInfoNavigation	= (info_navigation)request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION);
+				info_navigation	formInfoNavigation	=  bsController.getFromInfoNavigation(null, request);
 				if(formInfoNavigation!=null){
 					formInfoNavigation = formInfoNavigation.last();
 					auth.get_user_property().put(CONST_LASTUSE_ACTION, formInfoNavigation.getLastChildRedirect().getDescr());

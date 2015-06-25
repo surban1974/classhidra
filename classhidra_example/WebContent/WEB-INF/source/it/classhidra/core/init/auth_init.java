@@ -35,6 +35,7 @@ import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_auth;
 import it.classhidra.core.tool.util.util_file;
+import it.classhidra.core.tool.util.util_reflect;
 
 import java.io.File;
 import java.io.Serializable;
@@ -184,7 +185,7 @@ public class auth_init implements Serializable{
 			jaas_managername = (property.getProperty(id_manager)==null)?"":property.getProperty(id_manager);
 			if(!jaas_managername.equals("")){
 				try{
-					_manager = (i_auth_manager)Class.forName(jaas_managername).newInstance();
+					_manager = (i_auth_manager)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, jaas_managername);
 				}catch(Exception e){
 				}
 			}
@@ -192,7 +193,7 @@ public class auth_init implements Serializable{
 			name_authentication_filter = (property.getProperty(id_authentication_filter)==null)?"it.classhidra.core.controller.bs_authentication_filters":property.getProperty(id_authentication_filter);
 			if(!name_authentication_filter.equals("")){
 				try{
-					_authentication_filter = (i_authentication_filter)Class.forName(name_authentication_filter).newInstance();
+					_authentication_filter = (i_authentication_filter)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, name_authentication_filter);
 				}catch(Exception e){
 				}
 			}
@@ -200,7 +201,7 @@ public class auth_init implements Serializable{
 			name_authentication_filter = "it.classhidra.core.controller.bs_authentication_filters";
 			if(!name_authentication_filter.equals("")){
 				try{
-					_authentication_filter = (i_authentication_filter)Class.forName(name_authentication_filter).newInstance();
+					_authentication_filter = (i_authentication_filter)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, name_authentication_filter);
 				}catch(Exception e){
 				}
 			}

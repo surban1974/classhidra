@@ -1,10 +1,14 @@
 package it.classhidra.core.tool.util;
 
 
+
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_provider;
+import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_navigation;
+import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 
@@ -18,7 +22,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class util_reflect {
 
@@ -649,9 +655,11 @@ public static Object prepareWriteValueFromBean(String fromBean, HttpServletReque
 			if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
 			if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
 			try{
-				if(rightBean==null) rightBean = ((info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION)).find(nameRightBean).get_content();
+				if(rightBean==null) rightBean = ( bsController.getFromInfoNavigation(null, request)).find(nameRightBean).get_content();
 			}catch(Exception e){
-			}			
+			}	
+			if(rightBean==null) rightBean = bsController.getProperty(nameRightBean,request);
+			
 			if(rightBean==null){
 				methodRightBean = nameRightBean+"."+methodRightBean;
 				nameRightBean = "";
@@ -672,7 +680,90 @@ public static Object prepareWriteValueFromBean(String fromBean, HttpServletReque
 	return result;
 }
 
+public static Object providerObjectFactory(String id_provider, String id_bean, String class_bean, ServletContext servletContext){
+	if(id_provider==null || id_bean==null || id_provider.equals("") || id_bean.equals("")) return null;
+	Object instance = retrieveProvider(id_provider, id_bean, class_bean, servletContext);
+	if(instance==null)
+		instance = retrieveProvider(bsConstants.CONST_PROVIDER_PATH+id_provider, id_bean, class_bean, servletContext);
+	return instance;
+}
 
+public static Object retrieveProvider(String id_provider, String id_bean, String class_bean, ServletContext servletContext){
+	try{		
+		
+		i_provider provider  = null;
+		try{
+			Class c_provider = Class.forName(id_provider);
+			try{
+				Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{String.class,String.class,ServletContext.class});
+				Object instance = m_getInstance.invoke(null, new Object[]{id_bean,class_bean,servletContext});
+				return instance;
+			}catch(Exception e){				
+			}
+			provider = (i_provider)Class.forName(id_provider).newInstance();
+		}catch (Exception e) {
+			return null;
+		}
+		if(provider==null) 
+			return null;
+		provider.set_context(servletContext);
+		return 
+			provider.get_bean(id_bean);
+	}catch(Exception e){
+		new bsControllerException(e,iStub.log_DEBUG);
+	}catch (Throwable t) {
+		new bsControllerException(t,iStub.log_DEBUG);
+	}
+	return null;
+}
+
+public static Object getInstanceForNameFromProvider(String[] providers, String class_name) throws Exception{
+	Object result = null;
+	if(providers!=null && providers.length>0){
+		int i=0;
+		while(result==null && i<providers.length){
+			if(providers[i]!=null && !providers[i].equals(""))
+				result = util_reflect.providerObjectFactory(providers[i], class_name, class_name, null);
+			i++;
+		}
+	}
+	if(result==null && class_name!=null)
+		result = Class.forName(class_name).newInstance();
+	
+	return result;
+}
+
+public static Object getInstanceForNameFromProvider(String[] providers, String class_name, Class[] arg, Object[] par) throws Exception{
+	Object result = null;
+	if(providers!=null && providers.length>0){
+		int i=0;
+		while(result==null && i<providers.length){
+			if(providers[i]!=null && !providers[i].equals(""))
+				result = util_reflect.providerObjectFactory(providers[i], class_name, class_name, null);
+			i++;
+		}
+	}
+	if(result==null && class_name!=null)
+		result = Class.forName(class_name).getConstructor(arg).newInstance(par);
+	
+	return result;
+}
+
+public static Object getInstanceForNameFromProvider(info_action i_action, String class_name) throws Exception{
+	if(class_name==null) 
+		return null;
+	if(i_action==null)
+		return getInstanceForNameFromProvider(new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider()}, class_name);
+	return getInstanceForNameFromProvider(new String[]{i_action.getProvider(),bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider()}, class_name);
+}
+
+public static Object getInstanceForNameFromProvider(info_action i_action, String class_name, Class[] arg, Object[] par) throws Exception{
+	if(class_name==null) 
+		return null;
+	if(i_action==null)
+		return getInstanceForNameFromProvider(new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider()}, class_name, arg, par);
+	return getInstanceForNameFromProvider(new String[]{i_action.getProvider(),bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider()}, class_name, arg, par);
+}
 
 @Deprecated
 public static Object convertType(Class CTarget, Object source, String format) throws Exception {
@@ -971,6 +1062,9 @@ public void setField(Field fld, Object obj, Object value) throws Exception {
 		}
 	}
 }
+
+
+
 @Deprecated
 public void setIndexOfList(int newValue) {
 	this.indexOfList = newValue;

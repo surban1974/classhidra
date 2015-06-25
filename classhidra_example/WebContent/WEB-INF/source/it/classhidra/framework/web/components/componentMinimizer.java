@@ -97,7 +97,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		
 		info_navigation fromElements = (info_navigation)elements.get(source);
 		if(fromElements!=null){
-			request.getSession().setAttribute(bsController.CONST_BEAN_$NAVIGATION,fromElements);
+			bsController.setToInfoNavigation(fromElements, request);
 			elements.remove(source);
 		}
 		
@@ -128,7 +128,7 @@ private info_navigation prepareDump(HttpServletRequest request){
 	info_navigation active = null;
 	
 	HashMap 		fromSessionGlobal = 	(HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
-	info_navigation	formInfoNavigation	= 	(info_navigation)request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION);
+	info_navigation	formInfoNavigation	= 	 bsController.getFromInfoNavigation(null, request);
 	i_bean 			lastInstance = 			(i_bean)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE);
 	i_bean 			lastInstance_clone = null;
 	

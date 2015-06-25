@@ -69,7 +69,8 @@ public interface bsConstants {
 	public final static String CONST_BEAN_$NAVIGATION 					=	"$navigation";
 	public final static String CONST_BEAN_$ONLYINSSESSION 				=	"$onlyinssession";
 	public final static String CONST_BEAN_$ONLYASLASTINSTANCE			=	"$onlyaslastinstance";
-
+	public final static String CONST_BEAN_$LOCAL_CONTAINER 				=	"$local_container";
+	
 	public final static String CONST_SERVICE_$PARENT_POINTOFLAUNCH 		=	"$parent_pointOfLaunch";
 	public final static String CONST_SERVICE_$CHILD_POINTOFRETURN 		=	"$child_pointOfReturn";
 	public final static String CONST_SERVICE_$ID_POINTOFSERVICE 		=	"$id_pointOfService";
@@ -136,7 +137,7 @@ public interface bsConstants {
 	
 	public final static String CONST_ID_STATISTIC_STACK					=	"$statisticStack";
 	public final static String CONST_ID_STATISTIC_PROVIDER				=	"$statisticProvider";
-	public final static int 	CONST_LEN_STATISTIC_STACK				=	100;
+	public final static int    CONST_LEN_STATISTIC_STACK				=	100;
 	
 	public final static String CONST_DIRECTINDACTION_bsLog				=	"bsLog";
 	public final static String CONST_DIRECTINDACTION_bsActions			=	"bsActions";
@@ -150,6 +151,7 @@ public interface bsConstants {
 	public final static String CONST_DIRECTINDACTION_bsLoadSrc			=	"src";
 	public final static String CONST_DIRECTINDACTION_bsLoadType			=	"type";
 	public final static String CONST_DIRECTINDACTION_bsLoadCache		=	"cache";
+	public final static String CONST_DIRECTINDACTION_bsLoadEncoding		=	"encoding";
 	
 	public final static String CONST_ID_EXEC_TYPE_CLONED				= 	"cloned";
 	

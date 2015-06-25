@@ -39,10 +39,10 @@ import javax.servlet.*;
 
 public class action extends bean implements i_action, Serializable{
 	private static final long serialVersionUID = -6220391111031079562L;
-	private i_bean _bean;
-	private redirects current_redirect;
-	private boolean included = false;
-	private listener_action listener_a;
+	protected i_bean _bean;
+	protected redirects current_redirect;
+	protected boolean included = false;
+	protected listener_action listener_a;
 	
 	public action(){
 		super();

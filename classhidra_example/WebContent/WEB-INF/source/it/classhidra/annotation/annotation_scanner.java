@@ -6,6 +6,7 @@ import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Apply_to_action;
 import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Entity;
+import it.classhidra.annotation.elements.NavigatedScoped;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.annotation.elements.Section;
 import it.classhidra.annotation.elements.Stream;
@@ -31,6 +32,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 
@@ -53,6 +55,9 @@ public class annotation_scanner implements i_annotation_scanner {
 	protected String listener_beans;
 	protected String listener_streams;
 	protected String memoryInContainer_streams;
+	protected String provider;
+	protected String instance_navigated;
+	protected String instance_local_container;
 
 	
 
@@ -195,6 +200,13 @@ public class annotation_scanner implements i_annotation_scanner {
 	public void checkClassAnnotation(String class_path) {
 		try{
 			Class classType = Class.forName(class_path);
+			
+			Map subAnnotations = new HashMap();
+			Annotation subAnnotation = classType.getAnnotation(NavigatedScoped.class);
+				if(subAnnotation!=null){
+					checkClassAnnotation(class_path, subAnnotation, subAnnotations);
+					subAnnotations.put("NavigatedScoped", subAnnotation);
+				}
 	
 			ActionMapping annotationActionMapping = (ActionMapping)classType.getAnnotation(ActionMapping.class);
 			if(annotationActionMapping!=null){
@@ -206,42 +218,48 @@ public class annotation_scanner implements i_annotation_scanner {
 				listener_beans=annotationActionMapping.listener_beans();
 				listener_streams=annotationActionMapping.listener_streams();
 				memoryInContainer_streams=annotationActionMapping.memoryInContainer_streams();
+				provider=annotationActionMapping.provider();
+				instance_navigated=annotationActionMapping.instance_navigated();
+				instance_local_container=annotationActionMapping.instance_local_container();
 				
 				Stream[] streams = annotationActionMapping.streams();
 				if(streams!=null && streams.length>0){
 					for(int i=0;i<streams.length;i++)
-						checkClassAnnotation(class_path, streams[i]);
+						checkClassAnnotation(class_path, streams[i], subAnnotations);
 				}
 				Bean[] beans = annotationActionMapping.beans();
 				if(beans!=null && beans.length>0){
 					for(int i=0;i<beans.length;i++)
-						checkClassAnnotation(class_path, beans[i]);
+						checkClassAnnotation(class_path, beans[i], subAnnotations);
 				}
 				Redirect[] redirects = annotationActionMapping.redirects();
 				if(redirects!=null && redirects.length>0){
 					for(int i=0;i<redirects.length;i++)
-						checkClassAnnotation(class_path, redirects[i]);
+						checkClassAnnotation(class_path, redirects[i], subAnnotations);
 				}
 				Action[] actions = annotationActionMapping.actions();
 				if(actions!=null && actions.length>0){
 					for(int i=0;i<actions.length;i++)
-						checkClassAnnotation(class_path, actions[i]);
+						checkClassAnnotation(class_path, actions[i], subAnnotations);
 				}
 				Transformation[] transformations = annotationActionMapping.transformations();
 				if(transformations!=null && transformations.length>0){
 					for(int i=0;i<transformations.length;i++)
-						checkClassAnnotation(class_path, transformations[i]);
+						checkClassAnnotation(class_path, transformations[i], subAnnotations);
 				}
 			}
 			
+
+				
+				
 			Annotation annotation = classType.getAnnotation(Bean.class);
-				if(annotation!=null) checkClassAnnotation(class_path, annotation);
+				if(annotation!=null) checkClassAnnotation(class_path, annotation, subAnnotations);
 			annotation = classType.getAnnotation(Action.class);
-				if(annotation!=null) checkClassAnnotation(class_path, annotation);
+				if(annotation!=null) checkClassAnnotation(class_path, annotation, subAnnotations);
 			annotation = classType.getAnnotation(Stream.class);
-				if(annotation!=null) checkClassAnnotation(class_path, annotation);
+				if(annotation!=null) checkClassAnnotation(class_path, annotation, subAnnotations);
 			annotation = classType.getAnnotation(Transformation.class);
-				if(annotation!=null) checkClassAnnotation(class_path, annotation);
+				if(annotation!=null) checkClassAnnotation(class_path, annotation, subAnnotations);
 		    
 		    
 		}catch(Exception e){			
@@ -249,7 +267,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	    
 	}
 	
-	private void checkClassAnnotation(String class_path, Annotation annotation) {
+	private void checkClassAnnotation(String class_path, Annotation annotation, Map subAnnotations) {
 		try{
 			
 		    Bean annotationBean = null;
@@ -257,6 +275,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    Stream annotationStream = null;
 		    Transformation annotationTransformation = null;
 		    Redirect annotationRedirect = null;
+		    NavigatedScoped navigatedScoped = null;
 
 
 		    if(annotation instanceof Bean) annotationBean = (Bean)annotation;
@@ -264,6 +283,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    if(annotation instanceof Action) annotationAction = (Action)annotation;
 		    if(annotation instanceof Stream) annotationStream = (Stream)annotation;
 		    if(annotation instanceof Transformation) annotationTransformation = (Transformation)annotation;
+		    if(annotation instanceof NavigatedScoped) navigatedScoped = (NavigatedScoped)annotation;
 	
 	
 		    if (annotationBean != null) {
@@ -344,6 +364,10 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
 		    	iAction.setReloadAfterNextNavigated(annotationAction.reloadAfterNextNavigated());
 		    	iAction.setNavigated(annotationAction.navigated());
+		    	
+		    	if(!iAction.getNavigated().trim().equalsIgnoreCase("true") && subAnnotations.get("NavigatedScoped")!=null)
+		    		iAction.setNavigated("true");
+		    		
 		    	iAction.setSyncro(annotationAction.syncro());
 		    	iAction.setStatistic(annotationAction.statistic());
 		    	iAction.setHelp(annotationAction.help());
@@ -585,6 +609,19 @@ public class annotation_scanner implements i_annotation_scanner {
 
 	public String getMemoryInContainer_streams() {
 		return memoryInContainer_streams;
+	}
+
+
+	public String getProvider() {
+		return provider;
+	}
+	
+	public String getInstance_navigated() {
+		return instance_navigated;
+	}
+
+	public String getInstance_local_container() {
+		return instance_local_container;
 	}
 
 
