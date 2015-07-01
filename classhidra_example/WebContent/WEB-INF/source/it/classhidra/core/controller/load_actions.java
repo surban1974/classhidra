@@ -30,13 +30,12 @@ import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
-
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_find;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_reflect;
+import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_sort;
 import it.classhidra.core.tool.util.util_xml;
 
@@ -72,6 +71,7 @@ public class load_actions extends elementBase{
 	private String provider;
 	private String instance_navigated;
 	private String instance_local_container;
+	private String instance_onlysession;
 
 
 	private Vector  v_info_actions;
@@ -120,7 +120,7 @@ public void init() throws bsControllerException{
 	
 	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
 		try{ 
-			i_externalloader extl = (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, ainit.get_external_loader());
+			i_externalloader extl = (i_externalloader)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, ainit.get_external_loader());
 			reInit(extl);
 		}catch(Exception e){
 			bsController.writeLog("Load_actions from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
@@ -132,7 +132,7 @@ public void init() throws bsControllerException{
 
 	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, this.getExternalloader());
+			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, this.getExternalloader());
 			extl.load();
 			reInit(extl);
 		}catch(Exception e){
@@ -248,6 +248,10 @@ public void reInit(i_externalloader _externalloader){
 		_externalloader.getProperty(i_externalloader.ACTIONS_instance_local_container) instanceof String){
 		instance_local_container=(String)_externalloader.getProperty(i_externalloader.ACTIONS_instance_local_container);
 	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_instance_onlysession)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_instance_onlysession) instanceof String){
+		instance_onlysession=(String)_externalloader.getProperty(i_externalloader.ACTIONS_instance_onlysession);
+	}
 	
 	
 	
@@ -306,6 +310,7 @@ public void reimposta(){
 	if(provider==null) provider="";
 	if(instance_navigated==null) instance_navigated="";
 	if(instance_local_container==null) instance_local_container="";
+	if(instance_onlysession==null) instance_onlysession="";
 	readOk_Resource=false;
 	readOk_Folder=false;
 	readOk_File=false;
@@ -336,15 +341,20 @@ public void syncroWithBuilder(){
 
 }
 
-public void initProperties(String xml) throws bsControllerException{
+public boolean initProperties(String xml) throws bsControllerException{
 	try{
 		if(initWithFile(xml)){
 			readOk_File = true;
 			loadedFrom+=" "+xml;
-		}else readOk_File = false;
+			return true;
+		}else{
+			readOk_File = false;
+			return false;
+		}
 	}catch(Exception e){
 		readOk_File=false;
 	}
+	return false;
 }
 
 public void initWithFOLDER(String dir) throws bsControllerException{
@@ -426,13 +436,13 @@ public void loadFromAnnotations(){
 	
 	if(ainit.get_annotation_scanner()==null || ainit.get_annotation_scanner().equals("")){
 		try{
-			l_annotated = (i_annotation_scanner)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, annotation_scanner.class.getName());	
+			l_annotated = (i_annotation_scanner)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, annotation_scanner.class.getName());	
 		}catch(Exception e){
 			l_annotated = new annotation_scanner();
 		}
 	}else{
 		try{
-			l_annotated = (i_annotation_scanner)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, ainit.get_annotation_scanner());
+			l_annotated = (i_annotation_scanner)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, ainit.get_annotation_scanner());
 		}catch(Exception e){
 			new bsException("Load Error Annotation scaner: "+ainit.get_annotation_scanner(), iStub.log_ERROR);
 			new bsException(e.toString(), iStub.log_ERROR);
@@ -443,7 +453,7 @@ public void loadFromAnnotations(){
 	
 	if(l_annotated==null){
 		try{
-			l_annotated = (i_annotation_scanner)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, annotation_scanner.class.getName());	
+			l_annotated = (i_annotation_scanner)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, annotation_scanner.class.getName());	
 		}catch(Exception e){
 			l_annotated = new annotation_scanner();
 		}
@@ -471,6 +481,8 @@ public void loadFromAnnotations(){
 		instance_navigated = l_annotated.getInstance_navigated();
 	if(l_annotated.getInstance_local_container()!=null && !l_annotated.getInstance_local_container().equals(""))
 		instance_local_container = l_annotated.getInstance_local_container();	
+	if(l_annotated.getInstance_onlysession()!=null && !l_annotated.getInstance_onlysession().equals(""))
+		instance_onlysession = l_annotated.getInstance_onlysession();	
 	
 	Vector a_streams = new Vector(l_annotated.get_streams().values());
 	if(a_streams.size()>0){
@@ -634,13 +646,13 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 	
 	if(ainit.get_annotation_scanner()==null || ainit.get_annotation_scanner().equals("")){
 		try{
-			l_annotated = (i_annotation_scanner)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, annotation_scanner.class.getName());	
+			l_annotated = (i_annotation_scanner)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, annotation_scanner.class.getName());	
 		}catch(Exception e){
 			l_annotated = new annotation_scanner();
 		}
 	}else{
 		try{
-			l_annotated = (i_annotation_scanner)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, ainit.get_annotation_scanner());
+			l_annotated = (i_annotation_scanner)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, ainit.get_annotation_scanner());
 		}catch(Exception e){
 			new bsException("Load Error Annotation scaner: "+ainit.get_annotation_scanner(), iStub.log_ERROR);
 			new bsException(e.toString(), iStub.log_ERROR);
@@ -651,7 +663,7 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 	
 	if(l_annotated==null){
 		try{
-			l_annotated = (i_annotation_scanner)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, annotation_scanner.class.getName());	
+			l_annotated = (i_annotation_scanner)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, annotation_scanner.class.getName());	
 		}catch(Exception e){
 			l_annotated = new annotation_scanner();
 		}
@@ -690,6 +702,8 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 		instance_navigated = l_annotated.getInstance_navigated();
 	if(l_annotated.getInstance_local_container()!=null && !l_annotated.getInstance_local_container().equals(""))
 		instance_local_container = l_annotated.getInstance_local_container();	
+	if(l_annotated.getInstance_onlysession()!=null && !l_annotated.getInstance_onlysession().equals(""))
+		instance_onlysession = l_annotated.getInstance_onlysession();	
 	
 
 	Vector a_streams = new Vector(l_annotated.get_streams().values());
@@ -861,6 +875,12 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 
 public void load_from_resources() {
 	load_from_resources("/config/"+bsController.CONST_XML_ACTIONS);
+	load_from_resources("/config/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_ACTIONS);
+	
+	load_from_resources("META-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_ACTIONS);	
+	load_from_resources("WEB-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_ACTIONS);
+	
+	
 	String property_name =  "config."+bsController.CONST_XML_ACTIONS_FOLDER;
 	ArrayList array = new ArrayList();
 
@@ -877,7 +897,10 @@ public void load_from_resources() {
 	}
 
 }
-private void load_from_resources(String property_name) {
+
+
+
+private boolean load_from_resources(String property_name) {
 	
 	bsController.writeLog("Start Load_actions from "+property_name,iStub.log_INFO);
 
@@ -890,6 +913,10 @@ private void load_from_resources(String property_name) {
 
     try {
     	is = getClass().getResourceAsStream(property_name);
+    	if(is==null)
+    		is = this.getClass().getClassLoader().getResourceAsStream(property_name);
+    	if(is==null)
+    		is = ClassLoader.getSystemClassLoader().getResourceAsStream(property_name);
     	if(is!=null){
     		result="";
 	    	br = new BufferedReader(new InputStreamReader(is));
@@ -907,19 +934,83 @@ private void load_from_resources(String property_name) {
     	}
 	}
 
-    try{
-
-    	if(initWithData(result)){
-    		bsController.writeLog("Load_actions from "+property_name+" OK ",iStub.log_INFO);
-    		readOk_Resource = readOk_Resource || true;
-    		loadedFrom+=" "+property_name;
-    	}
-
-	}catch(Exception e){
-		bsController.writeLog("Load_actions from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
-	}
+    if(result!=null){
+	    try{
+	    	if(initWithData(result)){
+	    		bsController.writeLog("Load_actions from "+property_name+" OK ",iStub.log_INFO);
+	    		readOk_Resource = readOk_Resource || true;
+	    		loadedFrom+=" "+property_name;
+	    		return true;
+	    	}
+		}catch(Exception e){
+			bsController.writeLog("Load_actions from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+		}
+    }
+    
+    return false;
 
 }
+
+public boolean load_from_resources(ServletContext ctx) {
+
+	boolean read = load_from_resources(ctx,"/WEB-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_ACTIONS);
+	if(!read) 
+		read = load_from_resources(ctx,"/WEB-INF/config/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_ACTIONS);
+	if(!read) 
+		read = load_from_resources(ctx,"/META-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_ACTIONS);
+	if(!read) 
+		read = load_from_resources(ctx,"/META-INF/config/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_ACTIONS);
+
+	return read;
+}
+
+private boolean load_from_resources(ServletContext ctx, String property_name) {
+	
+	bsController.writeLog("Start Load_actions from "+property_name,iStub.log_INFO);
+
+
+	InputStream is = null;
+    BufferedReader br = null;
+    String result=null;
+    String line="";
+
+
+    try {
+    	is = ctx.getResourceAsStream(property_name);
+      	if(is!=null){
+    		result="";
+	    	br = new BufferedReader(new InputStreamReader(is));
+	    	while (null != (line = br.readLine())) {
+	    		result+=(line+"\n");
+	    	}
+    	}
+    }catch (Exception e) {
+    	bsController.writeLog("Load_actions from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+    }finally {
+    	try {
+    		if (br != null) br.close();
+    		if (is != null) is.close();
+    	}catch (Exception e) {
+    	}
+	}
+
+    if(result!=null){
+	    try{
+	    	if(initWithData(result)){
+	    		bsController.writeLog("Load_actions from "+property_name+" OK ",iStub.log_INFO);
+	    		readOk_Resource = readOk_Resource || true;
+	    		loadedFrom+=" "+property_name;
+	    		return true;
+	    	}
+		}catch(Exception e){
+			bsController.writeLog("Load_actions from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+		}
+    }
+    
+    return false;
+
+}
+
 
 public boolean initWithData(String _xml) throws bsControllerException, Exception{
 		Document documentXML = null;
@@ -1058,7 +1149,8 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 			iAction = new info_action();
 			iAction.setPath(id_action);
 			rAction.set_infoaction(iAction);
-			((bean)rAction).set_infobean(new info_bean());
+//			((bean)rAction).set_infobean(new info_bean());
+			rAction.asBean().set_infobean(new info_bean());
 			return rAction;
 		}
 	}else iAction = (info_action)_actions.get(id_action);
@@ -1067,6 +1159,26 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 
 
 	boolean loadedFromProvider=false;
+	
+	if((((iAction.getProvider()==null)?"":iAction.getProvider().trim()) + ((getProvider()==null)?"":getProvider().trim()) + ((bsController.getAppInit().get_cdi_provider()==null)?"":bsController.getAppInit().get_cdi_provider().trim())).length()>0 || bsController.getCdiDefaultProvider()!=null){
+		Object objFromProvider = util_provider.getBeanFromObjectFactory(new String[]{iAction.getProvider(),getProvider(),bsController.getAppInit().get_cdi_provider()}, iAction.getPath(), iAction.getType(), servletContext);
+		if(objFromProvider!=null && objFromProvider instanceof i_action){
+			rAction = (i_action)objFromProvider;
+			if(iBean!=null)
+//				((bean)rAction).set_infobean(iBean);
+				rAction.asBean().set_infobean(iBean);
+			loadedFromProvider=true;
+		}
+		if(!loadedFromProvider && objFromProvider!=null && objFromProvider instanceof i_bean){
+			rAction = ((i_bean)objFromProvider).asAction();
+			if(iBean!=null)
+//				((bean)rAction).set_infobean(iBean);
+				rAction.asBean().set_infobean(iBean);
+			loadedFromProvider=true;
+		}
+
+	}
+/*	
 	if(iAction.getProvider()!=null && !iAction.getProvider().equals("")){
 		Object actionFromProvider = util_reflect.providerObjectFactory(iAction.getProvider(), iAction.getPath(), iAction.getType(), servletContext);
 		if(actionFromProvider!=null && actionFromProvider instanceof i_action){
@@ -1074,7 +1186,7 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 			if(iBean!=null) ((bean)rAction).set_infobean(iBean);
 			loadedFromProvider=true;
 		}
-	}else if(getProvider()!=null && !getProvider().equals("")){
+	}else if(getProvider()!=null && !getProvider().equals("") && !getProvider().equalsIgnoreCase("false")){
 		Object actionFromProvider = util_reflect.providerObjectFactory(getProvider(), iAction.getPath(), iAction.getType(), servletContext);
 		if(actionFromProvider!=null && actionFromProvider instanceof i_action){
 			rAction = (i_action)actionFromProvider;
@@ -1089,7 +1201,7 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 			loadedFromProvider=true;
 		}
 	}  
-
+*/
 	if(!loadedFromProvider){
 		if(iAction.getType()!=null && !iAction.getType().equals("")){
 			if(iAction.getProperty("init").equalsIgnoreCase("annotation") && !iAction.isAnnotationLoaded())
@@ -1103,49 +1215,65 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 			
 		}
 	}
+	
 	if(rAction!=null){
 		if(iAction.getListener()!=null && !iAction.getListener().equals("")){
 			try{
-				listener_action lAction= (listener_action)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iAction.getListener());
+				listener_action lAction= (listener_action)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iAction.getListener());
 				if(lAction!=null) rAction.setListener_a(lAction);
 			}catch (Exception e) {
 				try{
-					listener_bean lAction= (listener_bean)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iAction.getListener());
-					if(lAction!=null) ((i_bean)rAction).setListener_b(lAction);
+					listener_bean lAction= (listener_bean)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iAction.getListener());
+					if(lAction!=null) rAction.asBean().setListener_b(lAction);
 				}catch(Exception ex){
+				}catch(Throwable t) {
 				}
+			}catch(Throwable t) {
 			}				
 		}
-		if(rAction.getListener_a()==null && getListener_actions()!=null && !getListener_actions().equals("")){
-			try{
-				listener_action lAction= (listener_action)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_actions());
-				if(lAction!=null) rAction.setListener_a(lAction);
-			}catch (Exception e) {
+		try{
+			if(rAction.getListener_a()==null && getListener_actions()!=null && !getListener_actions().equals("")){
 				try{
-					listener_bean lAction= (listener_bean)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_beans());
-					if(lAction!=null) ((i_bean)rAction).setListener_b(lAction);
-				}catch(Exception ex){
-				}
-			}				
+					listener_action lAction= (listener_action)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_actions());
+					if(lAction!=null) rAction.setListener_a(lAction);
+				}catch (Exception e) {
+					try{
+						listener_bean lAction= (listener_bean)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_beans());
+						if(lAction!=null) rAction.asBean().setListener_b(lAction);
+					}catch(Exception ex){
+					}catch(Throwable t) {
+					}
+				}catch(Throwable t) {
+				}				
+			}
+		}catch(Exception e){
+			new bsControllerException(e, iStub.log_ERROR);
+		}catch(Throwable e){
+			new bsControllerException(e, iStub.log_ERROR);
 		}
 		
 		if(loadedFromProvider)
 			rAction.onPostInstanceFromProvider();
-		else rAction.onPostInstance();
+		else
+			rAction.onPostInstance();
 
 		
 		rAction.set_infoaction(iAction);
 		if(iBean!=null){
 			if(iBean.getProperty("init").equalsIgnoreCase("annotation") && !iBean.isAnnotationLoaded() && !iBean.getType().equals(""))
 				iBean = (info_bean)loadFromAnnotations(iBean);
-			((bean)rAction).set_infobean(iBean);
+//			((bean)rAction).set_infobean(iBean);
+			rAction.asBean().set_infobean(iBean);
 		}
-		else ((bean)rAction).set_infobean(new info_bean());
+		else 
+			rAction.asBean().set_infobean(new info_bean());
+//			((bean)rAction).set_infobean(new info_bean());
 	}else{
 		iAction = new info_action();
 		iAction.setPath(id_action);
 		rAction.set_infoaction(iAction);
-		((bean)rAction).set_infobean(new info_bean());
+//		((bean)rAction).set_infobean(new info_bean());
+		rAction.asBean().set_infobean(new info_bean());
 	}
 	return rAction;
 }
@@ -1188,6 +1316,15 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 
 
 	boolean loadedFromProvider=false;
+	
+	if((((iStream.getProvider()==null)?"":iStream.getProvider().trim()) + ((getProvider()==null)?"":getProvider().trim()) + ((bsController.getAppInit().get_cdi_provider()==null)?"":bsController.getAppInit().get_cdi_provider().trim())).length()>0 || bsController.getCdiDefaultProvider()!=null){
+		Object objFromProvider = util_provider.getBeanFromObjectFactory(new String[]{iStream.getProvider(),getProvider(),bsController.getAppInit().get_cdi_provider()}, iStream.getName(), iStream.getType(), servletContext);
+		if(objFromProvider!=null && objFromProvider instanceof i_stream){
+			rStream = (i_stream)objFromProvider;
+			loadedFromProvider=true;
+		}
+	}	
+/*	
 	if(iStream.getProvider()!=null && !iStream.getProvider().equals("")){
 		Object streamFromProvider = util_reflect.providerObjectFactory(iStream.getProvider(), iStream.getName(), iStream.getType(), servletContext);
 		if(streamFromProvider!=null && streamFromProvider instanceof i_stream){
@@ -1207,7 +1344,7 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 			loadedFromProvider=true;
 		}
 	}
-
+*/
 	if(!loadedFromProvider){
 		if(iStream==null || iStream.getType()==null || iStream.getType().equals("")) return rStream;
 
@@ -1224,17 +1361,19 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 	if(rStream!=null)
 		if(iStream.getListener()!=null && !iStream.getListener().equals("")){
 			try{
-				listener_stream lStream= (listener_stream)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iStream.getListener());
+				listener_stream lStream= (listener_stream)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iStream.getListener());
 				if(lStream!=null) rStream.setListener_s(lStream);
 			}catch (Exception e) {
+			}catch(Throwable t) {
 			}				
 		}
 		if(rStream.getListener_s()==null && getListener_streams()!=null && !getListener_streams().equals("")){
 			try{
-				listener_stream lStream= (listener_stream)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_streams());
+				listener_stream lStream= (listener_stream)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_streams());
 				if(lStream!=null) rStream.setListener_s(lStream);
 			}catch (Exception e) {
-			}				
+			}catch(Throwable t) {
+			}			
 		}
 		
 		if(loadedFromProvider)
@@ -1274,7 +1413,7 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 public i_bean beanFactory(String id_bean,HttpSession session,ServletContext servletContext,i_action action_instance){
 	i_bean rBean = null;
 	if(action_instance!=null){
-		rBean = (i_bean)action_instance;
+		rBean = action_instance.asBean();
 	}
 	else rBean = new bean();
 	info_bean iBean = null;
@@ -1294,17 +1433,25 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 			if(rBean.get_infobean()!=null){
 				if(rBean.get_infobean().getListener()!=null && !rBean.get_infobean().getListener().equals("")){
 					try{
-						listener_bean lBean= (listener_bean)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iBean.getListener());
+						listener_bean lBean= (listener_bean)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iBean.getListener());
 						if(lBean!=null) rBean.setListener_b(lBean);;
 					}catch (Exception e) {
+					}catch(Throwable t) {
 					}				
 				}
-				if(rBean.getListener_b()==null && getListener_beans()!=null && !getListener_beans().equals("")){
-					try{
-						listener_bean lBean= (listener_bean)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_beans());
-						if(lBean!=null) rBean.setListener_b(lBean);
-					}catch (Exception e) {
-					}				
+				try{
+					if(rBean.getListener_b()==null && getListener_beans()!=null && !getListener_beans().equals("")){
+						try{
+							listener_bean lBean= (listener_bean)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_beans());
+							if(lBean!=null) rBean.setListener_b(lBean);
+						}catch (Exception e) {
+						}catch(Throwable t) {
+						}				
+					}
+				}catch(Exception e){
+					new bsControllerException(e, iStub.log_ERROR);
+				}catch(Throwable e){
+					new bsControllerException(e, iStub.log_ERROR);
 				}
 			}
 
@@ -1314,6 +1461,19 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 
 	if(iBean==null) return null;
 	boolean loadedFromProvider=false;
+	
+	if(((iBean.getProvider()==null)?"":(iBean.getProvider().trim()) + ((getProvider()==null)?"":getProvider().trim()) + ((bsController.getAppInit().get_cdi_provider()==null)?"":bsController.getAppInit().get_cdi_provider().trim())).length()>0 || bsController.getCdiDefaultProvider()!=null){
+		Object objFromProvider = util_provider.getBeanFromObjectFactory(new String[]{iBean.getProvider(),getProvider(),bsController.getAppInit().get_cdi_provider()}, iBean.getName(), iBean.getType(), servletContext);
+		if(objFromProvider!=null && objFromProvider instanceof i_bean){
+			rBean = (i_bean)objFromProvider;
+			loadedFromProvider=true;
+		}
+		if(objFromProvider!=null && !(objFromProvider instanceof i_bean)){
+			rBean.setDelegated(objFromProvider);
+			loadedFromProvider=true;
+		}
+	}	
+/*	
 	if(iBean.getProvider()!=null && !iBean.getProvider().equals("")){
 		Object actionFromProvider = util_reflect.providerObjectFactory(iBean.getProvider(), iBean.getName(), iBean.getType(), servletContext);
 		if(actionFromProvider!=null && actionFromProvider instanceof i_bean){
@@ -1345,7 +1505,7 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 			loadedFromProvider=true;
 		}
 	}
-
+*/
 
 	if( !loadedFromProvider &&
 		(
@@ -1404,17 +1564,25 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 	if(rBean!=null){
 		if(iBean.getListener()!=null && !iBean.getListener().equals("")){
 			try{
-				listener_bean lBean= (listener_bean)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iBean.getListener());
+				listener_bean lBean= (listener_bean)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, iBean.getListener());
 				if(lBean!=null) rBean.setListener_b(lBean);;
 			}catch (Exception e) {
+			}catch(Throwable t) {
 			}				
 		}
-		if(rBean.getListener_b()==null && getListener_beans()!=null && !getListener_beans().equals("")){
-			try{
-				listener_bean lBean= (listener_bean)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_beans());
-				if(lBean!=null) rBean.setListener_b(lBean);
-			}catch (Exception e) {
-			}				
+		try{
+			if(rBean.getListener_b()==null && getListener_beans()!=null && !getListener_beans().equals("")){
+				try{
+					listener_bean lBean= (listener_bean)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getListener_beans());
+					if(lBean!=null) rBean.setListener_b(lBean);
+				}catch (Exception e) {
+				}catch(Throwable t) {
+				}				
+			}
+		}catch(Exception e){
+			new bsControllerException(e, iStub.log_ERROR);
+		}catch(Throwable e){
+			new bsControllerException(e, iStub.log_ERROR);
 		}
 		if(loadedFromProvider)
 			rBean.onPostInstanceFromProvider();
@@ -1482,9 +1650,9 @@ private static Object providerTransformationFactory(String id_provider, String t
 	try{
 		if(id_provider==null || transformationName==null || id_provider.equals("") || transformationName.equals("")) return null;
 //			i_provider provider  = (i_provider)Class.forName(bsConstants.CONST_PROVIDER_PATH+id_provider).newInstance();
-		i_provider provider  = (i_provider)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, bsConstants.CONST_PROVIDER_PATH+id_provider);
+		i_provider provider  = (i_provider)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, bsConstants.CONST_PROVIDER_PATH+id_provider);
 		if(provider==null) 
-			provider  = (i_provider)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()},id_provider);
+			provider  = (i_provider)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()},id_provider);
 		if(provider==null) 
 			return null;
 		provider.set_context(servletContext);
@@ -1818,6 +1986,7 @@ public String toXml(){
 	if(provider!=null && !provider.trim().equals("")) result+=" provider=\""+util_format.normaliseXMLText(provider)+"\"";
 	if(instance_navigated!=null && !instance_navigated.trim().equals("")) result+=" instance_navigated=\""+util_format.normaliseXMLText(instance_navigated)+"\"";
 	if(instance_local_container!=null && !instance_local_container.trim().equals("")) result+=" instance_local_container=\""+util_format.normaliseXMLText(instance_local_container)+"\"";
+	if(instance_onlysession!=null && !instance_onlysession.trim().equals("")) result+=" instance_onlysession=\""+util_format.normaliseXMLText(instance_onlysession)+"\"";
 
 	result+=">";
 	result+=System.getProperty("line.separator")+"   <action-streams";
@@ -2076,6 +2245,15 @@ public void setInstance_local_container(String provider_local_container) {
 	this.instance_local_container = provider_local_container;
 }
 
+public String getInstance_onlysession() {
+	return instance_onlysession;
+}
+
+public void setInstance_onlysession(String instance_onlysession) {
+	this.instance_onlysession = instance_onlysession;
+}
+
+
 class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private HashMap _b_actions=null;
@@ -2125,7 +2303,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 		
 		if(getExternalloader()!=null && !getExternalloader().equals("")){
 			try{
-				i_externalloader extl= (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getExternalloader());
+				i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, getExternalloader());
 				extl.load();
 				reInit(extl);
 			}catch(Exception e){
@@ -2254,7 +2432,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			l_annotated = new annotation_scanner();
 		}else{
 			try{
-				l_annotated = (i_annotation_scanner)util_reflect.getInstanceForNameFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, ainit.get_annotation_scanner());
+				l_annotated = (i_annotation_scanner)util_provider.getInstanceFromProvider(new String[]{getProvider(),bsController.getAppInit().get_cdi_provider()}, ainit.get_annotation_scanner());
 			}catch(Exception e){
 				new bsException("Load Error Annotation scaner: "+ainit.get_annotation_scanner(), iStub.log_ERROR);
 				new bsException(e.toString(), iStub.log_ERROR);
@@ -2288,6 +2466,8 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			instance_navigated = l_annotated.getInstance_navigated();
 		if(l_annotated.getInstance_local_container()!=null && !l_annotated.getInstance_local_container().equals(""))
 			instance_local_container = l_annotated.getInstance_local_container();	
+		if(l_annotated.getInstance_onlysession()!=null && !l_annotated.getInstance_onlysession().equals(""))
+			instance_onlysession = l_annotated.getInstance_onlysession();	
 		
 		Vector a_streams = new Vector(l_annotated.get_streams().values());
 

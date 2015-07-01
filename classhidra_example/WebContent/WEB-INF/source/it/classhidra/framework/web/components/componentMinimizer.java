@@ -91,7 +91,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		HashMap fromSession_clone = (HashMap)fromSessions.get(source);
 		if(fromSession_clone!=null){
 			fromSession_clone.put(get_infoaction().getPath(), get_bean());
-			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession_clone);
+			bsController.setOnlySession(fromSession_clone, request);
 			fromSessions.remove(source);
 		}
 		
@@ -127,7 +127,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 private info_navigation prepareDump(HttpServletRequest request){
 	info_navigation active = null;
 	
-	HashMap 		fromSessionGlobal = 	(HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+	HashMap 		fromSessionGlobal = 	 new HashMap(bsController.getOnlySession(request));
 	info_navigation	formInfoNavigation	= 	 bsController.getFromInfoNavigation(null, request);
 	i_bean 			lastInstance = 			(i_bean)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE);
 	i_bean 			lastInstance_clone = null;

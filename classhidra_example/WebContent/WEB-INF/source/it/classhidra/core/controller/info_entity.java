@@ -48,6 +48,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	protected String system;
 	protected String prefix;
 	protected String annotated;
+	protected String lookup;
 	protected int enabled=1;
 
 	protected HashMap properties;
@@ -65,6 +66,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 		system="false";
 		annotated="false";
 		prefix="";
+		lookup="";
 		enabled=1;
 	}
 
@@ -74,6 +76,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 		provider = entity.getProvider();
 		order = entity.getOrder();
 		comment = entity.getComment();
+		lookup = entity.getLookup();
 	}
 
 	public String getProperty() {
@@ -137,6 +140,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	public String toXml(){
 		String result="";
 		if(provider!=null && !provider.trim().equals("")) result+=" provider=\""+util_format.normaliseXMLText(provider)+"\"";
+		if(lookup!=null && !lookup.trim().equals("")) result+=" lookup=\""+util_format.normaliseXMLText(lookup)+"\"";
 		if(this instanceof info_stream){
 			if(order!=null && !order.trim().equals("")) result+=" order=\""+util_format.normaliseXMLText(order)+"\"";
 		}
@@ -242,6 +246,16 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 
 	public void setAnnotationLoaded(boolean annotationLoaded) {
 		this.annotationLoaded = annotationLoaded;
+	}
+
+
+	public String getLookup() {
+		return lookup;
+	}
+
+
+	public void setLookup(String lookup) {
+		this.lookup = lookup;
 	}
 
 

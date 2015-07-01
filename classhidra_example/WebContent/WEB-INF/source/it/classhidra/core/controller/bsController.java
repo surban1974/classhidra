@@ -48,6 +48,7 @@ import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_cloner;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_sort;
 
@@ -69,6 +70,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -102,6 +105,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 	private static load_organization org_config;
 	private static load_menu menu_config;
 	private static String idApp;
+	private static I_StatisticProvider statisticProvider;
+	private static i_provider cdiDefaultProvider;
+	private static i_provider ejbDefaultProvider;
 
 	private static ConcurrentHashMap local_container = new ConcurrentHashMap();
 
@@ -149,11 +155,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}catch(Exception e){
 		}
 
+
 		if(appInit==null){
 
 			appInit = new app_init();
 				appInit.init();
 
+			if(cdiDefaultProvider==null && appInit.get_cdi_provider()!=null && !appInit.get_cdi_provider().equalsIgnoreCase("false"))
+				cdiDefaultProvider = util_provider.checkDeafaultCdiProvider(appInit.get_cdi_jndi_name(), getServletContext());
+			if(ejbDefaultProvider==null)
+				ejbDefaultProvider = util_provider.checkDeafaultEjbProvider(appInit.get_ejb_jndi_name(), getServletContext());
+				
+				
 			try{
 				if(idApp==null) idApp = util_format.replace(getContextPathFor5(getServletContext()), "/", "");
 			}catch(Exception ex){
@@ -174,7 +187,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 			stat.setFt(new Date());
 			putToStatisticProvider(stat);
 		}
-
 
 	}
 
@@ -207,11 +219,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 			i_externalloader initloader = null;
 			if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
 				try{
-					initloader = (i_externalloader)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), null);
+					initloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), null);
 					initloader.load();
 				}catch(Exception e){
 				}
 			}
+			if(initloader==null && getCdiDefaultProvider()!=null){			
+				try{
+					initloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), null);
+					initloader.load();
+				}catch(Exception e){
+				}
+			}
+			
 			if(initloader==null){			
 				try{
 					initloader = (i_externalloader)Class.forName(getAppInit().get_init_loader().trim()).newInstance();
@@ -281,11 +301,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 			i_externalloader externalloader = null;
 			if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
 				try{
-					externalloader = (i_externalloader)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_external_loader, getAppInit().get_external_loader().trim(), null);
+					externalloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_external_loader, getAppInit().get_external_loader().trim(), null);
 					externalloader.load();
 				}catch(Exception e){
 				}
 			}
+			if(externalloader==null && getCdiDefaultProvider()!=null){
+				try{
+					externalloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_external_loader, getAppInit().get_external_loader().trim(), null);
+					externalloader.load();
+				}catch(Exception e){
+				}
+			}
+			
 			if(externalloader==null){			
 				try{
 					externalloader = (i_externalloader)Class.forName(getAppInit().get_external_loader().trim()).newInstance();
@@ -554,9 +582,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 					action_instance.get_infoaction().getName().equals("") ||
 					(iBean!=null && action_instance.get_infoaction().getType().equals(iBean.getType()))
 				)
-			)
-				bean_instance = (i_bean)action_instance;
-			else
+			){
+				if(action_instance!=null)
+					bean_instance = action_instance.asBean();
+			}else
 				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext(),action_instance);
 			if(bean_instance!=null){
 				if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
@@ -697,18 +726,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 			try{
 				i_bean form = action_instance.get_bean();
 				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
+/*					
 					HashMap fromSession = null;
 					fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 					if(fromSession==null){
 						fromSession = new HashMap();
 						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession);
 					}
+*/					
 					if(form!=null)
 						form.onAddToSession();
 // Mod 20150402 --					
 //					fromSession.put(form.get_infobean().getName(),form);
+
 					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null)
-						fromSession.put(form.get_infoaction().getPath(),form);
+						setToOnlySession(form.get_infoaction().getPath(),form, request);
+//						fromSession.put(form.get_infoaction().getPath(),form);
 				}
 				if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
 					if(form!=null)
@@ -755,9 +788,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 							prev_action_instance.get_infoaction().getName().equals("") ||
 							(iBean!=null && prev_action_instance.get_infoaction().getType().equals(iBean.getType()))
 						)
-				)
-					bean_instance_clone = (i_bean)prev_action_instance;
-				else
+				){
+					if(prev_action_instance!=null)
+						bean_instance_clone = prev_action_instance.asBean();
+				}else
 					bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext(),prev_action_instance);
 				if(bean_instance_clone!=null){
 					if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")) 
@@ -1344,7 +1378,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static void addAsMessage(Throwable ex, HttpServletRequest request){
 		if(ex!=null && request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)!=null){
-//			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE,new Vector());
 			message mess = new message();
 			mess.setDESC_MESS(ex.toString());
 			mess.setTYPE("E");
@@ -1463,9 +1496,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 		try{
 			info_action infoAction = (info_action)getAction_config().get_actions().get(id_current);
 			if(	infoAction.getMemoryInSession().equalsIgnoreCase("true")){
+/*
 				i_bean content = (i_bean)
 					((HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION))
 					.get(infoAction.getPath());
+*/
+				i_bean content = (i_bean)getFromOnlySession(infoAction.getPath(), request);
+
 				if(content!=null)
 					content.onGetFromSession();
 				return content;
@@ -1529,18 +1566,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(!go || action.getCurrent_redirect()==null){
 			try{
 				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
+/*					
 					HashMap fromSession = null;
 					fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 					if(fromSession==null){
 						fromSession = new HashMap();
 						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession);
 					}
+*/					
 					if(form!=null)
 						form.onAddToSession();
-					// Mod 20150402 --					
+// Mod 20150402 --					
 //					fromSession.put(form.get_infobean().getName(),form);
 					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null)
-						fromSession.put(form.get_infoaction().getPath(),form);
+						setToOnlySession(form.get_infoaction().getPath(),form, request);
+//						fromSession.put(form.get_infoaction().getPath(),form);
 				}
 				if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
 					if(form!=null)
@@ -1566,64 +1606,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 	}
 
-	public static info_navigation getFromInfoNavigation(String id,HttpServletRequest request){
-		
-		info_navigation nav = null;
-		if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("")){
-			try{
-				if(!getAction_config().getInstance_navigated().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$NAVIGATION, getAction_config().getInstance_navigated(), request.getSession().getServletContext());
-					nav = (info_navigation)wrapper.getInstance();
-				}
-			}catch(Exception e){
-			}
-		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
-			try{
-				if(!getAction_config().getInstance_navigated().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$NAVIGATION, getAction_config().getInstance_navigated(), request.getSession().getServletContext());
-					nav = (info_navigation)wrapper.getInstance();
-				}
-			}catch(Exception e){
-			}
-		}
-			
-		if(nav==null)
-			nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
-		if(nav==null) 
-			return null;
-		if(id==null) 
-			return nav;
-		return nav.find(id);
-	}
 
-	public static boolean setToInfoNavigation(info_navigation nav,HttpServletRequest request){
-		try{
-			if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("")){
-				try{
-					if(!getAction_config().getInstance_navigated().equals("")){
-						bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$NAVIGATION, getAction_config().getInstance_navigated(), request.getSession().getServletContext());
-						wrapper.setInstance(nav);
-						return true;
-					}
-				}catch(Exception e){
-				}
-			}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
-				try{
-					if(!getAction_config().getInstance_navigated().equals("")){
-						bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$NAVIGATION, getAction_config().getInstance_navigated(), request.getSession().getServletContext());
-						wrapper.setInstance(nav);
-						return true;
-					}
-				}catch(Exception e){
-				}
-			}
-
-			request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
-			return true;
-		}catch(Exception e){
-			return false;
-		}
-	}
 	
 	public static Object getProperty(String key, HttpServletRequest request){
 		if(key==null) return null;
@@ -1643,7 +1626,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 					Object transf = null;
 					if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
 						try{
-							transf = util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  "it.classhidra.core.tool.exception.bsIntegrator", "it.classhidra.core.tool.exception.bsIntegrator", null);
+							transf = util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  "it.classhidra.core.tool.exception.bsIntegrator", "it.classhidra.core.tool.exception.bsIntegrator", null);
+						}catch(Exception e){
+						}
+					}
+					if(transf==null && getCdiDefaultProvider()!=null){
+						try{
+							transf = util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  "it.classhidra.core.tool.exception.bsIntegrator", "it.classhidra.core.tool.exception.bsIntegrator", null);
 						}catch(Exception e){
 						}
 					}
@@ -1661,7 +1650,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			try{
 				if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
 					try{
-						logG = (i_log_generator)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  logInit.get_LogGenerator(), logInit.get_LogGenerator(), null);
+						logG = (i_log_generator)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  logInit.get_LogGenerator(), logInit.get_LogGenerator(), null);
 					}catch(Exception e){
 						logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
 					}
@@ -1963,14 +1952,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 				action_config.initWithFOLDER(dir);
 			}catch(bsControllerException je){}
 		}
-		if(action_config!=null && !action_config.isReadOk_File()){
-			String path = getContextConfigPath(servletContext)+CONST_XML_ACTIONS;
-			String dir = getContextConfigPath(servletContext)+CONST_XML_ACTIONS_FOLDER+"/";
-			try{
-				action_config.initProperties(path);
-				action_config.initWithFOLDER(dir);
-			}catch(bsControllerException je){}
-			if(action_config.isReadOk_File()) getAppInit().set_path_config(getContextConfigPath(servletContext));
+		if(action_config!=null && !action_config.isReadOk_File()){			
+			if(!action_config.load_from_resources(servletContext)){
+				String path = getContextConfigPath(servletContext)+CONST_XML_ACTIONS;
+				String dir = getContextConfigPath(servletContext)+CONST_XML_ACTIONS_FOLDER+"/";
+				try{
+					action_config.initProperties(path);
+					action_config.initWithFOLDER(dir);
+				}catch(bsControllerException je){}
+				if(action_config.isReadOk_File())
+					getAppInit().set_path_config(getContextConfigPath(servletContext));
+			}
 		}
 	}
 
@@ -1987,12 +1979,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 
 		if(mess_config!=null && !mess_config.isReadOk_File()){
-			String path = getContextConfigPath(servletContext)+CONST_XML_MESSAGES;
-			String dir = getContextConfigPath(servletContext)+CONST_XML_MESSAGES_FOLDER+"/";
-			try{
-				mess_config.initProperties(path);
-				mess_config.initWithFOLDER(dir);
-			}catch(bsControllerException je){}
+			if(!mess_config.load_from_resources(servletContext)){
+				String path = getContextConfigPath(servletContext)+CONST_XML_MESSAGES;
+				String dir = getContextConfigPath(servletContext)+CONST_XML_MESSAGES_FOLDER+"/";
+				try{
+					mess_config.initProperties(path);
+					mess_config.initWithFOLDER(dir);
+				}catch(bsControllerException je){}
+			}
 		}
 	}
 
@@ -2008,12 +2002,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}catch(bsControllerException je){}
 		}
 		if(auth_config!=null && !auth_config.isReadOk()){
-			String path = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS;
-			String dir = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/";
-			try{
-				auth_config.initProperties(path);
-				auth_config.initWithFOLDER(dir);
-			}catch(bsControllerException je){}
+			if(!auth_config.load_from_resources(servletContext)){
+				String path = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS;
+				String dir = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/";
+				try{
+					auth_config.initProperties(path);
+					auth_config.initWithFOLDER(dir);
+				}catch(bsControllerException je){}
+			}
 		}
 	}
 
@@ -2027,10 +2023,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}catch(bsControllerException je){}
 		}
 		if(org_config!=null && !org_config.isReadOk()){
-			String path = getContextConfigPath(servletContext)+CONST_XML_ORGANIZATION;
-			try{
-				org_config.initProperties(path);
-			}catch(bsControllerException je){}
+			if(!org_config.load_from_resources(servletContext)){
+				String path = getContextConfigPath(servletContext)+CONST_XML_ORGANIZATION;
+				try{
+					org_config.initProperties(path);
+				}catch(bsControllerException je){}
+			}
 		}
 	}
 
@@ -2053,18 +2051,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 		if(menu_config!=null && !menu_config.isReadOk()){
-
-
-			menu_config = new load_menu(ime);
-			try{
-				menu_config.init();
-			}catch(bsControllerException je){}
-			if(!menu_config.isReadOk()) menu_config.load_from_resources();
-			if(!menu_config.isReadOk()){
-				String path = getContextConfigPath(servletContext)+CONST_XML_MENU;
+			if(!menu_config.load_from_resources(servletContext)){
+				menu_config = new load_menu(ime);
 				try{
-					menu_config.initProperties(path);
+					menu_config.init();
 				}catch(bsControllerException je){}
+				if(!menu_config.isReadOk()) menu_config.load_from_resources();
+				if(!menu_config.isReadOk()){
+					String path = getContextConfigPath(servletContext)+CONST_XML_MENU;
+					try{
+						menu_config.initProperties(path);
+					}catch(bsControllerException je){}
+				}
 			}
 		}
 	}
@@ -2093,7 +2091,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 //			auth = new auth_init();
 			
 			try{
-				auth = (auth_init)util_reflect.getInstanceForNameFromProvider(new String[]{getAppInit().get_cdi_provider()}, auth_init.class.getName());
+				auth = (auth_init)util_provider.getInstanceFromProvider(new String[]{getAppInit().get_cdi_provider()}, auth_init.class.getName());
 				auth.init(request);
 			}catch(bsException je){				
 			}catch(Exception e){				
@@ -2226,8 +2224,66 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		return 0;
 	}
+	
+	public static I_StatisticProvider checkStatisticProvider(){
+		if(statisticProvider!=null)
+			return statisticProvider;
+		if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true")){
+			if(getAppInit().get_statistic_provider()==null || getAppInit().get_statistic_provider().equals("")){
+				try{
+					statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
+				}catch(Exception e){						
+				}
+				if(statisticProvider==null && getCdiDefaultProvider()!=null){
+					try{
+						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
+					}catch(Exception e){						
+					}
+				}
+				
+				if(statisticProvider==null) 
+					statisticProvider = new StatisticProvider_Simple();
+			}else{
+				if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+					try{
+						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_statistic_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				if(statisticProvider==null && getCdiDefaultProvider()!=null){
+					try{
+						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(), app_init.id_statistic_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){						
+					}
+				}
+				
+				if(statisticProvider==null){
+					try{
+						statisticProvider = (I_StatisticProvider)Class.forName(getAppInit().get_statistic_provider()).newInstance();
+					}catch(Exception e){
+						writeLog("ERROR instance Statistic Provider:"+getAppInit().get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
+					}
+				}
+			}
+			if(statisticProvider==null){
+				try{
+					statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
+				}catch(Exception e){						
+				}
+				if(statisticProvider==null) 
+					statisticProvider = new StatisticProvider_Simple();
+			}
+		}
+		return statisticProvider;
+			
+	}
 
 	public static void putToStatisticProvider(StatisticEntity stat){
+		if(statisticProvider==null)
+			statisticProvider = checkStatisticProvider();
+		if(statisticProvider!=null)
+			statisticProvider.addStatictic(stat);
+/*		
 		if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true")){
 			I_StatisticProvider statProvider = (I_StatisticProvider) getFromLocalContainer(CONST_ID_STATISTIC_PROVIDER);
 			if(statProvider==null){
@@ -2253,12 +2309,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 			statProvider.addStatictic(stat);
 		}
+*/		
 	}
 
 	public static I_StatisticProvider getStatisticProvider(){
+		if(statisticProvider==null)
+			statisticProvider = checkStatisticProvider();
+		return statisticProvider;
+
+/*		
+		I_StatisticProvider statProvider = null;
 		if(getAppInit().get_statistic()!=null && getAppInit().get_statistic().equalsIgnoreCase("true"))
-			return (I_StatisticProvider) getFromLocalContainer(CONST_ID_STATISTIC_PROVIDER);
-		return null;
+			statProvider = (I_StatisticProvider) getFromLocalContainer(CONST_ID_STATISTIC_PROVIDER);
+		if(statProvider==null){
+			statProvider = checkStatisticProvider();
+			putToLocalContainer(CONST_ID_STATISTIC_PROVIDER,statProvider);
+		}
+		return statProvider;
+*/		
 	}
 
 
@@ -2403,101 +2471,336 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return "???";
 	}
 
+	
+	public static Map checkOnlySession(HttpServletRequest request){
+		bsProvidedWrapper wrapper = null;
+		String bean_id = bsConstants.CONST_BEAN_$ONLYINSSESSION; 
+		if(!getAction_config().getInstance_onlysession().equals("") && !getAction_config().getInstance_onlysession().equalsIgnoreCase("false"))
+			bean_id = getAction_config().getInstance_onlysession();
 
-	public static Object getFromLocalContainer(String key) {
-		if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("")){
-			try{
-				if(!getAction_config().getInstance_local_container().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
-					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
-					return map.get(key);
+			if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
+					if(wrapper!=null)
+						return (Map)wrapper.getInstance();
+				}catch(Exception e){
 				}
-			}catch(Exception e){
-			}
-		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
-			try{
-				if(!getAction_config().getInstance_local_container().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
-					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
-					return map.get(key);
+			}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
+					if(wrapper!=null)
+						return (Map)wrapper.getInstance();
+				}catch(Exception e){
 				}
-			}catch(Exception e){
 			}
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
+					if(wrapper!=null)
+						return (Map)wrapper.getInstance();
+				}catch(Exception e){
+				}
+			}
+		return null;		
+	}
+	
+	public static Object getFromOnlySession(String id,HttpServletRequest request){		
+		Map instance = checkOnlySession(request);
+		
+		if(instance==null)
+			instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+		if(instance==null){
+			instance = new HashMap();
+			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
 		}
-		return local_container.get(key);
+		return instance.get(id);
+	}
+
+	public static boolean setToOnlySession(String id,Object obj,HttpServletRequest request){
+		try{
+			Map instance = checkOnlySession(request);
+
+			if(instance==null)
+				instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			if(instance==null){
+				instance = new HashMap();
+				request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
+			}
+			instance.put(id, obj);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
+
+	public static Object removeFromOnlySession(String id,HttpServletRequest request){
+			Map instance = checkOnlySession(request);
+			if(instance!=null)
+				util_provider.destroyInstanceFromProvider(instance.get(id), null);
+
+			if(instance==null)
+				instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			if(instance==null){
+				instance = new HashMap();
+				request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
+			}
+			return instance.remove(id);
+	}
+
+	public static Map getOnlySession(HttpServletRequest request){
+		Map instance = checkOnlySession(request);
+		
+		if(instance==null)
+			instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+		if(instance==null){
+			instance = new HashMap();
+			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
+		}
+		return instance;
+	}
+	
+	public static boolean setOnlySession(Map newInstance, HttpServletRequest request){
+		
+		if(newInstance == null)
+			return false;
+		
+		Map instance = checkOnlySession(request);
+		
+		if(instance==null)
+			instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+		if(instance==null){
+			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,newInstance);
+		}else{
+			instance.clear();
+			instance.putAll(newInstance);
+		}
+		return true;
+	}
+	
+
+	public static void clearOnlySession(HttpServletRequest request){
+		Map instance = checkOnlySession(request);
+		if(instance!=null){
+			Iterator it = instance.values().iterator();
+			while(it.hasNext())
+				util_provider.destroyInstanceFromProvider(it.next(), null);
+		}
+		if(instance==null)
+			instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+		if(instance==null){
+			instance = new HashMap();
+			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
+		}
+		instance.clear();
+
+	}
+	
+	
+	public static bsProvidedWrapper checkInfoNavigationWrapper(HttpServletRequest request){
+
+		bsProvidedWrapper wrapper = null;
+		String bean_id = bsConstants.CONST_BEAN_$NAVIGATION; 
+		if(!getAction_config().getInstance_navigated().equals("") && !getAction_config().getInstance_navigated().equalsIgnoreCase("false"))
+			bean_id = getAction_config().getInstance_navigated();
+
+			if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
+				try{					
+					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					return (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+		
+		return wrapper;
+	}
+	
+	public static info_navigation getFromInfoNavigation(String id,HttpServletRequest request){
+		info_navigation nav = null;
+		bsProvidedWrapper inw = checkInfoNavigationWrapper(request);
+		if(inw!=null)
+			nav = (info_navigation)inw.getInstance();
+			
+		if(nav==null)
+			nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+		if(nav==null) 
+			return null;
+		if(id==null) 
+			return nav;
+		return nav.find(id);
+	}
+
+	public static boolean setToInfoNavigation(info_navigation nav,HttpServletRequest request){
+		try{
+			
+			bsProvidedWrapper inw = checkInfoNavigationWrapper(request);
+			
+			if(inw!=null){
+				inw.setInstance(nav);
+				return true;
+			}
+
+			request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION, nav);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}	
+	
+
+	public static Map checkLocalContainer(){
+		if(action_config==null || !action_config.isReadOk()){
+			return local_container;	
+		}else{
+			bsProvidedWrapper wrapper = null;
+			String bean_id = bsConstants.CONST_BEAN_$LOCAL_CONTAINER; 
+			if(!getAction_config().getInstance_local_container().equals("") && !getAction_config().getInstance_local_container().equalsIgnoreCase("false"))
+				bean_id = getAction_config().getInstance_local_container();
+			
+				if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
+					try{
+						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(), bean_id, getAction_config().getInstance_local_container(), null);
+						if(wrapper!=null && local_container!=null && local_container.size()>0){
+							wrapper.setInstance(local_container);
+							local_container.clear();
+							local_container=null;
+						}
+						return (Map)wrapper.getInstance();
+					}catch(Exception e){
+					}
+				}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+					try{
+						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						if(wrapper!=null && local_container!=null && local_container.size()>0){
+							wrapper.setInstance(local_container);
+							local_container.clear();
+							local_container=null;
+						}
+						return (Map)wrapper.getInstance();
+					}catch(Exception e){
+					}
+				}
+				if(wrapper==null && getCdiDefaultProvider()!=null){
+					try{
+						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						if(wrapper!=null && local_container!=null && local_container.size()>0){
+							wrapper.setInstance(local_container);
+							local_container.clear();
+							local_container=null;
+						}
+						return (Map)wrapper.getInstance();
+					}catch(Exception e){
+					}
+					
+				}
+//			}
+		}
+		return local_container;
+		
+	}
+	
+	public static Object getFromLocalContainer(String key) {
+		Map container = checkLocalContainer();
+		if(container!=null)
+			return container.get(key);
+		if(local_container!=null)
+			return local_container.get(key);
+		return null;
 	}
 
 	public static Object removeFromLocalContainer(String key) {
-		if(getAction_config()!=null && getAction_config().getProvider()!=null){
-			try{
-				if(!getAction_config().getInstance_local_container().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
-					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
-					map.remove(key);
-				}
-			}catch(Exception e){
-			}
-		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
-			try{
-				if(!getAction_config().getInstance_local_container().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
-					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
-					return map.get(key);
-				}
-			}catch(Exception e){
-			}
+		Map container = checkLocalContainer();
+		if(container!=null){
+			util_provider.destroyInstanceFromProvider(container.get(key), null);
+			return container.remove(key);
 		}
-		return local_container.remove(key);
+		if(local_container!=null)
+			return local_container.remove(key);
+		return null;
 	}
 
 	public static void setToLocalContainer(String key, Object value) {
-		if(getAction_config()!=null && getAction_config().getProvider()!=null){
-			try{
-				if(!getAction_config().getInstance_local_container().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
-					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
-					map.putIfAbsent(key,value);
-				}
-			}catch(Exception e){
-			}
-		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
-			try{
-				if(!getAction_config().getInstance_local_container().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
-					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
-					map.putIfAbsent(key,value);
-				}
-			}catch(Exception e){
-			}
+		Map container = checkLocalContainer();
+		if(container!=null){
+			if(container instanceof ConcurrentHashMap)
+				((ConcurrentHashMap)container).putIfAbsent(key,value);
+			else 
+				container.put(key,value);
 		}
-		local_container.putIfAbsent(key,value);
+		if(local_container!=null)
+			local_container.putIfAbsent(key,value);
 	}
 
 	public static void putToLocalContainer(String key, Object value) {
-		if(getAction_config()!=null && getAction_config().getProvider()!=null){
-			try{
-				if(!getAction_config().getInstance_local_container().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAction_config().getProvider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
-					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
-					map.put(key,value);
-				}
-			}catch(Exception e){
-			}
-		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
-			try{
-				if(!getAction_config().getInstance_local_container().equals("")){
-					bsProvidedWrapper wrapper = (bsProvidedWrapper)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  bsConstants.CONST_BEAN_$LOCAL_CONTAINER, getAction_config().getInstance_local_container(), null);
-					ConcurrentHashMap map = (ConcurrentHashMap)wrapper.getInstance();
-					map.put(key,value);
-				}
-			}catch(Exception e){
-			}
-		}
-		local_container.put(key,value);
+		Map container = checkLocalContainer();
+		if(container!=null)
+			container.put(key,value);
+		if(local_container!=null)
+			local_container.put(key,value);
+	}
+	
+	public static Map getLocalContainer(){
+		Map container = checkLocalContainer();
+		if(container!=null)
+			return container;
+		if(local_container!=null)
+			return local_container;
+		return null;
 	}
 
+	public static boolean setLocalContainer(Map newInstance){
+		if(newInstance==null) 
+			return false;
+		Map container = checkLocalContainer();
+		if(container!=null){
+			container.clear();
+			container.putAll(newInstance);
+			return true;
+		}
+		if(local_container!=null){
+			local_container.clear();
+			local_container.putAll(newInstance);
+			return true;
+		}
+		return false;
+	}
 
+	public static boolean clearLocalContainer(){
+		Map container = checkLocalContainer();
+		if(container!=null){
+			Iterator it = container.values().iterator();
+			while(it.hasNext())
+				util_provider.destroyInstanceFromProvider(it.next(), null);
+			
+			container.clear();
+			return true;
+		}
+		if(local_container!=null){
+			local_container.clear();
+			return true;
+		}
+		return false;
+	}
+	
+	
 	public static void setReInit(boolean reInit) {
 		bsController.reInit = reInit;
+	}
+
+	public static i_provider getCdiDefaultProvider() {
+		return cdiDefaultProvider;
+	}
+
+	public static i_provider getEjbDefaultProvider() {
+		return ejbDefaultProvider;
 	}
 }

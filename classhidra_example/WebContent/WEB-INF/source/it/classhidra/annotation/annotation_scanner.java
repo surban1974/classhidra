@@ -58,6 +58,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	protected String provider;
 	protected String instance_navigated;
 	protected String instance_local_container;
+	protected String instance_onlysession;
 
 	
 
@@ -170,7 +171,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 	
 	
-	private List checkBranch(String path){
+	public List checkBranch(String path){
 		List array = new ArrayList();
 		try{
 			array = util_classes.getResourcesAsFile(path);
@@ -221,6 +222,7 @@ public class annotation_scanner implements i_annotation_scanner {
 				provider=annotationActionMapping.provider();
 				instance_navigated=annotationActionMapping.instance_navigated();
 				instance_local_container=annotationActionMapping.instance_local_container();
+				instance_onlysession=annotationActionMapping.instance_onlysession();
 				
 				Stream[] streams = annotationActionMapping.streams();
 				if(streams!=null && streams.length>0){
@@ -533,6 +535,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	private void setEntity(info_entity iEntity, Entity entity){
 		if(iEntity==null || entity==null) return;
 		iEntity.setProvider(entity.provider());
+		iEntity.setLookup(entity.lookup());
 		iEntity.setProperty(entity.property());
 		iEntity.setOrder(entity.order());
 		iEntity.setComment(entity.comment());
@@ -622,6 +625,11 @@ public class annotation_scanner implements i_annotation_scanner {
 
 	public String getInstance_local_container() {
 		return instance_local_container;
+	}
+
+
+	public String getInstance_onlysession() {
+		return instance_onlysession;
 	}
 
 

@@ -17,7 +17,8 @@ public @interface ActionMapping {
 	String memoryInContainer_streams() default "false";
 	String provider() default "";
 	String instance_navigated() default "";
-	String instance_local_container() default "";	
+	String instance_local_container() default "";
+	String instance_onlysession() default "";
 	Stream[] streams() default {};
 	Bean[] beans() default {};
 	Redirect[] redirects() default {};

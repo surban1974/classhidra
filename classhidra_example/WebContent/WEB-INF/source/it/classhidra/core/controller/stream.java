@@ -102,12 +102,22 @@ public class stream implements i_stream, Serializable{
 	}
 	
 	public listener_stream getListener_s() {
-		return listener_s;
+		try{
+			return listener_s;
+		}catch(Exception e){
+			return null;
+		}catch(Throwable e){
+			return null;
+		}
 	}
 
 	public void setListener_s(listener_stream listenerS) {
-		listener_s = listenerS;
-		if(listener_s!=null) listener_s.setOwner(this);
+		try{
+			listener_s = listenerS;
+			if(listener_s!=null) listener_s.setOwner(this);
+		}catch(Exception e){
+		}catch(Throwable e){
+		}
 	}
 
 	public void onPostEnter(redirects redirect, HttpServletRequest request,HttpServletResponse response) {

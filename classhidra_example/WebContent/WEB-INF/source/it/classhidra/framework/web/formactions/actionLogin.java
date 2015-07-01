@@ -141,7 +141,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			auth.get_authentication_filter().validate_actionPermittedForbidden(auth);		
 		}catch(Exception e){
 		}
-		request.getSession().removeAttribute(bsController.CONST_BEAN_$ONLYINSSESSION);
+		bsController.clearOnlySession(request);
 		return new redirects("/actions/"+(String)get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION)+bsController.getAppInit().get_extention_do());
 
 	}

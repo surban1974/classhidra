@@ -23,6 +23,7 @@
 *********************************************************************************/
 package it.classhidra.core.controller;
 
+
 import it.classhidra.core.tool.exception.bsControllerException;
 
 import java.io.Serializable;
@@ -34,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-public interface i_action extends Serializable, listener_action{
+public interface i_action extends listener_action, Serializable{
 	void init(HttpServletRequest request,HttpServletResponse response) throws bsControllerException;
 	redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
 	redirects syncroservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
@@ -54,4 +55,5 @@ public interface i_action extends Serializable, listener_action{
 	Object[] getMethodAndCall(String annotation_name);
 	listener_action getListener_a();
 	void setListener_a(listener_action listenerA);
+	i_bean asBean();
 }

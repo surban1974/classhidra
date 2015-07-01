@@ -11,4 +11,5 @@ public @interface Entity {
 	String comment() default "";
 	String system() default "false";
 	String annotated() default "true";
+	String lookup() default "";
 }

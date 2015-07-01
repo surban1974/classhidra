@@ -1622,65 +1622,7 @@
   </tag> 
 
 
-  <tag>
-    <name>conditions</name>
-    <tag-class>it.classhidra.core.controller.tags.tagConditions</tag-class>
-    <body-content>JSP</body-content>
-    <description>for Condition Expression</description>
-   <attribute>
-        <name>condId</name>
-        <required>true</required>
-    	<rtexprvalue>true</rtexprvalue>
-	</attribute>   
-  <attribute>
-        <name>cond</name>
-        <required>true</required>
-    	<rtexprvalue>true</rtexprvalue>
-	</attribute> 	
-  </tag>	
-  
-  <tag>
-    <name>condition</name>
-    <tag-class>it.classhidra.core.controller.tags.tagCondition</tag-class>
-    <body-content>JSP</body-content>
-    <description>for Condition</description>
-   <attribute>
-        <name>cond</name>
-        <required>false</required>
-    	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
-    <attribute>
-        <name>bean</name>
-        <required>false</required>
-    	<rtexprvalue>true</rtexprvalue>
-	</attribute>
-    <attribute>
-        <name>name</name>
-        <required>false</required>
-    <rtexprvalue>true</rtexprvalue>
-	</attribute>
-    <attribute>
-    	<name>value</name>
-    	<required>false</required>
-    <rtexprvalue>true</rtexprvalue>
-	</attribute>
-    <attribute>
-        <name>method_prefix</name>
-        <required>false</required>
-    	<rtexprvalue>true</rtexprvalue>
-	</attribute>
-    <attribute>
-        <name>field</name>
-        <required>false</required>
-    	<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-	        <name>valueFromBean</name>
-	        <required>false</required>
-	    	<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	
-  </tag> 
+ 
   
   <tag>
     <name>like</name>

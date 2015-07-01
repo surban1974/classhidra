@@ -417,7 +417,6 @@ public class tagOptions extends TagSupport{
 			}catch(Exception e){}
 			results.append(currentLabel);
 		}
-		results.append("</option>");
 		results.append(System.getProperty("line.separator"));
 
 		return results.toString();

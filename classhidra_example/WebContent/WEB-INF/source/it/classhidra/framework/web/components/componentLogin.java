@@ -1,6 +1,18 @@
 package it.classhidra.framework.web.components; 
 
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Entity;
@@ -22,21 +34,10 @@ import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_reflect;
+import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_usersInSession;
 import it.classhidra.framework.web.beans.option_element;
 import it.classhidra.framework.web.integration.i_module_integration;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @ActionMapping (
 		redirects={
@@ -166,7 +167,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 			group="";
 			groups=new Vector();
 			auth.set_logged(false);
-			HashMap fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			Map fromSession = bsController.getOnlySession(request);
 			if(fromSession!=null) fromSession.remove("formMinimizer");
 			return new redirects(get_infoaction().getRedirect());
 		}
@@ -192,8 +193,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 			}catch(Exception e){
 			}
 			middleAction="";	
-			request.getSession().removeAttribute(bsController.CONST_BEAN_$ONLYINSSESSION);
-	
+			bsController.clearOnlySession(request);
 			return new redirects("actions/content?t=1");
 	
 		}
@@ -220,7 +220,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		    
 		    i_module_integration imi = null;
 		    try{
-		    	imi = (i_module_integration)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, module_integration);
+		    	imi = (i_module_integration)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, module_integration);
 		    }catch(Exception e){		    	
 		    }
 	

@@ -1,13 +1,18 @@
 package it.classhidra.framework.web.formactions;
 
-import it.classhidra.core.controller.*;
+import java.io.Serializable;
+
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import it.classhidra.core.controller.action;
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.framework.web.formbeans.formMenuCreator;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import javax.servlet.http.*;
-import javax.servlet.*;
 
 
 
@@ -20,7 +25,7 @@ public actionContent(){
 	
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	try{
-		formMenuCreator fmc = (formMenuCreator)((HashMap)request.getSession().getAttribute(bsController.CONST_BEAN_$ONLYINSSESSION)).get("formMenuCreator");
+		formMenuCreator fmc = (formMenuCreator)bsController.getFromOnlySession("formMenuCreator", request);
 		fmc.getElement().hideDynamicElements();
 		fmc.getElement().calculate_potential_elements();
 		fmc.getElement().analyse_potential_group(true);

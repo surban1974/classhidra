@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-public interface listener_bean {
+public interface listener_bean{
 	void onPreInit(HttpServletRequest request);
 	void onPreInit(HashMap _content);
 	void onPreInit(i_bean another_bean);

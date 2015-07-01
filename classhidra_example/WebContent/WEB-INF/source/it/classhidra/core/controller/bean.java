@@ -44,6 +44,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 
+
+
+
 import javax.servlet.http.HttpServletRequest;
 
 import sun.misc.BASE64Decoder;
@@ -1180,12 +1183,22 @@ public void setGzipoutput(boolean gzipoutput) {
 }
 
 public listener_bean getListener_b() {
-	return listener_b;
+	try{
+		return listener_b;
+	}catch(Exception e){
+		return null;
+	}catch(Throwable e){
+		return null;
+	}
 }
 
 public void setListener_b(listener_bean listener) {
-	this.listener_b = listener;
-	if(listener_b!=null) listener_b.setOwner(this);
+	try{
+		this.listener_b = listener;
+		if(listener_b!=null) listener_b.setOwner(this);
+	}catch(Exception e){
+	}catch(Throwable e){
+	}
 }
 
 public void onPostInit(HashMap content) {
@@ -1288,7 +1301,9 @@ public boolean convert2json(){
 	return false;
 }
 
-
+public i_action asAction(){
+	return (action)this;
+}
 
 
 

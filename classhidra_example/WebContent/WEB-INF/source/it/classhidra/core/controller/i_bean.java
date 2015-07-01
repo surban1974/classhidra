@@ -36,7 +36,7 @@ import it.classhidra.core.tool.exception.bsControllerException;
 
 
 
-public interface i_bean extends i_elementBeanBase,listener_bean{
+public interface i_bean extends listener_bean, i_elementBeanBase{
 	void reimposta();
 	void init(HttpServletRequest request)  throws bsControllerException;
 	void init(HashMap _content)  throws bsControllerException;
@@ -110,4 +110,5 @@ public interface i_bean extends i_elementBeanBase,listener_bean{
 	
 	listener_bean getListener_b();
 	void setListener_b(listener_bean listener);
+	i_action asAction();
 }

@@ -24,6 +24,20 @@
 
 package it.classhidra.core.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.servlet.ServletContext;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import it.classhidra.core.init.app_init;
 import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -32,19 +46,8 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_reflect;
+import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_xml;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.*;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 
 public class load_message  extends elementBase{
@@ -95,7 +98,7 @@ public void init() throws bsControllerException{
 	
 	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, ainit.get_external_loader());
+			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, ainit.get_external_loader());
 			reInit(extl);
 		}catch(Exception e){
 			bsController.writeLog("Load_messages from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
@@ -107,7 +110,7 @@ public void init() throws bsControllerException{
 
 	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, this.getExternalloader());
+			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, this.getExternalloader());
 			reInit(extl);
 		}catch(Exception e){
 			bsController.writeLog("Load_messages from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
@@ -296,6 +299,12 @@ public boolean isReadOk() {
 
 public void load_from_resources() { 
 		load_from_resources("/config/"+bsController.CONST_XML_MESSAGES);
+		load_from_resources("/config/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);
+		
+		
+		load_from_resources("META-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);	
+		load_from_resources("WEB-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);
+		
 		String property_name =  "config."+bsController.CONST_XML_MESSAGES_FOLDER;
 		ArrayList array = new ArrayList();
 
@@ -312,19 +321,19 @@ public void load_from_resources() {
 		}
 
 }
-private void load_from_resources(String property_name) {
-
-
+private boolean load_from_resources(String property_name) {
 		InputStream is = null;
 	    BufferedReader br = null;
 	    String result=null;
 	    String line="";
 
-
 	    try {
 
 	    	is = getClass().getResourceAsStream(property_name);
-	    	
+	    	if(is==null)
+	    		is = this.getClass().getClassLoader().getResourceAsStream(property_name);
+	    	if(is==null)
+	    		is = ClassLoader.getSystemClassLoader().getResourceAsStream(property_name);
 	    	if(is!=null){
 	    		result="";
 		    	br = new BufferedReader(new InputStreamReader(is));
@@ -341,20 +350,86 @@ private void load_from_resources(String property_name) {
 	    	}
 		}
 
-	    try{
-	    	if(result!=null){
-	    		if(initWithData(result)){
-	    			bsController.writeLog("Load_messages from "+property_name+" OK ",iStub.log_INFO);
-	    			readOk_Resource = readOk_Resource || true;
-	    			loadedFrom+= " "+property_name;
-	    		}
-	    	}
-	    }catch (Exception e) {
-	    	readOk_Resource = readOk_Resource || false;
-			bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
-		}
+	    if(result!=null){
+		    try{
+		    	if(result!=null){
+		    		if(initWithData(result)){
+		    			bsController.writeLog("Load_messages from "+property_name+" OK ",iStub.log_INFO);
+		    			readOk_Resource = readOk_Resource || true;
+		    			loadedFrom+= " "+property_name;
+		    			return true;
+		    		}
+		    	}
+		    }catch (Exception e) {
+		    	readOk_Resource = readOk_Resource || false;
+				bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+			}
+	    }
+	    return false;
 
 }
+
+
+public boolean load_from_resources(ServletContext ctx) {
+
+	boolean read = load_from_resources(ctx,"/WEB-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);
+	if(!read) 
+		read = load_from_resources(ctx,"/WEB-INF/config/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);
+	if(!read) 
+		read = load_from_resources(ctx,"/META-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);
+	if(!read) 
+		read = load_from_resources(ctx,"/META-INF/config/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);
+
+	return read;
+}
+
+private boolean load_from_resources(ServletContext ctx, String property_name) {
+	
+
+
+
+	InputStream is = null;
+    BufferedReader br = null;
+    String result=null;
+    String line="";
+
+
+    try {
+    	is = ctx.getResourceAsStream(property_name);
+      	if(is!=null){
+    		result="";
+	    	br = new BufferedReader(new InputStreamReader(is));
+	    	while (null != (line = br.readLine())) {
+	    		result+=(line+"\n");
+	    	}
+    	}
+    }catch (Exception e) {
+    	bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+    }finally {
+    	try {
+    		if (br != null) br.close();
+    		if (is != null) is.close();
+    	}catch (Exception e) {
+    	}
+	}
+
+    if(result!=null){
+	    try{
+	    	if(initWithData(result)){
+	    		bsController.writeLog("Load_messages from "+property_name+" OK ",iStub.log_INFO);
+	    		readOk_Resource = readOk_Resource || true;
+	    		loadedFrom+=" "+property_name;
+	    		return true;
+	    	}
+		}catch(Exception e){
+			bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+		}
+    }
+    
+    return false;
+
+}
+
 
 public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 		String app_path=ainit.get_path();

@@ -12,8 +12,10 @@
 	info_action		formInfoAction 		= formAction.get_infoaction();
 	i_bean 			formBean 			= formAction.get_bean();
 	redirects 		formRedirect 		= formAction.getCurrent_redirect();
-	info_navigation	formInfoNavigation	= (request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION)==null)?new info_navigation():(info_navigation)request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION);
-		formInfoNavigation.decodeMessage(request);
+	info_navigation	formInfoNavigation	= bsController.getFromInfoNavigation(null, request);
+		if(formInfoNavigation==null)
+			formInfoNavigation = new info_navigation();
+	formInfoNavigation.decodeMessage(request);
 	auth_init 		userInfo			= (auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
 	int shw=0;
 	if(formInfoAction!=null) shw++;

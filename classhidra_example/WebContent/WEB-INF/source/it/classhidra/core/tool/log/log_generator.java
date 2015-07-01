@@ -25,12 +25,6 @@
 package it.classhidra.core.tool.log;
 
 
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.init.*;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_reflect;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +32,12 @@ import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.init.log_init;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_provider;
 
 public class log_generator implements i_log_generator {
 	private log_init init;
@@ -78,7 +78,7 @@ public static i_log_pattern_web patternFactory(String className){
 	if(className==null || className.equals("")) return new log_patternSimple();
 	if(element==null){
 		try{	
-			element = (i_log_pattern_web)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
+			element = (i_log_pattern_web)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
 		}catch (Exception e) {
 			element = new log_patternSimple();
 		}
@@ -91,7 +91,7 @@ public static iStub stubFactory(String className){
 	if(className==null || className.equals("")) return null;
 	if(element==null){
 		try{	
-			element = (iStub)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
+			element = (iStub)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
 		}catch (Exception e) {
 			element = null;
 		}
@@ -107,7 +107,7 @@ public static iStub stubFactory(log_init _init){
 	
 	if(element==null){
 		try{	
-			element = (iStub)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
+			element = (iStub)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
 		}catch (Exception e) {
 			element = null;
 		}

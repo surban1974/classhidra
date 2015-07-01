@@ -1,6 +1,6 @@
 package it.classhidra.core.controller;
 
-public interface i_externalloader {
+public interface i_externalloader{
 	public static final String ACTIONS_actions="actions";
 	public static final String ACTIONS_streams="streams";
 	public static final String ACTIONS_streams_apply_to_actions="streams_apply_to_actions";
@@ -17,6 +17,8 @@ public interface i_externalloader {
 	public static final String ACTIONS_provider="provider";
 	public static final String ACTIONS_instance_navigated="instance_navigated";
 	public static final String ACTIONS_instance_local_container="instance_local_container";
+	public static final String ACTIONS_instance_onlysession="instance_onlysession"; 
+
 	
 	public static final String MESSAGES_messages="messages";
 

@@ -48,7 +48,7 @@ public class action extends bean implements i_action, Serializable{
 		super();
 	}	
 	
-	public void init(HttpServletRequest request,	HttpServletResponse response) throws bsControllerException{
+	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		if(_bean!=null){
 			_bean.onPreInit(request);
 			_bean.init(request); 
@@ -294,6 +294,10 @@ public class action extends bean implements i_action, Serializable{
 	}
 	
 	public void setOwner(i_action owner) {
+	}
+	
+	public i_bean asBean(){
+		return (bean)this;
 	}
 
 

@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-public interface i_stream extends Serializable, listener_stream{
+public interface i_stream extends listener_stream, Serializable{
 	void init(HttpServletRequest request,HttpServletResponse response) throws bsControllerException;
 	redirects streamservice_enter(HttpServletRequest request, HttpServletResponse response) throws bsControllerException;
 	redirects streamservice_exit(HttpServletRequest request, HttpServletResponse response) throws bsControllerException;

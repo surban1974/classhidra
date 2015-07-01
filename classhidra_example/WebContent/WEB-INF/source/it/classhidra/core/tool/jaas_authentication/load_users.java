@@ -25,18 +25,6 @@
 package it.classhidra.core.tool.jaas_authentication;
 
 
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.controller.i_externalloader;
-import it.classhidra.core.init.app_init;
-import it.classhidra.core.tool.elements.elementBase;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_blob;
-import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_reflect;
-import it.classhidra.core.tool.util.util_sort;
-import it.classhidra.core.tool.util.util_xml;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,6 +36,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_externalloader;
+import it.classhidra.core.init.app_init;
+import it.classhidra.core.tool.elements.elementBase;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_blob;
+import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_provider;
+import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.util_xml;
 
 public class load_users extends elementBase{
 
@@ -103,7 +103,7 @@ public void init() throws bsControllerException{
 	
 	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, ainit.get_external_loader());
+			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, ainit.get_external_loader());
 			reInit(extl);
 		}catch(Exception e){
 			bsController.writeLog("Load_users from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
@@ -115,7 +115,7 @@ public void init() throws bsControllerException{
 
 	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)util_reflect.getInstanceForNameFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, this.getExternalloader());
+			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, this.getExternalloader());
 			extl.load();
 			reInit(extl);
 		}catch(Exception e){
