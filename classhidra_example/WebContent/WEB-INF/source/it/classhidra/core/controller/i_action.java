@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************

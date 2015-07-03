@@ -1,4 +1,4 @@
-package it.classhidra.framework.web.components; 
+package it.classhidra.framework.web.components;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.Bean;
@@ -16,7 +16,7 @@ import java.util.Vector;
 
 import javax.servlet.http.*;
 import javax.servlet.*;
-  
+
 
 @Bean (	name="formMinimizer")
 
@@ -28,7 +28,7 @@ import javax.servlet.*;
         statistic="false",
         entity=@Entity(
 				property="allway:public"
-		)	
+		)
 )
 
 public class componentMinimizer extends action implements i_action, Serializable{
@@ -44,9 +44,9 @@ public class componentMinimizer extends action implements i_action, Serializable
 
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-	
+
 	if(this.getMiddleAction()==null) this.setMiddleAction("");
-	
+
 	if(this.getMiddleAction().equals("view")){
 		return new redirects(get_infoaction().getRedirect());
 	}
@@ -60,11 +60,11 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			return new redirects(tmp);
 		}
 		else return new redirects(get_infoaction().getRedirect());
-		
+
 	}
-	
+
 	if(this.getMiddleAction().equals("open")){
-/*		
+/*
 		HashMap fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 		info_navigation	formInfoNavigation	= (info_navigation)request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION);
 		info_navigation active = formInfoNavigation.getPrevIRedirect();
@@ -83,31 +83,31 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				labels.put(current.getIAction().getPath()+"", current.getDesc_second());
 			}catch(Exception e){
 			}
-			
-		}
-*/		
 
-		
+		}
+*/
+
+
 		HashMap fromSession_clone = (HashMap)fromSessions.get(source);
 		if(fromSession_clone!=null){
 			fromSession_clone.put(get_infoaction().getPath(), get_bean());
 			bsController.setOnlySession(fromSession_clone, request);
 			fromSessions.remove(source);
 		}
-		
+
 		info_navigation fromElements = (info_navigation)elements.get(source);
 		if(fromElements!=null){
 			bsController.setToInfoNavigation(fromElements, request);
 			elements.remove(source);
 		}
-		
+
 		i_bean lastInstance = (i_bean)fromLastInstance.get(source);
 		if(lastInstance!=null){
 			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,lastInstance);
 			fromLastInstance.remove(source);
 		}
-		
-		
+
+
 		keys=prepareKeys(elements, labels);
 		String tmp = source;
 		source = "";
@@ -126,12 +126,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 private info_navigation prepareDump(HttpServletRequest request){
 	info_navigation active = null;
-	
+
 	HashMap 		fromSessionGlobal = 	 new HashMap(bsController.getOnlySession(request));
 	info_navigation	formInfoNavigation	= 	 bsController.getFromInfoNavigation(null, request);
 	i_bean 			lastInstance = 			(i_bean)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE);
 	i_bean 			lastInstance_clone = null;
-	
+
 	if(formInfoNavigation!=null){
 		active = formInfoNavigation.getPrevIRedirect();
 		if(active==null){
@@ -163,19 +163,19 @@ private info_navigation prepareDump(HttpServletRequest request){
 					    	fromSession_clone.put(pair.getKey(), util_cloner.clone(pair.getValue()));
 					}
 				}
-				
-				fromSessions.put(current.getIAction().getPath(), fromSession_clone);				
+
+				fromSessions.put(current.getIAction().getPath(), fromSession_clone);
 				elements.put(current.getIAction().getPath(), util_cloner.clone(formInfoNavigation));
 				if(lastInstance_clone!=null)
 					fromLastInstance.put(current.getIAction().getPath(), lastInstance_clone);
 				labels.put(current.getIAction().getPath(), current.getDesc_second());
 				keys=prepareKeys(elements, labels);
-				
+
 			}catch(Exception e){
-			}			
+			}
 		}
 	}
-	
+
 	return active;
 }
 
@@ -189,7 +189,7 @@ private Vector prepareKeys(HashMap elements, HashMap labels){
 				);
 		}catch(Exception e){
 		}
-		
+
 	}
 	return result;
 }

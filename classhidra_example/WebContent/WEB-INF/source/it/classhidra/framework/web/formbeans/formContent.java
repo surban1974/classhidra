@@ -11,7 +11,7 @@ import it.classhidra.core.controller.redirects;
 public class formContent extends bean implements i_bean{
 	private static final long serialVersionUID = -1125497534735376530L;
 	private String menuSource;
-	
+
 public void reimposta(){
 	menuSource="";
 }

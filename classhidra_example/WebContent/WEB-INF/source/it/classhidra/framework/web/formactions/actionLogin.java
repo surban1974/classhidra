@@ -23,34 +23,34 @@ public class actionLogin extends action implements i_action, Serializable{
 
 public actionLogin(){
 	super();
-}	
-	
+}
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	auth_init auth=(auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
 	if(auth==null) auth = new auth_init();
 	if(	get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION)!=null &&
-		get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("undefined")) 
-			get_bean().set(bsController.CONST_ID_$MIDDLE_ACTION,"");	
-	
+		get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("undefined"))
+			get_bean().set(bsController.CONST_ID_$MIDDLE_ACTION,"");
+
 	boolean fromTicker=false;
-	
+
 	if(	get_bean().get("user").equals("") &&
 		get_bean().get("password").equals("") &&
 		get_bean().get("group").equals("")){
 		try{
-	
+
 			if(auth.readTicker(request)){
 				if(auth.get_user()!=null){
 					get_bean().set("user",auth.get_user());
 					get_bean().set("password","**********");
 					get_bean().set("group",auth.get_ruolo());
 					fromTicker=true;
-				}	
+				}
 			}
 		}catch(Exception e){
 		}
-			
-	} 
+
+	}
 	if(fromTicker){
 		if(!((String)get_bean().get("prev_user")).equals(get_bean().get("user")+"."+get_bean().get("password")))
 			get_bean().set("prev_user",get_bean().get("user")+"."+get_bean().get("password"));
@@ -59,21 +59,21 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		StringTokenizer st = new StringTokenizer(auth.get_ruoli(),";");
 		while(st.hasMoreTokens()){
 			String current = st.nextToken();
-			groups.add(new option_element(current,current)); 
-		}			
-		
-	}else{	
+			groups.add(new option_element(current,current));
+		}
+
+	}else{
 		try{
-			
+
 			if(!((String)get_bean().get("prev_user")).equals(get_bean().get("user")+"."+get_bean().get("password"))){
-				get_bean().set("group",""); 
+				get_bean().set("group","");
 				get_bean().set("prev_user",get_bean().get("user")+"."+get_bean().get("password"));
-			}		
+			}
 		}catch(Exception e){
 		}
 	}
-	
-	
+
+
 
 	if(	get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION)!=null &&
 		get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("")){
@@ -81,12 +81,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			!get_bean().get("password").equals("") &&
 			((Vector)get_bean().get("groups")).size()==0)
 			get_bean().set(bsController.CONST_ID_$MIDDLE_ACTION,"groups");
-		
+
 
 	}
-	
+
 	if(	get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION)!=null &&
-		get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("groups")){	
+		get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("groups")){
 		if(get_bean().get("user").equals("") && get_bean().get("password").equals("")) get_bean().set("user","anonimouse");
 //		if(auth!=null && !auth.is_logged()){
 			auth.init((String)get_bean().get("user"),(String)get_bean().get("password"),request);
@@ -101,15 +101,15 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			StringTokenizer st = new StringTokenizer(auth.get_ruolo(),";");
 			while(st.hasMoreTokens()){
 				String current = st.nextToken();
-				groups.add(new option_element(current,current)); 
-			}			
+				groups.add(new option_element(current,current));
+			}
 			get_bean().set("lang",auth.get_language());
-		}	
-		
+		}
+
 		return new redirects(get_infoaction().getRedirect());
 	}
 
-	
+
 	if(	get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION)!=null &&
 		get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("clear")){
 		get_bean().set("user","");
@@ -129,16 +129,16 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}
 		return new redirects(get_infoaction().getRedirect());
 	}
-	
-	
+
+
 	if(	get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION)!=null &&
-		!get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("") && 
+		!get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("") &&
 		!get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("change_rule")){
 		try{
 			get_bean().set("lang",auth.get_language());
-			auth.set_ruolo((String)get_bean().get("group"));			
+			auth.set_ruolo((String)get_bean().get("group"));
 			auth.saveTicker(response);
-			auth.get_authentication_filter().validate_actionPermittedForbidden(auth);		
+			auth.get_authentication_filter().validate_actionPermittedForbidden(auth);
 		}catch(Exception e){
 		}
 		bsController.clearOnlySession(request);
@@ -149,13 +149,13 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		get_bean().get(bsController.CONST_ID_$MIDDLE_ACTION).equals("change_rule")){
 			try{
 				get_bean().set("lang",auth.get_language());
-				auth.set_ruolo((String)get_bean().get("group"));			
+				auth.set_ruolo((String)get_bean().get("group"));
 				auth.saveTicker(response);
-				auth.get_authentication_filter().validate_actionPermittedForbidden(auth);		
+				auth.get_authentication_filter().validate_actionPermittedForbidden(auth);
 			}catch(Exception e){
 			}
-		}	
+		}
 	return new redirects(get_infoaction().getRedirect());
-		
+
 }
 }

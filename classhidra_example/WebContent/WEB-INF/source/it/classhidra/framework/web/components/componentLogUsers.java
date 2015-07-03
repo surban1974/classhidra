@@ -1,4 +1,4 @@
-package it.classhidra.framework.web.components; 
+package it.classhidra.framework.web.components;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
@@ -6,6 +6,7 @@ import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -24,7 +25,7 @@ import javax.servlet.http.HttpSession;
 
 @ActionMapping (
 		redirects={
-				@Redirect(	
+				@Redirect(
 						path="/jsp/framework/log_users.jsp",
 						descr="Users In Session",
 						mess_id="title_fw_Log_users"
@@ -39,7 +40,7 @@ import javax.servlet.http.HttpSession;
 	redirect="/jsp/framework/log_users.jsp",
 	navigated="true",
 	redirects={
-			@Redirect(	
+			@Redirect(
 				auth_id="logu_id",
 				path="*"
 			)
@@ -52,16 +53,16 @@ public class componentLogUsers extends action implements i_action, Serializable{
 
 
 
-	
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 
-	
-	
+
+
 	HashMap h_user_container = (HashMap)bsController.getFromLocalContainer(util_usersInSession.CONST_APP_USER_CONTAINER);
 	if(h_user_container==null) h_user_container = new HashMap();
 	if(this.getMiddleAction()==null) this.setMiddleAction("");
 	if(this.getMiddleAction().equals("view_mess")){
-		return new redirects("/jsp/ajax/add_LogUserMess.jsp?session_id="+this.get("session_id"));	
+		return new redirects("/jsp/ajax/add_LogUserMess.jsp?session_id="+this.get("session_id"));
 	}
 	if(this.getMiddleAction().equals("add_mess")){
 		try{
@@ -85,7 +86,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 						$listmessages.add(mess);
 					}
 				}
-				
+
 			}else{
 				HttpSession current_session = (HttpSession)h_user_container.get(this.get("session_id").toString());
 				if(current_session!=null){
@@ -97,10 +98,10 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					$listmessages.add(mess);
 				}
 			}
-		}catch(Exception e){			
+		}catch(Exception e){
 		}
-			
-	}	
+
+	}
 	if(this.getMiddleAction().equals("remove")){
 		try{
 			HttpSession current_session = (HttpSession)h_user_container.get(this.get("session_id").toString());
@@ -113,7 +114,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			auth.set_matricola("guest");
 			auth.set_language("it");
 			h_user_container.remove(this.get("session_id").toString());
-		}catch(Exception e){			
+		}catch(Exception e){
 		}
 	}
 	if(this.getMiddleAction().equals("clear")){
@@ -134,7 +135,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 		}
 		request.setAttribute("elements", elements);
-	return new redirects(get_infoaction().getRedirect());	
+	return new redirects(get_infoaction().getRedirect());
 }
 
 }

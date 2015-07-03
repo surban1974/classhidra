@@ -311,7 +311,7 @@ public class util_blob {
 			try{
 				
 					conn = new db_connection().getContent();
-					conn.setAutoCommit(false);
+//					conn.setAutoCommit(false);
 					st = conn.createStatement();
 				rs = st.executeQuery(sql);
 				if(rs.next()){
@@ -338,7 +338,7 @@ public class util_blob {
 			try{
 				
 					conn = new db_connection().getContent(false);
-					conn.setAutoCommit(false);
+//					conn.setAutoCommit(false);
 					st = conn.createStatement();
 				rs = st.executeQuery(sql);
 				if(rs.next()){

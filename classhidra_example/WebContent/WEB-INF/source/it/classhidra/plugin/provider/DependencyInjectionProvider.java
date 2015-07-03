@@ -2,6 +2,17 @@ package it.classhidra.plugin.provider;
 
 
 
+import javax.annotation.ManagedBean;
+import javax.ejb.Singleton;
+import javax.ejb.Stateful;
+import javax.ejb.Stateless;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_provider;
@@ -12,15 +23,8 @@ import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Local_container;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Navigation;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Onlyinssession;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-
 public class DependencyInjectionProvider implements i_provider {
-	private static final long serialVersionUID = 1L;
+
 	private static final String LOOKUP_BEANMANAGER = 		"java:comp/BeanManager";
 	private static final String LOOKUP_ENV_BEANMANAGER = 	"java:comp/env/BeanManager";
 
@@ -258,5 +262,32 @@ public class DependencyInjectionProvider implements i_provider {
         	 return true;
      }
      
+     public static boolean checkAnnotationOfClassIfEJB(String class_bean) {
+    	 try{
+    		Class clazz=null;
+   	    	try{
+   	    		clazz=Class.forName(class_bean);
+   	    	}catch(Exception e){
+   	    		return false;
+   	    	}
+   	    	
+    	    if(clazz!=null){
+            	if(clazz.getAnnotation(Stateless.class)!=null)
+            		return true;
+            	if(clazz.getAnnotation(Stateful.class)!=null)
+            		return true;
+            	if(clazz.getAnnotation(Singleton.class)!=null)
+            		return true;
+            	if(clazz.getAnnotation(ManagedBean.class)!=null)
+            		return true;
+     	    	
+    	    }
+    	    return false;
+    	 }catch(Exception e){
+    		 return false;
+    	 }catch(Throwable e){
+    		 return false;
+    	 }
+     }
 
 }

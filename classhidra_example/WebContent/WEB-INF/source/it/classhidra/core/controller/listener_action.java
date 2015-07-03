@@ -1,6 +1,6 @@
 /**
 * Creation date: (10/06/2014)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -42,14 +42,14 @@ public interface listener_action{
 	void onPreRedirectError();
 	void onPreTransform(Object input);
 	void onPreActionCall(String id_call, HttpServletRequest request, HttpServletResponse response);
-	
-	
+
+
 	void onPostInit(HttpServletRequest request, HttpServletResponse response);
 	void onPostInit(HashMap _content);
 	void onPostActionservice(redirects redirect, HttpServletRequest request, HttpServletResponse response);
 	void onPostSyncroservice(redirects redirect,HttpServletRequest request, HttpServletResponse response);
 	void onPostActionservice(redirects redirect,HashMap _content);
-	void onPostSyncroservice(redirects redirect,HashMap _content);	
+	void onPostSyncroservice(redirects redirect,HashMap _content);
 	void onPostSet_bean();
 	void onPostSetCurrent_redirect();
 	void onPostRedirect(RequestDispatcher rd);
@@ -58,6 +58,6 @@ public interface listener_action{
 	void onPostActionCall(redirects redirect,String id_call, HttpServletRequest request, HttpServletResponse response);
 	void onPostInstance();
 	void onPostInstanceFromProvider();
-	
+
 	void setOwner(i_action owner);
 }

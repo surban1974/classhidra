@@ -24,6 +24,7 @@ import it.classhidra.core.controller.info_transformation;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_classes;
+import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_sort;
 
 import java.io.File;
@@ -34,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+
 
 
 
@@ -63,7 +66,9 @@ public class annotation_scanner implements i_annotation_scanner {
 	
 
 	protected String package_annotated = "";
-	protected File directory;
+	
+	protected File directory = null;
+	protected ClassLoader cld = Thread.currentThread().getContextClassLoader();
 	
 	
 	public annotation_scanner(){
@@ -106,9 +111,9 @@ public class annotation_scanner implements i_annotation_scanner {
 
 			if(package_annotated!=null && !package_annotated.trim().equals("")){
 				try{
-					
+					URL resource = null;
 					try {
-						ClassLoader cld = Thread.currentThread().getContextClassLoader();
+						
 						if (cld == null)
 							throw new ClassNotFoundException("Can't get class loader.");
 						String path = null;
@@ -117,7 +122,9 @@ public class annotation_scanner implements i_annotation_scanner {
 							path = '/' + package_annotated.replace('.', '/')+".class";
 						}else
 							path = '/' + package_annotated.replace('.', '/');
-						URL resource = cld.getResource(path);
+						
+						resource = cld.getResource(path);
+						
 						if (resource == null) {
 							path = package_annotated.replace('.', '/');
 							resource = cld.getResource(path);
@@ -125,41 +132,92 @@ public class annotation_scanner implements i_annotation_scanner {
 						if (resource == null) {
 							throw new ClassNotFoundException("No resource for " + path);
 						}
-						directory = util_classes.convertUrl2File(resource);
+
 					}catch(Exception ex){
 						new bsException("Load_actions ClassLoader Error Annotation scaner: "+ex.toString(), iStub.log_ERROR);
 					}catch(Throwable t){
 						new bsException("Load_actions ClassLoader Error Annotation scaner: "+t.toString(), iStub.log_ERROR);
 					}
 					
-					if(directory==null) return;
 					
+					
+					if(resource!=null){
+						if(resource.getProtocol().equalsIgnoreCase("vfs")){
+							
+							List vfsList = (List)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{URL.class}, new Object[]{resource});
+							
 
-					
-					if (directory.exists() && directory.isDirectory()) {
-						File[] files = directory.listFiles();
-						for(int i=0;i<files.length;i++){
-							String package_path = files[i].getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
-							package_path=package_annotated+package_path;
-							if(files[i].isDirectory())
-								checkBranch(package_path);					
-							else{
-								String class_path=package_path;
-								if(class_path.lastIndexOf(".class")==class_path.length()-6)
-									class_path=class_path.substring(0,class_path.length()-6);
-								checkClassAnnotation(class_path);
+							if(vfsList!=null){
+								if (vfsList.size()>1) {
+									for(int i=1;i<vfsList.size();i++){
+										String package_path = (String)vfsList.get(i);
+										List vfsChildren = (List)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{String.class}, new Object[]{package_path});
+										
+										if(vfsChildren.size()>1)
+											checkBranchVFS(vfsChildren);					
+										else{
+											String class_path=package_path;
+											if(class_path.lastIndexOf(".class")==class_path.length()-6)
+												class_path=class_path.substring(0,class_path.length()-6);
+											class_path=class_path.replace("/", ".").replace("\\", ".");
+											if(class_path.indexOf(package_annotated)!=0)
+												class_path = class_path.substring(class_path.indexOf(package_annotated),class_path.length());
+
+											checkClassAnnotation(class_path);
+			
+										}
+									}
+								}else if (vfsList.size()==1) {
+									String package_path = (String)vfsList.get(0);
+										String class_path=package_path;
+										if(class_path.lastIndexOf(".class")==class_path.length()-6)
+											class_path=class_path.substring(0,class_path.length()-6);
+										class_path=class_path.replace("/", ".").replace("\\", ".");
+										if(class_path.indexOf(package_annotated)!=0)
+											class_path = class_path.substring(class_path.indexOf(package_annotated),class_path.length());
+
+										checkClassAnnotation(class_path);
+			
+								}
+								return;
+								
+							}
+														
+							
+						}else{							
+							try{
+								directory = util_classes.convertUrl2File(resource);
+							}catch(Exception e){
+							}
+							if(directory==null) return;	
+							
+							if (directory.exists() && directory.isDirectory()) {
+								File[] files = directory.listFiles();
+								for(int i=0;i<files.length;i++){
+									String package_path = files[i].getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
+									package_path=package_annotated+package_path;
+									if(files[i].isDirectory())
+										checkBranch(package_path);					
+									else{
+										String class_path=package_path;
+										if(class_path.lastIndexOf(".class")==class_path.length()-6)
+											class_path=class_path.substring(0,class_path.length()-6);
+										checkClassAnnotation(class_path);
+
+									}
+								}
+							}
+							if (directory.exists() && directory.isFile()) {
+									String package_path = directory.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
+									package_path=package_annotated+package_path;
+									String class_path=package_path;
+									if(class_path.lastIndexOf(".class")==class_path.length()-6)
+										class_path=class_path.substring(0,class_path.length()-6);
+									checkClassAnnotation(class_path);
 
 							}
 						}
-					}
-					if (directory.exists() && directory.isFile()) {
-							String package_path = directory.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
-							package_path=package_annotated+package_path;
-							String class_path=package_path;
-							if(class_path.lastIndexOf(".class")==class_path.length()-6)
-								class_path=class_path.substring(0,class_path.length()-6);
-							checkClassAnnotation(class_path);
-
+					
 					}
 					
 				}catch(Exception e){
@@ -181,7 +239,9 @@ public class annotation_scanner implements i_annotation_scanner {
 
 		for(int i=0;i<array.size();i++){
 			File current =  (File)array.get(i);
-			String package_path = current.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
+			String package_path = "";
+			if(directory!=null)
+				package_path = current.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
 			package_path=package_annotated+package_path;
 			if(current.isDirectory())
 				checkBranch(package_path);
@@ -196,6 +256,33 @@ public class annotation_scanner implements i_annotation_scanner {
 		return array;
 	}
 
+	private void checkBranchVFS(List vfsChildren){
+
+		for(int i=1;i<vfsChildren.size();i++){
+			String package_path = (String)vfsChildren.get(i);
+			List vfsSubChildren = (List)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{String.class}, new Object[]{package_path});
+
+			try{
+				if(vfsSubChildren.size()>1)
+					checkBranchVFS(vfsSubChildren);
+				else{
+					String class_path=package_path;
+					if(class_path.lastIndexOf(".class")==class_path.length()-6)
+						class_path=class_path.substring(0,class_path.length()-6);	
+					class_path=class_path.replace("/", ".").replace("\\", ".");
+					if(class_path.indexOf(package_annotated)!=0)
+						class_path = class_path.substring(class_path.indexOf(package_annotated),class_path.length());
+					
+					checkClassAnnotation(class_path);
+	
+				}
+			}catch(Exception e){
+				
+			}
+		}
+
+	}
+	
 
 
 	public void checkClassAnnotation(String class_path) {
@@ -277,7 +364,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    Stream annotationStream = null;
 		    Transformation annotationTransformation = null;
 		    Redirect annotationRedirect = null;
-		    NavigatedScoped navigatedScoped = null;
+//		    NavigatedScoped navigatedScoped = null;
 
 
 		    if(annotation instanceof Bean) annotationBean = (Bean)annotation;
@@ -285,7 +372,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    if(annotation instanceof Action) annotationAction = (Action)annotation;
 		    if(annotation instanceof Stream) annotationStream = (Stream)annotation;
 		    if(annotation instanceof Transformation) annotationTransformation = (Transformation)annotation;
-		    if(annotation instanceof NavigatedScoped) navigatedScoped = (NavigatedScoped)annotation;
+//		    if(annotation instanceof NavigatedScoped) navigatedScoped = (NavigatedScoped)annotation;
 	
 	
 		    if (annotationBean != null) {
@@ -308,6 +395,10 @@ public class annotation_scanner implements i_annotation_scanner {
     			iRedirect.setUnited_id(annotationRedirect.united_id());
     			iRedirect.setImg(annotationRedirect.img());
     			iRedirect.setNavigated(annotationRedirect.navigated());
+    			iRedirect.setContentType(annotationRedirect.contentType());
+    			iRedirect.setContentEncoding(annotationRedirect.contentEncoding());
+    			iRedirect.setContentName(annotationRedirect.contentName());
+    			iRedirect.setTransformationName(annotationRedirect.transformationName());
     			setEntity(iRedirect,annotationRedirect.entity());
     			iRedirect.setAnnotationLoaded(true);
 
@@ -389,6 +480,10 @@ public class annotation_scanner implements i_annotation_scanner {
 		    			iRedirect.setUnited_id(annotationRedirect1.united_id());
 		    			iRedirect.setImg(annotationRedirect1.img());
 		    			iRedirect.setNavigated(annotationRedirect1.navigated());
+		    			iRedirect.setContentType(annotationRedirect1.contentType());
+		    			iRedirect.setContentEncoding(annotationRedirect1.contentEncoding());
+		    			iRedirect.setContentName(annotationRedirect1.contentName());
+		    			iRedirect.setTransformationName(annotationRedirect1.transformationName());
 		    			setEntity(iRedirect,annotationRedirect1.entity());
 		    			if(iRedirect.getOrder().equals("")) iRedirect.setOrder(Integer.valueOf(i+1).toString()); 
 		    			iRedirect.setAnnotationLoaded(true);

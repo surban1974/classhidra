@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -45,16 +45,16 @@ public class stream implements i_stream, Serializable{
 	private info_stream _infostream;
 	private listener_stream listener_s;
 
-	
+
 	public stream(){
 		super();
-	}	
-	
+	}
+
 	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		_request = request;
 		if(_stream!=null){
 			_stream.onPreInit(_request, response);
-			_stream.init(_request,response); 
+			_stream.init(_request,response);
 			_stream.onPostInit(_request, response);
 		}
 	}
@@ -69,19 +69,19 @@ public class stream implements i_stream, Serializable{
 	}
 	public redirects streamservice_exit(HashMap wsParameters) throws bsControllerException{
 		return null;
-	}	
+	}
 
-	public info_stream get_infostream() {		
+	public info_stream get_infostream() {
 		return _infostream;
 	}
 
 	public void set_infostream(info_stream stream) {
-		_infostream = stream;		
+		_infostream = stream;
 	}
 
 	public RequestDispatcher redirect(ServletContext scontext, redirects _redirect, String id_action) throws ServletException, UnavailableException{
 		RequestDispatcher rd=null;
-		
+
 		if(_infostream==null) return rd;
 		if(_infostream.get_apply_to_action().size()==0 || _infostream.get_apply_to_action().get("*")!=null){
 			info_action iAction = new info_action();
@@ -89,18 +89,18 @@ public class stream implements i_stream, Serializable{
 			iAction.setRedirect(_redirect.get_uri());
 			rd = _redirect.redirect(scontext, iAction);
 			return rd;
-		}else{ 
-			
+		}else{
+
 //			info_action iAction = (info_action)bsController.getAction_config().get_actions().get(id_action);
 			info_action iAction = (info_action)load_actions.get_actions().get(id_action);
 
 			if(iAction!=null) rd = _redirect.redirect(scontext, iAction);
 		}
-		
+
 
 		return rd;
 	}
-	
+
 	public listener_stream getListener_s() {
 		try{
 			return listener_s;
@@ -171,10 +171,10 @@ public class stream implements i_stream, Serializable{
 	public void onPostInstance() {
 		if(listener_s!=null) listener_s.onPostInstance();
 	}
-	
+
 	public void onPostInstanceFromProvider() {
 		if(listener_s!=null) listener_s.onPostInstanceFromProvider();
-	}	
+	}
 
 	public void setOwner(i_stream owner) {
 	}

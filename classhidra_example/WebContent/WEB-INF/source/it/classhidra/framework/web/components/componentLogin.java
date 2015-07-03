@@ -1,4 +1,4 @@
-package it.classhidra.framework.web.components; 
+package it.classhidra.framework.web.components;
 
 
 import java.io.Serializable;
@@ -23,6 +23,7 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.info_nodeorganization;
 import it.classhidra.core.controller.load_organization;
 import it.classhidra.core.controller.redirects;
@@ -41,7 +42,7 @@ import it.classhidra.framework.web.integration.i_module_integration;
 
 @ActionMapping (
 		redirects={
-				@Redirect(	
+				@Redirect(
 						path="/jsp/framework/login.jsp",
 						descr="Login",
 						mess_id="title_fw_Login"
@@ -58,10 +59,10 @@ import it.classhidra.framework.web.integration.i_module_integration;
 						help="/jsp/help/help_login.html",
 						entity=@Entity(
 								property="allway:public"
-						)						
+						)
 				)
-				
-				
+
+
 		}
 )
 
@@ -82,10 +83,10 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 	private String target;
 	private String prev_user;
 	private String module_integration;
-	
+
 	private Vector groups;
-	
-	
+
+
 	public void reimposta(){
 		group="";
 		target="";
@@ -96,51 +97,51 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		module_integration="";
 		groups=new Vector();
 	}
-	
-	
+
+
 	public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-		
+
 		auth_init auth=(auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
 		if(auth==null) auth = new auth_init();
 		if(	middleAction!=null &&
 			(middleAction.equals("undefined") || middleAction.equals("reload"))
 			)
-				middleAction="";	
-		
-	
-		
+				middleAction="";
+
+
+
 		if(	user.equals("") &&
 			password.equals("") &&
 			group.equals("")){
-	
-				
-		} 
+
+
+		}
 			try{
-				
+
 				if(!prev_user.equals(user+"."+password)){
-					group=""; 
+					group="";
 					prev_user=user+"."+password;
-				}		
+				}
 			}catch(Exception e){
 			}
-	
-		
-		
-	
+
+
+
+
 		if(	middleAction!=null &&
 			middleAction.equals("")){
 			if(	!user.equals("") &&
 				!password.equals("") &&
 				groups.size()==0)
 				middleAction="groups";
-			
-	
+
+
 		}
-		
+
 		if(	middleAction!=null &&
-			middleAction.equals("groups")){	
+			middleAction.equals("groups")){
 			if(user.equals("") && password.equals("")) user="anonimouse";
-	
+
 				login_Non_JAAS(auth, user, password, request);
 			if(auth==null || !auth.is_logged()){
 				new bsControllerMessageException("error_2",request,null,iStub.log_INFO,new String[]{user});
@@ -151,15 +152,15 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 				StringTokenizer st = new StringTokenizer(auth.get_ruolo(),";");
 				while(st.hasMoreTokens()){
 					String current = st.nextToken();
-					groups.add(new option_element(current,current)); 
-				}			
+					groups.add(new option_element(current,current));
+				}
 				lang=auth.get_language();
-			}	
-			
+			}
+
 			return new redirects(get_infoaction().getRedirect());
 		}
-	
-		
+
+
 		if(	middleAction!=null &&
 			middleAction.equals("clear")){
 			user="";
@@ -171,7 +172,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 			if(fromSession!=null) fromSession.remove("formMinimizer");
 			return new redirects(get_infoaction().getRedirect());
 		}
-	
+
 		if(	middleAction!=null &&
 			middleAction.equals("lang")){
 			try{
@@ -180,50 +181,50 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 			}
 			return new redirects(get_infoaction().getRedirect());
 		}
-		
-		
+
+
 		if(	middleAction!=null &&
-			!middleAction.equals("") && 
+			!middleAction.equals("") &&
 			!middleAction.equals("change_rule") &&
 			!group.equals("")){
 			try{
 				lang=auth.get_language();
-				auth.set_ruolo(group);			
-				auth.get_authentication_filter().validate_actionPermittedForbidden(auth);		
+				auth.set_ruolo(group);
+				auth.get_authentication_filter().validate_actionPermittedForbidden(auth);
 			}catch(Exception e){
 			}
-			middleAction="";	
+			middleAction="";
 			bsController.clearOnlySession(request);
 			return new redirects("actions/content?t=1");
-	
+
 		}
 		if(	middleAction!=null &&
 			middleAction.equals("change_rule")){
 				try{
 					lang=auth.get_language();
-					auth.set_ruolo(group);			
+					auth.set_ruolo(group);
 					auth.saveTicker(response);
-					auth.get_authentication_filter().validate_actionPermittedForbidden(auth);		
+					auth.get_authentication_filter().validate_actionPermittedForbidden(auth);
 				}catch(Exception e){
 				}
-			}	
+			}
 		return new redirects(get_infoaction().getRedirect());
-			
+
 	}
-	
-	
+
+
 	private boolean login_Non_JAAS(auth_init auth,String userG, String password, HttpServletRequest request){
 	    try {
 		    String user = userG;
 		    String pass = password;
 		    info_user _user = null;
-		    
+
 		    i_module_integration imi = null;
 		    try{
 		    	imi = (i_module_integration)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, module_integration);
-		    }catch(Exception e){		    	
+		    }catch(Exception e){
 		    }
-	
+
 		    if(imi==null){
 		    	loadUser_config();
 		    	_user = ((load_users)bsController.getUser_config()).get_user(user,pass);
@@ -234,16 +235,16 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		    	Object result=null;
 				try{
 					result = imi.operation(i_module_integration.o_FIND, form);
-				}catch(Exception e){			
+				}catch(Exception e){
 				}
-				
+
 				if(result!=null && result instanceof Vector && ((Vector)result).size()>0){
 					_user = (info_user)((Vector)result).get(0);
 				}
 		    }
-	
-	
-		    
+
+
+
 		    if(_user!=null){
 		    	auth.setInfouser(_user);
 		    	auth.set_user(_user.getName());
@@ -257,38 +258,38 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		    		info_target itarget = (info_target)_user.getV_info_targets().get(0);
 		    		auth.setInfotarget(itarget);
 		    		auth.get_target_property().putAll(itarget.getProperties());
-		    	}catch(Exception e){	    		
+		    	}catch(Exception e){
 		    	}
 		    	auth.get_user_property().putAll(_user.getProperties());
 		    	auth.set_logged(true);
 		    	util_usersInSession.addInSession(auth, request, new Date());
-		    	
+
 		    	loadOrganizationsVisibleNodes4sql(auth.get_matricola(),auth);
 				new bsControllerException(
-						auth.get_user()+":"+auth.get_matricola()+":"+auth.get_user_ip()+" is logged ",						
-						iStub.log_INFO);	
-	
+						auth.get_user()+":"+auth.get_matricola()+":"+auth.get_user_ip()+" is logged ",
+						iStub.log_INFO);
+
 		    }else{
 		    	util_usersInSession.removeFromSession(auth, request);
-		    	auth.set_logged(false);	
+		    	auth.set_logged(false);
 		    	return false;
 		    }
-		
-	
-	
+
+
+
 	    } catch (Exception e) {
 	    	bsController.writeLog("Login Exception "+ e, iStub.log_FATAL);
 	    	message mess = new message();
 	    		mess.setTYPE("E");
 	    		mess.setDESC_MESS("JAAS Exception "+ e);
-	
-	    	auth.set_logged(false);	
+
+	    	auth.set_logged(false);
 	    	return false;
-	    	
-	    }	
+
+	    }
 	    auth.set_logged(true);
-		return true;	
-		
+		return true;
+
 	}
 
 	public void loadOrganizationsVisibleNodes4sql(String matr,auth_init auth){
@@ -310,13 +311,13 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 				}
 			}
 		}catch(Exception e){
-			
+
 		}
 
 		auth.get_user_property().put(load_organization.CONST_$VISIBLE_NODES4SQL, result);
 
 	}
- 
+
 //	private void  loadUser_config() {
 //		if(bsController.getUser_config()==null){
 //			bsController.setUser_config(new load_users());
@@ -349,7 +350,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 				}
 			}
 		}
-	
+
 	public String getPassword() {
 		return password;
 	}

@@ -11,6 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Redirect {
 	Entity entity() default @Entity;
 	String path() default "";
+	String contentType() default "";
+	String contentEncoding() default "";
+	String contentName() default "";
+	String transformationName() default "";
 	String auth_id() default "";
 	String error() default "";
 	String descr() default "";

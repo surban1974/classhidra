@@ -38,18 +38,18 @@ public componentStatisticsJson(){
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 
 	if(middleAction==null) middleAction="";
-	
+
 	if(middleAction.equals("showasxml")){
 		I_StatisticProvider provider = bsController.getStatisticProvider();
 		if(provider!=null){
 			String json=provider.getAllEntitiesAsXml();
 			try{
 
-				
-				
+
+
 				OutputStream out = response.getOutputStream();
 				out.write("<textarea wrap='off' style='width:100%;height: 100%;overflow:scroll;border: solid 1px silver;' readonly='readonly'>".getBytes());
-				out.write(json.getBytes()); 
+				out.write(json.getBytes());
 				out.write("</textarea>".getBytes());
 				out.flush();
 
@@ -59,7 +59,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}
 		return null;
 	}
-	
+
 	try{
 		I_StatisticProvider provider = bsController.getStatisticProvider();
 		if(provider!=null){
@@ -79,7 +79,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				}
 				statistics = provider.getLastEntities(length);
 			}
-			statistics = util_sort.sort(statistics, "st");			
+			statistics = util_sort.sort(statistics, "st");
 			long startX=-1;
 			long finishX=-1;
 			long totalDelta=0;
@@ -92,7 +92,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				if(entity.getDelta()>maxY) maxY=entity.getDelta();
 				if(entity.getSt().getTime()-startX>maxX) maxX = entity.getSt().getTime()-startX;
 			}
-			
+
 			if(startX==-1)
 				json+=("{\"length\":"+length+",\"n\"=0,\"fr\"=0,\"dn\"=0,\"data\":[]}");
 			else{
@@ -116,16 +116,16 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			try{
 				OutputStream out = response.getOutputStream();
-				out.write(json.getBytes()); 
+				out.write(json.getBytes());
 			}catch(Exception e){
 			}
 			return null;
 
 		}
 	}catch(Exception e){
-		
+
 	}
-	
+
 return null;
 }
 

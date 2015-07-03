@@ -1,4 +1,4 @@
-package it.classhidra.framework.web.components; 
+package it.classhidra.framework.web.components;
 
 
 import it.classhidra.annotation.elements.Action;
@@ -8,6 +8,7 @@ import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.init.project_init;
@@ -26,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @ActionMapping (
 		redirects={
-				@Redirect(	
+				@Redirect(
 						path="/jsp/framework/resources.jsp",
 						descr="Resources",
 						mess_id="title_fw_Resources"
@@ -45,7 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 			property="allway:public"
 	),
 	redirects={
-			@Redirect(	
+			@Redirect(
 				auth_id="res_id",
 				path="*"
 			)
@@ -63,9 +64,9 @@ public componentRecources(){
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	if(this.getMiddleAction()==null) this.setMiddleAction("");
 	if(this.getMiddleAction().equals("reload")) this.setMiddleAction("");
-	
+
 	boolean isScript=false;
-	
+
 	if(!this.getMiddleAction().equals("")){
 		String pinAuth = bsController.getAppInit().get_pin();
 		isScript=true;
@@ -81,12 +82,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					jscript+="else dhtmlLoadScript('resources?isPin=true&pin='+inPut+'&middleAction="+this.getMiddleAction()+"');";
 					jscript+="";
 					out.write(jscript.getBytes());
-				}catch(Exception e){				
+				}catch(Exception e){
 				}
 				return null;
 			}else{
 				try{
-					String pin = request.getParameter("pin");				
+					String pin = request.getParameter("pin");
 					if(	pin!=null){
 						if(	pinAuth.equals(pin) ||
 							pinAuth.equals(bsController.encrypt(pin))
@@ -104,7 +105,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 		}
 	}
-	
+
 	if(this.getMiddleAction().equals("users_config")){
 		bsController.setUser_config(new load_users());
 			try{
@@ -130,13 +131,13 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		bsController.setReInit(true);
 		bsController.getMenu_config();
 		bsController.setReInit(false);
-	}	
+	}
 	if(this.getMiddleAction().equals("actions_config")){
 		bsController.setReInit(true);
 		bsController.getAction_config();
 		bsController.setReInit(false);
-	}	
-	
+	}
+
 	if(this.getMiddleAction().equals("db_init")){
 		bsController.setReInit(true);
 		bsController.getDbInit();
@@ -162,10 +163,10 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		bsController.setReInit(false);
 	}
 
-	
+
 	this.setMiddleAction("");
 	if(this.getMiddleAction().equals("")){
-		
+
 		this.put("app_init",bsController.getAppInit().getLoadedFrom());
 		this.put("project_init",new project_init(null).getLoadedFrom());
 		this.put("auth_init",new auth_init().getLoadedFrom());
@@ -177,18 +178,18 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		this.put("menu_config",bsController.getMenu_config().getLoadedFrom());
 		try{
 			this.put("users_config",((load_users)bsController.getUser_config()).getLoadedFrom());
-		}catch(Exception e){			
+		}catch(Exception e){
 		}
 		this.put("containerkeys",util_container.getContainer().getContainerKeys());
 	}
-	
+
 	if(isScript){
 		try{
 			OutputStream out = response.getOutputStream();
 			String jscript="alert('Operation is finished')";
 			out.write(jscript.getBytes());
 		}catch(Exception e){
-			
+
 		}
 		return null;
 

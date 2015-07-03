@@ -1,4 +1,4 @@
-package application.replacedAsComponent.web.forms;  
+package application.replacedAsComponent.web.forms;
 
 import java.util.Vector;
 
@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import it.classhidra.core.controller.bean;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_apply_to_action;
 import it.classhidra.core.controller.info_bean;
@@ -15,7 +16,6 @@ import it.classhidra.core.controller.info_section;
 import it.classhidra.core.controller.info_stream;
 import it.classhidra.core.controller.info_transformation;
 import it.classhidra.core.controller.load_actions;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.framework.web.beans.option_element;
 
 
@@ -32,7 +32,7 @@ public class formBuilder extends bean implements i_bean{
 	private String id_selected_item;
 	private String id_selected_section;
 	private String type_selected;
-	
+
 	private info_action selected_action;
 	private info_stream selected_stream;
 	private info_redirect selected_redirect;
@@ -41,24 +41,24 @@ public class formBuilder extends bean implements i_bean{
 	private info_apply_to_action selected_apply_to_action;
 	private info_item selected_item;
 	private info_section selected_section;
-	
+
 	private Vector elements_true_false;
 	private Vector elements_transformationoutput_event;
 	private Vector elements_transformationoutput_inputformat;
 	private Vector elements_transformationoutput_outputformat;
 	private Vector elements_all_redirects;
-	
+
 	private Vector elements_item_types;
-	
+
 	private String xmlContent;
-	
+
 	private boolean display_streams=true;
 	private boolean display_actions=true;
 	private boolean display_beans=false;
 	private boolean display_redirects=false;
 
-	
-	
+
+
 
 public void reimposta(){
 	id_selected_action="";
@@ -70,26 +70,26 @@ public void reimposta(){
 	id_selected_item="";
 	id_selected_section="";
 	type_selected="";
-	
-	
+
+
 	elements_true_false = new Vector();
 	elements_true_false.add(new option_element("false","false"));
 	elements_true_false.add(new option_element("true","true"));
-	
+
 	elements_transformationoutput_event = new Vector();
 	elements_transformationoutput_event.add(new option_element("before","before"));
-	elements_transformationoutput_event.add(new option_element("after","after"));	
-	elements_transformationoutput_event.add(new option_element("both","both"));	
-	
+	elements_transformationoutput_event.add(new option_element("after","after"));
+	elements_transformationoutput_event.add(new option_element("both","both"));
+
 	elements_transformationoutput_inputformat = new Vector();
 	elements_transformationoutput_inputformat.add(new option_element("byte","byte"));
-	elements_transformationoutput_inputformat.add(new option_element("string","string"));	
-	elements_transformationoutput_inputformat.add(new option_element("form","form"));	
-	
+	elements_transformationoutput_inputformat.add(new option_element("string","string"));
+	elements_transformationoutput_inputformat.add(new option_element("form","form"));
+
 	elements_transformationoutput_outputformat = new Vector();
 	elements_transformationoutput_outputformat.add(new option_element("byte","byte"));
 	elements_transformationoutput_outputformat.add(new option_element("string","string"));
-	
+
 	elements_item_types = new Vector();
 	elements_item_types.add(new option_element("java.lang.Integer","java.lang.Integer"));
 	elements_item_types.add(new option_element("java.lang.Short","java.lang.Short"));
@@ -102,13 +102,13 @@ public void reimposta(){
 	elements_item_types.add(new option_element("java.lang.Character","java.lang.Character"));
 	elements_item_types.add(new option_element("java.util.Vector","java.util.Vector"));
 	elements_item_types.add(new option_element("java.util.HashMap","java.util.HashMap"));
-	
+
 	elements_all_redirects=new Vector();
-	
+
 	xmlContent="";
-	
+
 	l_actions=new load_actions();
-	
+
 }
 
 public redirects validate(HttpServletRequest request){

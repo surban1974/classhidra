@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="it/classhidra/plugin/provider/EjbProvider.java|it/classhidra/plugin/provider/ejb/|it/classhidra/plugin/was/|test/" kind="src" path="WebContent/WEB-INF/source"/>
+	<classpathentry excluding="it/classhidra/plugin/vfs/util_virtualvfs_classes.java|it/classhidra/plugin/was/jboss/|test/" kind="src" path="WebContent/WEB-INF/source"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>

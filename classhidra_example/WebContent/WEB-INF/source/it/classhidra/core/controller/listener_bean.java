@@ -1,6 +1,6 @@
 /**
 * Creation date: (10/06/2014)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -38,14 +38,14 @@ public interface listener_bean{
 	void onAddToLastInstance();
 	void onGetFromSession();
 	void onGetFromLastInstance();
-	
+
 	void onPostInit(HttpServletRequest request);
 	void onPostInit(HashMap _content);
 	void onPostInit(i_bean another_bean);
 	void onPostValidate(redirects redirect, HttpServletRequest request);
 	void onPostInstance();
 	void onPostInstanceFromProvider();
-	
+
 	void setOwner(i_bean owner);
-	
+
 }

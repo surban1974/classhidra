@@ -15,8 +15,8 @@ public class actionChangeAuth extends action implements i_action, Serializable{
 
 public actionChangeAuth(){
 	super();
-}	
-	
+}
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	if(get_bean().get("name").equals("")){
 		try{
@@ -30,7 +30,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}catch(Exception e){
 		}
 	}
-	
+
 	if(get_bean().get(bsConstants.CONST_ID_$MIDDLE_ACTION).equals("change")){
 		auth_init aInit = null;
 		try{
@@ -40,7 +40,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		if (aInit!=null) aInit.saveFromForm(get_bean(), request, response);
 	}
 
-	return new redirects(get_infoaction().getRedirect());	
+	return new redirects(get_infoaction().getRedirect());
 }
 
 }

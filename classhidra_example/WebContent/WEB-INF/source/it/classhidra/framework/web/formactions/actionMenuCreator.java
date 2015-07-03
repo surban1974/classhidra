@@ -17,12 +17,12 @@ public class actionMenuCreator extends action implements i_action, Serializable{
 
 public actionMenuCreator(){
 	super();
-}	
-	
+}
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	if(get_bean().get("element")==null) prepareElement(request);
 	if(get_bean().get("element")!=null){
-		
+
 		if(get_bean().get("menu_id").equals("all")){
 			menu_element founded = new menu_element((i_menu_element)get_bean().get("element"));
 			founded.setVisibilityAllChildren(true);
@@ -36,22 +36,22 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			get_bean().set("menu_id",founded.getInfo_menu().getId());
 			get_bean().set("menu_html",founded.generateHTML(request));
 		}
-		
+
 		menu_element founded = 	new menu_element(
 				((i_menu_element)get_bean().get("element")).find((String)get_bean().get("menu_id"))
 				);
 		if(founded!=null){
 			if(get_bean().get("menu_action").equals("visual_true")) founded.setVisibilityChildren(true);
 			if(get_bean().get("menu_action").equals("visual_false")) founded.setVisibilityChildren(false);
-			get_bean().set("menu_html",founded.generateHTML(request));			
+			get_bean().set("menu_html",founded.generateHTML(request));
 		}
 
 	}
-	return new redirects(get_infoaction().getRedirect());	
+	return new redirects(get_infoaction().getRedirect());
 }
 
 private void prepareElement(HttpServletRequest request){
-	try{	
+	try{
 		i_menu_element element = bsController.getMenu_config().get_menu();
 		if(element==null){
 			bsController.reloadMenu_config(request,new menu_element());
@@ -59,7 +59,7 @@ private void prepareElement(HttpServletRequest request){
 		}
 		element.authentication_clear(((auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION)).get_actions_forbidden());
 		element.authentication_clear(((auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION)).get_actions_forbidden());
-				
+
 		element.setVisible(true);
 		element.calculate_potential_elements();
 		element.analyse_potential_group(true);
@@ -67,7 +67,7 @@ private void prepareElement(HttpServletRequest request){
 	}catch(Exception e){
 		bsController.writeLog("Load_current_menu error: "+e.toString(),iStub.log_ERROR);
 	}
-	
+
 }
 
 }

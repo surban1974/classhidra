@@ -6,6 +6,7 @@ import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 
 import java.io.Serializable;
@@ -21,10 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 	navigated="false",
 	entity=@Entity(
 			property="allway:public"
-	),	
+	),
 
 	redirects={
-			@Redirect(	
+			@Redirect(
 				auth_id="rep_id",
 				path="*"
 			)
@@ -34,10 +35,10 @@ import javax.servlet.http.HttpServletResponse;
 
 public class componentReportNH extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6534122783978835682L;
-	
+
 	private String source;
 	private String lib;
-	
+
 public componentReportNH(){
 	super();
 

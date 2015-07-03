@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -30,16 +30,16 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_redirect;
 import it.classhidra.core.controller.info_relation;
 import it.classhidra.core.controller.info_section;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*; 
+import javax.servlet.jsp.tagext.*;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -49,7 +49,7 @@ public class tagSection extends  TagSupport {
 	protected String name=null;
 	protected String trace=null;
 	protected String type=null;
-	
+
 	public int doStartTag() throws JspException {
 		try {
 			if(trace==null || trace.equalsIgnoreCase("true")) pageContext.getOut().print("<!--START SECTION NAME=\""+name+"\"-->");
@@ -88,18 +88,18 @@ public class tagSection extends  TagSupport {
 			if(pool!=null) formAction = (i_action)pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
-		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
-		if(formAction==null) formAction = new action(); 
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		if(formAction==null) formAction = new action();
 		if(bean==null) formBean = formAction.get_bean();
-		
+
 		redirects 		formRedirect 	=  formAction.getCurrent_redirect();
 		try{
 			auth_init auth = bsController.checkAuth_init(request);
 			info_action i_a = (info_action)auth.get_actions_permitted().get(formAction.get_infoaction().getPath());
 			info_redirect i_r = (info_redirect)i_a.get_auth_redirects().get(formRedirect.get_inforedirect().getAuth_id());
-			
-		
-		
+
+
+
 			if(name!=null &&
 				i_r!=null &&
 				i_r.get_sections()!=null &&
@@ -109,15 +109,15 @@ public class tagSection extends  TagSupport {
 					return true;
 				if((type!=null  && type.equals(info_relation.TYPE_FORBIDDEN)) && !section.isAllowed())
 					return true;
-				
+
 			}
 
-			
+
 			info_action i_af = (info_action)auth.get_actions_forbidden().get(formAction.get_infoaction().getPath());
 			info_redirect i_rf = (info_redirect)i_af.get_auth_redirects().get(formRedirect.get_inforedirect().getAuth_id());
-			
-		
-		
+
+
+
 			if(name!=null &&
 				i_rf!=null &&
 				i_rf.get_sections()!=null &&
@@ -127,10 +127,10 @@ public class tagSection extends  TagSupport {
 			}
 		}catch(Exception e){
 		}
-			
-			
 
-		
+
+
+
 		return result;
 	}
 	public String getName() {

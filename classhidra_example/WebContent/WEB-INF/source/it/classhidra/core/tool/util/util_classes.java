@@ -1,6 +1,7 @@
 package it.classhidra.core.tool.util;
 
 import it.classhidra.core.controller.bsController;
+import it.classhidra.core.init.app_init;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -17,6 +18,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 public class util_classes {
+	
+	public final static String PATH_VFS_PLUGIN				= 	app_init.PATH_VFS_PLUGIN;
+	
+	public static String getVFSPluginPath(){
+		if(bsController.getAppInit()!=null && bsController.getAppInit().get_vfs_plugin()!=null && !bsController.getAppInit().get_vfs_plugin().equals(""))
+			return bsController.getAppInit().get_vfs_plugin();
+		else 
+			return PATH_VFS_PLUGIN;
+	}
 	
 	public  static Class[] getClasses(String pckgname) throws ClassNotFoundException {
 		ArrayList classes = new ArrayList();
@@ -41,7 +51,12 @@ public class util_classes {
 		}
 		if(resource!=null){
 			if(resource.getProtocol().equalsIgnoreCase("vfs")){
-				Object arr = util_reflect.execStaticMethod("it.classhidra.plugin.was.jboss7.util_vfs_classes", "getResources", new Class[]{URL.class}, new Object[]{resource});
+				Object arr = null;
+				if(bsController.getAppInit()!=null && bsController.getAppInit().get_vfs_plugin()!=null && !bsController.getAppInit().get_vfs_plugin().equals(""))
+					arr = util_reflect.execStaticMethod(bsController.getAppInit().get_vfs_plugin(), "getResources", new Class[]{URL.class}, new Object[]{resource});
+				else
+					arr = util_reflect.execStaticMethod(PATH_VFS_PLUGIN, "getResources", new Class[]{URL.class}, new Object[]{resource});
+				
 				if(arr!=null && arr instanceof ArrayList){
 					for (int i = 0; i < ((ArrayList)arr).size(); i++) {
 						// we are only interested in .class files
@@ -104,7 +119,12 @@ public class util_classes {
 		}
 		if(resource!=null){
 			if(resource.getProtocol().equalsIgnoreCase("vfs")){
-				Object arr = util_reflect.execStaticMethod("it.classhidra.plugin.was.jboss7.util_vfs_classes", "getResources", new Class[]{URL.class}, new Object[]{resource});
+				Object arr = null;
+				if(bsController.getAppInit()!=null && bsController.getAppInit().get_vfs_plugin()!=null && !bsController.getAppInit().get_vfs_plugin().equals(""))
+					arr = util_reflect.execStaticMethod(bsController.getAppInit().get_vfs_plugin(), "getResources", new Class[]{URL.class}, new Object[]{resource});
+				else
+					arr = util_reflect.execStaticMethod(PATH_VFS_PLUGIN, "getResources", new Class[]{URL.class}, new Object[]{resource});
+
 				if(arr!=null && arr instanceof ArrayList)
 					return (ArrayList)arr;
 					

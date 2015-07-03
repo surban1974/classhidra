@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -43,15 +43,15 @@ public class action extends bean implements i_action, Serializable{
 	protected redirects current_redirect;
 	protected boolean included = false;
 	protected listener_action listener_a;
-	
+
 	public action(){
 		super();
-	}	
-	
+	}
+
 	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		if(_bean!=null){
 			_bean.onPreInit(request);
-			_bean.init(request); 
+			_bean.init(request);
 			_bean.onPostInit(request);
 		}
 	}
@@ -61,7 +61,7 @@ public class action extends bean implements i_action, Serializable{
 			_bean.init(wsParameters);
 			_bean.onPostInit(wsParameters);
 		}
-	}	
+	}
 	public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException{
 		return new redirects(_infoaction.getRedirect());
 	}
@@ -86,17 +86,17 @@ public class action extends bean implements i_action, Serializable{
 		String formatCountry=request.getParameter("$formatCountry_"+target);
 		String replaceOnBlank=request.getParameter("$replaceOnBlank_"+target);
 		String replaceOnErrorFormat=request.getParameter("$replaceOnErrorFormat_"+target);
-		
+
 		Object writeValue = get_bean().get(target);
 		String value = null;
 		try{
 			value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
-			if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");			
+			if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
 		}catch(Exception e){
 			if(replaceOnErrorFormat != null)
 				value = replaceOnErrorFormat;
 		}
-		
+
 
 		try{
 			if(value!=null)
@@ -106,13 +106,13 @@ public class action extends bean implements i_action, Serializable{
 		}
 		return null;
 	}
-	
+
 	public i_bean get_bean() {
 		if(_bean!=null && _bean.getClass().getName().equals(this.getClass().getName())) return this;
 		if(_bean==null) return this;
 		return _bean;
 	}
-	
+
 	public void set_bean(i_bean form) {
 		_bean = form;
 		if(_bean!=null) _bean.set_infoaction(_infoaction);
@@ -125,11 +125,11 @@ public class action extends bean implements i_action, Serializable{
 		String uri=null;
 		if(current_redirect!=null) uri = current_redirect.get_uri();
 		if(uri!=null && uri.indexOf("?")!=-1) uri=uri.substring(0,uri.indexOf("?"));
-		try{		
+		try{
 			if(_infoaction.get_redirects().get(uri)!=null)
 				current_redirect.set_inforedirect((info_redirect)_infoaction.get_redirects().get(uri));
-		}catch(Exception e){	
-			if( e instanceof java.lang.NullPointerException){				
+		}catch(Exception e){
+			if( e instanceof java.lang.NullPointerException){
 			}else new bsControllerException(e,iStub.log_DEBUG);
 		}
 	}
@@ -141,7 +141,7 @@ public class action extends bean implements i_action, Serializable{
 	public void setIncluded(boolean included) {
 		this.included = included;
 	}
-	
+
 	public java.lang.reflect.Method getMethodForCall(String annotation_name){
 		java.lang.reflect.Method result=null;
 		java.lang.reflect.Method[] mtds = this.getClass().getMethods();
@@ -156,11 +156,11 @@ public class action extends bean implements i_action, Serializable{
 		}
 		return result;
 	}
-	
+
 	public Object[] getMethodAndCall(String annotation_name){
 		return getMethodAndCall(this.getClass(), annotation_name);
 	}
-	
+
 	private Object[] getMethodAndCall(Class cls, String annotation_name){
 		info_call call=null;
 		java.lang.reflect.Method[] mtds = cls.getMethods();
@@ -187,7 +187,7 @@ public class action extends bean implements i_action, Serializable{
 			return getMethodAndCall(cls.getSuperclass(), annotation_name);
 		return null;
 	}
-	
+
 	public listener_action getListener_a() {
 		return listener_a;
 	}
@@ -195,7 +195,7 @@ public class action extends bean implements i_action, Serializable{
 	public void setListener_a(listener_action listenerA) {
 		listener_a = listenerA;
 		if(listener_a!=null) listener_a.setOwner((i_action)this);
-	}	
+	}
 
 	public void onPostActionservice(redirects redirect,HttpServletRequest request, HttpServletResponse response) {
 		if(listener_a!=null) listener_a.onPostActionservice(redirect,request, response);
@@ -257,7 +257,7 @@ public class action extends bean implements i_action, Serializable{
 		if(listener_a!=null) listener_a.onPostRedirect(rd);
 	}
 
-	public void onPreRedirect() {	
+	public void onPreRedirect() {
 		if(listener_a!=null) listener_a.onPreRedirect();
 	}
 
@@ -282,7 +282,7 @@ public class action extends bean implements i_action, Serializable{
 	}
 
 	public void onPreActionCall(String idCall, HttpServletRequest request, HttpServletResponse response) {
-		if(listener_a!=null) listener_a.onPreActionCall(idCall, request, response);		
+		if(listener_a!=null) listener_a.onPreActionCall(idCall, request, response);
 	}
 
 	public void onPostInstance() {
@@ -292,10 +292,10 @@ public class action extends bean implements i_action, Serializable{
 	public void onPostInstanceFromProvider() {
 		if(listener_a!=null) listener_a.onPostInstanceFromProvider();
 	}
-	
+
 	public void setOwner(i_action owner) {
 	}
-	
+
 	public i_bean asBean(){
 		return (bean)this;
 	}

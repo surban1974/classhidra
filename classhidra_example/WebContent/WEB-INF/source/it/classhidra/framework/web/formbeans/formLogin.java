@@ -19,9 +19,9 @@ public class formLogin extends bean implements i_bean{
 	private String group;
 	private String target;
 	private String prev_user;
-	
+
 	private Vector groups;
-	
+
 public void reimposta(){
 	group="";
 	target="";
@@ -29,26 +29,26 @@ public void reimposta(){
 	password="";
 	lang="EN";
 	prev_user="";
-	
+
 	groups=new Vector();
 }
 
 public redirects validate(HttpServletRequest request){
 	if(this.middleAction!=null && this.middleAction.equals("lang")) return null;
 	if(this.user.equals("") && this.password.equals("")) user="anonimous";
-/*	
+/*
 	if(this.user.equals("") || this.password.equals("")){
 		new bsControllerMessageException("error_1",request,null,iStub.log_INFO);
 		redirects redirect = new redirects(bsController.getAction_config().actionFactory("$login").get_infoaction().getRedirect());
 		return redirect;
-	}	
+	}
 	if(!this.user.equals("") && !this.password.equals("") && !this.group.equals("")){
 		String cur_id = (String)request.getAttribute(bsController.CONST_ID);
 		if(cur_id!=null && !cur_id.equals("$login")){
 			new bsControllerMessageException("message_1",request,null,iStub.log_INFO);
-		}	
-	}	
-*/	
+		}
+	}
+*/
 	return null;
 }
 public String getPassword() {

@@ -1,4 +1,4 @@
-package it.classhidra.framework.web.components; 
+package it.classhidra.framework.web.components;
 
 
 import it.classhidra.annotation.elements.Action;
@@ -8,6 +8,7 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_menu_element;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.load_menu;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
@@ -81,12 +82,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 private i_menu_element prepareElement(HttpServletRequest request){
 	try{
 		componentMenuCreator fc = this;
-	
+
 		i_menu_element element = fc.getElement_menu_html();
 		if(element==null){
 			load_menu menu_config = new load_menu(new menu_element());
 			try{
-				menu_config.load_from_resources();	
+				menu_config.load_from_resources();
 			}catch (Exception e) {
 			}
 
@@ -97,7 +98,7 @@ private i_menu_element prepareElement(HttpServletRequest request){
 		element.setVisible(true);
 		element.calculate_potential_elements();
 		element.analyse_potential_group(true);
-		
+
 		fc.setElement_menu_html(element);
 		return element;
 	}catch(Exception e){

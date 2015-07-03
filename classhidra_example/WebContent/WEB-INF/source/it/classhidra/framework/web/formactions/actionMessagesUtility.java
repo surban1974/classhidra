@@ -44,14 +44,14 @@ public class actionMessagesUtility extends action implements i_action, Serializa
 
 public actionMessagesUtility(){
 	super();
-	
+
 }
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 
 	integrity_log="";integrity_log+="";
-	presented=new HashMap(); 
-	
+	presented=new HashMap();
+
 	if(get_bean().get("middleAction")==null) get_bean().set("middleAction","");
 	if(get_bean().get("middleAction").equals("generate")){
 		Vector langs=new Vector();
@@ -87,12 +87,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		String mask_name=util_format.replace( ((String)get_bean().get("pathInput")),"//","/").replace('/','.').replace(':', '.');
 		if(mask_name.length()>20) mask_name=mask_name.substring(0,20);
 		mask_name=mask_name.replace('.', '_');
-		
+
 		File input = new File(pathInput);
 		if(input.exists()){
-			
+
 			input_dir_path = input.getAbsolutePath();
-			
+
 			if(input.isFile() ){
 				if(checkExt(input))
 					elaborateFile(input,langs,tmpPathDate,mask_name);
@@ -110,7 +110,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 		}catch(Exception e){
 		}
-		
+
 	}else{
 		get_bean().set("pathOutput","");
 	}
@@ -153,9 +153,9 @@ private boolean checkExt(File current){
 	try{
 		ext = current.getName();
 		ext = ext.substring(ext.lastIndexOf(".")+1).toUpperCase();
-		
+
 	}catch(Exception e){
-		
+
 	}
 	if(	exts.indexOf(";"+ext+";")>-1) result=true;
 	return result;
@@ -171,7 +171,7 @@ private String getURLContent(String url_request) throws Exception {
 			result+=inputLine+"\n";
 		in.close();
 	}catch(Exception e){
-		
+
 	}
 	return result;
 }
@@ -189,7 +189,7 @@ private  Vector getMessages(String file) throws Exception {
 	String test = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\"/>\n";
 		test+=getURLContent(sourceUrlString);
 
-	
+
 //	Source source=new Source(new URL(sourceUrlString));
 	Source source=new Source(test.subSequence(0,test.length()));
 	source.setLogWriter(new OutputStreamWriter(System.err)); // send log messages to stderr
@@ -266,17 +266,17 @@ private  Vector getMessages(String file) throws Exception {
 private void prepareContent(Vector mess,Vector langs,  String tmpPathDate, String fInput, String mask_name){
 	String sep = System.getProperty("line.separator");
 	String jsp_name = util_format.replace(fInput.replace('\\','/'),"//","/");
-	
+
 	String tmp =  util_format.replace(input_dir_path.replace('\\','/'),"//","/");
 	String view_jsp_name = util_format.replace( jsp_name,tmp, "");
-	
+
 	jsp_name=jsp_name.substring(jsp_name.lastIndexOf("/")+1,jsp_name.length());
-	
-	
-	
-	 String tmp_integrity_log = ""; 
-	
-	
+
+
+
+	 String tmp_integrity_log = "";
+
+
 	String 	result="";
 	for(int i=0;i<mess.size();i++){
 		message mes = (message)mess.get(i);

@@ -13,7 +13,7 @@ public class formHelp extends bean implements i_bean{
 	private String helpId;
 	private String helpSection;
 	private String helpRedirect;
-	
+
 public void reimposta(){
 	helpId="";
 	helpSection="";

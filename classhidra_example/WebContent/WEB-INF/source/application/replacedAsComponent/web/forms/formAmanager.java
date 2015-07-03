@@ -1,14 +1,14 @@
-package application.replacedAsComponent.web.forms;   
+package application.replacedAsComponent.web.forms;
 
 import it.classhidra.core.controller.bean;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_redirect;
 import it.classhidra.core.controller.info_relation;
 import it.classhidra.core.controller.info_section;
 import it.classhidra.core.controller.load_actions;
 import it.classhidra.core.controller.load_authentication;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.jaas_authentication.info_group;
 import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.jaas_authentication.info_user;
@@ -36,7 +36,7 @@ public class formAmanager extends bean implements i_bean{
 
 	private String type_selected;
 	private String mode="user";
-	
+
 	private info_action selected_action;
 	private info_redirect selected_redirect;
 	private info_section selected_section;
@@ -44,22 +44,22 @@ public class formAmanager extends bean implements i_bean{
 	private info_group selected_group;
 	private info_target selected_target;
 	private info_relation selected_relation;
-	
+
 	private Vector elements_true_false;
-	
+
 	private boolean display_users=true;
 	private boolean display_actions=false;
 	private boolean display_groups=false;
 	private boolean display_targets=false;
 	private boolean display_relations=false;
 
-	
+
 	private String xmlContent;
-	
 
 
-	
-	
+
+
+
 
 public void reimposta(){
 	id_selected_action="";
@@ -70,18 +70,18 @@ public void reimposta(){
 	id_selected_user="";
 	id_selected_relation="";
 	type_selected="";
-	
+
 	elements_true_false = new Vector();
 	elements_true_false.add(new option_element("false","false"));
 	elements_true_false.add(new option_element("true","true"));
-	
+
 	xmlContent="";
 	mode="user";
-	
+
 	l_actions=new load_actions();
 	l_users=new load_users();
 	l_authentication=new load_authentication();
-	
+
 }
 
 public redirects validate(HttpServletRequest request){
@@ -251,14 +251,14 @@ public void setMode(String mode) {
 		if(mode.equals("user")){
 			display_users=true;
 			display_actions=false;
-			display_groups=false;			
+			display_groups=false;
 		}
 		if(mode.equals("group")){
 			display_users=false;
 			display_actions=true;
-			display_groups=true;			
+			display_groups=true;
 		}
-		
+
 	}
 }
 

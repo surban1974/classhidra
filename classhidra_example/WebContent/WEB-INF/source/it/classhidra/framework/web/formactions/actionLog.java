@@ -22,7 +22,7 @@ public class actionLog extends action implements i_action, Serializable{
 		public class log_element{
 			private String Path;
 			private String Mod;
-		
+
 			log_element(String path, String mod){
 				this.Path = path;
 				this.Mod = mod;
@@ -43,14 +43,14 @@ public class actionLog extends action implements i_action, Serializable{
 				return Path+"|"+Mod;
 			}
 		}
-	
+
 public actionLog(){
 	super();
-}	
-	
+}
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	String path=request.getParameter("path");
-	
+
 	if(path!=null){
 		String file="";
 		try{
@@ -68,17 +68,17 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			file = new String(dataBytes,0,dataBytes.length);
 			request.setAttribute("file",file);
 			request.setAttribute("type","open");
-		}catch(Exception e){	
+		}catch(Exception e){
 		}
-		
+
 		return new redirects(get_infoaction().getRedirect());
 	}
-	Vector ListLog = new Vector(); 
-		
+	Vector ListLog = new Vector();
+
 	File f=new File( bsController.getLogInit().get_LogPath());
 	log_FilesFilter filter = new log_FilesFilter();
 	File[] list = f.listFiles(filter);
-	for(int i=0;i<list.length;i++) 
+	for(int i=0;i<list.length;i++)
 		ListLog.add(new log_element(list[i].getAbsolutePath().replace('\\','/'),String.valueOf(list[i].lastModified())));
 	ListLog = new util_sort().sort(ListLog,"Mod","D");
 	request.setAttribute("ListLog",ListLog);

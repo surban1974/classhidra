@@ -14,7 +14,12 @@ public interface i_transformation extends Serializable{
 	public byte[] transform(String input,HttpServletRequest request);		
 	public byte[] transform(byte[] input,HttpServletRequest request);	
 	public byte[] transform(i_bean form,HttpServletRequest request);	
-	public byte[] transform(String input,HttpServletRequest request,HttpServletResponse response);		
+	public byte[] transform(String input,HttpServletRequest request,HttpServletResponse response);	
+	public byte[] transform(i_action input, HttpServletRequest request, HttpServletResponse response);
+	public byte[] transform(i_bean input, HttpServletRequest request, HttpServletResponse response);
+	public byte[] transform(i_stream input, HttpServletRequest request, HttpServletResponse response);
+	public byte[] transform(i_transformation input, HttpServletRequest request, HttpServletResponse response);
+	public byte[] transform(redirects input, HttpServletRequest request, HttpServletResponse response);
 	public info_transformation get_infotransformation();
 	public void set_infotransformation(info_transformation infotransformation);	
 	public byte[] getOutputcontent();

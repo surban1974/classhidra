@@ -38,42 +38,41 @@ import java.util.ResourceBundle;
 
 
 public class app_init implements Serializable{ 
-	public String get_path_root() {
-		return _path_root;
-	}
 
-	public void set_path_root(String _path_root) {
-		this._path_root = _path_root;
-	}
 
 	private static final long serialVersionUID = -1L;
-	static public String CONST_PAGESIZE					= 	"application.const.pagesize";
-	static public String id_path 						= 	"application.path";
-	static public String id_enterpoint 					= 	"application.auth.action.enterpoint";
-	static public String id_nav_excluded 				= 	"application.auth.tag_navigation.action_excluded";
-	static public String id_load_res_mode				= 	"application.load.resource.mode";
-	static public String id_external_loader				= 	"application.external_loader.class";
-	static public String id_init_loader					= 	"application.init_loader.class";
-	static public String id_cdi_provider				= 	"application.cdi.provider.class";
-	static public String id_cdi_jndi_name				= 	"application.cdi.jndi.name";
-	static public String id_ejb_jndi_name				= 	"application.ejb.jndi.name";
-	static public String id_ejb_jndi_name_prefix 		= 	"application.ejb.jndi.resolvename.prefix";
-	static public String id_pin							=	"application.pin";
-	static public String id_db_name 					=	"application.config.db";
-	static public String id_extention_do 				=	"application.extention.do";
-	static public String id_actioncall_separator 		=	"application.actioncall.separator";
+	
+	public final static String PATH_VFS_PLUGIN				= 	"it.classhidra.plugin.vfs.util_vfs_classes";
+	
+	public final static String CONST_PAGESIZE				= 	"application.const.pagesize";
+	public final static String id_path 						= 	"application.path";
+	public final static String id_enterpoint 				= 	"application.auth.action.enterpoint";
+	public final static String id_nav_excluded 				= 	"application.auth.tag_navigation.action_excluded";
+	public final static String id_load_res_mode				= 	"application.load.resource.mode";
+	public final static String id_external_loader			= 	"application.external_loader.class";
+	public final static String id_init_loader				= 	"application.init_loader.class";
+	public final static String id_cdi_provider				= 	"application.cdi.provider.class";
+	public final static String id_cdi_jndi_name				= 	"application.cdi.jndi.name";
+	public final static String id_ejb_jndi_name				= 	"application.ejb.jndi.name";
+	public final static String id_ejb_jndi_name_prefix 		= 	"application.ejb.jndi.resolvename.prefix";
+	public final static String id_pin						=	"application.pin";
+	public final static String id_db_name 					=	"application.config.db";
+	public final static String id_extention_do 				=	"application.extention.do";
+	public final static String id_actioncall_separator 		=	"application.actioncall.separator";
 
 	
-	static public String id_transf_elaborationmode		=	"application.transformation.event.after.elaborationmode";
-	static public String id_transf_elaborationpoint		=	"application.transformation.event.after.elaborationpoint";
-	static public String id_transf_elaborationwrapper	=	"application.transformation.event.after.elaborationwrapper";
-	static public String id_annotation_scanner			= 	"application.annotation.scanner";
-	static public String id_package_annotated			=	"application.package.annotated";
-	static public String id_debug						=	"application.debug";
+	public final static String id_transf_elaborationmode	=	"application.transformation.event.after.elaborationmode";
+	public final static String id_transf_elaborationpoint	=	"application.transformation.event.after.elaborationpoint";
+	public final static String id_transf_elaborationwrapper	=	"application.transformation.event.after.elaborationwrapper";
+	public final static String id_annotation_scanner		= 	"application.annotation.scanner";
+	public final static String id_package_annotated			=	"application.package.annotated";
+	public final static String id_debug						=	"application.debug";
+	public final static String id_permit_redirect_resource	=	"application.permit.redirect.resource";
+	public final static String id_vfs_plugin	 			=	"application.vfs.plugin";
 	
-	static public String id_statistic					=	"application.statistic";
-	static public String id_statistic_provider			=	"application.statistic.provider";
-	static public String id_statistic_stacklength		= 	"application.statistic.stacklength";
+	public final static String id_statistic					=	"application.statistic";
+	public final static String id_statistic_provider		=	"application.statistic.provider";
+	public final static String id_statistic_stacklength		= 	"application.statistic.stacklength";
 	
 	private String _path;
 	private String _path_root;
@@ -95,10 +94,12 @@ public class app_init implements Serializable{
 	private String _extention_do;
 	private String _actioncall_separator;
 	private String _debug;
+	private String _permit_redirect_resource;
 	private String _statistic;
 	private String _statistic_provider;
 	private String _annotation_scanner;
 	private String _statistic_stacklength;
+	private String _vfs_plugin = PATH_VFS_PLUGIN;
 
 
 
@@ -192,13 +193,15 @@ public class app_init implements Serializable{
 			_actioncall_separator=(_actioncall_separator==null)?System.getProperty(id_actioncall_separator):_actioncall_separator;
 
 			_debug=(_debug==null)?System.getProperty(id_debug):_debug;
+			_permit_redirect_resource=(_permit_redirect_resource==null)?System.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
 			_statistic=(_statistic==null)?System.getProperty(id_statistic):_statistic;
 			_statistic_provider=(_statistic_provider==null)?System.getProperty(id_statistic_provider):_statistic_provider;
 			_statistic_stacklength=(_statistic_stacklength==null)?System.getProperty(id_statistic_stacklength):_statistic_stacklength;
 			
 			
 			_annotation_scanner=(_annotation_scanner==null)?System.getProperty(id_annotation_scanner):_annotation_scanner;
-
+			_vfs_plugin=(_vfs_plugin==null)?System.getProperty(id_vfs_plugin):_vfs_plugin;
+			
 			
 			
 			_transf_elaborationmode=(System.getProperty(id_transf_elaborationmode)!=null)?System.getProperty(id_transf_elaborationmode):_transf_elaborationmode;
@@ -224,6 +227,7 @@ public class app_init implements Serializable{
 			if(_load_res_mode==null) _load_res_mode="normal";
 			if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
 			if(_debug==null) _debug="false";
+			if(_permit_redirect_resource==null) _permit_redirect_resource="false";
 			if(_statistic==null) _statistic="false";
 		}		
 		content = new HashMap();
@@ -266,9 +270,12 @@ public class app_init implements Serializable{
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
 		_annotation_scanner=(_annotation_scanner==null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
+		_vfs_plugin=(_vfs_plugin==null)?property.getProperty(id_vfs_plugin):_vfs_plugin;
 		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
 		_actioncall_separator=(_actioncall_separator==null)?property.getProperty(id_actioncall_separator):_actioncall_separator;
 		_debug=(_debug==null)?property.getProperty(id_debug):_debug;
+		_permit_redirect_resource=(_permit_redirect_resource==null)?property.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
+
 		_statistic=(_statistic==null)?property.getProperty(id_statistic):_statistic;
 		_statistic_provider=(_statistic_provider==null)?property.getProperty(id_statistic_provider):_statistic_provider;
 		_statistic_stacklength=(_statistic_stacklength==null)?property.getProperty(id_statistic_stacklength):_statistic_stacklength;
@@ -295,6 +302,7 @@ public class app_init implements Serializable{
 		if(_load_res_mode==null) _load_res_mode="normal";
 		if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
 		if(_debug==null) _debug="false";
+		if(_permit_redirect_resource==null) _permit_redirect_resource="false";
 		if(_statistic==null) _statistic="false";
 		content = new HashMap();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?property.getProperty(CONST_PAGESIZE):(String)content.get(CONST_PAGESIZE));
@@ -555,4 +563,23 @@ public class app_init implements Serializable{
 		return _ejb_jndi_name_prefix;
 	}
 
+	public String get_vfs_plugin() {
+		return _vfs_plugin;
+	}
+	
+	public String get_path_root() {
+		return _path_root;
+	}
+
+	public void set_path_root(String _path_root) {
+		this._path_root = _path_root;
+	}
+
+	public String get_permit_redirect_resource() {
+		return _permit_redirect_resource;
+	}
+
+	public void set_permit_redirect_resource(String _permit_redirect_resource) {
+		this._permit_redirect_resource = _permit_redirect_resource;
+	}
 }

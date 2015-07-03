@@ -1,4 +1,4 @@
-package application.replacedAsComponent.web.forms; 
+package application.replacedAsComponent.web.forms;
 
 import java.util.HashMap;
 import java.util.Vector;

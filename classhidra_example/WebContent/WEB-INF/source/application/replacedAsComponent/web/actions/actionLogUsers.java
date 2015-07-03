@@ -1,8 +1,9 @@
-package application.replacedAsComponent.web.actions; 
+package application.replacedAsComponent.web.actions;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -31,12 +32,12 @@ public actionLogUsers(){
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 
-	
-	
+
+
 	HashMap h_user_container = (HashMap)bsController.getFromLocalContainer(util_usersInSession.CONST_APP_USER_CONTAINER);
 	if(get_bean().getMiddleAction()==null) get_bean().setMiddleAction("");
 	if(get_bean().getMiddleAction().equals("view_mess")){
-		return new redirects("/jsp/ajax/add_LogUserMess.jsp?session_id="+get_bean().get("session_id"));	
+		return new redirects("/jsp/ajax/add_LogUserMess.jsp?session_id="+get_bean().get("session_id"));
 	}
 	if(get_bean().getMiddleAction().equals("add_mess")){
 		try{
@@ -60,7 +61,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 						$listmessages.add(mess);
 					}
 				}
-				
+
 			}else{
 				HttpSession current_session = (HttpSession)h_user_container.get(get_bean().get("session_id").toString());
 				if(current_session!=null){
@@ -72,10 +73,10 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					$listmessages.add(mess);
 				}
 			}
-		}catch(Exception e){			
+		}catch(Exception e){
 		}
-			
-	}	
+
+	}
 	if(get_bean().getMiddleAction().equals("remove")){
 		try{
 			HttpSession current_session = (HttpSession)h_user_container.get(get_bean().get("session_id").toString());
@@ -88,7 +89,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			auth.set_matricola("guest");
 			auth.set_language("it");
 			h_user_container.remove(get_bean().get("session_id").toString());
-		}catch(Exception e){			
+		}catch(Exception e){
 		}
 	}
 	if(get_bean().getMiddleAction().equals("clear")){
@@ -109,7 +110,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 		}
 		request.setAttribute("elements", elements);
-	return new redirects(get_infoaction().getRedirect());	
+	return new redirects(get_infoaction().getRedirect());
 }
 
 }

@@ -13,7 +13,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import javax.servlet.http.HttpServletRequest;
+import it.classhidra.annotation.elements.Transformation;
 
+@Transformation(name="resource2xslt")
 public class xslt extends transformation implements i_transformation, Serializable {
 
 	private static final long serialVersionUID = 1L;

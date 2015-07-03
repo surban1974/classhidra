@@ -1,4 +1,4 @@
-package it.classhidra.framework.web.components;   
+package it.classhidra.framework.web.components;
 
 
 import it.classhidra.annotation.elements.Action;
@@ -7,6 +7,7 @@ import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_entity;
 import it.classhidra.core.controller.info_redirect;
@@ -38,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @ActionMapping (
 		redirects={
-				@Redirect(	
+				@Redirect(
 						path="/jsp/amanager/canvas.jsp",
 						descr="Users/Groups/Authentications",
 						mess_id="title_fw_amanager"
@@ -58,7 +59,7 @@ import javax.servlet.http.HttpServletResponse;
     memoryAsLastInstance="true",
     reloadAfterAction="true",
 	redirects={
-			@Redirect(	
+			@Redirect(
 				auth_id="amn_id",
 				path="*"
 			)
@@ -81,7 +82,7 @@ public class componentAmanager extends action implements i_action, Serializable{
 
 	private String type_selected;
 	private String mode="user";
-	
+
 	private info_action selected_action;
 	private info_redirect selected_redirect;
 	private info_section selected_section;
@@ -89,29 +90,29 @@ public class componentAmanager extends action implements i_action, Serializable{
 	private info_group selected_group;
 	private info_target selected_target;
 	private info_relation selected_relation;
-	
+
 	private Vector elements_true_false;
-	
+
 	private boolean display_users=true;
 	private boolean display_actions=false;
 	private boolean display_groups=false;
 	private boolean display_targets=false;
 	private boolean display_relations=false;
 
-	
+
 	private String xmlContent;
 
 
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-	
+
 	componentAmanager form = this;
-	
+
 	if(form.getMiddleAction()==null) form.setMiddleAction("");
-/*	
+/*
 	Vector tmp1 = new Vector(request.getParameterMap().keySet());
 	String tmp_str = "";
-	for(int i=0;i<tmp1.size();i++){	
+	for(int i=0;i<tmp1.size();i++){
 		tmp_str+=tmp1.get(i)+"=[";
 		try{
 			String[] arr = (String[])request.getParameterMap().get(tmp1.get(i));
@@ -122,10 +123,10 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		tmp_str+="]";
 	}
 	new bsControllerException(request.getRequestURI() +"|"+ request.getQueryString(), iStub.log_ERROR);
-	new bsControllerException(tmp_str, iStub.log_ERROR); 
+	new bsControllerException(tmp_str, iStub.log_ERROR);
 */
-	
-//	new bsControllerException(request.getSession().getId()+"|"+request.getSession().hashCode()+"|"+form.hashCode(), iStub.log_ERROR); 
+
+//	new bsControllerException(request.getSession().getId()+"|"+request.getSession().hashCode()+"|"+form.hashCode(), iStub.log_ERROR);
 	if(!form.getL_users().isReadOk() || form.getMiddleAction().equals("reload")){
 		try{
 			if(bsController.getUser_config()==null){
@@ -153,9 +154,9 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}
 
 	}
-	
-	
-	
+
+
+
 	if(!form.getL_actions().isReadOk() || form.getMiddleAction().equals("reload")){
 		try{
 			load_actions tmp = (load_actions)util_cloner.clone(bsController.getAction_config());
@@ -173,7 +174,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	if(!form.getL_authentication().isReadOk() || form.getMiddleAction().equals("reload")){
 		try{
 			load_authentication tmp = (load_authentication)util_cloner.clone(bsController.getAuth_config());
-			if(tmp.getXmlEncoding().equals("")) tmp.setXmlEncoding("ISO-8859-1");	
+			if(tmp.getXmlEncoding().equals("")) tmp.setXmlEncoding("ISO-8859-1");
 			form.getL_authentication().reimposta();
 			form.getL_authentication().initData(tmp.toXml());
 			form.getL_authentication().setReadOk_File(true);
@@ -182,37 +183,37 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}
 
 	}
-	
+
 
 	if(form.getMiddleAction().equals("reload")){
 		form.setMiddleAction("blank");
 	}
-	
+
 	if(form.getMiddleAction().equals("preview")){
 		if(form.getL_users()!=null){
 			preLoadUsers(form);
-			
+
 			form.setXmlContent(form.getL_users().toXml());
 		}
 		return new redirects("/jsp/amanager/preview.jsp");
 	}
-	
+
 	if(form.getMiddleAction().equals("preview_auth")){
 		if(form.getL_authentication()!=null){
-			
+
 			preLoadAuthentications(form);
-			
+
 			form.setXmlContent(form.getL_authentication().toXml());
-			
+
 		}
 		return new redirects("/jsp/amanager/preview.jsp");
-	}	
-	
+	}
+
 	if(form.getMiddleAction().equals("load")){
 		try{
-			
+
 			preLoadUsers(form);
-			
+
 			form.getL_users().initData(form.getXmlContent());
 		}catch(Exception e){
 			new bsControllerMessageException(new message("E", "", e.toString()), request, iStub.log_ERROR);
@@ -221,16 +222,16 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	}
 	if(form.getMiddleAction().equals("load_auth")){
 		try{
-			
-			preLoadAuthentications(form);			
-			
+
+			preLoadAuthentications(form);
+
 			form.getL_authentication().initData(form.getXmlContent());
 		}catch(Exception e){
 			new bsControllerMessageException(new message("E", "", e.toString()), request, iStub.log_ERROR);
 		}
 		return new redirects(get_infoaction().getRedirect());
-	}	
-	
+	}
+
 	if(form.getMiddleAction().equals("syncro") || form.getMiddleAction().equals("syncro_auth")){
 		String oldXML = null;
 		try{
@@ -238,9 +239,9 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				if(bsController.getUser_config() instanceof load_users){
 					oldXML=((load_users)bsController.getUser_config()).toXml();
 					((load_users)bsController.getUser_config()).reimposta();
-					
+
 					preLoadUsers(form);
-					
+
 					((load_users)bsController.getUser_config()).initData(form.getL_users().toXml());
 				}
 			}
@@ -250,14 +251,14 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			new bsControllerMessageException(new message("E", "", e.toString()), request, iStub.log_ERROR);
 		}
-	
+
 
 		oldXML = null;
 		try{
 			if(form.getL_authentication()!=null){
 
 					oldXML=bsController.getAuth_config().toXml();
-					bsController.getAuth_config().reimposta();					
+					bsController.getAuth_config().reimposta();
 					preLoadAuthentications(form);
 					bsController.getAuth_config().initData(form.getL_authentication().toXml());
 			}
@@ -272,8 +273,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			new bsControllerMessageException(new message("E", "", e.toString()), request, iStub.log_ERROR);
 		}
 		return new redirects(get_infoaction().getRedirect());
-	}		
-	
+	}
+
 	if(form.getMiddleAction().equals("clear")){
 		try{
 			if(form.getL_actions()!=null){
@@ -285,7 +286,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				load_actions l_actions = new load_actions();
 				l_actions.initBuilder(form.getL_actions().toXml());
 				form.setL_actions(l_actions);
-				
+
 			}
 
 		}catch(Exception e){
@@ -293,16 +294,16 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}
 		return new redirects(get_infoaction().getRedirect());
 	}
-	
+
 	if(form.getMiddleAction().equals("list_groupsIntoUser")){
 		return new redirects("/jsp/amanager/list.jsp");
 	}
 	if(form.getMiddleAction().equals("list_targetsIntoUser")){
 		return new redirects("/jsp/amanager/list.jsp");
-	}	
+	}
 	if(form.getMiddleAction().equals("list_usersIntoGroup")){
 		return new redirects("/jsp/amanager/list.jsp");
-	}	
+	}
 	if(form.getMiddleAction().equals("list_usersIntoTarget")){
 		return new redirects("/jsp/amanager/list.jsp");
 	}
@@ -312,8 +313,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	if(form.getMiddleAction().equals("list_targetsIntoRelation")){
 		return new redirects("/jsp/amanager/list.jsp");
 	}
-	
-	
+
+
 	if(form.getMiddleAction().indexOf("enable_")>-1){
 
 		if(form.getMiddleAction().equals("enable_action")){
@@ -326,7 +327,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			else{
 				selected_relation.removeElement(selected_action.getPath()+".*.*");
-				selected_action.setEnableDisable(info_entity.CONST_ENABLED);				
+				selected_action.setEnableDisable(info_entity.CONST_ENABLED);
 			}
 			form.setMiddleAction("view_action");
 		}
@@ -342,11 +343,11 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			else{
 				selected_relation.removeElement(selected_action.getPath()+"."+selected_redirect.getAuth_id()+".*");
-				selected_redirect.setEnableDisable(info_entity.CONST_ENABLED);				
+				selected_redirect.setEnableDisable(info_entity.CONST_ENABLED);
 			}
 			selected_action.refreshEnableDisableLevel();
 			form.setMiddleAction("view_action");
-		}	
+		}
 		if(form.getMiddleAction().equals("enable_section")){
 			info_relation selected_relation = (info_relation)util_find.findElementFromList(form.getL_authentication().getV_info_relations(), form.getId_selected_relation(), "name");
 			info_action selected_action = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
@@ -362,17 +363,17 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			else{
 				selected_relation.removeElement(selected_action.getPath()+"."+selected_redirect.getAuth_id()+"."+selected_section.getName());
-				selected_section.setEnableDisable(info_entity.CONST_ENABLED);				
+				selected_section.setEnableDisable(info_entity.CONST_ENABLED);
 			}
 			selected_redirect.refreshEnableDisableLevel();
 			selected_action.refreshEnableDisableLevel();
 			form.setMiddleAction("view_action");
-		}		
-		
+		}
+
 		return new redirects("/jsp/amanager/entity.jsp");
 	}
 
-	
+
 	if(form.getMiddleAction().indexOf("view_")>-1){
 		if(form.getMiddleAction().equals("view_user")){
 			info_user selected = (info_user)util_find.findElementFromList(form.getL_users().getV_info_users(), form.getId_selected_user(), "name");
@@ -381,16 +382,16 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		if(form.getMiddleAction().equals("view_group")){
 			info_group selected = (info_group)util_find.findElementFromList(form.getL_users().getV_info_groups(), form.getId_selected_group(), "name");
 			form.setSelected_group(selected);
-		}	
+		}
 		if(form.getMiddleAction().equals("view_target")){
 			info_target selected = (info_target)util_find.findElementFromList(form.getL_users().getV_info_targets(), form.getId_selected_target(), "name");
 			form.setSelected_target(selected);
-		}		
-		
-		
+		}
+
+
 		if(form.getMiddleAction().equals("view_action")){
 			info_relation selected = (info_relation)util_find.findElementFromList(form.getL_authentication().getV_info_relations(), form.getId_selected_relation(), "name");
-			form.setSelected_relation(selected);		
+			form.setSelected_relation(selected);
 			if(form.getType_selected().equals("open")){
 				for(int i=0;i<form.getL_actions().getV_info_actions().size();i++){
 					info_action current = (info_action)form.getL_actions().getV_info_actions().get(i);
@@ -404,7 +405,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				form.setSelected_action(selected_a);
 			}
 		}
-		
+
 		if(form.getMiddleAction().equals("view_redirect")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			form.setSelected_action(selected);
@@ -412,8 +413,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				info_redirect selected_a = (info_redirect)util_find.findElementFromList(form.getSelected_action().getV_info_redirects(), form.getId_selected_redirect(), "path");
 				form.setSelected_redirect(selected_a);
 			}
-		}	
-		
+		}
+
 		if(form.getMiddleAction().equals("view_section")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			form.setSelected_action(selected);
@@ -425,33 +426,33 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					form.setSelected_section(selected_b);
 				}
 			}
-		}		
+		}
 		if(form.getMiddleAction().equals("view_relation")){
 			info_relation selected = (info_relation)util_find.findElementFromList(form.getL_authentication().getV_info_relations(), form.getId_selected_relation(), "name");
 			form.setSelected_relation(selected);
-			
-					
-		}	
+
+
+		}
 
 		if(form.getMiddleAction().equals("view_authentication")){
 			info_relation selected = (info_relation)util_find.findElementFromList(form.getL_authentication().getV_info_relations(), form.getId_selected_relation(), "name");
-			form.setSelected_relation(selected);		
+			form.setSelected_relation(selected);
 			if(form.getType_selected().equals("open")){
 				for(int i=0;i<form.getL_actions().getV_info_actions().size();i++){
 					info_action current = (info_action)form.getL_actions().getV_info_actions().get(i);
 					current.syncroWithRelations(selected.get_elements());
 				}
 			}
-			
-		}		
-		
+
+		}
+
 		return new redirects("/jsp/amanager/entity.jsp");
 	}
-	
+
 	if(form.getMiddleAction().indexOf("update_")>-1){
 		String name=request.getParameter("name");
 		String value=request.getParameter("value");
-		
+
 		if(form.getMiddleAction().equals("update_general")){
 			if(!form.getMode().equals("relation")){
 				if(form.getL_actions()!=null){
@@ -472,7 +473,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setMiddleAction("view_general");
 			return new redirects("/jsp/amanager/entity.jsp");
 
-			
+
 		}
 		if(form.getMiddleAction().equals("update_user")){
 			info_user selected = (info_user)util_find.findElementFromList(form.getL_users().getV_info_users(), form.getId_selected_user(), "name");
@@ -484,19 +485,19 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					}catch(Exception e){
 					}
 				}
-			}					
+			}
 			try{
 				form.getSelected_user().setCampoValue(name, value);
 			}catch(Exception e){
 			}
-				
+
 			if(name.equals("crypted")){
 				form.getSelected_user().setPassword("");
 			}
 			form.setMiddleAction("view_user");
 			return new redirects("/jsp/amanager/entity.jsp");
 		}
-		
+
 		if(form.getMiddleAction().equals("update_group")){
 			info_group selected = (info_group)util_find.findElementFromList(form.getL_users().getV_info_groups(), form.getId_selected_group(), "name");
 			form.setSelected_group(selected);
@@ -507,11 +508,11 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			if(name.equals("name")){
 				try{
-					
+
 					form.getL_users().get_groups().remove(origName);
 					form.getL_users().get_groups().put(form.getSelected_group().getName(),form.getSelected_group());
 					form.getL_users().refreshV_info_groups();
-					
+
 					for(int i=0;i<form.getL_users().getV_info_users().size();i++){
 						info_user iUser = (info_user)form.getL_users().getV_info_users().get(i);
 						if(iUser.get_groups().get(origName)!=null){
@@ -523,10 +524,10 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 				}catch(Exception e){
 				}
-			}			
+			}
 			form.setMiddleAction("view_group");
 			return new redirects("/jsp/amanager/entity.jsp");
-			
+
 		}
 		if(form.getMiddleAction().equals("update_target")){
 			info_target selected = (info_target)util_find.findElementFromList(form.getL_users().getV_info_targets(), form.getId_selected_target(), "name");
@@ -538,22 +539,22 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			if(name.equals("name")){
 				try{
-					
+
 					form.getL_users().get_targets().remove(origName);
 					form.getL_users().get_targets().put(form.getSelected_target().getName(),form.getSelected_target());
 					form.getL_users().refreshV_info_targets();
-					
+
 					for(int i=0;i<form.getL_users().getV_info_users().size();i++){
 						info_user iUser = (info_user)form.getL_users().getV_info_users().get(i);
 						if(iUser.getTarget().equals(origName)){
 							iUser.setTarget(form.getSelected_target().getName());
 						}
 					}
-					
+
 
 				}catch(Exception e){
 				}
-			}			
+			}
 			form.setMiddleAction("view_target");
 			return new redirects("/jsp/amanager/entity.jsp");
 		}
@@ -567,20 +568,20 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			form.setMiddleAction("view_relation");
 			return new redirects("/jsp/amanager/entity.jsp");
-			
+
 		}
 
 		return null;
 	}
-	
+
 	if(form.getMiddleAction().indexOf("remove_")>-1){
 		if(form.getMiddleAction().equals("remove_user")){
 			info_user selected = (info_user)util_find.findElementFromList(form.getL_users().getV_info_users(), form.getId_selected_user(), "name");
 			try{
 
-				
+
 				if(form.getL_users().getV_info_users().remove(selected)){
-					
+
 					boolean founded=false;
 				    Iterator iterator = form.getL_users().get_users().keySet().iterator();
 				    while (iterator.hasNext() && !founded) {
@@ -598,7 +599,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 							iGroup.get_users().remove(selected.getName());
 							iGroup.refreshV_info_users();
 						}
-					}					
+					}
 
 				}
 			}catch(Exception e){
@@ -611,7 +612,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			if(selected.get_groups().get(selected_a.getName())!=null){
 				selected.get_groups().remove(selected_a.getName());
 				selected.refreshV_info_groups();
-				
+
 				selected_a.get_users().remove(selected.getName());
 				selected_a.refreshV_info_users();
 			}
@@ -619,12 +620,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setMiddleAction("view_user");
 			return new redirects("/jsp/amanager/entity.jsp");
 		}
-		
+
 		if(form.getMiddleAction().equals("remove_group")){
 			info_group selected = (info_group)util_find.findElementFromList(form.getL_users().getV_info_groups(), form.getId_selected_group(), "name");
 			try{
 
-				
+
 				if(form.getL_users().getV_info_groups().remove(selected)){
 					form.getL_users().get_groups().remove(selected.getName());
 					for(int i=0;i<form.getL_users().getV_info_users().size();i++){
@@ -634,17 +635,17 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 							iUser.refreshV_info_groups();
 						}
 					}
-					
+
 				}
 			}catch(Exception e){
-			}		
+			}
 			return new redirects(get_infoaction().getRedirect());
 		}
 		if(form.getMiddleAction().equals("remove_target")){
 			info_target selected = (info_target)util_find.findElementFromList(form.getL_users().getV_info_targets(), form.getId_selected_target(), "name");
 			try{
 
-				
+
 				if(form.getL_users().getV_info_targets().remove(selected)){
 					form.getL_users().get_targets().remove(selected.getName());
 					for(int i=0;i<form.getL_users().getV_info_users().size();i++){
@@ -653,10 +654,10 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 							iUser.setTarget("");
 						}
 					}
- 
+
 				}
 			}catch(Exception e){
-			}	
+			}
 			return new redirects(get_infoaction().getRedirect());
 		}
 		if(form.getMiddleAction().equals("remove_relation")){
@@ -667,21 +668,21 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}catch(Exception e){
 			}
 			return new redirects(get_infoaction().getRedirect());
-		}		
+		}
 		if(form.getMiddleAction().equals("remove_userIntoGroup")){
 			info_group selected = (info_group)util_find.findElementFromList(form.getL_users().getV_info_groups(), form.getId_selected_group(), "name");
 			info_user selected_a = (info_user)util_find.findElementFromList(form.getL_users().getV_info_users(), form.getId_selected_user(), "name");
 			if(selected.get_users().get(selected_a.getName())!=null){
 				selected.get_users().remove(selected_a.getName());
 				selected.refreshV_info_users();
-				
+
 				selected_a.get_groups().remove(selected.getName());
 				selected_a.refreshV_info_groups();
 			}
 			form.setSelected_group(selected);
 			form.setMiddleAction("view_group");
 			return new redirects("/jsp/amanager/entity.jsp");
-			
+
 		}
 		if(form.getMiddleAction().equals("remove_userIntoTarget")){
 			info_target selected = (info_target)util_find.findElementFromList(form.getL_users().getV_info_targets(), form.getId_selected_target(), "name");
@@ -689,13 +690,13 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			if(selected.get_users().get(selected_a.getName())!=null){
 				selected.get_users().remove(selected_a.getName());
 				selected.refreshV_info_users();
-				
+
 				selected_a.setTarget("");
 			}
 			form.setSelected_target(selected);
 			form.setMiddleAction("view_target");
 			return new redirects("/jsp/amanager/entity.jsp");
-			
+
 		}
 		if(form.getMiddleAction().equals("remove_targetIntoRelation")){
 			info_relation selected = (info_relation)util_find.findElementFromList(form.getL_authentication().getV_info_relations(), form.getId_selected_relation(), "name");
@@ -708,7 +709,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_relation(selected);
 			form.setMiddleAction("view_relation");
 			return new redirects("/jsp/amanager/entity.jsp");
-			
+
 		}
 		if(form.getMiddleAction().equals("remove_groupIntoRelation")){
 			info_relation selected = (info_relation)util_find.findElementFromList(form.getL_authentication().getV_info_relations(), form.getId_selected_relation(), "name");
@@ -721,15 +722,15 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_relation(selected);
 			form.setMiddleAction("view_relation");
 			return new redirects("/jsp/amanager/entity.jsp");
-			
+
 		}
-		
-			
-		
-		
+
+
+
+
 		return null;
-	}	
-	
+	}
+
 	if(form.getMiddleAction().indexOf("add_")>-1){
 		if(form.getMiddleAction().equals("add_user")){
 			info_user selected = new info_user();
@@ -749,7 +750,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setMiddleAction("");
 			return new redirects(get_infoaction().getRedirect());
 		}
-		
+
 		if(form.getMiddleAction().equals("add_target")){
 			info_target selected = new info_target();
 			selected.setName("[new_target]");
@@ -766,46 +767,46 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_relation(selected);
 			form.setMiddleAction("");
 			return new redirects(get_infoaction().getRedirect());
-		}		
+		}
 		if(form.getMiddleAction().equals("add_groupIntoUser")){
 			info_user selected = (info_user)util_find.findElementFromList(form.getL_users().getV_info_users(), form.getId_selected_user(), "name");
 			info_group selected_a = (info_group)util_find.findElementFromList(form.getL_users().getV_info_groups(), form.getId_selected_group(), "name");
 			if(selected.get_groups().get(selected_a.getName())==null){
 				selected.get_groups().put(selected_a.getName(), selected_a);
 				selected.refreshV_info_groups();
-				
+
 				selected_a.get_users().put(selected.getName(), selected);
 				selected_a.refreshV_info_users();
 			}
 			form.setSelected_user(selected);
 			form.setMiddleAction("view_user");
-		}		
+		}
 		if(form.getMiddleAction().equals("add_userIntoGroup")){
 			info_group selected = (info_group)util_find.findElementFromList(form.getL_users().getV_info_groups(), form.getId_selected_group(), "name");
 			info_user selected_a = (info_user)util_find.findElementFromList(form.getL_users().getV_info_users(), form.getId_selected_user(), "name");
 			if(selected.get_users().get(selected_a.getName())==null){
 				selected.get_users().put(selected_a.getName(), selected_a);
 				selected.refreshV_info_users();
-				
+
 				selected_a.get_groups().put(selected.getName(), selected);
 				selected_a.refreshV_info_groups();
 			}
 			form.setSelected_group(selected);
 			form.setMiddleAction("view_group");
-		}				
+		}
 		if(form.getMiddleAction().equals("add_userIntoTarget")){
 			info_target selected = (info_target)util_find.findElementFromList(form.getL_users().getV_info_targets(), form.getId_selected_target(), "name");
 			info_user selected_a = (info_user)util_find.findElementFromList(form.getL_users().getV_info_users(), form.getId_selected_user(), "name");
 			if(selected.get_users().get(selected_a.getName())==null){
 				selected.get_users().put(selected_a.getName(), selected_a);
 				selected.refreshV_info_users();
-				
+
 				selected_a.setTarget(selected.getName());
 			}
 			form.setSelected_target(selected);
 			form.setMiddleAction("view_target");
-		}	
-		
+		}
+
 		if(form.getMiddleAction().equals("add_targetIntoUser")){
 			info_target selected = (info_target)util_find.findElementFromList(form.getL_users().getV_info_targets(), form.getId_selected_target(), "name");
 			info_user selected_a = (info_user)util_find.findElementFromList(form.getL_users().getV_info_users(), form.getId_selected_user(), "name");
@@ -838,30 +839,30 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			form.setSelected_relation(selected);
 			form.setMiddleAction("view_relation");
-		}		
+		}
 
 
 		return new redirects("/jsp/amanager/entity.jsp");
-	}		
+	}
 	return new redirects(get_infoaction().getRedirect());
 }
 
 private void preLoadUsers(componentAmanager form){
 	return;
-/*	
+/*
 	try{
 		load_users tmp = new load_users();
 		String xml = util_classes.getResourceAsTxt(this.getClass().getName(), "resources/example_users.xml");
 		tmp.initData(xml);
-		
+
 		form.getL_users().get_users().putAll(tmp.get_users());
 		form.getL_users().get_groups().putAll(tmp.get_groups());
 		form.getL_users().get_targets().putAll(tmp.get_targets());
-		
+
 		form.getL_users().refreshV_info_users();
 		form.getL_users().refreshV_info_groups();
 		form.getL_users().refreshV_info_targets();
-		
+
 	}catch(Exception e){
 	}
 */
@@ -869,16 +870,16 @@ private void preLoadUsers(componentAmanager form){
 
 private void preLoadAuthentications(componentAmanager form){
 	return;
-/*	
+/*
 	try{
 		load_authentication tmp = new load_authentication();
 		String xml = util_classes.getResourceAsTxt(this.getClass().getName(), "resources/example_authentication.xml");
 		tmp.initData(xml);
-		
+
 		HashMap _relations = new HashMap();
-		
+
 		for(int i=0;i<form.getL_authentication().getV_info_relations().size();i++){
-			
+
 			info_relation current = (info_relation)form.getL_authentication().getV_info_relations().get(i);
 			if(current.get_targets().get("default_target")!=null &&
 				(current.get_groups().get("guest")!=null || current.get_groups().get("user")!=null)
@@ -890,17 +891,17 @@ private void preLoadAuthentications(componentAmanager form){
 				current.refreshV_info_targets();
 			}
 			_relations.put(current.getName(), current);
-			
+
 		}
 		for(int i=0;i<tmp.getV_info_relations().size();i++){
-			info_relation current = (info_relation)tmp.getV_info_relations().get(i);	
+			info_relation current = (info_relation)tmp.getV_info_relations().get(i);
 			_relations.put(current.getName(), current);
 		}
 		Vector v_info_relations = (new Vector(_relations.values()));
 		v_info_relations = new util_sort().sort(v_info_relations,"name");
 
 		form.getL_authentication().setV_info_relations(v_info_relations);
-		
+
 	}catch(Exception e){
 	}
 */
@@ -914,18 +915,18 @@ public void reimposta(){
 	id_selected_user="";
 	id_selected_relation="";
 	type_selected="";
-	
+
 	elements_true_false = new Vector();
 	elements_true_false.add(new option_element("false","false"));
 	elements_true_false.add(new option_element("true","true"));
-	
+
 	xmlContent="";
 	mode="user";
-	
+
 	l_actions=new load_actions();
 	l_users=new load_users();
 	l_authentication=new load_authentication();
-	
+
 }
 
 public redirects validate(HttpServletRequest request){
@@ -1095,14 +1096,14 @@ public void setMode(String mode) {
 		if(mode.equals("user")){
 			display_users=true;
 			display_actions=false;
-			display_groups=false;			
+			display_groups=false;
 		}
 		if(mode.equals("group")){
 			display_users=false;
 			display_actions=true;
-			display_groups=true;			
+			display_groups=true;
 		}
-		
+
 	}
 }
 

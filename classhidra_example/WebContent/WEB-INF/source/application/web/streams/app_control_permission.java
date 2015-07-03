@@ -5,6 +5,7 @@ import it.classhidra.annotation.elements.Apply_to_action;
 import it.classhidra.annotation.elements.Stream;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.redirects;
@@ -21,12 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-@Stream(	
+@Stream(
 		name="def_control_permission",
 		applied={
 			@Apply_to_action(action="*")
 		}
-)	
+)
 
 public class app_control_permission extends stream implements i_stream{
 
@@ -34,15 +35,15 @@ public class app_control_permission extends stream implements i_stream{
 	public static String CONST_IPCNT_INSERT = "CONST_IPCNT_INSERT";
 
 	public redirects streamservice_enter(HttpServletRequest request,HttpServletResponse response) throws bsControllerException {
-		
 
-	
+
+
 		String redirectURI=null;
-		auth_init auth = null; 
-		
-		
+		auth_init auth = null;
 
-		
+
+
+
 		if(request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION)==null){
 			auth = new auth_init();
 			try{
@@ -66,13 +67,13 @@ public class app_control_permission extends stream implements i_stream{
 			}
 		}
 
-		
-		
+
+
 
 		String id_action = (String)request.getAttribute(bsController.CONST_ID);
-		
-		
-		
+
+
+
 		if(	auth!=null &&
 			auth.get_authentication_filter()!=null &&
 			!auth.get_authentication_filter().check_actionIsPermitted(auth,id_action)){
@@ -91,20 +92,20 @@ public class app_control_permission extends stream implements i_stream{
 						new Object[]{});
 			 return new redirects(redirectURI);
 		}
-		
+
 		return super.streamservice_enter(request, response);
-		
+
 	}
 
 	public redirects streamservice_exit(HttpServletRequest request, HttpServletResponse response) throws bsControllerException {
 
 		String redirectURI=null;
-		auth_init auth = null; 
+		auth_init auth = null;
 		try{
 			auth = bsController.checkAuth_init(request);
-		}catch(Exception e){			
+		}catch(Exception e){
 		}
-		String id_action = (String)request.getAttribute(bsController.CONST_ID);		
+		String id_action = (String)request.getAttribute(bsController.CONST_ID);
 		i_action action_instance = (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
 		if(	action_instance!=null &&
 			auth!=null &&
@@ -118,7 +119,7 @@ public class app_control_permission extends stream implements i_stream{
 		return super.streamservice_exit(request, response);
 	}
 
-	
+
 	private String service_AuthRedirect(String id_action,ServletContext servletContext, HttpServletRequest request, HttpServletResponse response){
 		String redirectURI="";
 		try{
@@ -129,8 +130,8 @@ public class app_control_permission extends stream implements i_stream{
 			}else redirectURI = bsController.getAction_config().getAuth_error();
 
 		}catch(Exception ex){
-			bsController.writeLog(request, "Controller authentication error. Action: ["+id_action+"] URI: ["+redirectURI+"]");		
-		}	
+			bsController.writeLog(request, "Controller authentication error. Action: ["+id_action+"] URI: ["+redirectURI+"]");
+		}
 		return redirectURI;
 	}
 	private String service_ErrorRedirect(String id_action,ServletContext servletContext, HttpServletRequest request, HttpServletResponse response){
@@ -143,12 +144,12 @@ public class app_control_permission extends stream implements i_stream{
 			}else redirectURI = bsController.getAction_config().getError();
 
 		}catch(Exception ex){
-			bsController.writeLog(request, "Controller authentication error. Action: ["+id_action+"] URI: ["+redirectURI+"]");		
-		}	
+			bsController.writeLog(request, "Controller authentication error. Action: ["+id_action+"] URI: ["+redirectURI+"]");
+		}
 		return redirectURI;
 	}
-	
 
-	
+
+
 
 }

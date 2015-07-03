@@ -53,7 +53,7 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 
- 
+
 public class bean extends elementBeanBase implements i_bean  {
 	private static final long serialVersionUID = 3917073481415967577L;
 
@@ -76,9 +76,9 @@ public class bean extends elementBeanBase implements i_bean  {
 	protected boolean virtual=false;
 	protected boolean gzipoutput=false;
 	protected int countActions;
-	
+
 	protected listener_bean listener_b;
-	
+
 	protected Object delegated;
 
 
@@ -116,20 +116,20 @@ public void init(HttpServletRequest request) throws bsControllerException{
 				if(level_curr<level_prev && level_curr!=-1) return;
 			}
 
-		
+
 		}
 
 	}
-	
+
 	if(request.getContentType()!=null && request.getContentType().indexOf("multipart")>-1){
 		initMultiPart(request);
 		return;
 	}
-	
+
 	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
 		if(initJsonPart(request)) return;
 	}
-	
+
 	initNormal(request);
 
 }
@@ -140,7 +140,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
-						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))		
+						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
 				)
 			);
 
@@ -151,7 +151,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 			String format = request.getParameter("$format_"+key);
 			String replaceOnBlank = request.getParameter("$replaceOnBlank_"+key);
 			String replaceOnErrorFormat = request.getParameter("$replaceOnErrorFormat_"+key);
-			
+
 			if(inputBase64){
 				String charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
 				try{
@@ -168,7 +168,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 				}catch(Exception e){
 				}
 			}
-			
+
 			if(key.indexOf(".")==-1){
 				try{
 					Object makedValue=null;
@@ -206,13 +206,13 @@ public void init(HttpServletRequest request) throws bsControllerException{
 					}
 				}
 			}else{
-				
+
 				Object writeValue=null;
 				Object current_requested = (delegated==null)?this:delegated;
-				
+
 				String last_field_name = null;
 				StringTokenizer st = new StringTokenizer(key,".");
-				while(st.hasMoreTokens()){				
+				while(st.hasMoreTokens()){
 					if(st.countTokens()>1){
 						String current_field_name = st.nextToken();
 						try{
@@ -229,7 +229,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 					}
 					writeValue = null;
 				}
-				
+
 				if(current_requested!=null){
 					try{
 						if(format!=null)
@@ -270,7 +270,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		HashMap parameters = util_multipart.popolateHashMap(request);
 		initPartFromMap(parameters);
 	}
-	
+
 	public boolean initJsonPart(HttpServletRequest request) throws bsControllerException{
 		boolean isJson=false;
 		HashMap parameters = new HashMap();
@@ -286,7 +286,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 				bytesRead = in.read(dataBytes, totalBytesRead, formDataLength);
 				totalBytesRead += bytesRead;
 			}
-			
+
 			String json = new String(dataBytes,0,dataBytes.length).trim();
 			if(json.charAt(0)=='{' && json.charAt(json.length()-1)=='}') isJson=true;
 			if(isJson){
@@ -307,14 +307,14 @@ public void init(HttpServletRequest request) throws bsControllerException{
 						value=value.trim();
 						if(value.charAt(0)=='"' && value.length()>0) value=value.substring(1,value.length());
 						if(value.charAt(value.length()-1)=='"' && value.length()>0) value=value.substring(0,value.length()-1);
-						parameters.put(key, value);						
+						parameters.put(key, value);
 					}
 				}
 			}
-		
-			
+
+
 		}catch(Exception e){
-			
+
 		}finally{
 			try{
 				in.close();
@@ -323,21 +323,21 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		}
 
 		if(isJson) initPartFromMap(parameters);
-		
+
 		return isJson;
 	}
-	
+
 
 	private void initPartFromMap(HashMap parameters) throws bsControllerException{
 		if(parameters==null) parameters=new HashMap();
 		parametersMP = parameters;
-		
+
 		xmloutput=false;
 		jsonoutput=false;
 		boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
-						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))		
+						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
 				)
 			);
 
@@ -346,7 +346,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 //		for(int k=0;k<parameters.keySet().size();k++){
 		for (Object elem : parameters.keySet()) {
 			String key = (String)elem;
-			
+
 			if(parameters.get(key) instanceof String ){
 				String value = (String)parameters.get(key);
 				String format = (String)parameters.get("$format_"+key);
@@ -370,7 +370,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 					}catch(Exception e){
 					}
 				}
-				
+
 
 				if(key.indexOf(".")==-1){
 					try{
@@ -414,10 +414,10 @@ public void init(HttpServletRequest request) throws bsControllerException{
 				}else{
 					Object writeValue=null;
 					Object current_requested = (delegated==null)?this:delegated;
-					
+
 					String last_field_name = null;
 					StringTokenizer st = new StringTokenizer(key,".");
-					while(st.hasMoreTokens()){				
+					while(st.hasMoreTokens()){
 						if(st.countTokens()>1){
 							String current_field_name = st.nextToken();
 							try{
@@ -435,7 +435,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 						}
 						writeValue = null;
 					}
-					
+
 					if(current_requested!=null){
 						try{
 							if(format!=null)
@@ -476,21 +476,21 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 public void init(HashMap _content) throws bsControllerException{
 	if(_content==null) return;
-	
+
 	xmloutput=false;
 	jsonoutput=false;
 	boolean inputBase64 = (_content.get(bsController.CONST_ID_INPUTBASE64)!=null &&
 			(
 					_content.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
-					_content.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))		
+					_content.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
 			)
 		);
-	
+
 //	Object[] keys = _content.keySet().toArray();
 //	for (int ii = 0; ii < keys.length; ii++){
 	for (Object elem :  _content.keySet()) {
 		String key = (String)elem;
-		
+
 //		String key = (String)keys[ii];
 		String value = (String)_content.get(key);
 		String format = (String)_content.get("$format_"+key);
@@ -514,8 +514,8 @@ public void init(HashMap _content) throws bsControllerException{
 			}catch(Exception e){
 			}
 		}
-		
-		
+
+
 		if(key.indexOf(".")==-1){
 			try{
 
@@ -559,10 +559,10 @@ public void init(HashMap _content) throws bsControllerException{
 			Object writeValue=null;
 			Object current_requested = (delegated==null)?this:delegated;
 
-		
+
 			String last_field_name = null;
 			StringTokenizer st = new StringTokenizer(key,".");
-			while(st.hasMoreTokens()){				
+			while(st.hasMoreTokens()){
 				if(st.countTokens()>1){
 					String current_field_name = st.nextToken();
 					try{
@@ -713,36 +713,36 @@ private Object getPrimitiveArgument(String name, String s_value){
 	Object primArgument = null;
 	Class reqClass = (delegated==null)?this.getClass():delegated.getClass();
 	if(name.indexOf('.')>-1){
-		StringTokenizer st = new StringTokenizer(name,".");		
+		StringTokenizer st = new StringTokenizer(name,".");
 /*
 		Vector allfields=new Vector();
 		while(st.hasMoreTokens())
 			allfields.add(st.nextToken());
 
-			
+
 		String complexName="";
 		for(int i=0;i<allfields.size()-1;i++){
 			complexName+=allfields.get(i);
 			if(i!=allfields.size()-2) complexName+=".";
 		}
-		
+
 		name = (String)allfields.get(allfields.size()-1);
 */
 
 		String complexName="";
 		while(st.hasMoreTokens()){
-			String token = st.nextToken();			
+			String token = st.nextToken();
 			if(st.countTokens()>0) complexName+=token;
 			if(st.countTokens()>1) complexName+=".";
 			if(st.countTokens()==0) name=token;
 		}
 
-		
+
 		Object writeObj=get(complexName);
 		if(writeObj==null) return primArgument;
-		reqClass=writeObj.getClass();			
+		reqClass=writeObj.getClass();
 
-		
+
 
 	}
 
@@ -982,11 +982,11 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 
 		}else{
 			StringTokenizer st = new StringTokenizer(name,".");
-/*			
+/*
 			Vector allfields=new Vector();
 			while(st.hasMoreTokens())
 				allfields.add(st.nextToken());
-			
+
 			String complexName="";
 			for(int i=0;i<allfields.size()-1;i++){
 				complexName+=allfields.get(i);
@@ -1001,7 +1001,7 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 			String current_field_name = null;
 			String complexName="";
 			while(st.hasMoreTokens()){
-				String token = st.nextToken();			
+				String token = st.nextToken();
 				if(st.countTokens()>0) complexName+=token;
 				if(st.countTokens()>1) complexName+=".";
 				if(st.countTokens()==0) current_field_name=token;
@@ -1009,7 +1009,7 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 			Object writeObj=get(complexName);
 			if(writeObj==null) writeObj=get(this,complexName);
 			if(writeObj==null) return false;
-			
+
 			if(writeObj!=null && current_field_name!=null){
 				try{
 						setCampoValuePoint(
@@ -1258,7 +1258,7 @@ public void onGetFromSession() {
 }
 
 public void onAddToLastInstance() {
-	if(listener_b!=null) listener_b.onAddToLastInstance();	
+	if(listener_b!=null) listener_b.onAddToLastInstance();
 }
 
 

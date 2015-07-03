@@ -14,7 +14,7 @@ import javax.servlet.*;
 
 @ActionMapping (
 		redirects={
-				@Redirect(	
+				@Redirect(
 						path="/jsp/qmf/qmftool_login.jsp",
 						descr="DBMS",
 						mess_id="title_fw_Qmf"
@@ -27,11 +27,11 @@ import javax.servlet.*;
 		name="formQmf",
 		redirect="/jsp/qmf/qmftool_login.jsp",
 		redirects={
-				@Redirect(	
+				@Redirect(
 					auth_id="qmf_id",
 					path="*"
 				)
-		}			
+		}
 )
 
 public class componentQmf extends action implements i_action, Serializable{
@@ -46,9 +46,9 @@ public componentQmf(){
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	String redirect = request.getParameter("redirect");
 	if(redirect==null) return new redirects(get_infoaction().getRedirect());
-	else{ 
+	else{
 		if(get_bean().getParametersMP()!=null){
-			HashMap cur_file = (HashMap)get_bean().getParametersMP().get("file0");	
+			HashMap cur_file = (HashMap)get_bean().getParametersMP().get("file0");
 			if(cur_file!=null){
 				byte[] file_content = (byte[])cur_file.get("content");
 				if(file_content!=null){

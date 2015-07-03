@@ -1,6 +1,6 @@
 /**
 * Creation date: (08/09/2010)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -47,9 +47,9 @@ import sun.misc.BASE64Encoder;
 
 public class wsController   {
 
-	
+
 	public String getId_UserSOAP(String user, String password,String isCodedInput){
-		
+
 		if(isCodedInput!=null && isCodedInput.toUpperCase().equals("TRUE")){
 			BASE64Decoder decoder = new BASE64Decoder();
 			try{
@@ -60,7 +60,7 @@ public class wsController   {
 				password = new String(decoder.decodeBuffer(password));
 			}catch(Exception e){
 			}
-			
+
 		}
 
 		if(bsController.getUser_config()==null){
@@ -73,13 +73,13 @@ public class wsController   {
  			}catch(bsControllerException je){
  				bsController.setUser_config(null);
  			}
-			
+
 		}
-		info_user _user = ((load_users)bsController.getUser_config()).get_user(user,password);	 
+		info_user _user = ((load_users)bsController.getUser_config()).get_user(user,password);
 	    if(_user!=null){
-	    	
+
 	    	auth_init auth = new auth_init();
-	    	
+
 	    	auth.set_user(_user.getName());
 	    	auth.set_userDesc(_user.getDescription());
 	    	auth.set_ruolo(_user.getGroup());
@@ -89,28 +89,28 @@ public class wsController   {
 	    	auth.get_target_property().put(bsConstants.CONST_AUTH_TARGET_ISTITUTION, auth.get_target());
 	    	auth.set_logged(true);
 	    	String redirectSSOID = auth.get_matricola()+"$$"+auth.get_ruolo()+"$$"+util_format.dataToString(new Date(), "yyyyMMddHHmm");
-		
+
 			try{
 				redirectSSOID = bsController.encrypt(redirectSSOID.toUpperCase());
-			}catch(Exception e){				
+			}catch(Exception e){
 			}
 			return redirectSSOID;
-	    }	
+	    }
 
 		return "";
 	}
 	public String PerformActionSOAP(String id_action, String ssoid, String inputXML, String isCodedInput, String isCodedOutput) {
 
 		HashMap wsParameters = new HashMap();
-		
+
 		wsParameters.put(bsController.CONST_ID, id_action);
 		wsParameters.put(bsController.CONST_SSOID, ssoid);
-		
+
 		String outputXML="";
 		Vector errors=new Vector();
 		auth_init auth = null;
 		if(auth==null) auth = new auth_init();
-		
+
 		StatisticEntity stat = null;
 		try{
 			stat = new StatisticEntity(
@@ -126,7 +126,7 @@ public class wsController   {
 		}catch(Exception e){
 		}
 
-		
+
 		if(isCodedInput!=null && isCodedInput.toUpperCase().equals("TRUE")){
 			BASE64Decoder decoder = new BASE64Decoder();
 			try{
@@ -134,20 +134,20 @@ public class wsController   {
 			}catch(Exception e){
 			}
 		}
-				
+
 		if(id_action!=null){
-					
-				
+
+
 			Vector _streams = new Vector();
 			Vector _streams_orig = (Vector)bsController.getAction_config().get_streams_apply_to_actions().get("*");
-					
+
 			if(_streams_orig!=null) _streams.addAll(_streams_orig);
 			Vector _streams4action = (Vector)bsController.getAction_config().get_streams_apply_to_actions().get(id_action);
 			if(_streams4action!=null) _streams.addAll(_streams4action);
 
 			i_action action_instance = null;
-					
-					
+
+
 
 			try{
 						try{
@@ -155,30 +155,30 @@ public class wsController   {
 						}catch (Exception e) {
 							throw e;
 						}
-						
+
 						action_instance = bsController.getAction_config().actionFactory(id_action);
-						
+
 						i_bean bean_instance = bsController.getAction_config().beanFactory(action_instance.get_infoaction().getName());
 						if(bean_instance!=null){
 							bean_instance.reimposta();
 							i_bean fromXML = null;
 							try{
 								fromXML = (i_bean)util_beanMessageFactory.message2bean(inputXML);
-							}catch(Exception e){								
+							}catch(Exception e){
 							}
 							if(fromXML!=null)
 								bean_instance.reInit(fromXML);
 						}
-						 
+
 
 						action_instance.onPreSet_bean();
-						action_instance.set_bean(bean_instance); 
+						action_instance.set_bean(bean_instance);
 						action_instance.onPostSet_bean();
 
 						action_instance.onPreInit(wsParameters);
 						action_instance.init(wsParameters);
 						action_instance.onPostInit(wsParameters);
-						
+
 						redirects redirect = null;
 						if(action_instance.get_infoaction().getSyncro().toLowerCase().equals("true")){
 							action_instance.onPreSyncroservice(wsParameters);
@@ -190,31 +190,31 @@ public class wsController   {
 							action_instance.onPostActionservice(redirect,wsParameters);
 						}
 
-//						redirects redirect = action_instance.actionservice(wsParameters);			
+//						redirects redirect = action_instance.actionservice(wsParameters);
 
-						
+
 						if(action_instance!=null && action_instance.get_bean()!=null){
 							String output4SOAP = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4SOAP);
 							if(output4SOAP==null)
 								outputXML = util_beanMessageFactory.bean2xml(action_instance.get_bean(),action_instance.get_bean().get_infobean().getName(),true);
 							else outputXML = output4SOAP;
 						}
-						
+
 
 						try{
 							performStream_Exit(_streams, id_action,action_instance,wsParameters );
 						}catch (Exception e) {
 							throw e;
 						}
-						
+
 						if(redirect!=null){
 							String id_current = check_DO(redirect.get_uri());
 							if(id_current!=null){
 								outputXML = PerformActionSOAP(id_action, ssoid, outputXML, isCodedInput, isCodedOutput);
 							}
 						}
-						
-							
+
+
 			}catch(bsControllerException e){
 				errors.add(e.toString());
 			}catch(Exception ex){
@@ -223,13 +223,13 @@ public class wsController   {
 				errors.add(t.toString());
 			}
 
-		}	
-		
-		
+		}
+
+
 		if(errors.size()>0){
 			outputXML+=	util_beanMessageFactory.bean2xml(errors);
 		}
-		
+
 		if(isCodedOutput!=null && isCodedOutput.toUpperCase().equals("TRUE")){
 			BASE64Encoder encoder = new BASE64Encoder();
 			try{
@@ -237,15 +237,15 @@ public class wsController   {
 			}catch(Exception e){
 			}
 		}
-		
+
 		if(stat!=null){
 			stat.setFt(new Date());
 			bsController.putToStatisticProvider(stat);
 		}
 
 		return outputXML;
-	}	
-	
+	}
+
 	public  boolean performStream_Enter(Vector _streams, String id_action,i_action action_instance, HashMap wsParameters) throws bsControllerException, Exception, Throwable{
 		for(int i=0;i<_streams.size();i++){
 			info_stream iStream = (info_stream)_streams.get(i);
@@ -261,7 +261,7 @@ public class wsController   {
 		}
 		return true;
 	}
-	
+
 	public  boolean performStream_Exit(Vector _streams, String id_action,i_action action_instance, HashMap wsParameters) throws bsControllerException, Exception, Throwable{
 		for(int i=_streams.size()-1;i>-1;i--){
 			info_stream iStream = (info_stream)_streams.get(i);
@@ -276,12 +276,12 @@ public class wsController   {
 			}
 		}
 		return true;
-	}	
+	}
 
 	public String check_DO(String url) throws ServletException{
 
-		
-		
+
+
 
 
 			String id_current = null;
@@ -296,7 +296,7 @@ public class wsController   {
 					id_current = util_format.replace(id_current,bsConstants.CONST_EXTENTION_DO,"");
 					return id_current;
 				}
-				if(	id_current.equals("") && 
+				if(	id_current.equals("") &&
 					(url.lastIndexOf("/actions/")+9==url.length())
 				){
 					return bsController.getAppInit().get_enterpoint();
@@ -306,5 +306,5 @@ public class wsController   {
 		return null;
 	}
 
-		
+
 }

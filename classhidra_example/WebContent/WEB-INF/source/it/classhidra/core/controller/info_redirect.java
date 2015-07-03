@@ -50,6 +50,10 @@ public class info_redirect extends info_entity implements i_elementBase{
 	private String united_id;
 	private String img;
 	private String navigated;
+	private String contentType;
+	private String contentName;
+	private String contentEncoding;
+	private String transformationName;
 
 	private Vector v_info_sections;
 	private Vector v_info_transformationoutput;
@@ -70,6 +74,15 @@ public class info_redirect extends info_entity implements i_elementBase{
 			this.error = iRedirect.getError();
 		if((this.descr==null || this.descr.equals("")) && (iRedirect.getDescr()!=null && !iRedirect.getDescr().equals("")))
 			this.descr = iRedirect.getDescr();
+		if((this.contentType==null || this.contentType.equals("")) && (iRedirect.getContentType()!=null && !iRedirect.getContentType().equals("")))
+			this.contentType = iRedirect.getContentType();
+		if((this.contentEncoding==null || this.contentEncoding.equals("")) && (iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals("")))
+			this.contentEncoding = iRedirect.getContentEncoding();
+		if((this.contentName==null || this.contentName.equals("")) && (iRedirect.getContentName()!=null && !iRedirect.getContentName().equals("")))
+			this.contentName = iRedirect.getContentName();
+		if((this.transformationName==null || this.transformationName.equals("")) && (iRedirect.getTransformationName()!=null && !iRedirect.getTransformationName().equals("")))
+			this.transformationName = iRedirect.getTransformationName();
+		
 		if((this.mess_id==null || this.mess_id.equals("")) && (iRedirect.getMess_id()!=null && !iRedirect.getMess_id().equals("")))
 			this.mess_id = iRedirect.getMess_id();
 		if((this.united_id==null || this.united_id.equals("")) && (iRedirect.getUnited_id()!=null && !iRedirect.getUnited_id().equals("")))
@@ -148,6 +161,10 @@ public class info_redirect extends info_entity implements i_elementBase{
 		auth_id="";
 		error="";
 		descr="";
+		contentType="";
+		contentEncoding="";
+		transformationName="";
+		contentName="";
 		mess_id="";
 		united_id="";
 		img="";
@@ -230,14 +247,50 @@ public class info_redirect extends info_entity implements i_elementBase{
 		this.navigated = navigated;
 	}
 
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contenttype) {
+		this.contentType = contenttype;
+	}
+	
+	public String getContentEncoding() {
+		return contentEncoding;
+	}
+
+	public void setContentEncoding(String contentencoding) {
+		this.contentEncoding = contentencoding;
+	}
+	
+	public String getContentName() {
+		return contentName;
+	}
+
+	public void setContentName(String contentName) {
+		this.contentName = contentName;
+	}	
+	
 	public String toString(){
 		return toXml();
 	}
+	
+	public String getTransformationName() {
+		return transformationName;
+	}
 
+	public void setTransformationName(String transformationName) {
+		this.transformationName = transformationName;
+	}
+	
 	public String toXml(){
 		String result=System.getProperty("line.separator")+"         <"+prefix+"redirect";
 		if(auth_id!=null && !auth_id.trim().equals("")) result+=" auth_id=\""+util_format.normaliseXMLText(auth_id)+"\"";
 		if(path!=null && !path.trim().equals("")) result+=" path=\""+util_format.normaliseXMLText(path)+"\"";
+		if(contentType!=null && !contentType.trim().equals("")) result+=" contentType=\""+util_format.normaliseXMLText(contentType)+"\"";
+		if(contentEncoding!=null && !contentEncoding.trim().equals("")) result+=" contentEncoding=\""+util_format.normaliseXMLText(contentEncoding)+"\"";
+		if(contentName!=null && !contentName.trim().equals("")) result+=" contentName=\""+util_format.normaliseXMLText(contentName)+"\"";
+		if(transformationName!=null && !transformationName.trim().equals("")) result+=" transformationName=\""+util_format.normaliseXMLText(transformationName)+"\"";
 		if(navigated!=null && !navigated.trim().equals("") && !navigated.trim().equals("true")) result+=" navigated=\""+util_format.normaliseXMLText(navigated)+"\"";
 		if(descr!=null && !descr.trim().equals("")) result+=" descr=\""+util_format.normaliseXMLText(descr)+"\"";
 		if(mess_id!=null && !mess_id.trim().equals("")) result+=" mess_id=\""+util_format.normaliseXMLText(mess_id)+"\"";
@@ -340,7 +393,4 @@ public class info_redirect extends info_entity implements i_elementBase{
 	public HashMap get_transformationoutput() {
 		return _transformationoutput;
 	}
-
-
-
 }

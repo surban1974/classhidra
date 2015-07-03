@@ -15,8 +15,8 @@ public class actionHome extends action implements i_action, Serializable{
 
 public actionHome(){
 	super();
-}	
-	
+}
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	if(!get_bean().get("lang").equals("")){
 		try{
@@ -25,8 +25,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}catch(Exception e){
 		}
 	}
-	
-	return new redirects(get_infoaction().getRedirect());	
+
+	return new redirects(get_infoaction().getRedirect());
 }
 
 }

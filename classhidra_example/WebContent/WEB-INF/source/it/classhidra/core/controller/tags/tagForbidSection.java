@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -30,14 +30,14 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_redirect;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*; 
+import javax.servlet.jsp.tagext.*;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -46,7 +46,7 @@ public class tagForbidSection extends  TagSupport {
 	protected String bean=null;
 	protected String name=null;
 	protected String trace=null;
-	
+
 	public int doStartTag() throws JspException {
 		try {
 			if(trace==null || trace.equalsIgnoreCase("true"))pageContext.getOut().print("<!--START FORBIDDEN BOOKMARK NAME=\""+name+"\"-->");
@@ -83,26 +83,26 @@ public class tagForbidSection extends  TagSupport {
 			if(pool!=null) formAction = (i_action)pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
-		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
-		if(formAction==null) formAction = new action(); 
+		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
+		if(formAction==null) formAction = new action();
 		if(bean==null) formBean = formAction.get_bean();
-		
+
 		redirects 		formRedirect 	=  formAction.getCurrent_redirect();
 		try{
 			auth_init auth = bsController.checkAuth_init(request);
 			info_action i_a = (info_action)auth.get_actions_permitted().get(formAction.get_infoaction().getPath());
 			info_redirect i_r = (info_redirect)i_a.get_auth_redirects().get(formRedirect.get_inforedirect().getAuth_id());
-			
-		
-		
+
+
+
 			if(name!=null &&
 				i_r!=null &&
 				i_r.get_sections()!=null &&
 				i_r.get_sections().get(name)!=null) result = false;
 			}catch(Exception e){
-				
+
 			}
-		
+
 		return result;
 	}
 	public String getName() {

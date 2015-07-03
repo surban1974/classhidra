@@ -1,4 +1,4 @@
-package application.web.actions; 
+package application.web.actions;
 
 
 import it.classhidra.annotation.elements.Action;
@@ -34,7 +34,7 @@ import javax.servlet.*;
 		help="/jsp/help/help_login.html",
 		entity=@Entity(
 				property="allway:public"
-		)						
+		)
 )
 
 
@@ -43,36 +43,36 @@ public class actionLoginVirtual extends action implements i_action, Serializable
 
 public actionLoginVirtual(){
 	super();
-}	
-	
+}
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-	
+
 	auth_init auth=(auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
 	if(auth==null) auth = new auth_init();
 	if(	get_bean().getMiddleAction()!=null &&
 		(get_bean().getMiddleAction().equals("undefined") || get_bean().getMiddleAction().equals("reload"))
 		)
-			get_bean().setMiddleAction("");	
-	
+			get_bean().setMiddleAction("");
 
-	
+
+
 	if(	get_bean().get("user").equals("") &&
 		get_bean().get("password").equals("") &&
 		get_bean().get("group").equals("")){
 
-			
-	} 
+
+	}
 		try{
-			
+
 			if(!((String)get_bean().get("prev_user")).equals(get_bean().get("user")+"."+get_bean().get("password"))){
-				get_bean().set("group",""); 
+				get_bean().set("group","");
 				get_bean().set("prev_user",get_bean().get("user")+"."+get_bean().get("password"));
-			}		
+			}
 		}catch(Exception e){
 		}
 
-	
-	
+
+
 
 	if(	get_bean().getMiddleAction()!=null &&
 		get_bean().getMiddleAction().equals("")){
@@ -80,12 +80,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			!get_bean().get("password").equals("") &&
 			((Vector)get_bean().get("groups")).size()==0)
 			get_bean().set(bsController.CONST_ID_$MIDDLE_ACTION,"groups");
-		
+
 
 	}
-	
+
 	if(	get_bean().getMiddleAction()!=null &&
-		get_bean().getMiddleAction().equals("groups")){	
+		get_bean().getMiddleAction().equals("groups")){
 		if(get_bean().get("user").equals("") && get_bean().get("password").equals("")) get_bean().set("user","anonimouse");
 
 			login_Non_JAAS(auth, (String)get_bean().get("user"), (String)get_bean().get("password"), request);
@@ -99,15 +99,15 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			StringTokenizer st = new StringTokenizer(auth.get_ruolo(),";");
 			while(st.hasMoreTokens()){
 				String current = st.nextToken();
-				groups.add(new option_element(current,current)); 
-			}			
+				groups.add(new option_element(current,current));
+			}
 			get_bean().set("lang",auth.get_language());
-		}	
-		
+		}
+
 		return new redirects(get_infoaction().getRedirect());
 	}
 
-	
+
 	if(	get_bean().getMiddleAction()!=null &&
 		get_bean().getMiddleAction().equals("clear")){
 		get_bean().set("user","");
@@ -128,19 +128,19 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}
 		return new redirects(get_infoaction().getRedirect());
 	}
-	
-	
+
+
 	if(	get_bean().getMiddleAction()!=null &&
-		!get_bean().getMiddleAction().equals("") && 
+		!get_bean().getMiddleAction().equals("") &&
 		!get_bean().getMiddleAction().equals("change_rule") &&
 		!get_bean().get("group").equals("")){
 		try{
 			get_bean().set("lang",auth.get_language());
-			auth.set_ruolo((String)get_bean().get("group"));			
-			auth.get_authentication_filter().validate_actionPermittedForbidden(auth);		
+			auth.set_ruolo((String)get_bean().get("group"));
+			auth.get_authentication_filter().validate_actionPermittedForbidden(auth);
 		}catch(Exception e){
 		}
-		get_bean().setMiddleAction("");	
+		get_bean().setMiddleAction("");
 		request.getSession().removeAttribute(bsController.CONST_BEAN_$ONLYINSSESSION);
 
 		return new redirects("actions/content?t=1");
@@ -150,14 +150,14 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		get_bean().getMiddleAction().equals("change_rule")){
 			try{
 				get_bean().set("lang",auth.get_language());
-				auth.set_ruolo((String)get_bean().get("group"));			
+				auth.set_ruolo((String)get_bean().get("group"));
 				auth.saveTicker(response);
-				auth.get_authentication_filter().validate_actionPermittedForbidden(auth);		
+				auth.get_authentication_filter().validate_actionPermittedForbidden(auth);
 			}catch(Exception e){
 			}
-		}	
+		}
 	return new redirects(get_infoaction().getRedirect());
-		
+
 }
 
 
@@ -166,7 +166,7 @@ private boolean login_Non_JAAS(auth_init auth,String userG, String password, Htt
 	    String user = userG;
 	    String pass = password;
 
-    
+
 
 	    loadUser_config();
 
@@ -181,17 +181,17 @@ private boolean login_Non_JAAS(auth_init auth,String userG, String password, Htt
 	    	auth.set_matricola(_user.getMatriculation());
 	    	auth.set_target(_user.getTarget().replace(';','^'));
 	    	auth.get_target_property().put(bsConstants.CONST_AUTH_TARGET_ISTITUTION, auth.get_target());
-	    	util_usersInSession.addInSession(auth, request, new Date());	    	
+	    	util_usersInSession.addInSession(auth, request, new Date());
 			new bsControllerException(
-					auth.get_user()+":"+auth.get_matricola()+":"+auth.get_user_ip()+" is logged ",						
-					iStub.log_INFO);	
+					auth.get_user()+":"+auth.get_matricola()+":"+auth.get_user_ip()+" is logged ",
+					iStub.log_INFO);
 
 	    }else{
 	    	util_usersInSession.removeFromSession(auth, request);
-	    	auth.set_logged(false);	
+	    	auth.set_logged(false);
 	    	return false;
 	    }
-	
+
 
 
     } catch (Exception e) {
@@ -200,16 +200,16 @@ private boolean login_Non_JAAS(auth_init auth,String userG, String password, Htt
     		mess.setTYPE("E");
     		mess.setDESC_MESS("JAAS Exception "+ e);
 
-    	auth.set_logged(false);	
+    	auth.set_logged(false);
     	return false;
-    	
-    }	
+
+    }
     auth.set_logged(true);
-	return true;	
-	
+	return true;
+
 }
 
- 
+
 private void  loadUser_config() {
 	if(bsController.getUser_config()==null){
 		bsController.setUser_config(new load_users());

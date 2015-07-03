@@ -1,4 +1,4 @@
-package application.replacedAsComponent.web.actions; 
+package application.replacedAsComponent.web.actions;
 
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.util.util_cloner;
@@ -22,12 +22,12 @@ public actionMinimizer(){
 }
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-	
+
 	if(get_bean().getMiddleAction()==null) get_bean().setMiddleAction("");
 	HashMap elements = (HashMap)get_bean().get("elements");
 	HashMap labels = (HashMap)get_bean().get("labels");
 	HashMap fromSessions = (HashMap)get_bean().get("fromSessions");
-	
+
 	if(get_bean().getMiddleAction().equals("view")){
 		return new redirects(get_infoaction().getRedirect());
 	}
@@ -46,15 +46,15 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					fromSession_clone.remove("formMinimizer");
 				}
 				fromSessions.put(current.getIAction().getPath()+"", fromSession_clone);
-				
+
 				elements.put(current.getIAction().getPath()+"", util_cloner.clone(formInfoNavigation));
 				labels.put(current.getIAction().getPath()+"", current.getDesc_second());
 				get_bean().set("keys",prepareKeys(elements, labels));
 			}catch(Exception e){
 			}
-			
+
 		}
-	
+
 		return new redirects(active.getIAction().getPath()+"");
 	}
 	if(get_bean().getMiddleAction().equals("open")){
@@ -76,16 +76,16 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				labels.put(current.getIAction().getPath()+"", current.getDesc_second());
 			}catch(Exception e){
 			}
-			
+
 		}
-		
-		
-		
+
+
+
 		String source = get_bean().get("source").toString();
 		HashMap fromSession_clone = (HashMap)fromSessions.get(source);
 		fromSession_clone.put("formMinimizer", get_bean());
 		request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession_clone);
-		
+
 		info_navigation fromElements = (info_navigation)elements.get(source);
 		if(fromElements!=null){
 			request.getSession().setAttribute(bsController.CONST_BEAN_$NAVIGATION,fromElements);
@@ -111,7 +111,7 @@ private Vector prepareKeys(HashMap elements, HashMap labels){
 		result.add(
 				new option_element(keys.get(i).toString(),labels.get(keys.get(i)).toString())
 			);
-		
+
 	}
 	return result;
 }

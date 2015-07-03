@@ -1,10 +1,11 @@
-package it.classhidra.framework.web.components; 
+package it.classhidra.framework.web.components;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.Bean;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.util.util_cloner;
@@ -33,22 +34,22 @@ public class componentMessages extends action implements i_action, Serializable{
 
 
 
-	
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	Vector $listmessages = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
 	Vector local_$listmessages = new Vector();
 	if(this.getMiddleAction()==null) this.setMiddleAction("");
 
 		try{
-			local_$listmessages = (Vector) util_cloner.clone($listmessages);	
+			local_$listmessages = (Vector) util_cloner.clone($listmessages);
 			if(this.getMiddleAction().equals("view")){
 				$listmessages.clear();
 			}
 		}catch(Exception ex){
-			
+
 		}
 		view_list=local_$listmessages;
-	return new redirects(get_infoaction().getRedirect());	
+	return new redirects(get_infoaction().getRedirect());
 
 }
 

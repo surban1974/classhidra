@@ -11,6 +11,7 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.framework.web.formbeans.formMenuCreator;
 
@@ -21,8 +22,8 @@ public class actionContent extends action implements i_action, Serializable{
 
 public actionContent(){
 	super();
-}	
-	
+}
+
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	try{
 		formMenuCreator fmc = (formMenuCreator)bsController.getFromOnlySession("formMenuCreator", request);
@@ -32,7 +33,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		fmc.getElement().hideDynamicElements();
 		request.setAttribute("refreshMenu","true");
 	}catch(Exception e){
-	}	
+	}
 	if(!get_bean().get("menuSource").equals("")) return new redirects("/actions/"+(String)get_bean().get("menuSource")+bsController.getAppInit().get_extention_do());
 	else return new redirects(get_infoaction().getRedirect());
 }

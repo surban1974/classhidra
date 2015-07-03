@@ -1,6 +1,6 @@
 /**
 * Creation date: (07/04/2006)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -41,11 +41,11 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void init(HttpServletRequest request)  throws bsControllerException;
 	void init(HashMap _content)  throws bsControllerException;
 	void init(i_bean another_bean) throws bsControllerException;
-	void reInit(i_elementDBBase _i_el); 
+	void reInit(i_elementDBBase _i_el);
 	redirects validate(HttpServletRequest request)  throws bsControllerException;
 	info_bean get_infobean();
 	void set_infobean(info_bean bean);
-	
+
 	Object get(Object requested,String value);
 	Object get(String value);
 	int getInt(String name);
@@ -58,7 +58,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	char getChar(String name);
 	BigDecimal getBigDecimal(String name);
 	String getString(String name);
-	
+
 	void set(String name, Object value);
 	void put(String name, Object value);
 	void set(String name, int value);
@@ -69,8 +69,8 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void set(String name, byte value);
 	void set(String name, boolean value);
 	void set(String name, char value);
-	
-	
+
+
 	info_action get_infoaction();
 	void set_infoaction(info_action action);
 	boolean logic_equals(i_bean obj);
@@ -86,7 +86,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void setParametersFly(HashMap parametersFly);
 	String getJs4ajax();
 	void setJs4ajax(String js4ajax);
-	
+
 	boolean getXmloutput();
 	void setXmloutput(boolean xmloutput);
 	String getXmloutput_encoding();
@@ -107,7 +107,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void setVirtual(boolean virtual);
 	boolean getGzipoutput();
 	void setGzipoutput(boolean gzipoutput);
-	
+
 	listener_bean getListener_b();
 	void setListener_b(listener_bean listener);
 	i_action asAction();

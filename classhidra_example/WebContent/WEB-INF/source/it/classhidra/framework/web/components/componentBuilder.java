@@ -1,4 +1,4 @@
-package it.classhidra.framework.web.components;   
+package it.classhidra.framework.web.components;
 
 
 import it.classhidra.annotation.elements.Action;
@@ -7,6 +7,7 @@ import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_apply_to_action;
 import it.classhidra.core.controller.info_bean;
@@ -38,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @ActionMapping (
 		redirects={
-				@Redirect(	
+				@Redirect(
 					path="/jsp/builder/canvas.jsp",
 					descr="Builder actions.xml (BETA)",
 					mess_id="title_fw_builder"
@@ -46,7 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 			}
 )
 
-//@Bean (	name="formBuilder") 
+//@Bean (	name="formBuilder")
 
 @Action (
 		path="builder",
@@ -58,7 +59,7 @@ import javax.servlet.http.HttpServletResponse;
         memoryAsLastInstance="true",
         reloadAfterAction="true",
         redirects={
-			@Redirect(	
+			@Redirect(
 				auth_id="bld_id",
 				path="*"
 			)
@@ -79,7 +80,7 @@ public class componentBuilder extends action implements i_action, Serializable{
 	private String id_selected_item;
 	private String id_selected_section;
 	private String type_selected;
-	
+
 	private info_action selected_action;
 	private info_stream selected_stream;
 	private info_redirect selected_redirect;
@@ -88,17 +89,17 @@ public class componentBuilder extends action implements i_action, Serializable{
 	private info_apply_to_action selected_apply_to_action;
 	private info_item selected_item;
 	private info_section selected_section;
-	
+
 	private Vector elements_true_false;
 	private Vector elements_transformationoutput_event;
 	private Vector elements_transformationoutput_inputformat;
 	private Vector elements_transformationoutput_outputformat;
 	private Vector elements_all_redirects;
-	
+
 	private Vector elements_item_types;
-	
+
 	private String xmlContent;
-	
+
 	private boolean display_streams=false;
 	private boolean display_actions=true;
 	private boolean display_beans=false;
@@ -106,11 +107,11 @@ public class componentBuilder extends action implements i_action, Serializable{
 
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-	
+
 	componentBuilder form = this;
 	if(form.getMiddleAction()==null) form.setMiddleAction("");
-	
-	
+
+
 	if(!form.getL_actions().isReadOk() || this.getMiddleAction().equals("reload")){
 		try{
 			load_actions tmp = (load_actions)util_cloner.clone(bsController.getAction_config());
@@ -130,15 +131,15 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 	}
 
 
-	
+
 	if(form.getMiddleAction().equals("preview")){
 		if(form.getL_actions()!=null){
 			form.setXmlContent(form.getL_actions().toXml());
-			
+
 		}
 		return new redirects("/jsp/builder/preview.jsp");
 	}
-	
+
 	if(form.getMiddleAction().equals("load")){
 		try{
 			form.getL_actions().initBuilder(form.getXmlContent());
@@ -147,7 +148,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}
 		return new redirects(get_infoaction().getRedirect());
 	}
-	
+
 	if(form.getMiddleAction().equals("syncro")){
 		try{
 			if(form.getL_actions()!=null){
@@ -158,8 +159,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			new bsControllerMessageException(new message("E", "", e.toString()), request, iStub.log_ERROR);
 		}
 		return new redirects(get_infoaction().getRedirect());
-	}	
-	
+	}
+
 	if(form.getMiddleAction().equals("clear")){
 		try{
 			if(form.getL_actions()!=null){
@@ -169,7 +170,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				form.getL_actions().getV_info_streams().clear();
 				form.getL_actions().getV_info_transformationoutput().clear();
 				form.getL_actions().initBuilder(form.getL_actions().toXml());
-				
+
 			}
 
 		}catch(Exception e){
@@ -177,14 +178,14 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}
 		return new redirects(get_infoaction().getRedirect());
 	}
-	
-	
+
+
 	if(form.getMiddleAction().indexOf("view_")>-1){
 		if(form.getMiddleAction().equals("view_stream")){
 			info_stream selected = (info_stream)util_find.findElementFromList(form.getL_actions().getV_info_streams(), form.getId_selected_stream(), "name");
 			form.setSelected_stream(selected);
 		}
-		
+
 		if(form.getMiddleAction().equals("view_apply_to_action")){
 			info_stream selected = (info_stream)util_find.findElementFromList(form.getL_actions().getV_info_streams(), form.getId_selected_stream(), "name");
 			form.setSelected_stream(selected);
@@ -192,8 +193,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				info_apply_to_action selected_a = (info_apply_to_action)util_find.findElementFromList(form.getSelected_stream().getV_info_apply_to_action(), form.getId_selected_apply_to_action(), "action");
 				form.setSelected_apply_to_action(selected_a);
 			}
-		}	
-		
+		}
+
 		if(form.getMiddleAction().equals("view_action")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			form.setSelected_action(selected);
@@ -209,8 +210,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				info_item selected_a = (info_item)util_find.findElementFromList(form.getSelected_bean().getV_info_items(), form.getId_selected_item(), "name");
 				form.setSelected_item(selected_a);
 			}
-		}	
-		
+		}
+
 		if(form.getMiddleAction().equals("view_redirect")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			form.setSelected_action(selected);
@@ -218,15 +219,15 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				info_redirect selected_a = (info_redirect)util_find.findElementFromList(form.getSelected_action().getV_info_redirects(), form.getId_selected_redirect(), "path");
 				form.setSelected_redirect(selected_a);
 			}
-		}	
+		}
 		if(form.getMiddleAction().equals("view_redirect1")){
 			info_redirect selected = (info_redirect)util_find.findElementFromList(form.getL_actions().getV_info_redirects(), form.getId_selected_redirect(), "path");
 			form.setSelected_redirect(selected);
-			
+
 			prepareListRedirects(form);
-			
-		}		
-		
+
+		}
+
 		if(form.getMiddleAction().equals("view_transformationoutput")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			form.setSelected_action(selected);
@@ -234,7 +235,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				info_transformation selected_a = (info_transformation)util_find.findElementFromList(form.getSelected_action().getV_info_transformationoutput(), form.getId_selected_transformationoutput(), "name");
 				form.setSelected_transformationoutput(selected_a);
 			}
-		}		
+		}
 		if(form.getMiddleAction().equals("view_transformationoutput1")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			form.setSelected_action(selected);
@@ -246,7 +247,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					form.setSelected_transformationoutput(selected_b);
 				}
 			}
-		}		
+		}
 		if(form.getMiddleAction().equals("view_section")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			form.setSelected_action(selected);
@@ -258,14 +259,14 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 					form.setSelected_section(selected_b);
 				}
 			}
-		}	
+		}
 		return new redirects("/jsp/builder/entity.jsp");
 	}
-	
+
 	if(form.getMiddleAction().indexOf("update_")>-1){
 		String name=request.getParameter("name");
 		String value=request.getParameter("value");
-		
+
 		if(form.getMiddleAction().equals("update_general")){
 			if(form.getL_actions()!=null){
 				try{
@@ -286,7 +287,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_stream(selected);
 			form.setMiddleAction("view_stream");
 			return new redirects("/jsp/builder/entity.jsp");
-			
+
 		}
 		if(form.getMiddleAction().equals("update_action")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
@@ -297,7 +298,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_action(selected);
 			form.setMiddleAction("view_action");
 			return new redirects("/jsp/builder/entity.jsp");
-			
+
 		}
 
 		if(form.getMiddleAction().equals("update_bean")){
@@ -309,7 +310,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_bean(selected);
 			form.setMiddleAction("view_bean");
 			return new redirects("/jsp/builder/entity.jsp");
-			
+
 		}
 		if(form.getMiddleAction().equals("update_item")){
 			info_bean selected = (info_bean)util_find.findElementFromList(form.getL_actions().getV_info_beans(), form.getId_selected_bean(), "name");
@@ -325,10 +326,10 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_bean(selected);
 			form.setMiddleAction("view_item");
 			return new redirects("/jsp/builder/entity.jsp");
-			
+
 		}
-			
-		
+
+
 		if(form.getMiddleAction().equals("update_redirect1")){
 			info_redirect selected = (info_redirect)util_find.findElementFromList(form.getL_actions().getV_info_redirects(), form.getId_selected_redirect(), "path");
 			try{
@@ -339,9 +340,9 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_redirect(selected);
 			form.setMiddleAction("view_redirect1");
 			return new redirects("/jsp/builder/entity.jsp");
-		
+
 		}
-		
+
 		if(form.getMiddleAction().equals("update_apply_to_action")){
 			info_stream selected = (info_stream)util_find.findElementFromList(form.getL_actions().getV_info_streams(), form.getId_selected_stream(), "name");
 			if(selected!=null){
@@ -356,9 +357,9 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_stream(selected);
 			form.setMiddleAction("view_apply_to_action");
 			return new redirects("/jsp/builder/entity.jsp");
-			
+
 		}
-		
+
 		if(form.getMiddleAction().equals("update_redirect")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			if(selected!=null){
@@ -373,7 +374,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_action(selected);
 			form.setMiddleAction("view_redirect");
 			return new redirects("/jsp/builder/entity.jsp");
-			
+
 		}
 		if(form.getMiddleAction().equals("update_transformationoutput")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
@@ -389,8 +390,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_action(selected);
 			form.setMiddleAction("view_transformationoutput");
 			return new redirects("/jsp/builder/entity.jsp");
-			
-		}		
+
+		}
 
 		if(form.getMiddleAction().equals("update_transformationoutput1")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
@@ -398,7 +399,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				info_redirect selected_a = (info_redirect)util_find.findElementFromList(selected.getV_info_redirects(), form.getId_selected_redirect(), "path");
 				if(selected_a!=null){
 					info_transformation selected_b = (info_transformation)util_find.findElementFromList(selected_a.getV_info_transformationoutput(), form.getId_selected_transformationoutput(), "name");
-	
+
 					try{
 						selected_b.setCampoValue(name, value);
 					}catch(Exception e){
@@ -410,8 +411,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_action(selected);
 			form.setMiddleAction("view_transformationoutput1");
 			return new redirects("/jsp/builder/entity.jsp");
-			
-		}		
+
+		}
 		if(form.getMiddleAction().equals("update_section")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			if(selected!=null){
@@ -429,15 +430,15 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_action(selected);
 			form.setMiddleAction("view_section");
 			return new redirects("/jsp/builder/entity.jsp");
-			
-		}			
-		
+
+		}
+
 		return null;
 	}
 	if(form.getMiddleAction().indexOf("remove_")>-1){
 		if(form.getMiddleAction().equals("remove_stream")){
 			info_stream selected = (info_stream)util_find.findElementFromList(form.getL_actions().getV_info_streams(), form.getId_selected_stream(), "name");
-			if(form.getL_actions().getV_info_streams().remove(selected)){				
+			if(form.getL_actions().getV_info_streams().remove(selected)){
 			}
 			form.setSelected_stream(selected);
 			return new redirects(get_infoaction().getRedirect());
@@ -447,7 +448,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			if(selected!=null){
 				info_apply_to_action selected_a = (info_apply_to_action)util_find.findElementFromList(selected.getV_info_apply_to_action(), form.getId_selected_apply_to_action(), "action");
 				if(selected.getV_info_apply_to_action().remove(selected_a)){
-				}			
+				}
 			}
 			form.setSelected_stream(selected);
 			form.setMiddleAction("view_stream");
@@ -472,24 +473,24 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			if(selected!=null){
 				info_item selected_a = (info_item)util_find.findElementFromList(selected.getV_info_items(), form.getId_selected_item(), "name");
 				if(selected.getV_info_items().remove(selected_a)){
-				}			
+				}
 			}
 			form.setSelected_bean(selected);
 			form.setMiddleAction("view_bean");
 			return new redirects("/jsp/builder/entity.jsp");
 
-		}	
-		
+		}
+
 		if(form.getMiddleAction().equals("remove_redirect1")){
 			info_redirect selected = (info_redirect)util_find.findElementFromList(form.getL_actions().getV_info_redirects(), form.getId_selected_redirect(), "path");
 			if(selected!=null){
 				if(form.getL_actions().getV_info_redirects().remove(selected)){
-				}	
+				}
 			}
 			form.setSelected_redirect(selected);
 			return new redirects(get_infoaction().getRedirect());
 		}
-		
+
 		if(form.getMiddleAction().equals("remove_redirect")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			if(selected!=null){
@@ -503,7 +504,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setMiddleAction("view_action");
 			return new redirects("/jsp/builder/entity.jsp");
 
-		}	
+		}
 		if(form.getMiddleAction().equals("remove_transformationoutput")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			if(selected!=null){
@@ -516,8 +517,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_action(selected);
 			form.setMiddleAction("view_action");
 			return new redirects("/jsp/builder/entity.jsp");
-			
-		}	
+
+		}
 		if(form.getMiddleAction().equals("remove_transformationoutput1")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			if(selected!=null){
@@ -535,9 +536,9 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setSelected_action(selected);
 			form.setMiddleAction("view_redirect");
 			return new redirects("/jsp/builder/entity.jsp");
-			
-		}	
-		
+
+		}
+
 		if(form.getMiddleAction().equals("remove_section")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			if(selected!=null){
@@ -548,16 +549,16 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 						if(selected_a.getV_info_transformationoutput().remove(selected_b)){
 						}
 					}
-				}			
+				}
 				form.setSelected_redirect(selected_a);
 			}
 			form.setSelected_action(selected);
 			form.setMiddleAction("view_redirect");
 			return new redirects("/jsp/builder/entity.jsp");
-		}	
-		
+		}
+
 		return null;
-	}	
+	}
 	if(form.getMiddleAction().indexOf("add_")>-1){
 		if(form.getMiddleAction().equals("add_stream")){
 			info_stream selected = (info_stream)util_find.findElementFromList(form.getL_actions().getV_info_streams(), "[new stream]", "name");
@@ -614,8 +615,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			form.setSelected_item(selected_a);
 			form.setMiddleAction("view_bean");
-		}	
-		
+		}
+
 		if(form.getMiddleAction().equals("add_redirect1")){
 			info_redirect selected = (info_redirect)util_find.findElementFromList(form.getL_actions().getV_info_redirects(), "[new redirect]", "path");
 			if(selected==null){
@@ -631,7 +632,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			form.setDisplay_redirects(true);
 			return new redirects(get_infoaction().getRedirect());
 		}
-		
+
 		if(form.getMiddleAction().equals("add_apply_to_action")){
 			info_stream selected = (info_stream)util_find.findElementFromList(form.getL_actions().getV_info_streams(), form.getId_selected_stream(), "name");
 			info_apply_to_action selected_a = (info_apply_to_action)util_find.findElementFromList(selected.getV_info_apply_to_action(),"[new apply-to-action]", "action");
@@ -642,7 +643,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			form.setSelected_apply_to_action(selected_a);
 			form.setMiddleAction("view_stream");
-		}		
+		}
 		if(form.getMiddleAction().equals("add_redirect")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			info_redirect selected_a = (info_redirect)util_find.findElementFromList(selected.getV_info_redirects(), "[new redirect]", "path");
@@ -653,7 +654,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			form.setSelected_redirect(selected_a);
 			form.setMiddleAction("view_action");
-		}	
+		}
 		if(form.getMiddleAction().equals("add_transformationoutput")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			info_transformation selected_a = (info_transformation)util_find.findElementFromList(selected.getV_info_transformationoutput(), "[new transformation]", "name");
@@ -676,7 +677,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			form.setSelected_transformationoutput(selected_b);
 			form.setMiddleAction("view_redirect");
-		}		
+		}
 		if(form.getMiddleAction().equals("add_section")){
 			info_action selected = (info_action)util_find.findElementFromList(form.getL_actions().getV_info_actions(), form.getId_selected_action(), "path");
 			info_redirect selected_a = (info_redirect)util_find.findElementFromList(selected.getV_info_redirects(), form.getId_selected_redirect(), "path");
@@ -688,21 +689,21 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			}
 			form.setSelected_section(selected_b);
 			form.setMiddleAction("view_redirect");
-		}					
-		
+		}
+
 		return new redirects("/jsp/builder/entity.jsp");
-	}		
+	}
 	return new redirects(get_infoaction().getRedirect());
 }
 private void prepareListRedirects(componentBuilder form){
 	if(form.getType_selected().equals("open")){
 		Vector tmp = new Vector();
-		
+
 		info_redirect selected_a = new info_redirect();
 		selected_a.setPath("[new redirect]");
 		tmp.add(selected_a);
-		
-		
+
+
 		for(int i=0;i<form.getL_actions().getV_info_actions().size();i++){
 			info_action current = (info_action)form.getL_actions().getV_info_actions().get(i);
 			tmp.addAll(current.getV_info_redirects());
@@ -737,26 +738,26 @@ public void reimposta(){
 	id_selected_item="";
 	id_selected_section="";
 	type_selected="";
-	
-	
+
+
 	elements_true_false = new Vector();
 	elements_true_false.add(new option_element("false","false"));
 	elements_true_false.add(new option_element("true","true"));
-	
+
 	elements_transformationoutput_event = new Vector();
 	elements_transformationoutput_event.add(new option_element("before","before"));
-	elements_transformationoutput_event.add(new option_element("after","after"));	
-	elements_transformationoutput_event.add(new option_element("both","both"));	
-	
+	elements_transformationoutput_event.add(new option_element("after","after"));
+	elements_transformationoutput_event.add(new option_element("both","both"));
+
 	elements_transformationoutput_inputformat = new Vector();
 	elements_transformationoutput_inputformat.add(new option_element("byte","byte"));
-	elements_transformationoutput_inputformat.add(new option_element("string","string"));	
-	elements_transformationoutput_inputformat.add(new option_element("form","form"));	
-	
+	elements_transformationoutput_inputformat.add(new option_element("string","string"));
+	elements_transformationoutput_inputformat.add(new option_element("form","form"));
+
 	elements_transformationoutput_outputformat = new Vector();
 	elements_transformationoutput_outputformat.add(new option_element("byte","byte"));
 	elements_transformationoutput_outputformat.add(new option_element("string","string"));
-	
+
 	elements_item_types = new Vector();
 	elements_item_types.add(new option_element("java.lang.Integer","java.lang.Integer"));
 	elements_item_types.add(new option_element("java.lang.Short","java.lang.Short"));
@@ -769,13 +770,13 @@ public void reimposta(){
 	elements_item_types.add(new option_element("java.lang.Character","java.lang.Character"));
 	elements_item_types.add(new option_element("java.util.Vector","java.util.Vector"));
 	elements_item_types.add(new option_element("java.util.HashMap","java.util.HashMap"));
-	
+
 	elements_all_redirects=new Vector();
-	
+
 	xmlContent="";
-	
+
 	l_actions=new load_actions();
-	
+
 }
 
 public redirects validate(HttpServletRequest request){

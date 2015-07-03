@@ -145,7 +145,7 @@ public class annotation_scanner extends it.classhidra.annotation.annotation_scan
 	}
 	
 	
-	private List checkBranchVFile(VirtualFile file_){
+	public List checkBranchVFile(VirtualFile file_){
 		List array = new ArrayList();
 		try{
 			array = file_.getChildren();

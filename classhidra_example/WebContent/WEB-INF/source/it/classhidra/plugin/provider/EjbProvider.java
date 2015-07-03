@@ -2,23 +2,6 @@ package it.classhidra.plugin.provider;
 
 
 
-import it.classhidra.annotation.elements.Action;
-import it.classhidra.annotation.elements.Bean;
-import it.classhidra.annotation.elements.Entity;
-import it.classhidra.annotation.elements.LOOKUP;
-import it.classhidra.annotation.elements.Stream;
-import it.classhidra.annotation.elements.Transformation;
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.controller.bsProvidedWrapper;
-import it.classhidra.core.controller.i_action;
-import it.classhidra.core.controller.i_bean;
-import it.classhidra.core.controller.i_provider;
-import it.classhidra.core.controller.i_stream;
-import it.classhidra.core.controller.i_transformation;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.plugin.provider.ejb.wrappers.Wrapper_EjbContextLocal;
-
 import javax.ejb.EJBContext;
 import javax.ejb.MessageDriven;
 import javax.ejb.Singleton;
@@ -28,16 +11,34 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 
+import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.Bean;
+import it.classhidra.annotation.elements.Entity;
+import it.classhidra.annotation.elements.LOOKUP;
+import it.classhidra.annotation.elements.Stream;
+import it.classhidra.annotation.elements.Transformation;
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_provider;
+import it.classhidra.core.controller.i_stream;
+import it.classhidra.core.controller.i_transformation;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.plugin.provider.ejb.wrappers.Wrapper_EjbContextLocal;
+
 public class EjbProvider implements i_provider {
 
-	private static final long serialVersionUID = 1L;
 	private static final String LOOKUP_EJBCONTEXT = 		"java:comp/EJBContext";
 	private static final String LOOKUP_ENV_EJBCONTEXT = 	"java:comp/env/EJBContext";
 	private static final String LOOKUP_MAPPED_EJBCONTEXT = 	"java:module/WrapperEjbContext";
 	private static final String LOOKUP_MAPPED_EJB_PREFIX = 	"java:module/";
 	
+	private static int correct_context=0; 
+	
 	private static String correct_ejb_jndi_name;
 	private static EJBContext ejbContext;
+	private static InitialContext staticInitialContext;
 	
 
 	
@@ -51,12 +52,12 @@ public class EjbProvider implements i_provider {
 		if(id_bean==null) return instance;
 		
 		try{
-			instance = resolveReference(id_bean);
+			instance = resolveReference(1,id_bean);
 		}catch(Exception e){
 		}
 		if(instance==null){
 			try{
-				instance = resolveReference(Class.forName(id_bean));
+				instance = resolveReference(1,Class.forName(id_bean));
 			}catch(Exception e){
 			}			
 		}
@@ -69,9 +70,31 @@ public class EjbProvider implements i_provider {
 	
 //------ Static Implementation	
 	
-
-	
 	public static Object getInstance(Object obj, String id_bean, String class_bean, ServletContext _context) {
+		Object instance=null;
+		if(correct_context==0){
+			instance = getInstanceFromContext(obj, id_bean, class_bean, _context, 1);
+			if(instance!=null){
+				correct_context = 1;
+				return instance;
+			}
+			if(instance==null){
+				instance = getInstanceFromContext(obj, id_bean, class_bean, _context, 2);
+				if(instance!=null){
+					correct_context = 2;
+					return instance;
+				}
+			}
+		}else{
+			return
+					getInstanceFromContext(obj, id_bean, class_bean, _context, correct_context);
+			
+		}
+		return null;
+
+	}
+	
+	public static Object getInstanceFromContext(Object obj, String id_bean, String class_bean, ServletContext _context, int type) {
 		Object instance=null;
 		boolean objIsNull=true;
 		if(obj==null && id_bean==null && class_bean==null) return instance;
@@ -102,7 +125,7 @@ public class EjbProvider implements i_provider {
 
         	if(lookup!=null && !lookup.equals("")){
         		try{
-    				instance = resolveReference(lookup);
+    				instance = resolveReference(type,lookup);
     				if(instance!=null)
     					return instance;
     			}catch(Exception e){
@@ -124,7 +147,7 @@ public class EjbProvider implements i_provider {
            		LOOKUP a_lookup = (LOOKUP)clazz.getAnnotation(LOOKUP.class);
            		if(a_lookup!=null && a_lookup.name()!=null && !a_lookup.name().equals("")){
             		try{
-        				instance = resolveReference(a_lookup.name());        				
+        				instance = resolveReference(type,a_lookup.name());        				
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
@@ -135,7 +158,7 @@ public class EjbProvider implements i_provider {
         			Action ac_lookup = (Action)clazz.getAnnotation(Action.class);
         			if(ac_lookup!=null && ac_lookup.entity()!=null && ac_lookup.entity().lookup()!=null && !ac_lookup.entity().lookup().equals("")){
                 		try{
-            				instance = resolveReference(ac_lookup.entity().lookup());        				
+            				instance = resolveReference(type,ac_lookup.entity().lookup());        				
             				if(instance!=null)
             					return instance;
             			}catch(Exception e){
@@ -144,7 +167,7 @@ public class EjbProvider implements i_provider {
         			Bean bn_lookup = (Bean)clazz.getAnnotation(Bean.class);
         			if(bn_lookup!=null && bn_lookup.entity()!=null && bn_lookup.entity().lookup()!=null && !bn_lookup.entity().lookup().equals("")){
                 		try{
-            				instance = resolveReference(bn_lookup.entity().lookup());        				
+            				instance = resolveReference(type,bn_lookup.entity().lookup());        				
             				if(instance!=null)
             					return instance;
             			}catch(Exception e){
@@ -153,7 +176,7 @@ public class EjbProvider implements i_provider {
         			Stream st_lookup = (Stream)clazz.getAnnotation(Stream.class);
         			if(st_lookup!=null && st_lookup.entity()!=null && st_lookup.entity().lookup()!=null && !st_lookup.entity().lookup().equals("")){
                 		try{
-            				instance = resolveReference(st_lookup.entity().lookup());        				
+            				instance = resolveReference(type,st_lookup.entity().lookup());        				
             				if(instance!=null)
             					return instance;
             			}catch(Exception e){
@@ -162,7 +185,7 @@ public class EjbProvider implements i_provider {
         			Transformation tr_lookup = (Transformation)clazz.getAnnotation(Transformation.class);
         			if(tr_lookup!=null && tr_lookup.entity()!=null && tr_lookup.entity().lookup()!=null && !tr_lookup.entity().lookup().equals("")){
                 		try{
-            				instance = resolveReference(tr_lookup.entity().lookup());        				
+            				instance = resolveReference(type,tr_lookup.entity().lookup());        				
             				if(instance!=null)
             					return instance;
             			}catch(Exception e){
@@ -171,7 +194,7 @@ public class EjbProvider implements i_provider {
            			Entity en_lookup = (Entity)clazz.getAnnotation(Entity.class);
         			if(en_lookup!=null && en_lookup.lookup()!=null && !en_lookup.lookup().equals("")){
                 		try{
-            				instance = resolveReference(en_lookup.lookup());        				
+            				instance = resolveReference(type,en_lookup.lookup());        				
             				if(instance!=null)
             					return instance;
             			}catch(Exception e){
@@ -182,16 +205,18 @@ public class EjbProvider implements i_provider {
         		
             	
         		
+           	}
+        	if(instance==null){
         		Stateless a_ejb = (Stateless)clazz.getAnnotation(Stateless.class);
         		if(a_ejb!=null && a_ejb.mappedName()!=null && !a_ejb.mappedName().equals("")){
             		try{
-        				instance = resolveReference(a_ejb.mappedName());
+        				instance = resolveReference(type,a_ejb.mappedName());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			} 
             		try{
-        				instance = resolveReference(prefix+a_ejb.mappedName());
+        				instance = resolveReference(type,prefix+a_ejb.mappedName());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
@@ -199,30 +224,31 @@ public class EjbProvider implements i_provider {
         		}
         		if(a_ejb!=null && a_ejb.name()!=null && !a_ejb.name().equals("")){
             		try{
-        				instance = resolveReference(a_ejb.name());
+        				instance = resolveReference(type,a_ejb.name());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			}  
             		try{
-        				instance = resolveReference(prefix+a_ejb.name());
+        				instance = resolveReference(type,prefix+a_ejb.name());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			}             		
         		}
-           	}
+        	}
+        	
         	if(instance==null){
         		Stateful a_ejb = (Stateful)clazz.getAnnotation(Stateful.class);
         		if(a_ejb!=null && a_ejb.mappedName()!=null && !a_ejb.mappedName().equals("")){
             		try{
-        				instance = resolveReference(a_ejb.mappedName());
+        				instance = resolveReference(type,a_ejb.mappedName());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			} 
             		try{
-        				instance = resolveReference(prefix+a_ejb.mappedName());
+        				instance = resolveReference(type,prefix+a_ejb.mappedName());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
@@ -230,13 +256,13 @@ public class EjbProvider implements i_provider {
         		}
         		if(a_ejb!=null && a_ejb.name()!=null && !a_ejb.name().equals("")){
             		try{
-        				instance = resolveReference(a_ejb.name());
+        				instance = resolveReference(type,a_ejb.name());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			}  
             		try{
-        				instance = resolveReference(prefix+a_ejb.name());
+        				instance = resolveReference(type,prefix+a_ejb.name());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
@@ -247,13 +273,13 @@ public class EjbProvider implements i_provider {
         		Singleton a_ejb = (Singleton)clazz.getAnnotation(Singleton.class);
         		if(a_ejb!=null && a_ejb.mappedName()!=null && !a_ejb.mappedName().equals("")){
             		try{
-        				instance = resolveReference(a_ejb.mappedName());
+        				instance = resolveReference(type,a_ejb.mappedName());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			} 
             		try{
-        				instance = resolveReference(prefix+a_ejb.mappedName());
+        				instance = resolveReference(type,prefix+a_ejb.mappedName());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
@@ -261,13 +287,13 @@ public class EjbProvider implements i_provider {
         		}
         		if(a_ejb!=null && a_ejb.name()!=null && !a_ejb.name().equals("")){
             		try{
-        				instance = resolveReference(a_ejb.name());
+        				instance = resolveReference(type,a_ejb.name());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			}  
             		try{
-        				instance = resolveReference(prefix+a_ejb.name());
+        				instance = resolveReference(type,prefix+a_ejb.name());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
@@ -278,13 +304,13 @@ public class EjbProvider implements i_provider {
         		MessageDriven a_ejb = (MessageDriven)clazz.getAnnotation(MessageDriven.class);
         		if(a_ejb!=null && a_ejb.mappedName()!=null && !a_ejb.mappedName().equals("")){
             		try{
-        				instance = resolveReference(a_ejb.mappedName());
+        				instance = resolveReference(type,a_ejb.mappedName());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			} 
             		try{
-        				instance = resolveReference(prefix+a_ejb.mappedName());
+        				instance = resolveReference(type,prefix+a_ejb.mappedName());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
@@ -292,13 +318,13 @@ public class EjbProvider implements i_provider {
         		}
         		if(a_ejb!=null && a_ejb.name()!=null && !a_ejb.name().equals("")){
             		try{
-        				instance = resolveReference(a_ejb.name());
+        				instance = resolveReference(type,a_ejb.name());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
         			}  
             		try{
-        				instance = resolveReference(prefix+a_ejb.name());
+        				instance = resolveReference(type,prefix+a_ejb.name());
         				if(instance!=null)
         					return instance;
         			}catch(Exception e){
@@ -310,13 +336,13 @@ public class EjbProvider implements i_provider {
 
     	if(instance==null && id_bean!=null && !id_bean.equals("")){
        		try{
-    			instance = resolveReference(id_bean);
+    			instance = resolveReference(type,id_bean);
     			if(instance!=null)
     				return instance;
     		}catch(Exception e){
     		} 
         	try{
-    			instance = resolveReference(prefix+id_bean);
+    			instance = resolveReference(type,prefix+id_bean);
     			if(instance!=null)
     				return instance;
     		}catch(Exception e){
@@ -325,7 +351,7 @@ public class EjbProvider implements i_provider {
     	
     	if(instance==null && clazz!=null){
        		try{
-    			instance = resolveReference(clazz);
+    			instance = resolveReference(type,clazz);
     			if(instance!=null)
     				return instance;
     		}catch(Exception e){
@@ -339,54 +365,103 @@ public class EjbProvider implements i_provider {
 
 	
 	
-    public static Object resolveReference(String elName) {
-        EJBContext ejbc = getEjbContext();
-        try{
-
-        	return ejbc.lookup(elName);
-        }catch(Exception e){
-        	return null;
-        }
+    public static Object resolveReference(int type, String elName) {
+    	if(type==1){
+	    	EJBContext ejbc = getEjbContext();
+	        try{
+	        	return ejbc.lookup(elName);
+	        }catch(Exception e){
+	        	return null;
+	        }
+    	}
+    	if(type==2){    		
+	        try{	        	
+	        	return getStaticInitialContext().lookup(elName);
+	        }catch(Exception e){
+	        	return null;
+	        }
+    	}  
+    	return null;
      }
 
 
     
-    public static Object resolveReference(Class clazz) {
-    	EJBContext ejbc = getEjbContext();
-        try{
-        	String prefix = bsController.getAppInit().get_ejb_jndi_name_prefix();
-        	if(prefix==null)
-        		prefix = LOOKUP_MAPPED_EJB_PREFIX;
-        	Object result = null;
-        	try{
-        		result = ejbc.lookup(clazz.getSimpleName());
-        		if(result!=null)
-        			return result;
-        	}catch(Exception e){        		
-        	}        	
-        	try{
-        		result = ejbc.lookup(prefix+clazz.getSimpleName());
-        		if(result!=null)
-        			return result;
-        	}catch(Exception e){        		
-        	}
-        	try{
-        		result = ejbc.lookup(clazz.getName());
-        		if(result!=null)
-        			return result;
-        	}catch(Exception e){        		
-        	}          	
-        	try{
-        		result = ejbc.lookup(prefix+clazz.getName());
-        		if(result!=null)
-        			return result;
-        	}catch(Exception e){        		
-        	}        	
-        	return null;
-        }catch(Exception e){
-        	return null;
-        }    	
-
+    public static Object resolveReference(int type, Class clazz) {
+       	if(type==1){    	
+	    	EJBContext ejbc = getEjbContext();
+	        try{
+	        	String prefix = bsController.getAppInit().get_ejb_jndi_name_prefix();
+	        	if(prefix==null)
+	        		prefix = LOOKUP_MAPPED_EJB_PREFIX;
+	        	Object result = null;
+	        	try{
+	        		result = ejbc.lookup(clazz.getSimpleName());
+	        		if(result!=null)
+	        			return result;
+	        	}catch(Exception e){        		
+	        	}        	
+	        	try{
+	        		result = ejbc.lookup(prefix+clazz.getSimpleName());
+	        		if(result!=null)
+	        			return result;
+	        	}catch(Exception e){        		
+	        	}
+	        	try{
+	        		result = ejbc.lookup(clazz.getName());
+	        		if(result!=null)
+	        			return result;
+	        	}catch(Exception e){        		
+	        	}          	
+	        	try{
+	        		result = ejbc.lookup(prefix+clazz.getName());
+	        		if(result!=null)
+	        			return result;
+	        	}catch(Exception e){        		
+	        	}        	
+	        	return null;
+	        }catch(Exception e){
+	        	return null;
+	        }    
+       	}
+       	if(type==2){    	
+	    	
+	        try{
+	        	
+	        	String prefix = bsController.getAppInit().get_ejb_jndi_name_prefix();
+	        	if(prefix==null)
+	        		prefix = LOOKUP_MAPPED_EJB_PREFIX;
+	        	Object result = null;
+	        	try{
+	        		result = getStaticInitialContext().lookup(clazz.getSimpleName());
+	        		if(result!=null)
+	        			return result;
+	        	}catch(Exception e){        		
+	        	}        	
+	        	try{
+	        		result = getStaticInitialContext().lookup(prefix+clazz.getSimpleName());
+	        		if(result!=null)
+	        			return result;
+	        	}catch(Exception e){        		
+	        	}
+	        	try{
+	        		result = getStaticInitialContext().lookup(clazz.getName());
+	        		if(result!=null)
+	        			return result;
+	        	}catch(Exception e){        		
+	        	}          	
+	        	try{
+	        		result = getStaticInitialContext().lookup(prefix+clazz.getName());
+	        		if(result!=null)
+	        			return result;
+	        	}catch(Exception e){        		
+	        	}        	
+	        	return null;
+	        }catch(Exception e){
+	        	return null;
+	        }    
+       	}
+       	
+       	return null;
     }
     
      public static EJBContext getEjbContext() {
@@ -433,6 +508,9 @@ public class EjbProvider implements i_provider {
           	if(ejbContext==null){
  	         	try{
  	         		ejbContext = (EJBContext)initialContext.lookup(LOOKUP_EJBCONTEXT);
+ 	         		if(ejbContext!=null)
+ 	         			correct_ejb_jndi_name = LOOKUP_EJBCONTEXT;
+ 	         		
  	         	}catch(Exception e){
  	         		new bsControllerException(e, iStub.log_ERROR);
 // 	         		le.printStackTrace();
@@ -443,26 +521,28 @@ public class EjbProvider implements i_provider {
           		try{
  	         		ejbContext = (EJBContext)initialContext.lookup(LOOKUP_ENV_EJBCONTEXT);
  	         		if(ejbContext!=null)
- 	         			correct_ejb_jndi_name = ejbJndiName;
+ 	         			correct_ejb_jndi_name = LOOKUP_ENV_EJBCONTEXT;
  	         		}catch(Exception e){
           			new bsControllerException(e, iStub.log_ERROR);
 //          			le.printStackTrace();
           		}
           	}
           	
-          	if(ejbContext==null && correct_ejb_jndi_name==null){ 
-          		try{        			
-          			
- 	         		bsProvidedWrapper ejbWrapper = (bsProvidedWrapper)initialContext.lookup(LOOKUP_MAPPED_EJBCONTEXT);
- 	         		ejbContext = (EJBContext)ejbWrapper.getInstance();
- 	         		if(ejbContext!=null)
- 	         			correct_ejb_jndi_name = ejbJndiName;
-          		}catch(Exception e){
-          			new bsControllerException(e, iStub.log_ERROR);
-  //        			le.printStackTrace();
-          		}
-          	}         	
-
+        	if(ejbContext==null){ 
+         		try{        			
+	         		Object fromLookup = initialContext.lookup(LOOKUP_MAPPED_EJBCONTEXT);
+	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
+	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
+	         		}else
+	         			ejbContext = (EJBContext)fromLookup;
+	         		if(ejbContext!=null)
+	         			correct_ejb_jndi_name = LOOKUP_MAPPED_EJBCONTEXT;
+         		}catch(Exception e){
+         			new bsControllerException(e, iStub.log_ERROR);
+ //        			le.printStackTrace();
+         		}
+         	}     
+        	
          } catch (NamingException e) {
         	 new bsControllerException(e, iStub.log_ERROR);
 //             e.printStackTrace();
@@ -471,6 +551,15 @@ public class EjbProvider implements i_provider {
      }
      
 
+ 	public static InitialContext getStaticInitialContext() {
+ 		try{
+ 			if(staticInitialContext==null)
+ 				staticInitialContext = new InitialContext();
+ 			return staticInitialContext;
+ 		}catch(Exception e){
+ 			return null;
+ 		}
+ 	}
      
 
      public static boolean checkInitialContext(String ejbJndiName, ServletContext _context) {
@@ -515,6 +604,8 @@ public class EjbProvider implements i_provider {
          	if(ejbContext==null){
 	         	try{
 	         		ejbContext = (EJBContext)initialContext.lookup(LOOKUP_EJBCONTEXT);
+	         		if(ejbContext!=null)
+	         			correct_ejb_jndi_name = LOOKUP_EJBCONTEXT;
 	         	}catch(Exception e){
 	         		new bsControllerException(e, iStub.log_ERROR);
 //	         		le.printStackTrace();
@@ -525,7 +616,7 @@ public class EjbProvider implements i_provider {
          		try{
 	         		ejbContext = (EJBContext)initialContext.lookup(LOOKUP_ENV_EJBCONTEXT);
 	         		if(ejbContext!=null)
-	         			correct_ejb_jndi_name = ejbJndiName;
+	         			correct_ejb_jndi_name = LOOKUP_ENV_EJBCONTEXT;
 	         		}catch(Exception e){
          			new bsControllerException(e, iStub.log_ERROR);
 //         			le.printStackTrace();
@@ -534,11 +625,13 @@ public class EjbProvider implements i_provider {
          	
          	if(ejbContext==null){ 
          		try{        			
-         			
-	         		bsProvidedWrapper ejbWrapper = (bsProvidedWrapper)initialContext.lookup(LOOKUP_MAPPED_EJBCONTEXT);
-	         		ejbContext = (EJBContext)ejbWrapper.getInstance();
+	         		Object fromLookup = initialContext.lookup(LOOKUP_MAPPED_EJBCONTEXT);
+	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
+	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
+	         		}else
+	         			ejbContext = (EJBContext)fromLookup;
 	         		if(ejbContext!=null)
-	         			correct_ejb_jndi_name = ejbJndiName;
+	         			correct_ejb_jndi_name = LOOKUP_MAPPED_EJBCONTEXT;
          		}catch(Exception e){
          			new bsControllerException(e, iStub.log_ERROR);
  //        			le.printStackTrace();
@@ -557,5 +650,6 @@ public class EjbProvider implements i_provider {
          else
         	 return true;
      }
+
 
 }

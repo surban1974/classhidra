@@ -1,9 +1,10 @@
-package application.web.actions; 
+package application.web.actions;
 
 
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
@@ -33,19 +34,19 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 
 	if(get_bean().getMiddleAction().equals("send")){
-		
+
 		if(get_bean().get("s_mess").equals("")){
 			new bsControllerMessageException("error_1",request,null,iStub.log_ERROR);
 			return new redirects(get_infoaction().getRedirect());
 		}
-		
- 
+
+
         String msgBody = (String)get_bean().get("s_mess");
 
 
-		
+
 		mail_message mm = (mail_message)get_bean().get("m_message");
-		
+
 		mm.setBODY(msgBody);
 		mm.setSUBJECT("Message from:"+get_bean().get("s_name")+" email:"+get_bean().get("s_email"));
 		try{
@@ -54,10 +55,10 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		}catch(Exception e){
 			new bsControllerMessageException(e.toString(),request,null,iStub.log_ERROR);
 		}
-		
+
 	}
 
-	
+
 	return new redirects(get_infoaction().getRedirect());
 }
 

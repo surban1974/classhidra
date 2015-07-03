@@ -1,4 +1,4 @@
-package application.web.actions; 
+package application.web.actions;
 
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.controller.*;

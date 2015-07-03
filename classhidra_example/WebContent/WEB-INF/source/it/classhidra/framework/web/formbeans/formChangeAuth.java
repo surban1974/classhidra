@@ -18,8 +18,8 @@ public class formChangeAuth extends bean implements i_bean{
 	private String group;
 	private String target;
 	private String wac_fascia;
-	
-	
+
+
 public void reimposta(){
 	name="";
 	password="";

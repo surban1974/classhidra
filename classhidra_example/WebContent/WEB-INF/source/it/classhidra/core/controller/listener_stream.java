@@ -1,6 +1,6 @@
 /**
 * Creation date: (10/06/2014)
-* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com 
+* @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
 /********************************************************************************
@@ -39,7 +39,7 @@ public interface listener_stream {
 	void onPreExit(HashMap _content);
 	void onPreRedirect(redirects _redirect, String id_action);
 
-	
+
 	void onPostInit(HttpServletRequest request, HttpServletResponse response);
 	void onPostEnter(redirects redirect, HttpServletRequest request, HttpServletResponse response);
 	void onPostExit(redirects redirect, HttpServletRequest request, HttpServletResponse response);
@@ -48,7 +48,7 @@ public interface listener_stream {
 	void onPostRedirect(RequestDispatcher rd);
 	void onPostInstance();
 	void onPostInstanceFromProvider();
-	
+
 	void setOwner(i_stream owner);
-	
+
 }

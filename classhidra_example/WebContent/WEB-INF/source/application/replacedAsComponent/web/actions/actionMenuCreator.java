@@ -1,10 +1,11 @@
-package application.replacedAsComponent.web.actions; 
+package application.replacedAsComponent.web.actions;
 
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_menu_element;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.load_menu;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
@@ -64,24 +65,24 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 private i_menu_element prepareElement(HttpServletRequest request){
 	try{
 		formMenuCreator fc = (formMenuCreator)get_bean();
-/*		
+/*
 		formContent fc = null;
-		
+
 		info_navigation	formInfoNavigation = (request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION)==null)?new info_navigation():(info_navigation)request.getSession().getAttribute(bsController.CONST_BEAN_$NAVIGATION);
 
 		info_navigation current = formInfoNavigation.find("content");
 
 		if(current==null) return null;
-		
+
 		fc = (formContent)current.get_content();
-		
+
 		if(fc==null) return null;
-*/		
+*/
 		i_menu_element element = fc.getElement_menu_html();
 		if(element==null){
 			load_menu menu_config = new load_menu(new menu_element());
 			try{
-				menu_config.load_from_resources();	
+				menu_config.load_from_resources();
 			}catch (Exception e) {
 			}
 
@@ -92,7 +93,7 @@ private i_menu_element prepareElement(HttpServletRequest request){
 		element.setVisible(true);
 		element.calculate_potential_elements();
 		element.analyse_potential_group(true);
-		
+
 		fc.setElement_menu_html(element);
 		return element;
 	}catch(Exception e){

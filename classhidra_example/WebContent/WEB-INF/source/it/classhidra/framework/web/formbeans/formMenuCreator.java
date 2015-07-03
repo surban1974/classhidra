@@ -17,7 +17,7 @@ public class formMenuCreator extends bean implements i_bean{
 	private String menu_action;
 	private String menu_lang;
 	i_menu_element element;
-		
+
 public void reimposta(){
 	menu_id="menu_level_0";
 	menu_html="";

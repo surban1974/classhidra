@@ -11,7 +11,7 @@ import it.classhidra.core.controller.redirects;
 public class formHome extends bean implements i_bean{
 	private static final long serialVersionUID = 149516054527417887L;
 	private String lang;
-	
+
 public void reimposta(){
 	lang="IT";
 }

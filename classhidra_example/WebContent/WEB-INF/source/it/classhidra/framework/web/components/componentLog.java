@@ -7,6 +7,7 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.log_FilesFilter;
 import it.classhidra.core.tool.util.util_sort;
@@ -24,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @ActionMapping (
 		redirects={
-				@Redirect(	
+				@Redirect(
 						path="/jsp/framework/log.jsp",
 						descr="Log",
 						mess_id="title_fw_Log"
@@ -40,7 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 	navigated="true",
 
 	redirects={
-			@Redirect(	
+			@Redirect(
 				auth_id="log_id",
 				path="*"
 			)
