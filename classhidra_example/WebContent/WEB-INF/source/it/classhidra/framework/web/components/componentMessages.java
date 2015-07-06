@@ -6,7 +6,6 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.util.util_cloner;
 

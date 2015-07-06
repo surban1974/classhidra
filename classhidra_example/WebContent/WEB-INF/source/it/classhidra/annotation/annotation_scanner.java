@@ -6,7 +6,7 @@ import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Apply_to_action;
 import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Entity;
-import it.classhidra.annotation.elements.NavigatedScoped;
+import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.annotation.elements.Section;
 import it.classhidra.annotation.elements.Stream;
@@ -290,7 +290,7 @@ public class annotation_scanner implements i_annotation_scanner {
 			Class classType = Class.forName(class_path);
 			
 			Map subAnnotations = new HashMap();
-			Annotation subAnnotation = classType.getAnnotation(NavigatedScoped.class);
+			Annotation subAnnotation = classType.getAnnotation(NavigatedDirective.class);
 				if(subAnnotation!=null){
 					checkClassAnnotation(class_path, subAnnotation, subAnnotations);
 					subAnnotations.put("NavigatedScoped", subAnnotation);

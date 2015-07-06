@@ -1176,7 +1176,16 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 				rAction.asBean().set_infobean(iBean);
 			loadedFromProvider=true;
 		}
-
+		if(rAction!=null && rAction.get_bean()!=null){
+			rAction.get_bean().set_infoaction(iAction);
+			if(rAction.getRealBean()!=null)
+				rAction.getRealBean().setNavigable(false);
+//			rAction.get_bean().setNavigable(false);
+		}
+		if(rAction!=null && rAction.getCurrent_redirect()!=null){
+			rAction.setCurrent_redirect(null);
+		}
+		
 	}
 /*	
 	if(iAction.getProvider()!=null && !iAction.getProvider().equals("")){

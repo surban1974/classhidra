@@ -42,6 +42,7 @@ public interface listener_action{
 	void onPreRedirectError();
 	void onPreTransform(Object input);
 	void onPreActionCall(String id_call, HttpServletRequest request, HttpServletResponse response);
+	void onPreActionCall(String id_call, HashMap _content);
 
 
 	void onPostInit(HttpServletRequest request, HttpServletResponse response);
@@ -55,7 +56,8 @@ public interface listener_action{
 	void onPostRedirect(RequestDispatcher rd);
 	void onPostRedirectError(RequestDispatcher rd);
 	void onPostTransform(Object output);
-	void onPostActionCall(redirects redirect,String id_call, HttpServletRequest request, HttpServletResponse response);
+	void onPostActionCall(redirects redirect, String id_call, HttpServletRequest request, HttpServletResponse response);
+	void onPostActionCall(redirects redirect, String id_call, HashMap _content);
 	void onPostInstance();
 	void onPostInstanceFromProvider();
 

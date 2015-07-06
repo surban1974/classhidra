@@ -24,11 +24,12 @@
 		     <item name="prev_user" type="java.lang.String">.</item>
 		
 		</form-bean>	
-		<form-bean name="formContent" type="application.web.forms.formContent"/>
+		
 		<form-bean name="formHelp" type="application.web.forms.formHelp"/>
 		<form-bean name="formMail" type="application.web.forms.formMail"/>
 <!-- 
 		<form-bean name="formLogin" type="application.web.forms.formLogin" model_="config/beans/xmlFormTest.xml"/>
+		<form-bean name="formContent" type="application.web.forms.formContent"/>
 		<form-bean name="formBuilder" type="application.web.forms.formBuilder"/>
 		<form-bean name="formAmanager" type="application.web.forms.formAmanager"/>
 		<form-bean name="formMessages" type="application.web.forms.formMessages"/>
@@ -41,12 +42,13 @@
 
 	</form-beans>
 	<form-redirects>
-		<form-redirect path="/jsp/framework/content.jsp" descr="Content" mess_id="title_fw_Content"/>
+		
 		<form-redirect path="/jsp/pages/sendmail.jsp" descr="Send Messages" mess_id="title_fw_SendMail"/>
 		<form-redirect path="/jsp/pages/about.jsp" descr="About" mess_id="title_fw_About"/>
 		
 <!-- 
 		<form-redirect path="/jsp/framework/login.jsp" descr="Login" mess_id="title_fw_Login"/>
+		<form-redirect path="/jsp/framework/content.jsp" descr="Content" mess_id="title_fw_Content"/>
 		<form-redirect path="/jsp/builder/canvas.jsp" descr="Builder actions.xml (BETA)" mess_id="title_fw_builder"/>
 		<form-redirect path="/jsp/amanager/canvas.jsp" descr="Users/Groups/Authentications" mess_id="title_fw_amanager"/>
 		<form-redirect path="/jsp/framework/log_users.jsp" descr="Users In Session" mess_id="title_fw_Log_users"/>
@@ -168,10 +170,6 @@
 				<redirect auth_id="log_id" path="*"/>				
 		</action>
 		
-
- -->		
-
-                	
 		<action path="content"
                 	name="formContent"
                 	redirect="/jsp/framework/content.jsp"
@@ -180,6 +178,10 @@
                 	memoryInSession="false"
                 	reloadAfterAction="true">
         	</action> 
+ -->		
+
+                	
+
         	
 		<action path="sendMail"
                 	name="formMail"

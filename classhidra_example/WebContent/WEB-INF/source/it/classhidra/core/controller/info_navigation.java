@@ -73,7 +73,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iAction = iAction;
 		this.iRedirect = iRedirect;
 		this.id = iAction.getPath().trim();
-		this._content = content;
+		if(content!=null && content.isNavigable())
+			this._content = content;
 		this.iService = iService;
 	}
 	
@@ -82,7 +83,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iAction = second.getIAction();
 		this.iRedirect = second.getIRedirect();
 		this.id = second.getId();
-		this._content = second.get_content();
+		if(second.get_content()!=null && second.get_content().isNavigable())
+			this._content = second.get_content();
 		this.iService = second.getIService();
 		this.parent = second.getParent();
 		this.child = second.getChild();
@@ -94,7 +96,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iAction = second.getIAction();
 		this.iRedirect = second.getIRedirect();
 		this.id = second.getId();
-		this._content = second.get_content();
+		if(second.get_content()!=null && second.get_content().isNavigable())
+			this._content = second.get_content();
 		this.iService = second.getIService();
 		this.parent = second.getParent();
 		this.child = second.getChild();
@@ -224,8 +227,12 @@ public class info_navigation extends elementBase implements i_elementBase{
 				iNavigation.getIRedirect().getNavigated().toLowerCase().equals("true"))
 				iRedirect = iNavigation.getIRedirect();
 			child = iNavigation.getChild();
-			if(!(_content!=null && iNavigation.get_content()==null))
-				_content = iNavigation.get_content();
+//			if(!(_content!=null && iNavigation.get_content()==null))
+//				_content = iNavigation.get_content();
+			if(!(_content!=null && iNavigation.get_content()==null)){
+				if(iNavigation.get_content()!=null && iNavigation.get_content().isNavigable())
+					_content = iNavigation.get_content();
+			}
 			if(!iService.isComplete()){
 				if(!iService.isComplete() && iNavigation.getIService().isComplete()) iService = iNavigation.getIService();
 				else{

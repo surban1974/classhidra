@@ -37,6 +37,8 @@ import it.classhidra.core.tool.util.util_reflect;
 import java.io.DataInputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +82,10 @@ public class bean extends elementBeanBase implements i_bean  {
 	protected listener_bean listener_b;
 
 	protected Object delegated;
+	
+	protected boolean navigable=true;
+	protected boolean ejb=false;
+	protected boolean cdi=false;
 
 
 
@@ -90,6 +96,10 @@ public void reimposta(){
 }
 
 public redirects validate(HttpServletRequest request){
+	return null;
+}
+
+public redirects validate(HashMap parameters){
 	return null;
 }
 
@@ -187,7 +197,8 @@ public void init(HttpServletRequest request) throws bsControllerException{
 							makedValue=util_makeValue.makeValue1(this,value,key);
 						}
 					}
-					setCampoValueWithPoint(key,makedValue);
+					if(!setCampoValueWithPoint(key,makedValue))
+						throw new Exception();
 				}catch(Exception e){
 					try{
 						Object makedValue=null;
@@ -199,7 +210,8 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
 							}
 						}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
-						setCampoValueWithPoint(key,makedValue);
+						if(!setCampoValueWithPoint(key,makedValue))
+							throw new Exception();
 					}catch(Exception ex){
 						if(parametersFly==null) parametersFly = new HashMap();
 						if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
@@ -328,7 +340,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	}
 
 
-	private void initPartFromMap(HashMap parameters) throws bsControllerException{
+	public void initPartFromMap(HashMap parameters) throws bsControllerException{
 		if(parameters==null) parameters=new HashMap();
 		parametersMP = parameters;
 
@@ -390,7 +402,8 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								makedValue=util_makeValue.makeValue1(this,value,key);
 							}
 						}
-						setCampoValueWithPoint(key,makedValue);
+						if(!setCampoValueWithPoint(key,makedValue))
+							throw new Exception();
 					}catch(Exception e){
 						try{
 							Object makedValue=null;
@@ -404,7 +417,8 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								}
 							}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
 
-							setCampoValueWithPoint(key,makedValue);
+							if(!setCampoValueWithPoint(key,makedValue))
+								throw new Exception();
 						}catch(Exception ex){
 							if(parametersFly==null) parametersFly = new HashMap();
 							if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
@@ -486,12 +500,9 @@ public void init(HashMap _content) throws bsControllerException{
 			)
 		);
 
-//	Object[] keys = _content.keySet().toArray();
-//	for (int ii = 0; ii < keys.length; ii++){
+
 	for (Object elem :  _content.keySet()) {
 		String key = (String)elem;
-
-//		String key = (String)keys[ii];
 		String value = (String)_content.get(key);
 		String format = (String)_content.get("$format_"+key);
 		String replaceOnBlank = (String)_content.get("$replaceOnBlank_"+key);
@@ -535,7 +546,8 @@ public void init(HashMap _content) throws bsControllerException{
 						makedValue=util_makeValue.makeValue1(this,value,key);
 					}
 				}
-				setCampoValueWithPoint(key,makedValue);
+				if(!setCampoValueWithPoint(key,makedValue))
+					throw new Exception();
 			}catch(Exception e){
 				try{
 					Object makedValue=null;
@@ -549,7 +561,8 @@ public void init(HashMap _content) throws bsControllerException{
 						}
 					}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
 
-					setCampoValueWithPoint(key,makedValue);
+					if(!setCampoValueWithPoint(key,makedValue))
+						throw new Exception();
 				}catch(Exception ex){
 					if(parametersFly==null) parametersFly = new HashMap();
 					if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
@@ -708,7 +721,7 @@ public void set(String name, Object value) {
 	}
 }
 
-private Object getPrimitiveArgument(String name, String s_value){
+public Object getPrimitiveArgument(String name, String s_value){
 
 	Object primArgument = null;
 	Class reqClass = (delegated==null)?this.getClass():delegated.getClass();
@@ -846,6 +859,30 @@ public void set(String name, char value) {
 	}
 }
 
+public Collection getCollection(String name){
+	Collection result = new ArrayList();
+	Object objectResult = get(name);
+	if(objectResult==null) return result;
+	if(objectResult instanceof Collection ) return ((Collection)objectResult);
+	return result;
+}
+
+public List getList(String name) {
+	List result = new ArrayList();
+	Object objectResult = get(name);
+	if(objectResult==null) return result;
+	if(objectResult instanceof List ) return ((List)objectResult);
+	return result;
+}
+
+public Map getMap(String name) {
+	Map result = new HashMap();
+	Object objectResult = get(name);
+	if(objectResult==null) return result;
+	if(objectResult instanceof Map ) return ((Map)objectResult);
+	return result;
+}
+
 
 public int getInt(String name) {
 	int result = 0;
@@ -966,38 +1003,26 @@ public String getString(String name) {
 public boolean setCampoValueWithPoint(String name, Object value) throws Exception{
 	try{
 		if(name.indexOf('.')==-1){
-			if(delegated!=null){
-				boolean res = setValue(delegated, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
-				if(!res) res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
-				return res;
-			}
-			else{
-				boolean res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
-				if(!res){
-					if(parametersFly==null) parametersFly = new HashMap();
-					parametersFly.put(name, value);
+			try{
+				if(delegated!=null){
+					boolean res = setValue(delegated, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
+					if(!res) res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
+					return res;
 				}
-				return res;
+				else{
+					boolean res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
+					if(!res){
+						if(parametersFly==null) parametersFly = new HashMap();
+						parametersFly.put(name, value);
+					}
+					return res;
+				}
+			}catch(Exception e){
+				return false;
 			}
-
+			
 		}else{
 			StringTokenizer st = new StringTokenizer(name,".");
-/*
-			Vector allfields=new Vector();
-			while(st.hasMoreTokens())
-				allfields.add(st.nextToken());
-
-			String complexName="";
-			for(int i=0;i<allfields.size()-1;i++){
-				complexName+=allfields.get(i);
-				if(i!=allfields.size()-2) complexName+=".";
-			}
-
-			Object writeObj=get(complexName);
-			if(writeObj==null) writeObj=get(this,complexName);
-			if(writeObj==null) return false;
-			String current_field_name = (String)allfields.get(allfields.size()-1);
-*/
 			String current_field_name = null;
 			String complexName="";
 			while(st.hasMoreTokens()){
@@ -1305,6 +1330,33 @@ public i_action asAction(){
 	return (action)this;
 }
 
+public i_bean asBean(){
+	return (bean)this;
+}
+
+public boolean isNavigable() {
+	return navigable;
+}
+
+public void setNavigable(boolean navigable) {
+	this.navigable = navigable;
+}
+
+public boolean isEjb() {
+	return ejb;
+}
+
+public void setEjb(boolean ejb) {
+	this.ejb = ejb;
+}
+
+public boolean isCdi() {
+	return cdi;
+}
+
+public void setCdi(boolean cdi) {
+	this.cdi = cdi;
+}
 
 
 }

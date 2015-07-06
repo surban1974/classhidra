@@ -2,19 +2,10 @@ package it.classhidra.plugin.provider;
 
 
 
-import javax.annotation.ManagedBean;
-import javax.ejb.Singleton;
-import javax.ejb.Stateful;
-import javax.ejb.Stateless;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_provider;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
@@ -22,6 +13,16 @@ import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Local_container;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Navigation;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Onlyinssession;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
 
 public class DependencyInjectionProvider implements i_provider {
 
@@ -96,10 +97,66 @@ public class DependencyInjectionProvider implements i_provider {
 				return lookup_instance;
 		}
 */		
+		if(instance!=null){
+	    	Class clazz=instance.getClass();
+			if(instance instanceof i_bean){
+				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
+					clazz.getAnnotation(ApplicationScoped.class)!=null ||
+					clazz.getAnnotation(RequestScoped.class)!=null){
+					((i_bean)instance).setNavigable(false);
+					((i_bean)instance).asBean().setCdi(true);
+				}else{
+					try{
+						i_bean ibean = ((i_bean)instance).asBean();
+						Class clazzi=ibean.getClass();
+						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+							clazzi.getAnnotation(RequestScoped.class)!=null){
+							ibean.setNavigable(false);
+							ibean.setCdi(true);
+							ibean.setEjb(true);
+						}						
+					}catch(Exception e){						
+					}					
+				}
+			}
+			if(instance instanceof i_action){
+				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
+					clazz.getAnnotation(ApplicationScoped.class)!=null ||
+					clazz.getAnnotation(RequestScoped.class)!=null){
+					((i_action)instance).asBean().setNavigable(false);
+					((i_action)instance).asBean().setCdi(true);
+				}else{
+					try{
+						i_action iaction = ((i_action)instance).asAction();
+						Class clazzi=iaction.getClass();
+						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+							clazzi.getAnnotation(RequestScoped.class)!=null){
+							iaction.asBean().setNavigable(false);
+							iaction.asBean().setCdi(true);
+							iaction.asBean().setEjb(true);
+						}						
+					}catch(Exception e){						
+					}					
+				}
+			}
+		}
 		if(bsController.getEjbDefaultProvider()!=null && instance==null){
 			Object lookup_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
-			if(lookup_instance!=null)
+			if(lookup_instance!=null){
+				try{
+			    	Class clazz=lookup_instance.getClass();
+					if(lookup_instance instanceof i_bean){
+						((i_bean)lookup_instance).setNavigable(false);
+					}
+					if(lookup_instance instanceof i_action){
+						((i_action)lookup_instance).asBean().setNavigable(false);
+					}
+				}catch(Exception e){
+				}
 				return lookup_instance;
+			}
 		}
 		return instance;
 	}	
@@ -256,38 +313,14 @@ public class DependencyInjectionProvider implements i_provider {
          }
          
          
-         if(beanManager==null) 
+         if(beanManager==null){ 
+        	 new bsControllerException("Impossible retrive CDI BeanManager", iStub.log_WARN);
         	 return false;
-         else
+         }else{
+        	 new bsControllerException("CDI BeanManager retrived SUCCEESFULLY from: "+correct_jndi_jndi_name, iStub.log_INFO);
         	 return true;
+         }
      }
      
-     public static boolean checkAnnotationOfClassIfEJB(String class_bean) {
-    	 try{
-    		Class clazz=null;
-   	    	try{
-   	    		clazz=Class.forName(class_bean);
-   	    	}catch(Exception e){
-   	    		return false;
-   	    	}
-   	    	
-    	    if(clazz!=null){
-            	if(clazz.getAnnotation(Stateless.class)!=null)
-            		return true;
-            	if(clazz.getAnnotation(Stateful.class)!=null)
-            		return true;
-            	if(clazz.getAnnotation(Singleton.class)!=null)
-            		return true;
-            	if(clazz.getAnnotation(ManagedBean.class)!=null)
-            		return true;
-     	    	
-    	    }
-    	    return false;
-    	 }catch(Exception e){
-    		 return false;
-    	 }catch(Throwable e){
-    		 return false;
-    	 }
-     }
 
 }

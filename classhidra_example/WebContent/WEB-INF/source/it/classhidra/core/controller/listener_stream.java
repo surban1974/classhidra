@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface listener_stream {
 	void onPreInit(HttpServletRequest request, HttpServletResponse response);
+	void onPreInit(HashMap _content);
 	void onPreEnter(HttpServletRequest request, HttpServletResponse response);
 	void onPreExit(HttpServletRequest request, HttpServletResponse response);
 	void onPreEnter(HashMap _content);
@@ -41,6 +42,7 @@ public interface listener_stream {
 
 
 	void onPostInit(HttpServletRequest request, HttpServletResponse response);
+	void onPostInit(HashMap _content);
 	void onPostEnter(redirects redirect, HttpServletRequest request, HttpServletResponse response);
 	void onPostExit(redirects redirect, HttpServletRequest request, HttpServletResponse response);
 	void onPostEnter(redirects redirect, HashMap _content);

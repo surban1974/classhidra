@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 public class stream implements i_stream, Serializable{
 	private static final long serialVersionUID = -1;
 	private HttpServletRequest _request;
+	private HashMap _content;
 	private i_stream _stream;
 	private info_stream _infostream;
 	private listener_stream listener_s;
@@ -58,6 +59,14 @@ public class stream implements i_stream, Serializable{
 			_stream.onPostInit(_request, response);
 		}
 	}
+	public void init(HashMap content) throws bsControllerException{
+		_content = content;
+		if(_stream!=null){
+			_stream.onPreInit(_content);
+			_stream.init(_content);
+			_stream.onPostInit(_content);
+		}
+	}	
 	public redirects streamservice_enter(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		return null;
 	}
@@ -96,10 +105,28 @@ public class stream implements i_stream, Serializable{
 
 			if(iAction!=null) rd = _redirect.redirect(scontext, iAction);
 		}
-
-
 		return rd;
 	}
+	
+
+	public info_action redirect(HashMap wsParameters, redirects _redirect, String id_action) throws ServletException,	UnavailableException {
+		RequestDispatcher rd=null;
+
+		if(_infostream==null) return null;
+		if(_infostream.get_apply_to_action().size()==0 || _infostream.get_apply_to_action().get("*")!=null){
+			info_action iAction = new info_action();
+			iAction.get_redirects().put("*", _redirect.get_inforedirect());
+			iAction.setRedirect(_redirect.get_uri());
+			return iAction;
+		}else{
+
+//			info_action iAction = (info_action)bsController.getAction_config().get_actions().get(id_action);
+			info_action iAction = (info_action)load_actions.get_actions().get(id_action);
+
+//			if(iAction!=null) rd = _redirect.redirect(scontext, iAction);
+		}
+		return null;
+	}	
 
 	public listener_stream getListener_s() {
 		try{
@@ -176,8 +203,17 @@ public class stream implements i_stream, Serializable{
 		if(listener_s!=null) listener_s.onPostInstanceFromProvider();
 	}
 
+	public void onPreInit(HashMap _content) {
+		if(listener_s!=null) listener_s.onPreInit(_content);
+	}
+
+	public void onPostInit(HashMap _content) {
+		if(listener_s!=null) listener_s.onPostInit(_content);
+	}
+
 	public void setOwner(i_stream owner) {
 	}
+
 
 
 

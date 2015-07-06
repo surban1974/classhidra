@@ -55,7 +55,26 @@ public class util_provider {
 		}
 		return null;
 	}	
-
+	
+	public static boolean clearkDeafaultEjbProviderNamingMap(){
+		i_provider provider  = null;
+		try{
+			Class c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
+			try{
+				Method m_getInstance = c_provider.getDeclaredMethod("clearNamingMap", new Class[]{});
+				Object instance = m_getInstance.invoke(null, new Object[]{});
+				if(instance instanceof Boolean && (Boolean)instance)
+					return (Boolean)instance;
+			}catch(Exception e){				
+			}
+		}catch (Exception e) {
+			return false;
+		}catch (Throwable e) {
+			return false;
+		}
+		return false;
+	}	
+	
 	
 	public static Object getBeanFromObjectFactory(String id_provider, String id_bean, String class_bean, ServletContext servletContext){
 		if(id_bean==null || id_bean.equals("")) return null;

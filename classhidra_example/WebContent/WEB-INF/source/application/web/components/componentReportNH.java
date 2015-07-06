@@ -6,7 +6,7 @@ import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
-import it.classhidra.core.controller.redirects;
+
 import it.classhidra.core.tool.exception.bsControllerException;
 
 import java.io.Serializable;

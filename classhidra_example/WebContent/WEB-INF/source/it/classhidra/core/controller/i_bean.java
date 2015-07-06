@@ -24,7 +24,10 @@
 package it.classhidra.core.controller;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,10 +45,13 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void init(HashMap _content)  throws bsControllerException;
 	void init(i_bean another_bean) throws bsControllerException;
 	void reInit(i_elementDBBase _i_el);
+	void initPartFromMap(HashMap parameters) throws bsControllerException;
 	redirects validate(HttpServletRequest request)  throws bsControllerException;
+	redirects validate(HashMap parameters)  throws bsControllerException;
 	info_bean get_infobean();
 	void set_infobean(info_bean bean);
 
+	Object getPrimitiveArgument(String name, String s_value);
 	Object get(Object requested,String value);
 	Object get(String value);
 	int getInt(String name);
@@ -58,6 +64,10 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	char getChar(String name);
 	BigDecimal getBigDecimal(String name);
 	String getString(String name);
+	Collection getCollection(String name);
+	List getList(String name);
+	Map getMap(String name);
+	
 
 	void set(String name, Object value);
 	void put(String name, Object value);
@@ -69,7 +79,8 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void set(String name, byte value);
 	void set(String name, boolean value);
 	void set(String name, char value);
-
+	void setCampoValuePoint(Object req, String nome, Object value) throws Exception;
+	boolean setCampoValueWithPoint(String name, Object value) throws Exception;
 
 	info_action get_infoaction();
 	void set_infoaction(info_action action);
@@ -107,8 +118,16 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void setVirtual(boolean virtual);
 	boolean getGzipoutput();
 	void setGzipoutput(boolean gzipoutput);
-
+	boolean isNavigable();
+	void setNavigable(boolean navigable);
+	boolean isEjb();
+	void setEjb(boolean ejb);
+	boolean isCdi();
+	void setCdi(boolean cdi);
+	
+	
 	listener_bean getListener_b();
 	void setListener_b(listener_bean listener);
 	i_action asAction();
+	i_bean asBean();
 }

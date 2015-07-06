@@ -44,7 +44,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 					</tr>	
 					<tr>
 						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_2" defaultValue="Version"/>:</b></nobr></td>
-						<td class="labelContent" width="400px"> 1.4.11</td>
+						<td class="labelContent" width="400px"> 1.5.0 alfa</td>
 					</tr>	
 					<tr>
 						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_3" defaultValue="Author"/>:</b></nobr></td>
@@ -61,7 +61,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						
 					<tr>
 						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_5" defaultValue="Description"/>:</b></nobr></td>
-						<td class="labelContent" width="400px"><nobr> ClassHidra, Java open-source ModelViewController implementation.<br> Servlets and JSP technology. Web Application Development.<br> Integrated with Spring from v.1.2.0(classhigra2spring plugin)</nobr> </td>
+						<td class="labelContent" width="400px"><nobr> ClassHidra, Java open-source ModelViewController implementation.<br> Servlets and JSP technology. Web Application Development.<br> Integrated CDI, EJB and Spring from v.1.2.0(classhigra2cdi, classhigra2ejb, classhigra2spring plugins)</nobr> </td>
 					</tr>	
 					
 					

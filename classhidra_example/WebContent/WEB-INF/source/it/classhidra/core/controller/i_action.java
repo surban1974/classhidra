@@ -40,6 +40,7 @@ public interface i_action extends listener_action, Serializable{
 	redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
 	redirects syncroservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
 	void actionBeforeRedirect(HttpServletRequest request, HttpServletResponse response) throws bsControllerException;
+	void actionBeforeRedirect(HashMap wsParameters) throws bsControllerException;
 	void init(HashMap wsParameters) throws bsControllerException;
 	redirects actionservice(HashMap wsParameters) throws  bsControllerException;
 	redirects syncroservice(HashMap wsParameters) throws  bsControllerException;
@@ -56,4 +57,6 @@ public interface i_action extends listener_action, Serializable{
 	listener_action getListener_a();
 	void setListener_a(listener_action listenerA);
 	i_bean asBean();
+	i_bean getRealBean();
+	i_action asAction();
 }

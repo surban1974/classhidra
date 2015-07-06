@@ -8,7 +8,6 @@ import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.info_action;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.stream;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;

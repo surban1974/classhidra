@@ -4,7 +4,6 @@ package it.classhidra.core.tool.util;
 
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_bean;
-import it.classhidra.core.controller.i_provider;
 import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
@@ -16,6 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -581,15 +582,15 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 		}
 		try{
 			boolean isException=false;
-			if(current_requested!=null && current_requested instanceof HashMap){
+			if(current_requested!=null && current_requested instanceof Map){
 				try{
-					writeValue = ((HashMap)current_requested).get(current_field_name);
+					writeValue = ((Map)current_requested).get(current_field_name);
 				}catch(Exception ex){
 					isException=true;
 				}
-			}else if(current_requested!=null && current_requested instanceof AbstractList && int4list>-1){
+			}else if(current_requested!=null && current_requested instanceof List && int4list>-1){
 				try{
-					writeValue = ((AbstractList)current_requested).get(int4list);
+					writeValue = ((List)current_requested).get(int4list);
 				}catch(Exception ex){
 					isException=true;
 				}

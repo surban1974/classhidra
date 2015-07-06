@@ -1,13 +1,21 @@
 package it.classhidra.framework.web.components;
 
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_entity;
 import it.classhidra.core.controller.info_redirect;
@@ -15,6 +23,7 @@ import it.classhidra.core.controller.info_relation;
 import it.classhidra.core.controller.info_section;
 import it.classhidra.core.controller.load_actions;
 import it.classhidra.core.controller.load_authentication;
+import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
@@ -27,15 +36,6 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_cloner;
 import it.classhidra.core.tool.util.util_find;
 import it.classhidra.framework.web.beans.option_element;
-
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Vector;
-
-import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @ActionMapping (
 		redirects={

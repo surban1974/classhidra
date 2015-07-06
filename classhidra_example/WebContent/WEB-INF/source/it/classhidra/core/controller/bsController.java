@@ -44,6 +44,7 @@ import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_supportbean;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_cloner;
@@ -51,6 +52,7 @@ import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_sort;
+
 
 
 
@@ -82,6 +84,7 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 
 
@@ -583,10 +586,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 					(iBean!=null && action_instance.get_infoaction().getType().equals(iBean.getType()))
 				)
 			){
-				if(action_instance!=null)
+				bean_instance = action_instance.asBean();
+			}else if(iBean == null && !action_instance.get_infoaction().getName().equals("")){
+				if(action_instance.getRealBean()==null)
 					bean_instance = action_instance.asBean();
 			}else
 				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext(),action_instance);
+			
 			if(bean_instance!=null){
 				if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
 					bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
@@ -596,48 +602,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 
 			//Modifica 20100521 WARNING
-			if(cloned){
-				try{
-					action_instance.onPreSet_bean();
-					action_instance.set_bean((i_bean)bean_instance.clone());
-					action_instance.onPostSet_bean();
-				}catch(Exception e){
-					action_instance.onPreSet_bean();
-					action_instance.set_bean(bean_instance);
-					action_instance.onPostSet_bean();
-				}
-			}
-			else{
-				action_instance.onPreSet_bean();
-				action_instance.set_bean(bean_instance);
-				action_instance.onPostSet_bean();
-			}
-		}else{
-
-			if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
-				bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
-			if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true"))
-				bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
-
-			if(	action_instance instanceof i_bean &&
-					(
-						action_instance.get_infoaction().getName().equals("") ||
-						bean_instance.getClass().getName().equals(action_instance.getClass().getName())
-					)
-				){
-				if(cloned){
-					try{
-						action_instance = (i_action)util_cloner.clone(bean_instance);
-					}catch(Exception e){
-						action_instance = (i_action)bean_instance;
-					}
-				}
-				else action_instance = (i_action)bean_instance;
-			}else{
+			if(bean_instance!=null){
 				if(cloned){
 					try{
 						action_instance.onPreSet_bean();
-						action_instance.set_bean((i_bean)util_cloner.clone(bean_instance));
+						action_instance.set_bean((i_bean)bean_instance.clone());
 						action_instance.onPostSet_bean();
 					}catch(Exception e){
 						action_instance.onPreSet_bean();
@@ -649,13 +618,73 @@ public class bsController extends HttpServlet implements bsConstants  {
 					action_instance.onPreSet_bean();
 					action_instance.set_bean(bean_instance);
 					action_instance.onPostSet_bean();
+				} 
+			}
+		}else{
+
+			if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
+				bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
+			if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true"))
+				bean_instance.setCurrent_auth( bsController.checkAuth_init(request));
+
+			if(	action_instance instanceof i_bean &&
+					(
+						action_instance.get_infoaction().getName().equals("") ||
+						bean_instance.asBean().getClass().getName().equals(action_instance.asBean().getClass().getName())
+					)
+				){
+				if(cloned){
+					try{
+						action_instance = (i_action)util_cloner.clone(bean_instance);
+					}catch(Exception e){
+						action_instance = bean_instance.asAction();
+					}
+				}else action_instance = bean_instance.asAction();
+			}
+			else{
+				if(bean_instance!=null){
+					if(cloned){
+						try{
+							action_instance.onPreSet_bean();
+							action_instance.set_bean((i_bean)util_cloner.clone(bean_instance));
+							action_instance.onPostSet_bean();
+						}catch(Exception e){
+							action_instance.onPreSet_bean();
+							action_instance.set_bean(bean_instance);
+							action_instance.onPostSet_bean();
+						}
+					}
+					else{
+						action_instance.onPreSet_bean();
+						action_instance.set_bean(bean_instance);
+						action_instance.onPostSet_bean();
+					}
 				}
 			}
 		}
 
-		action_instance.onPreInit(request, response);
-		action_instance.init(request,response);
-		action_instance.onPostInit(request, response);
+		HashMap request2map = null;
+		try{
+			action_instance.onPreInit(request, response);
+		}catch(Exception e){ 
+			if(request2map==null)
+				request2map = util_supportbean.request2map(request);
+			action_instance.onPreInit(request2map);
+		}
+		try{
+			action_instance.init(request,response);
+		}catch(Exception e){
+			if(request2map==null)
+				request2map = util_supportbean.request2map(request);
+			action_instance.init(request2map);
+		}
+		try{
+			action_instance.onPostInit(request, response);
+		}catch(Exception e){
+			if(request2map==null)
+				request2map = util_supportbean.request2map(request);
+			action_instance.onPostInit(request2map);
+		}
 
 		info_call iCall = null;
 		Method iCallMethod = null;
@@ -684,28 +713,89 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 
 		if(iCall!=null && iCall.getNavigated().equalsIgnoreCase("false")){
-		}else setInfoNav_CurrentForm(action_instance,request);
+		}else 
+			setInfoNav_CurrentForm(action_instance,request);
 
 
 // ACTIONSEVICE
 		redirects current_redirect = null;
 		if(id_call==null){
 			if(action_instance.get_infoaction().getSyncro().equalsIgnoreCase("true")){
-				action_instance.onPreSyncroservice(request,response);
-				current_redirect = action_instance.syncroservice(request,response);
-				action_instance.onPostSyncroservice(current_redirect,request,response);
+				try{
+					action_instance.onPreSyncroservice(request,response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					action_instance.onPreSyncroservice(request2map);
+				}
+				if(action_instance.get_bean().getCurrent_auth()==null)
+					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
+
+				try{
+					current_redirect = action_instance.syncroservice(request,response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					current_redirect = action_instance.syncroservice(request2map);
+				}
+				try{
+					action_instance.onPostSyncroservice(current_redirect,request,response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					action_instance.onPostSyncroservice(current_redirect,request2map);
+				}
 			}
 			else{
-				action_instance.onPreActionservice(request,response);
-				current_redirect = action_instance.actionservice(request,response);
-				action_instance.onPostActionservice(current_redirect,request,response);
+				try{
+					action_instance.onPreActionservice(request,response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					action_instance.onPreActionservice(request2map);
+				}
+				if(action_instance.get_bean().getCurrent_auth()==null)
+					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
+				try{
+					current_redirect = action_instance.actionservice(request,response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					current_redirect = action_instance.actionservice(request2map);
+				}
+				try{
+					action_instance.onPostActionservice(current_redirect,request,response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					action_instance.onPostActionservice(current_redirect,request2map);
+				}
 			}
 		}else{
 			try{
 				if(iCallMethod!=null){
-					action_instance.onPreActionCall(id_call, request, response);
-					current_redirect = (redirects)util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response});
-					action_instance.onPostActionCall(current_redirect,id_call, request, response);
+					try{
+						action_instance.onPreActionCall(id_call, request, response);
+					}catch(Exception e){
+						if(request2map==null)
+							request2map = util_supportbean.request2map(request);
+						action_instance.onPreActionCall(id_call, request2map);						
+					}
+					if(action_instance.get_bean().getCurrent_auth()==null)
+						action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
+
+					try{
+						current_redirect = (redirects)util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response});
+					}catch(Exception e){
+					}
+					try{
+						action_instance.onPostActionCall(current_redirect,id_call, request, response);
+					}catch(Exception e){
+						if(request2map==null)
+							request2map = util_supportbean.request2map(request);
+						action_instance.onPostActionCall(current_redirect,id_call, request2map);
+
+					}
 				}
 			}catch(Exception ex){
 				new bsControllerException(ex, iStub.log_ERROR);
@@ -765,12 +855,37 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true") &&
 			!id_action.equals(id_current)){
 			if(bean_instance!=null){
-				bean_instance.onPreInit(request);
-				bean_instance.init(request);
-				bean_instance.onPostInit(request);
-				bean_instance.onPreValidate(request);
-				redirects validate_redirect = bean_instance.validate(request);
-				bean_instance.onPostValidate(validate_redirect,request);
+				try{
+					bean_instance.onPreInit(request);
+				}catch(Exception e){
+					util_supportbean.init(bean_instance, request);
+				}
+				try{
+					bean_instance.init(request);
+				}catch(Exception e){
+					util_supportbean.init(bean_instance, request);
+				}
+				try{
+					bean_instance.onPostInit(request);
+				}catch(Exception e){
+					util_supportbean.init(bean_instance, request);
+				}
+				try{
+					bean_instance.onPreValidate(request);
+				}catch(Exception e){
+					util_supportbean.init(bean_instance, request);
+				}
+				redirects validate_redirect = null;
+				try{
+					validate_redirect = bean_instance.validate(request);
+				}catch(Exception e){
+					validate_redirect = bean_instance.validate(util_supportbean.request2map(request));
+				}
+				try{
+					bean_instance.onPostValidate(validate_redirect,request);
+				}catch(Exception e){
+					util_supportbean.init(bean_instance, request);
+				}
 				prev_action_instance.onPreSetCurrent_redirect();
 				prev_action_instance.setCurrent_redirect(validate_redirect);
 				prev_action_instance.onPostSetCurrent_redirect();
@@ -789,10 +904,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 							(iBean!=null && prev_action_instance.get_infoaction().getType().equals(iBean.getType()))
 						)
 				){
-					if(prev_action_instance!=null)
+					bean_instance_clone = prev_action_instance.asBean();
+				}else if(iBean == null && !prev_action_instance.get_infoaction().getName().equals("")){
+					if(prev_action_instance.getRealBean()==null)
 						bean_instance_clone = prev_action_instance.asBean();
 				}else
 					bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext(),prev_action_instance);
+
 				if(bean_instance_clone!=null){
 					if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
 						bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
@@ -809,31 +927,56 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			if(bean_instance_clone!=null){
 				if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true")){
-					bean_instance_clone.onPreInit(request);
-					bean_instance_clone.init(request);
-					bean_instance_clone.onPostInit(request);
+					try{
+						bean_instance_clone.onPreInit(request);
+					}catch(Exception e){
+						util_supportbean.init(bean_instance, request);
+					}
+					try{
+						bean_instance_clone.init(request);
+					}catch(Exception e){
+						util_supportbean.init(bean_instance_clone, request);
+					}
+					try{
+						bean_instance_clone.onPostInit(request);
+					}catch(Exception e){
+						util_supportbean.init(bean_instance, request);
+					}						
 				}
 				if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
 					bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
 				if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true"))
 					bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
-				bean_instance_clone.onPreValidate(request);
-				redirects validate_redirect = bean_instance_clone.validate(request);
-				bean_instance_clone.onPostValidate(validate_redirect,request);
+				try{
+					bean_instance_clone.onPreValidate(request);
+				}catch(Exception e){
+					util_supportbean.init(bean_instance, request);
+				}
+				redirects validate_redirect = null;
+				try{
+					validate_redirect = bean_instance_clone.validate(request);
+				}catch(Exception e){
+					validate_redirect = bean_instance_clone.validate(util_supportbean.request2map(request));
+				}
+				try{
+					bean_instance_clone.onPostValidate(validate_redirect,request);
+				}catch(Exception e){
+					util_supportbean.init(bean_instance, request);
+				}
 				if(	prev_action_instance instanceof i_bean &&
 						(
 							prev_action_instance.get_infoaction().getName().equals("") ||
-							bean_instance_clone.getClass().getName().equals(prev_action_instance.getClass().getName())
+							bean_instance_clone.asBean().getClass().getName().equals(prev_action_instance.asBean().getClass().getName())
 						)
 				)
-					prev_action_instance = (i_action)bean_instance_clone;
+					prev_action_instance = bean_instance_clone.asAction();
 
 				if(prev_action_instance.get_bean()==null){
 					prev_action_instance.onPreSet_bean();
 					prev_action_instance.set_bean(bean_instance_clone);
 					prev_action_instance.onPostSet_bean();
 				}
-				else if(prev_action_instance.equals(prev_action_instance.get_bean()) && !prev_action_instance.get_bean().getClass().getName().equals(bean_instance_clone.getClass().getName())){
+				else if(prev_action_instance.equals(prev_action_instance.get_bean()) && !prev_action_instance.get_bean().getClass().getName().equals(bean_instance_clone.asBean().getClass().getName())){
 					prev_action_instance.onPreSet_bean();
 					prev_action_instance.set_bean(bean_instance_clone);
 					prev_action_instance.onPostSet_bean();
@@ -873,7 +1016,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 			){
 
 					try{
-						action_instance.actionBeforeRedirect(request,response);
+						try{
+							action_instance.actionBeforeRedirect(request,response);
+						}catch(Exception e){
+							action_instance.actionBeforeRedirect(util_supportbean.request2map(request));
+						}
+	
 					}catch(Exception e){
 						throw new bsControllerException("Controller generic actionBeforeRedirect error. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
 					}
@@ -1048,7 +1196,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 						resource2response =  getAction_config().transformationFactory("resource2response", servletContext);
 					if(resource2response!=null){
 						if(resource2response.transform(action_instance, request, response)!=null){
-							action_instance.onPostRedirect(rd);
+							try{
+								action_instance.onPostRedirect(rd);
+							}catch(Exception e){							
+							}
 				    		return response;
 						}
 					}
@@ -1059,12 +1210,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 			action_instance.onPreRedirectError();
 			throw ex;
 		}
-		
-		action_instance.onPostRedirect(rd);
+		try{
+			action_instance.onPostRedirect(rd);
+		}catch(Exception e){
+		}
 			if(rd==null){
 				action_instance.onPreRedirectError();
 				rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
-				action_instance.onPostRedirectError(rd);
+				try{
+					action_instance.onPostRedirectError(rd);
+				}catch(Exception e){
+				}
 			}
 			if(rd==null){
 				if(!action_instance.get_infoaction().getError().equals("")) action_instance.getCurrent_redirect().set_uriError(action_instance.get_infoaction().getError());
@@ -1076,7 +1232,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 		else{
 			try{
 				try{
-					action_instance.actionBeforeRedirect(request,response);
+					try{
+						action_instance.actionBeforeRedirect(request,response);
+					}catch(Exception e){
+						action_instance.actionBeforeRedirect(util_supportbean.request2map(request));
+					}
 				}catch(Exception e){
 					throw new bsControllerException("Controller generic actionBeforeRedirect error. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
 				}
@@ -1134,8 +1294,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 				ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException,ServletException, UnavailableException{
 		if(currentStream==null || currentStreamRedirect==null) return;
 		currentStream.onPreRedirect(currentStreamRedirect, id_action);
-		RequestDispatcher rd =  currentStream.redirect(servletContext, currentStreamRedirect, id_action);
-		currentStream.onPostRedirect(rd);
+		RequestDispatcher rd =  null;
+		try{
+			currentStream.redirect(servletContext, currentStreamRedirect, id_action);
+		}catch(Exception e){
+			info_action iaction = currentStream.redirect(util_supportbean.request2map(request), currentStreamRedirect, id_action);
+			if(iaction!=null)
+				rd = currentStreamRedirect.redirect(servletContext, iaction);
+		}
+		try{
+			currentStream.onPostRedirect(rd);
+		}catch(Exception e){
+		}
 
 		if(rd==null) throw new bsControllerException("Controller generic redirect error. Stream: ["+currentStream.get_infostream().getName()+"] ",request,iStub.log_ERROR);
 		else{
@@ -1480,13 +1650,33 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static info_stream performStream_EnterRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+		HashMap request2map = null;
 		for(int i=0;i<_streams.size();i++){
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = getAction_config().streamFactory(iStream.getName(),request.getSession(), servletContext);
-			if(currentStream!=null){
-				currentStream.onPreEnter(request, response);
-				redirects currentStreamRedirect = currentStream.streamservice_enter(request, response);
-				currentStream.onPostEnter(currentStreamRedirect, request, response);
+			if(currentStream!=null){	
+				try{
+					currentStream.onPreEnter(request, response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					currentStream.onPreEnter(request2map);
+				}
+				redirects currentStreamRedirect = null;
+				try{
+					currentStreamRedirect = currentStream.streamservice_enter(request, response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					currentStream.streamservice_enter(request2map);
+				}
+				try{
+					currentStream.onPostEnter(currentStreamRedirect, request, response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					currentStream.onPostEnter(currentStreamRedirect, request2map);
+				}
 				if(currentStreamRedirect!=null){
 					isException(action_instance, request);
 					execRedirect(currentStream, currentStreamRedirect, id_action, servletContext, request, response);
@@ -1503,13 +1693,33 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static info_stream performStream_ExitRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+		HashMap request2map = null;
 		for(int i=_streams.size()-1;i>-1;i--){
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = getAction_config().streamFactory(iStream.getName(), request.getSession(), servletContext);
 			if(currentStream!=null){
-				currentStream.onPreExit(request, response);
-				redirects currentStreamRedirect = currentStream.streamservice_exit(request, response);
-				currentStream.onPostExit(currentStreamRedirect,request, response);
+				try{
+					currentStream.onPreExit(request, response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					currentStream.onPreExit(request2map);
+				}
+				redirects currentStreamRedirect = null;
+				try{
+					currentStreamRedirect =currentStream.streamservice_exit(request, response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					currentStream.streamservice_exit(request2map);
+				}
+				try{	
+					currentStream.onPostExit(currentStreamRedirect,request, response);
+				}catch(Exception e){
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					currentStream.onPostExit(currentStreamRedirect, request2map);
+				}
 				if(currentStreamRedirect!=null){
 					isException(action_instance, request);
 					execRedirect(currentStream, currentStreamRedirect, id_action, servletContext, request, response);

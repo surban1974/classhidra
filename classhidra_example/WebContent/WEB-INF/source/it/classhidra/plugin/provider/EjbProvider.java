@@ -2,6 +2,10 @@ package it.classhidra.plugin.provider;
 
 
 
+
+import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.ejb.EJBContext;
 import javax.ejb.MessageDriven;
 import javax.ejb.Singleton;
@@ -27,6 +31,7 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.plugin.provider.ejb.wrappers.Wrapper_EjbContextLocal;
 
+
 public class EjbProvider implements i_provider {
 
 	private static final String LOOKUP_EJBCONTEXT = 		"java:comp/EJBContext";
@@ -38,7 +43,8 @@ public class EjbProvider implements i_provider {
 	
 	private static String correct_ejb_jndi_name;
 	private static EJBContext ejbContext;
-	private static InitialContext staticInitialContext;
+//	private static InitialContext initialContext;
+	private static ConcurrentHashMap namingMap;
 	
 
 	
@@ -72,6 +78,21 @@ public class EjbProvider implements i_provider {
 	
 	public static Object getInstance(Object obj, String id_bean, String class_bean, ServletContext _context) {
 		Object instance=null;
+		String retrivedClassName = null;
+		if(retrivedClassName==null && class_bean!=null) retrivedClassName = (String)getNamingMap().get(class_bean);
+		if(retrivedClassName==null && id_bean!=null) retrivedClassName = (String)getNamingMap().get(id_bean);
+		if(retrivedClassName!=null){
+			try{
+				StringTokenizer parts = new StringTokenizer(retrivedClassName,"|");
+				int type = Integer.valueOf(parts.nextToken());
+				String lookup = parts.nextToken();
+				instance = resolveReference(type,lookup);
+				if(instance!=null)
+					return instance;
+				
+			}catch(Exception e){
+			}
+		}
 		if(correct_context==0){
 			instance = getInstanceFromContext(obj, id_bean, class_bean, _context, 1);
 			if(instance!=null){
@@ -148,8 +169,10 @@ public class EjbProvider implements i_provider {
            		if(a_lookup!=null && a_lookup.name()!=null && !a_lookup.name().equals("")){
             		try{
         				instance = resolveReference(type,a_lookup.name());        				
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_lookup.name());
         					return instance;
+        				}
         			}catch(Exception e){
         			} 
            		}
@@ -159,8 +182,10 @@ public class EjbProvider implements i_provider {
         			if(ac_lookup!=null && ac_lookup.entity()!=null && ac_lookup.entity().lookup()!=null && !ac_lookup.entity().lookup().equals("")){
                 		try{
             				instance = resolveReference(type,ac_lookup.entity().lookup());        				
-            				if(instance!=null)
+            				if(instance!=null){
+            					getNamingMap().put(clazz.getName(), type+"|"+ac_lookup.entity().lookup());
             					return instance;
+            				}
             			}catch(Exception e){
             			} 
         			}
@@ -168,8 +193,10 @@ public class EjbProvider implements i_provider {
         			if(bn_lookup!=null && bn_lookup.entity()!=null && bn_lookup.entity().lookup()!=null && !bn_lookup.entity().lookup().equals("")){
                 		try{
             				instance = resolveReference(type,bn_lookup.entity().lookup());        				
-            				if(instance!=null)
+            				if(instance!=null){
+            					getNamingMap().put(clazz.getName(), type+"|"+bn_lookup.entity().lookup());
             					return instance;
+            				}
             			}catch(Exception e){
             			} 
         			}
@@ -177,8 +204,10 @@ public class EjbProvider implements i_provider {
         			if(st_lookup!=null && st_lookup.entity()!=null && st_lookup.entity().lookup()!=null && !st_lookup.entity().lookup().equals("")){
                 		try{
             				instance = resolveReference(type,st_lookup.entity().lookup());        				
-            				if(instance!=null)
+            				if(instance!=null){
+            					getNamingMap().put(clazz.getName(), type+"|"+st_lookup.entity().lookup());
             					return instance;
+            				}
             			}catch(Exception e){
             			} 
         			}
@@ -186,8 +215,10 @@ public class EjbProvider implements i_provider {
         			if(tr_lookup!=null && tr_lookup.entity()!=null && tr_lookup.entity().lookup()!=null && !tr_lookup.entity().lookup().equals("")){
                 		try{
             				instance = resolveReference(type,tr_lookup.entity().lookup());        				
-            				if(instance!=null)
+            				if(instance!=null){
+            					getNamingMap().put(clazz.getName(), type+"|"+tr_lookup.entity().lookup());
             					return instance;
+            				}
             			}catch(Exception e){
             			} 
         			}
@@ -195,8 +226,10 @@ public class EjbProvider implements i_provider {
         			if(en_lookup!=null && en_lookup.lookup()!=null && !en_lookup.lookup().equals("")){
                 		try{
             				instance = resolveReference(type,en_lookup.lookup());        				
-            				if(instance!=null)
+            				if(instance!=null){
+            					getNamingMap().put(clazz.getName(), type+"|"+en_lookup.lookup());
             					return instance;
+            				}
             			}catch(Exception e){
             			} 
         			}
@@ -211,28 +244,36 @@ public class EjbProvider implements i_provider {
         		if(a_ejb!=null && a_ejb.mappedName()!=null && !a_ejb.mappedName().equals("")){
             		try{
         				instance = resolveReference(type,a_ejb.mappedName());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_ejb.mappedName());
         					return instance;
+        				}
         			}catch(Exception e){
         			} 
             		try{
         				instance = resolveReference(type,prefix+a_ejb.mappedName());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+prefix+a_ejb.mappedName());
         					return instance;
+        				}
         			}catch(Exception e){
         			} 
         		}
         		if(a_ejb!=null && a_ejb.name()!=null && !a_ejb.name().equals("")){
             		try{
         				instance = resolveReference(type,a_ejb.name());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_ejb.name());
         					return instance;
+        				}
         			}catch(Exception e){
         			}  
             		try{
         				instance = resolveReference(type,prefix+a_ejb.name());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+prefix+a_ejb.name());
         					return instance;
+        				}
         			}catch(Exception e){
         			}             		
         		}
@@ -243,22 +284,28 @@ public class EjbProvider implements i_provider {
         		if(a_ejb!=null && a_ejb.mappedName()!=null && !a_ejb.mappedName().equals("")){
             		try{
         				instance = resolveReference(type,a_ejb.mappedName());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_ejb.mappedName());
         					return instance;
+        				}
         			}catch(Exception e){
         			} 
             		try{
         				instance = resolveReference(type,prefix+a_ejb.mappedName());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+prefix+a_ejb.mappedName());
         					return instance;
+        				}
         			}catch(Exception e){
         			}         
         		}
         		if(a_ejb!=null && a_ejb.name()!=null && !a_ejb.name().equals("")){
             		try{
         				instance = resolveReference(type,a_ejb.name());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_ejb.name());
         					return instance;
+        				}
         			}catch(Exception e){
         			}  
             		try{
@@ -274,28 +321,36 @@ public class EjbProvider implements i_provider {
         		if(a_ejb!=null && a_ejb.mappedName()!=null && !a_ejb.mappedName().equals("")){
             		try{
         				instance = resolveReference(type,a_ejb.mappedName());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_ejb.mappedName());
         					return instance;
+        				}
         			}catch(Exception e){
         			} 
             		try{
         				instance = resolveReference(type,prefix+a_ejb.mappedName());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+prefix+a_ejb.mappedName());
         					return instance;
+        				}
         			}catch(Exception e){
         			}      
         		}
         		if(a_ejb!=null && a_ejb.name()!=null && !a_ejb.name().equals("")){
             		try{
         				instance = resolveReference(type,a_ejb.name());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_ejb.name());
         					return instance;
+        				}
         			}catch(Exception e){
         			}  
             		try{
         				instance = resolveReference(type,prefix+a_ejb.name());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+prefix+a_ejb.name());
         					return instance;
+        				}
         			}catch(Exception e){
         			}             		
         		}        		
@@ -305,28 +360,36 @@ public class EjbProvider implements i_provider {
         		if(a_ejb!=null && a_ejb.mappedName()!=null && !a_ejb.mappedName().equals("")){
             		try{
         				instance = resolveReference(type,a_ejb.mappedName());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_ejb.mappedName());
         					return instance;
+        				}
         			}catch(Exception e){
         			} 
             		try{
         				instance = resolveReference(type,prefix+a_ejb.mappedName());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+prefix+a_ejb.mappedName());
         					return instance;
+        				}
         			}catch(Exception e){
         			}      
         		}
         		if(a_ejb!=null && a_ejb.name()!=null && !a_ejb.name().equals("")){
             		try{
         				instance = resolveReference(type,a_ejb.name());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+a_ejb.name());
         					return instance;
+        				}
         			}catch(Exception e){
         			}  
             		try{
         				instance = resolveReference(type,prefix+a_ejb.name());
-        				if(instance!=null)
+        				if(instance!=null){
+        					getNamingMap().put(clazz.getName(), type+"|"+prefix+a_ejb.name());
         					return instance;
+        				}
         			}catch(Exception e){
         			}             		
         		}        		
@@ -337,14 +400,18 @@ public class EjbProvider implements i_provider {
     	if(instance==null && id_bean!=null && !id_bean.equals("")){
        		try{
     			instance = resolveReference(type,id_bean);
-    			if(instance!=null)
-    				return instance;
+				if(instance!=null){
+					getNamingMap().put(clazz.getName(), type+"|"+id_bean);
+					return instance;
+				}
     		}catch(Exception e){
     		} 
         	try{
     			instance = resolveReference(type,prefix+id_bean);
-    			if(instance!=null)
-    				return instance;
+				if(instance!=null){
+					getNamingMap().put(clazz.getName(), type+"|"+prefix+id_bean);
+					return instance;
+				}
     		}catch(Exception e){
     		}             		
      	}
@@ -369,14 +436,32 @@ public class EjbProvider implements i_provider {
     	if(type==1){
 	    	EJBContext ejbc = getEjbContext();
 	        try{
-	        	return ejbc.lookup(elName);
+	        	Object result = null;
+	        	try{
+	        		result = ejbc.lookup(elName);
+	        		if(result instanceof i_bean)
+	        			((i_bean) result).asBean().setEjb(true);
+	        		if(result instanceof i_action)
+	        			((i_action) result).asBean().setEjb(true);
+	        	}catch(Exception e){
+	        		return result;
+	        	}
 	        }catch(Exception e){
 	        	return null;
 	        }
     	}
     	if(type==2){    		
-	        try{	        	
-	        	return getStaticInitialContext().lookup(elName);
+	        try{
+	        	Object result = null;
+	        	try{
+	        		result = getStaticInitialContext().lookup(elName);
+	        		if(result instanceof i_bean)
+	        			((i_bean) result).asBean().setEjb(true);
+	        		if(result instanceof i_action)
+	        			((i_action) result).asBean().setEjb(true);
+	        	}catch(Exception e){
+	        		return result;
+	        	}
 	        }catch(Exception e){
 	        	return null;
 	        }
@@ -396,26 +481,62 @@ public class EjbProvider implements i_provider {
 	        	Object result = null;
 	        	try{
 	        		result = ejbc.lookup(clazz.getSimpleName());
-	        		if(result!=null)
+	        		if(result!=null){
+       					getNamingMap().put(clazz.getName(),type+"|"+clazz.getSimpleName());
+       					try{
+	    	        		if(result instanceof i_bean)
+	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        		if(result instanceof i_action)
+	    	        			((i_action) result).asBean().setEjb(true);
+       					}catch(Exception e){
+       					}
 	        			return result;
+	        		}
 	        	}catch(Exception e){        		
 	        	}        	
 	        	try{
 	        		result = ejbc.lookup(prefix+clazz.getSimpleName());
-	        		if(result!=null)
+	        		if(result!=null){
+       					getNamingMap().put(clazz.getName(),type+"|"+prefix+clazz.getSimpleName());
+       					try{
+	    	        		if(result instanceof i_bean)
+	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        		if(result instanceof i_action)
+	    	        			((i_action) result).asBean().setEjb(true);
+       					}catch(Exception e){
+       					}
 	        			return result;
+	        		}
 	        	}catch(Exception e){        		
 	        	}
 	        	try{
 	        		result = ejbc.lookup(clazz.getName());
-	        		if(result!=null)
+	        		if(result!=null){
+       					getNamingMap().put(clazz.getName(),type+"|"+clazz.getName());
+       					try{
+	    	        		if(result instanceof i_bean)
+	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        		if(result instanceof i_action)
+	    	        			((i_action) result).asBean().setEjb(true);
+       					}catch(Exception e){
+       					}
 	        			return result;
+	        		}
 	        	}catch(Exception e){        		
 	        	}          	
 	        	try{
 	        		result = ejbc.lookup(prefix+clazz.getName());
-	        		if(result!=null)
+	        		if(result!=null){
+       					getNamingMap().put(clazz.getName(),type+"|"+prefix+clazz.getName());
+       					try{
+	    	        		if(result instanceof i_bean)
+	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        		if(result instanceof i_action)
+	    	        			((i_action) result).asBean().setEjb(true);
+       					}catch(Exception e){
+       					}
 	        			return result;
+	        		}
 	        	}catch(Exception e){        		
 	        	}        	
 	        	return null;
@@ -433,26 +554,62 @@ public class EjbProvider implements i_provider {
 	        	Object result = null;
 	        	try{
 	        		result = getStaticInitialContext().lookup(clazz.getSimpleName());
-	        		if(result!=null)
+	        		if(result!=null){
+       					getNamingMap().put(clazz.getName(),type+"|"+clazz.getSimpleName());
+       					try{
+	    	        		if(result instanceof i_bean)
+	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        		if(result instanceof i_action)
+	    	        			((i_action) result).asBean().setEjb(true);
+       					}catch(Exception e){
+       					}
 	        			return result;
+	        		}
 	        	}catch(Exception e){        		
 	        	}        	
 	        	try{
 	        		result = getStaticInitialContext().lookup(prefix+clazz.getSimpleName());
-	        		if(result!=null)
+	        		if(result!=null){
+       					getNamingMap().put(clazz.getName(),type+"|"+prefix+clazz.getSimpleName());
+       					try{
+	    	        		if(result instanceof i_bean)
+	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        		if(result instanceof i_action)
+	    	        			((i_action) result).asBean().setEjb(true);
+       					}catch(Exception e){
+       					}
 	        			return result;
+	        		}
 	        	}catch(Exception e){        		
 	        	}
 	        	try{
 	        		result = getStaticInitialContext().lookup(clazz.getName());
-	        		if(result!=null)
+	        		if(result!=null){
+       					getNamingMap().put(clazz.getName(),type+"|"+clazz.getName());
+       					try{
+	    	        		if(result instanceof i_bean)
+	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        		if(result instanceof i_action)
+	    	        			((i_action) result).asBean().setEjb(true);
+       					}catch(Exception e){
+       					}
 	        			return result;
+	        		}
 	        	}catch(Exception e){        		
 	        	}          	
 	        	try{
 	        		result = getStaticInitialContext().lookup(prefix+clazz.getName());
-	        		if(result!=null)
+	        		if(result!=null){
+       					getNamingMap().put(clazz.getName(),type+"|"+prefix+clazz.getName());
+       					try{
+	    	        		if(result instanceof i_bean)
+	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        		if(result instanceof i_action)
+	    	        			((i_action) result).asBean().setEjb(true);
+       					}catch(Exception e){
+       					}
 	        			return result;
+	        		}
 	        	}catch(Exception e){        		
 	        	}        	
 	        	return null;
@@ -468,7 +625,9 @@ public class EjbProvider implements i_provider {
     	 if(ejbContext != null) 
     		 return ejbContext;
          try {
-         	InitialContext initialContext = new InitialContext();
+        	 InitialContext initialContext = getStaticInitialContext();
+         	if(initialContext==null)
+         		initialContext = new InitialContext();
        	 
          	if(correct_ejb_jndi_name!=null){
  	         	try{
@@ -553,20 +712,41 @@ public class EjbProvider implements i_provider {
 
  	public static InitialContext getStaticInitialContext() {
  		try{
- 			if(staticInitialContext==null)
- 				staticInitialContext = new InitialContext();
- 			return staticInitialContext;
+ 			return new InitialContext();
  		}catch(Exception e){
  			return null;
  		}
+ /*		
+ 		try{
+ 			if(initialContext==null)
+ 				initialContext = new InitialContext();
+ 			return initialContext;
+ 		}catch(Exception e){
+ 			return null;
+ 		}
+*/ 		
  	}
-     
 
+	public static ConcurrentHashMap getNamingMap() {
+		if(namingMap==null)
+			namingMap = new ConcurrentHashMap();
+		return namingMap;
+	}	
+
+	public boolean clearNamingMap() {
+		if(namingMap!=null)
+			namingMap.clear();
+		return true;
+	}	
+	
+	
      public static boolean checkInitialContext(String ejbJndiName, ServletContext _context) {
 
     	 ejbContext = null;   	 
          try {
-         	InitialContext initialContext = new InitialContext();
+        	 InitialContext initialContext = getStaticInitialContext();
+        	 if(initialContext==null)
+        		 initialContext = new InitialContext();
         	 
         	if(correct_ejb_jndi_name!=null){
 	         	try{
@@ -645,11 +825,16 @@ public class EjbProvider implements i_provider {
          }
          
          
-         if(ejbContext==null) 
+         if(ejbContext==null){ 
+        	 new bsControllerException("Impossible retrive EjbContext", iStub.log_WARN);
         	 return false;
-         else
+         }else{
+        	 new bsControllerException("EjbContext retrived SUCCEESFULLY from: "+correct_ejb_jndi_name, iStub.log_INFO);
         	 return true;
+         }
      }
+
+
 
 
 }

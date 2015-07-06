@@ -29,6 +29,7 @@ package it.classhidra.core.controller;
 import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_supportbean;
 import it.classhidra.core.tool.util.util_format;
 
 import java.io.Serializable;
@@ -49,17 +50,27 @@ public class action extends bean implements i_action, Serializable{
 	}
 
 	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
-		if(_bean!=null){
-			_bean.onPreInit(request);
-			_bean.init(request);
-			_bean.onPostInit(request);
+		if(getRealBean()!=null){
+			try{
+				getRealBean().onPreInit(request);
+			}catch(Exception e){
+			}
+			try{
+				getRealBean().init(request);
+			}catch(Exception e){
+				util_supportbean.init(getRealBean(), request);
+			}
+			try{
+				getRealBean().onPostInit(request);
+			}catch(Exception e){
+			}
 		}
 	}
 	public void init(HashMap wsParameters) throws bsControllerException{
-		if(_bean!=null){
-			_bean.onPreInit(wsParameters);
-			_bean.init(wsParameters);
-			_bean.onPostInit(wsParameters);
+		if(getRealBean()!=null){
+			getRealBean().onPreInit(wsParameters);
+			getRealBean().init(wsParameters);
+			getRealBean().onPostInit(wsParameters);
 		}
 	}
 	public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException{
@@ -108,9 +119,9 @@ public class action extends bean implements i_action, Serializable{
 	}
 
 	public i_bean get_bean() {
-		if(_bean!=null && _bean.getClass().getName().equals(this.getClass().getName())) return this;
-		if(_bean==null) return this;
-		return _bean;
+		if(getRealBean()!=null && getRealBean().getClass().getName().equals(this.asBean().getClass().getName())) return this;
+		if(getRealBean()==null) return this;
+		return getRealBean();
 	}
 
 	public void set_bean(i_bean form) {
@@ -292,6 +303,18 @@ public class action extends bean implements i_action, Serializable{
 	public void onPostInstanceFromProvider() {
 		if(listener_a!=null) listener_a.onPostInstanceFromProvider();
 	}
+	
+	public void onPreActionCall(String id_call, HashMap _content) {
+		if(listener_a!=null) listener_a.onPreActionCall(id_call, _content);
+	}
+
+	public void onPostActionCall(redirects redirect, String id_call, HashMap _content) {
+		if(listener_a!=null) listener_a.onPostActionCall(redirect, id_call, _content);
+	}
+
+	public void actionBeforeRedirect(HashMap wsParameters) throws bsControllerException {
+
+	}	
 
 	public void setOwner(i_action owner) {
 	}
@@ -299,6 +322,12 @@ public class action extends bean implements i_action, Serializable{
 	public i_bean asBean(){
 		return (bean)this;
 	}
+	
+	public i_bean getRealBean(){
+		return _bean;
+	}
+
+
 
 
 

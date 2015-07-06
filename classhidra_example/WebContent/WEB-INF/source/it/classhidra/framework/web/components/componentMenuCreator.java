@@ -10,7 +10,6 @@ import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_menu_element;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.load_menu;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
