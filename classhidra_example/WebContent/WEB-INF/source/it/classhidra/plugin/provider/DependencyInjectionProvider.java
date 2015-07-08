@@ -10,9 +10,12 @@ import it.classhidra.core.controller.i_provider;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_provider;
+import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Local_container;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Navigation;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Onlyinssession;
+
+import java.lang.reflect.Proxy;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -119,8 +122,7 @@ public class DependencyInjectionProvider implements i_provider {
 					}catch(Exception e){						
 					}					
 				}
-			}
-			if(instance instanceof i_action){
+			}else if(instance instanceof i_action){
 				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 					clazz.getAnnotation(ApplicationScoped.class)!=null ||
 					clazz.getAnnotation(RequestScoped.class)!=null){
@@ -139,6 +141,38 @@ public class DependencyInjectionProvider implements i_provider {
 						}						
 					}catch(Exception e){						
 					}					
+				}
+			}else if(instance instanceof Proxy) {
+				if(bsController.getEjbDefaultProvider()!=null){
+					Object lookup_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
+					if(lookup_instance!=null){
+						try{
+							if(lookup_instance instanceof i_action){
+								i_bean ibean = ((i_action)lookup_instance).asBean();
+								Class clazz0i=ibean.getClass();
+								if(	clazz0i.getAnnotation(SessionScoped.class)!=null ||
+									clazz0i.getAnnotation(ApplicationScoped.class)!=null ||
+									clazz0i.getAnnotation(RequestScoped.class)!=null){
+									ibean.setNavigable(false);
+									ibean.setCdi(true);
+									ibean.setEjb(true);
+								}	
+							}else if(lookup_instance instanceof i_bean){						
+								i_bean ibean = ((i_bean)lookup_instance).asBean();
+								Class clazz0i=ibean.getClass();
+								if(	clazz0i.getAnnotation(SessionScoped.class)!=null ||
+									clazz0i.getAnnotation(ApplicationScoped.class)!=null ||
+									clazz0i.getAnnotation(RequestScoped.class)!=null){
+									ibean.setNavigable(false);
+									ibean.setCdi(true);
+									ibean.setEjb(true);
+								}	
+							}
+						}catch(Exception e){						
+						}					
+						
+					}
+					return lookup_instance;
 				}
 			}
 		}

@@ -119,6 +119,7 @@ public class tagLike extends  TagSupport {
 				if(anotherBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(bean).get_content();
 			}catch(Exception e){
 			}		
+			if(anotherBean==null) anotherBean = bsController.getFromOnlySession(bean, request);
 			if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
 
 			if(anotherBean!=null){

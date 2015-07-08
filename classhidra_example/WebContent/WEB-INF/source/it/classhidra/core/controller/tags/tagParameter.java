@@ -83,6 +83,7 @@ public class tagParameter extends TagSupport{
 						if(anotherBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(source).get_content();
 					}catch(Exception e){
 					}		
+					if(anotherBean==null) anotherBean = bsController.getFromOnlySession(source, request);
 					if(anotherBean==null) anotherBean = bsController.getProperty(source,request);
 					
 				}

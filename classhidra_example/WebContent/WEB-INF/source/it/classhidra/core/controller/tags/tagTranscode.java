@@ -135,6 +135,7 @@ public class tagTranscode extends TagSupport{
 					if(rightBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(nameRightBean).get_content();
 				}catch(Exception e){
 				}
+				if(anotherBean==null) anotherBean = bsController.getFromOnlySession(nameRightBean, request);
 				if(rightBean==null) anotherBean = bsController.getProperty(nameRightBean,request);
 				
 				if(rightBean!=null){
@@ -173,6 +174,7 @@ public class tagTranscode extends TagSupport{
 					if(rightBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(nameRightBean).get_content();
 				}catch(Exception e){
 				}
+				if(anotherBean==null) anotherBean = bsController.getFromOnlySession(nameRightBean, request);
 				if(rightBean==null) anotherBean = bsController.getProperty(nameRightBean,request);
 				
 				if(rightBean!=null){

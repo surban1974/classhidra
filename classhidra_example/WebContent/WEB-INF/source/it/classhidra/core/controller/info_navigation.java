@@ -38,6 +38,7 @@ import it.classhidra.core.tool.util.util_cloner;
 public class info_navigation extends elementBase implements i_elementBase{
 	private static final long serialVersionUID = 1L;
 	private String id;	
+	private String class_name;
 	private String desc_second;
 	private info_action iAction;
 	private info_redirect iRedirect;
@@ -73,8 +74,16 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iAction = iAction;
 		this.iRedirect = iRedirect;
 		this.id = iAction.getPath().trim();
-		if(content!=null && content.isNavigable())
-			this._content = content;
+		if(content!=null){
+			if(content.isNavigable())
+				this._content = content;
+			if(content instanceof i_bean)
+				class_name = content.asBean().getClass().getName();
+			else if(content instanceof i_action)
+				class_name = content.asBean().getClass().getName();					
+		}
+			
+		
 		this.iService = iService;
 	}
 	
@@ -83,8 +92,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iAction = second.getIAction();
 		this.iRedirect = second.getIRedirect();
 		this.id = second.getId();
-		if(second.get_content()!=null && second.get_content().isNavigable())
-			this._content = second.get_content();
+		if(second.get_realcontent()!=null && second.get_realcontent().isNavigable())
+			this._content = second.get_realcontent();
 		this.iService = second.getIService();
 		this.parent = second.getParent();
 		this.child = second.getChild();
@@ -96,8 +105,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iAction = second.getIAction();
 		this.iRedirect = second.getIRedirect();
 		this.id = second.getId();
-		if(second.get_content()!=null && second.get_content().isNavigable())
-			this._content = second.get_content();
+		if(second.get_realcontent()!=null && second.get_realcontent().isNavigable())
+			this._content = second.get_realcontent();
 		this.iService = second.getIService();
 		this.parent = second.getParent();
 		this.child = second.getChild();
@@ -229,10 +238,18 @@ public class info_navigation extends elementBase implements i_elementBase{
 			child = iNavigation.getChild();
 //			if(!(_content!=null && iNavigation.get_content()==null))
 //				_content = iNavigation.get_content();
-			if(!(_content!=null && iNavigation.get_content()==null)){
-				if(iNavigation.get_content()!=null && iNavigation.get_content().isNavigable())
-					_content = iNavigation.get_content();
+			if(!(_content!=null && iNavigation.get_realcontent()==null)){
+				if(iNavigation.get_realcontent()!=null){
+					if(iNavigation.get_realcontent().isNavigable())
+						_content = iNavigation.get_realcontent();
+					if(iNavigation.get_realcontent() instanceof i_bean)
+						class_name = iNavigation.get_realcontent().asBean().getClass().getName();
+					else if(iNavigation.get_realcontent() instanceof i_action)
+						class_name = iNavigation.get_realcontent().asBean().getClass().getName();					
+				}
+				
 			}
+			if(iNavigation.getClass_name()!=null) class_name = iNavigation.getClass_name();
 			if(!iService.isComplete()){
 				if(!iService.isComplete() && iNavigation.getIService().isComplete()) iService = iNavigation.getIService();
 				else{
@@ -321,8 +338,34 @@ public class info_navigation extends elementBase implements i_elementBase{
 		desc_second = string;
 	}
 	public i_bean get_content() {
+/*
+		if(_content == null && class_name!=null && !class_name.equals("")){
+			Object instance = util_provider.getBeanFromObjectFactory(new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider()}, id, class_name, null);
+			if(instance!=null){
+				if(instance instanceof i_bean)
+					return ((i_bean)instance).asBean();
+				else if(instance instanceof i_action)
+					return ((i_action)instance).asBean();
+				return null;
+			}
+		}
+*/	
+/*		
+		if(_content == null && class_name!=null && !class_name.equals("")){
+			Object instance = util_provider.getBeanFromObjectFactory(new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider()}, id, class_name, null);
+			if(instance!=null){
+				if(instance instanceof i_bean)
+					return ((i_bean)instance);
+
+				return null;
+			}
+		}
+*/		
 		return _content;
 	}
+	public i_bean get_realcontent() {
+		return _content;
+	}	
 	public String get_content_xml() {
 		if(_content!=null){
 			try{
@@ -355,6 +398,10 @@ public class info_navigation extends elementBase implements i_elementBase{
 
 	public void set_content(i_bean content) {
 		_content = content;
+	}
+
+	public String getClass_name() {
+		return class_name;
 	}
 
 }
