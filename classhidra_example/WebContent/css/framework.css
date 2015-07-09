@@ -5,7 +5,7 @@ body,th,input,select,td,th {
 
 .leaf A:link {text-decoration: none; }
 .leaf A:visited {text-decoration: none; }
-.leaf A:focus {text-transform: uppercase;}    
+.leaf A:focus_ {text-transform: uppercase;}    
 .leaf A {color: #000000;font:menu;vertical-align:top;}
 .leaf A:hover {color: #00BFFF;}
 .leaf {color: #000000;font: menu; vertical-align:top;}

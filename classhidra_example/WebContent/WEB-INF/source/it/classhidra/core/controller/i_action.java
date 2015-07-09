@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-public interface i_action extends listener_action, Serializable{
+public interface i_action extends listener_action, i_bean, Serializable{
 	void init(HttpServletRequest request,HttpServletResponse response) throws bsControllerException;
 	redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
 	redirects syncroservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
