@@ -45,11 +45,12 @@ public class info_action extends info_entity implements i_elementBase{
 	private String name;
 	private String redirect;
 	private String error;
-	private String memoryInSession;
+	private String memoryInSession;	
 	private String memoryAsLastInstance;
 	private String reloadAfterAction;
 	private String reloadAfterNextNavigated;
 	private String navigated;
+	private String navigatedMemoryContent;
 	private String help;
 	private String syncro;
 	private String listener;
@@ -158,6 +159,7 @@ public class info_action extends info_entity implements i_elementBase{
 		reloadAfterAction="";
 		reloadAfterNextNavigated="";
 		navigated="";
+		navigatedMemoryContent="";
 		help="";
 		syncro="false";
 		listener="";
@@ -293,6 +295,7 @@ public class info_action extends info_entity implements i_elementBase{
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(redirect!=null && !redirect.trim().equals("")) result+=" redirect=\""+util_format.normaliseXMLText(redirect)+"\"";
 		if(navigated!=null && !navigated.trim().equals("")) result+=" navigated=\""+util_format.normaliseXMLText(navigated)+"\"";
+		if(navigatedMemoryContent!=null && !navigatedMemoryContent.trim().equals("")) result+=" navigatedMemoryContent=\""+util_format.normaliseXMLText(navigatedMemoryContent)+"\"";
 		if(syncro!=null && !syncro.trim().equals("")) result+=" syncro=\""+util_format.normaliseXMLText(syncro)+"\"";
 		if(listener!=null && !listener.trim().equals("")) result+=" listener=\""+util_format.normaliseXMLText(listener)+"\"";
 		
@@ -473,6 +476,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setMemoryAsLastInstance(String _memoryAsLastInstance) {
 		this.memoryAsLastInstance = _memoryAsLastInstance;
+	}
+
+	public String getNavigatedMemoryContent() {
+		return navigatedMemoryContent;
+	}
+
+	public void setNavigatedMemoryContent(String navigatedMemoryContent) {
+		this.navigatedMemoryContent = navigatedMemoryContent;
 	}
 
 

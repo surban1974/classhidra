@@ -69,6 +69,7 @@ public void reInit(i_bean another_bean){
 				util_reflect.setValue(this, "set"+util_reflect.adaptMethodName(methodName.trim()), par,false);
 //				setCampoValue(methodName,another_bean.get(methodName));
 			}catch(Exception e){
+				e.toString();
 			}
 		}
 	}catch(Exception ex){

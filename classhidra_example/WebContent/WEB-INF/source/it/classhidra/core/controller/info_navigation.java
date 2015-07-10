@@ -75,8 +75,20 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iRedirect = iRedirect;
 		this.id = iAction.getPath().trim();
 		if(content!=null){
-			if(content.isNavigable())
+			if(iAction!=null && iAction.getNavigatedMemoryContent()!=null && !iAction.getNavigatedMemoryContent().equals("")){
+				if(iAction.getNavigatedMemoryContent().equalsIgnoreCase("true"))
+					this._content = content;
+				else if(!iAction.getNavigatedMemoryContent().equalsIgnoreCase("false")){
+					if(content.isNavigable())
+						this._content = content;						
+				}
+			}
+			else if(content.isNavigable()){
 				this._content = content;
+			}
+			
+//			if(content.isNavigable())
+//				this._content = content;
 			if(content instanceof i_bean)
 				class_name = content.asBean().getClass().getName();
 			else if(content instanceof i_action)
@@ -240,8 +252,18 @@ public class info_navigation extends elementBase implements i_elementBase{
 //				_content = iNavigation.get_content();
 			if(!(_content!=null && iNavigation.get_realcontent()==null)){
 				if(iNavigation.get_realcontent()!=null){
-					if(iNavigation.get_realcontent().isNavigable())
+					if(iAction!=null && iAction.getNavigatedMemoryContent()!=null && !iAction.getNavigatedMemoryContent().equals("")){
+						if(iAction.getNavigatedMemoryContent().equalsIgnoreCase("true"))
+							_content = iNavigation.get_realcontent();
+						else if(!iAction.getNavigatedMemoryContent().equalsIgnoreCase("false")){
+							if(iNavigation.get_realcontent().isNavigable())
+								_content = iNavigation.get_realcontent();							
+						}
+					}
+					else if(iNavigation.get_realcontent().isNavigable()){
 						_content = iNavigation.get_realcontent();
+					}
+					
 					if(iNavigation.get_realcontent() instanceof i_bean)
 						class_name = iNavigation.get_realcontent().asBean().getClass().getName();
 					else if(iNavigation.get_realcontent() instanceof i_action)

@@ -226,8 +226,32 @@ public static Object getValue(Object requested, String nome, Object[] value) thr
 		if(mtd==null) return null;
 		resultObject =mtd.invoke(requested, value);
 	}catch(Exception e){
-
 		java.lang.reflect.Method mtd = null;
+		if(mtd==null){
+			Method[] methods = requested.getClass().getMethods();
+			for(int i=0;i<methods.length;i++) {				
+		        if (nome.equals(methods[i].getName())) {
+		        	Class[] parTypes = methods[i].getParameterTypes();
+		        	boolean isCorrect = true;
+		        	if(parTypes.length==value.length){
+		        		int j=0;
+			        	while(j<parTypes.length && isCorrect){
+			        		if(!parTypes[j].isAssignableFrom(value[j].getClass()))
+			        			isCorrect = false;
+			        		j++;
+			        	}
+			        	if(isCorrect){
+			        		try{
+			        			resultObject = methods[i].invoke(requested, value);
+			        			return resultObject;
+			        		}catch(Exception ex){			        			
+			        		}
+			        	}
+		        	}
+		        }
+		    }			
+		}				
+		
 		Class[] cls = new Class[value.length];
 		for(int i=0;i<value.length;i++) cls[i]=value[i].getClass();
 		int maxCount = 0;
@@ -396,6 +420,31 @@ public static boolean setValue(Object requested, String nome, Object[] value, bo
 		mtd.invoke(requested, value);
 	}catch(Exception e){
 		mtd = null;
+		if(mtd==null){
+			Method[] methods = requested.getClass().getMethods();
+			for(int i=0;i<methods.length;i++) {				
+		        if (nome.equals(methods[i].getName())) {
+		        	Class[] parTypes = methods[i].getParameterTypes();
+		        	boolean isCorrect = true;
+		        	if(parTypes.length==value.length){
+		        		int j=0;
+			        	while(j<parTypes.length && isCorrect){
+			        		if(!parTypes[j].isAssignableFrom(value[j].getClass()))
+			        			isCorrect = false;
+			        		j++;
+			        	}
+			        	if(isCorrect){
+			        		try{
+			        			methods[i].invoke(requested, value);
+			        			return true;
+			        		}catch(Exception ex){			        			
+			        		}
+			        	}
+		        	}
+		        }
+		    }			
+		}				
+		
 		cls = new Class[value.length];
 		for(int i=0;i<value.length;i++) cls[i]=value[i].getClass();
 		int maxCount = 0;
@@ -458,6 +507,32 @@ public static boolean setValue(Object requested, String nome, Object[] value, bo
 				mtd = null;
 			}
 		}
+/*		
+		if(mtd==null){
+			Method[] methods = requested.getClass().getMethods();
+			for(int i=0;i<methods.length;i++) {				
+		        if (nome.equals(methods[i].getName())) {
+		        	Class[] parTypes = methods[i].getParameterTypes();
+		        	boolean isCorrect = true;
+		        	if(parTypes.length==value.length){
+		        		int j=0;
+			        	while(j<parTypes.length && isCorrect){
+			        		if(!parTypes[j].isAssignableFrom(value[j].getClass()))
+			        			isCorrect = false;
+			        		j++;
+			        	}
+			        	if(isCorrect){
+			        		try{
+			        			methods[i].invoke(requested, value);
+			        			return true;
+			        		}catch(Exception ex){			        			
+			        		}
+			        	}
+		        	}
+		        }
+		    }			
+		}		
+*/		
 		if(mtd==null){
 			String types="";
 			if(cls!=null){
@@ -468,6 +543,8 @@ public static boolean setValue(Object requested, String nome, Object[] value, bo
 			}
 			return false;
 		}
+
+		
 		mtd.invoke(requested, value);
 
 	}

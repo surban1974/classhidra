@@ -293,7 +293,7 @@ public class annotation_scanner implements i_annotation_scanner {
 			Annotation subAnnotation = classType.getAnnotation(NavigatedDirective.class);
 				if(subAnnotation!=null){
 					checkClassAnnotation(class_path, subAnnotation, subAnnotations);
-					subAnnotations.put("NavigatedScoped", subAnnotation);
+					subAnnotations.put("NavigatedDirective", subAnnotation);
 				}
 	
 			ActionMapping annotationActionMapping = (ActionMapping)classType.getAnnotation(ActionMapping.class);
@@ -364,7 +364,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    Stream annotationStream = null;
 		    Transformation annotationTransformation = null;
 		    Redirect annotationRedirect = null;
-//		    NavigatedScoped navigatedScoped = null;
+
 
 
 		    if(annotation instanceof Bean) annotationBean = (Bean)annotation;
@@ -372,7 +372,6 @@ public class annotation_scanner implements i_annotation_scanner {
 		    if(annotation instanceof Action) annotationAction = (Action)annotation;
 		    if(annotation instanceof Stream) annotationStream = (Stream)annotation;
 		    if(annotation instanceof Transformation) annotationTransformation = (Transformation)annotation;
-//		    if(annotation instanceof NavigatedScoped) navigatedScoped = (NavigatedScoped)annotation;
 	
 	
 		    if (annotationBean != null) {
@@ -457,9 +456,16 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
 		    	iAction.setReloadAfterNextNavigated(annotationAction.reloadAfterNextNavigated());
 		    	iAction.setNavigated(annotationAction.navigated());
+		    	iAction.setNavigatedMemoryContent(annotationAction.navigatedMemoryContent());
 		    	
-		    	if(!iAction.getNavigated().trim().equalsIgnoreCase("true") && subAnnotations.get("NavigatedScoped")!=null)
-		    		iAction.setNavigated("true");
+		    	NavigatedDirective navigatedDirective = (NavigatedDirective)subAnnotations.get("NavigatedDirective");
+		    	if(navigatedDirective!=null){
+		    		if(!iAction.getNavigated().trim().equalsIgnoreCase("true"))
+			    		iAction.setNavigated("true");
+		    		if(navigatedDirective.memoryContent()!=null && !navigatedDirective.memoryContent().equals(""))
+		    			iAction.setNavigatedMemoryContent(navigatedDirective.memoryContent());
+		    	}
+
 		    		
 		    	iAction.setSyncro(annotationAction.syncro());
 		    	iAction.setStatistic(annotationAction.statistic());

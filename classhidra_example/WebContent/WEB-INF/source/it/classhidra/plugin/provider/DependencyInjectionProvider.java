@@ -100,49 +100,11 @@ public class DependencyInjectionProvider implements i_provider {
 				return lookup_instance;
 		}
 */		
+		boolean anotherCheck4ejb=false;
 		if(instance!=null){
 	    	Class clazz=instance.getClass();
-			if(instance instanceof i_bean){
-				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
-					clazz.getAnnotation(ApplicationScoped.class)!=null ||
-					clazz.getAnnotation(RequestScoped.class)!=null){
-					((i_bean)instance).setNavigable(false);
-					((i_bean)instance).asBean().setCdi(true);
-				}else{
-					try{
-						i_bean ibean = ((i_bean)instance).asBean();
-						Class clazzi=ibean.getClass();
-						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
-							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
-							clazzi.getAnnotation(RequestScoped.class)!=null){
-							ibean.setNavigable(false);
-							ibean.setCdi(true);
-							ibean.setEjb(true);
-						}						
-					}catch(Exception e){						
-					}					
-				}
-			}else if(instance instanceof i_action){
-				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
-					clazz.getAnnotation(ApplicationScoped.class)!=null ||
-					clazz.getAnnotation(RequestScoped.class)!=null){
-					((i_action)instance).asBean().setNavigable(false);
-					((i_action)instance).asBean().setCdi(true);
-				}else{
-					try{
-						i_action iaction = ((i_action)instance).asAction();
-						Class clazzi=iaction.getClass();
-						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
-							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
-							clazzi.getAnnotation(RequestScoped.class)!=null){
-							iaction.asBean().setNavigable(false);
-							iaction.asBean().setCdi(true);
-							iaction.asBean().setEjb(true);
-						}						
-					}catch(Exception e){						
-					}					
-				}
-			}else if(instance instanceof Proxy) {
+
+	    	if(instance instanceof Proxy) {
 				if(bsController.getEjbDefaultProvider()!=null){
 					Object lookup_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
 					if(lookup_instance!=null){
@@ -157,6 +119,8 @@ public class DependencyInjectionProvider implements i_provider {
 									ibean.setCdi(true);
 									ibean.setEjb(true);
 								}	
+								ibean.setNavigable(false);
+								ibean.setEjb(true);
 							}else if(lookup_instance instanceof i_bean){						
 								i_bean ibean = ((i_bean)lookup_instance).asBean();
 								Class clazz0i=ibean.getClass();
@@ -167,25 +131,73 @@ public class DependencyInjectionProvider implements i_provider {
 									ibean.setCdi(true);
 									ibean.setEjb(true);
 								}	
+								ibean.setNavigable(false);
+								ibean.setEjb(true);								
 							}
 						}catch(Exception e){						
 						}					
 						
 					}
 					return lookup_instance;
+				}	
+	    	}
+	    	
+			if(instance instanceof i_bean){
+				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
+					clazz.getAnnotation(ApplicationScoped.class)!=null ||
+					clazz.getAnnotation(RequestScoped.class)!=null){
+						((i_bean)instance).setNavigable(false);
+						((i_bean)instance).asBean().setCdi(true);
+				}else{
+					try{
+						i_bean ibean = ((i_bean)instance).asBean();
+						Class clazzi=ibean.getClass();
+						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+							clazzi.getAnnotation(RequestScoped.class)!=null){
+							ibean.setNavigable(false);
+							ibean.setCdi(true);
+							ibean.setEjb(true);
+						}else if(!clazzi.getName().equals(clazz.getName()))
+							anotherCheck4ejb=true;
+					}catch(Exception e){						
+					}					
+				}
+			}else if(instance instanceof i_action){
+				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
+					clazz.getAnnotation(ApplicationScoped.class)!=null ||
+					clazz.getAnnotation(RequestScoped.class)!=null){
+						((i_action)instance).asBean().setNavigable(false);
+						((i_action)instance).asBean().setCdi(true);
+				}else{
+					try{
+						i_action iaction = ((i_action)instance).asAction();
+						Class clazzi=iaction.getClass();
+						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+							clazzi.getAnnotation(RequestScoped.class)!=null){
+							iaction.asBean().setNavigable(false);
+							iaction.asBean().setCdi(true);
+							iaction.asBean().setEjb(true);
+						}else if(!clazzi.getName().equals(clazz.getName()))
+							anotherCheck4ejb=true;
+					}catch(Exception e){						
+					}					
 				}
 			}
 		}
-		if(bsController.getEjbDefaultProvider()!=null && instance==null){
+		if(bsController.getEjbDefaultProvider()!=null && (instance==null || anotherCheck4ejb)){
 			Object lookup_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
 			if(lookup_instance!=null){
 				try{
 			    	Class clazz=lookup_instance.getClass();
 					if(lookup_instance instanceof i_bean){
 						((i_bean)lookup_instance).setNavigable(false);
+						((i_bean)lookup_instance).setEjb(true);
 					}
 					if(lookup_instance instanceof i_action){
 						((i_action)lookup_instance).asBean().setNavigable(false);
+						((i_bean)lookup_instance).setEjb(true);
 					}
 				}catch(Exception e){
 				}

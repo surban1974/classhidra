@@ -29,7 +29,10 @@ import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.elements.elementBeanBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_find;
+import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_makeValue;
 import it.classhidra.core.tool.util.util_multipart;
 import it.classhidra.core.tool.util.util_reflect;
@@ -44,6 +47,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+
+
 
 
 
@@ -651,6 +657,18 @@ public void reInit(i_elementDBBase _i_el) {
 		}
 	}catch(Exception ex){
 		new bsControllerException(ex,iStub.log_ERROR);
+	}
+
+}
+public void reInit(i_bean another_bean){
+	current_auth = another_bean.getCurrent_auth();
+	try{
+		Method[] methods = util_reflect.getMethods(this,"get");
+		for(int i=0;i<methods.length;i++){
+			String methodName = methods[i].getName().substring(3);
+			set(methodName,another_bean.get(methodName));
+		}
+	}catch(Exception ex){
 	}
 
 }
@@ -1291,6 +1309,15 @@ public void onGetFromLastInstance() {
 	if(listener_b!=null) listener_b.onGetFromLastInstance();
 }
 
+
+public void onPreValidate(HashMap _content) {
+	if(listener_b!=null) listener_b.onPreValidate(_content);
+}
+
+public void onPostValidate(redirects redirect, HashMap _content) {
+	if(listener_b!=null) listener_b.onPostValidate(redirect, _content);
+}
+
 public void setOwner(i_bean owner) {
 }
 
@@ -1357,6 +1384,8 @@ public boolean isCdi() {
 public void setCdi(boolean cdi) {
 	this.cdi = cdi;
 }
+
+
 
 
 }

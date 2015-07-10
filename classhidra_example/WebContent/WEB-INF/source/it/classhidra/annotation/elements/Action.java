@@ -19,6 +19,7 @@ public @interface Action {
 	String reloadAfterAction() default "";
 	String reloadAfterNextNavigated() default "";	
 	String navigated() default "";
+	String navigatedMemoryContent() default "";
 	String syncro() default "false";
 	String statistic() default "true";
 	String help() default "";

@@ -32,6 +32,7 @@ public interface listener_bean{
 	void onPreInit(HashMap _content);
 	void onPreInit(i_bean another_bean);
 	void onPreValidate(HttpServletRequest request);
+	void onPreValidate(HashMap _content);
 	void onAddToNavigation();
 	void onGetFromNavigation();
 	void onAddToSession();
@@ -43,6 +44,7 @@ public interface listener_bean{
 	void onPostInit(HashMap _content);
 	void onPostInit(i_bean another_bean);
 	void onPostValidate(redirects redirect, HttpServletRequest request);
+	void onPostValidate(redirects redirect, HashMap _content);
 	void onPostInstance();
 	void onPostInstanceFromProvider();
 

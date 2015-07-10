@@ -639,7 +639,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}catch(Exception e){
 						action_instance = bean_instance.asAction();
 					}
-				}else action_instance = bean_instance.asAction();
+				}else{
+					if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable() && action_instance.get_bean().isEjb())
+						action_instance.get_bean().reInit(bean_instance);
+					else
+						action_instance = bean_instance.asAction();
+				}
 			}
 			else{
 				if(bean_instance!=null){
@@ -656,7 +661,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 					else{
 						action_instance.onPreSet_bean();
-						action_instance.set_bean(bean_instance);
+						if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable() && action_instance.get_bean().isEjb())
+							action_instance.get_bean().reInit(bean_instance);
+						else
+							action_instance.set_bean(bean_instance);
 						action_instance.onPostSet_bean();
 					}
 				}
@@ -855,10 +863,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true") &&
 			!id_action.equals(id_current)){
 			if(bean_instance!=null){
+				HashMap request2map=null;
 				try{
 					bean_instance.onPreInit(request);
 				}catch(Exception e){
-					util_supportbean.init(bean_instance, request);
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					bean_instance.onPreInit(request2map);
 				}
 				try{
 					bean_instance.init(request);
@@ -868,23 +879,32 @@ public class bsController extends HttpServlet implements bsConstants  {
 				try{
 					bean_instance.onPostInit(request);
 				}catch(Exception e){
-					util_supportbean.init(bean_instance, request);
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					bean_instance.onPostInit(request2map);
 				}
 				try{
 					bean_instance.onPreValidate(request);
 				}catch(Exception e){
-					util_supportbean.init(bean_instance, request);
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					bean_instance.onPreValidate(request2map);
 				}
 				redirects validate_redirect = null;
 				try{
 					validate_redirect = bean_instance.validate(request);
 				}catch(Exception e){
-					validate_redirect = bean_instance.validate(util_supportbean.request2map(request));
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					validate_redirect = bean_instance.validate(request2map);
 				}
 				try{
 					bean_instance.onPostValidate(validate_redirect,request);
 				}catch(Exception e){
-					util_supportbean.init(bean_instance, request);
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					bean_instance.onPostValidate(validate_redirect, request2map);
+
 				}
 				prev_action_instance.onPreSetCurrent_redirect();
 				prev_action_instance.setCurrent_redirect(validate_redirect);
@@ -926,11 +946,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 
 			if(bean_instance_clone!=null){
+				HashMap request2map=null;
 				if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true")){
 					try{
 						bean_instance_clone.onPreInit(request);
 					}catch(Exception e){
-						util_supportbean.init(bean_instance, request);
+						if(request2map==null)
+							request2map = util_supportbean.request2map(request);
+						bean_instance.onPreInit(request2map);
 					}
 					try{
 						bean_instance_clone.init(request);
@@ -940,7 +963,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 					try{
 						bean_instance_clone.onPostInit(request);
 					}catch(Exception e){
-						util_supportbean.init(bean_instance, request);
+						if(request2map==null)
+							request2map = util_supportbean.request2map(request);
+						bean_instance.onPostInit(request2map);
 					}						
 				}
 				if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
@@ -950,18 +975,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 				try{
 					bean_instance_clone.onPreValidate(request);
 				}catch(Exception e){
-					util_supportbean.init(bean_instance, request);
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					bean_instance.onPreValidate(request2map);					
 				}
 				redirects validate_redirect = null;
 				try{
 					validate_redirect = bean_instance_clone.validate(request);
 				}catch(Exception e){
-					validate_redirect = bean_instance_clone.validate(util_supportbean.request2map(request));
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					validate_redirect = bean_instance_clone.validate(request2map);
 				}
 				try{
 					bean_instance_clone.onPostValidate(validate_redirect,request);
 				}catch(Exception e){
-					util_supportbean.init(bean_instance, request);
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+					bean_instance.onPostValidate(validate_redirect, request2map);						
 				}
 				if(	prev_action_instance instanceof i_bean &&
 						(
@@ -1296,7 +1327,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		currentStream.onPreRedirect(currentStreamRedirect, id_action);
 		RequestDispatcher rd =  null;
 		try{
-			currentStream.redirect(servletContext, currentStreamRedirect, id_action);
+			rd = currentStream.redirect(servletContext, currentStreamRedirect, id_action);
 		}catch(Exception e){
 			info_action iaction = currentStream.redirect(util_supportbean.request2map(request), currentStreamRedirect, id_action);
 			if(iaction!=null)
