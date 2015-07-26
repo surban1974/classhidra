@@ -93,13 +93,7 @@ public class DependencyInjectionProvider implements i_provider {
 				new bsControllerException(e, iStub.log_ERROR);
 			}			
 		}
-/*		
-		if(bsController.getEjbDefaultProvider()!=null && instance!=null && instance instanceof i_lookup){
-			Object lookup_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), instance, id_bean, class_bean, _context);
-			if(lookup_instance!=null)
-				return lookup_instance;
-		}
-*/		
+
 		boolean anotherCheck4ejb=false;
 		if(instance!=null){
 	    	Class clazz=instance.getClass();
@@ -138,7 +132,7 @@ public class DependencyInjectionProvider implements i_provider {
 						}					
 						
 					}
-					return lookup_instance;
+//					return lookup_instance;
 				}	
 	    	}
 	    	
@@ -186,6 +180,9 @@ public class DependencyInjectionProvider implements i_provider {
 				}
 			}
 		}
+		
+		anotherCheck4ejb = false;
+		
 		if(bsController.getEjbDefaultProvider()!=null && (instance==null || anotherCheck4ejb)){
 			Object lookup_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
 			if(lookup_instance!=null){
