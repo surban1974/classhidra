@@ -3,11 +3,9 @@ package examples.ejb.classhidra.framework.web.components;
 
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
-import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,16 +19,15 @@ import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 
 
-				@Action (
-						path="content",
-						name="formContent",
-						redirect="/jsp/framework/content.jsp",
-						reloadAfterAction="true"
-				)
+@Action (
+	path="content",
+	name="formContent",
+	redirect="/jsp/framework/content.jsp",
+	reloadAfterAction="true"
+)
 
-@Named("content")
-//@SessionScoped
-@NavigatedDirective
+
+@NavigatedDirective(memoryContent="true")
 @Stateful
 @Local(i_action.class)
 public class EjbComponentContent extends action implements i_action, Serializable{
@@ -39,9 +36,7 @@ public class EjbComponentContent extends action implements i_action, Serializabl
 	
 	private String menuSource;
 	
-	private Date date_Sistema; 
-	private Date date_Valuta ;
-	private Date date_Contabile;
+
 	
 	private boolean firstEnter=false;
 	
@@ -81,9 +76,6 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 public void reimposta(){
 	menuSource="";
-	date_Sistema = null;
-	date_Valuta = null;
-	date_Contabile = null;
 }
 
 public String getMenuSource() {
@@ -103,28 +95,5 @@ public void setFirstEnter(boolean firstEnter) {
 	this.firstEnter = firstEnter;
 }
 
-public Date getDate_Sistema() {
-	return date_Sistema;
-}
-
-public void setDate_Sistema(Date dateSistema) {
-	date_Sistema = dateSistema;
-}
-
-public Date getDate_Valuta() {
-	return date_Valuta;
-}
-
-public void setDate_Valuta(Date dateValuta) {
-	date_Valuta = dateValuta;
-}
-
-public Date getDate_Contabile() {
-	return date_Contabile;
-}
-
-public void setDate_Contabile(Date dateContabile) {
-	date_Contabile = dateContabile;
-}
 
 }

@@ -12,9 +12,6 @@ import javax.annotation.Resource;
 import javax.ejb.Local;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
-import javax.ejb.Stateless;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,24 +43,19 @@ import it.classhidra.framework.web.integration.i_module_integration;
 
 
 
-				@Action (
-						path="login",
-						name="formLogin",
-						redirect="/jsp/framework/login.jsp",
-						reloadAfterAction="true",
-						help="/jsp/help/help_login.html",
-						entity=@Entity(
-								property="allway:public"
-						)
-				)
+@Action (
+	path="login",
+	name="formLogin",
+	redirect="/jsp/framework/login.jsp",
+	reloadAfterAction="true",
+	help="/jsp/help/help_login.html",
+	entity=@Entity(
+		property="allway:public"
+	)
+)
 
-
-
-
-//@Named("login")
-//@SessionScoped
 @NavigatedDirective(memoryContent="true")
-@Stateless
+@Stateful
 @Local(i_action.class)
 public class EjbComponentLogin extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 1L;

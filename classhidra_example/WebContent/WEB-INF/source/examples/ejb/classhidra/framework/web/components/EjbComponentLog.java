@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
-import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,9 +37,9 @@ import it.classhidra.core.tool.util.util_sort;
 	}
 )
 
-@Named("log")
+//@Named("log")
 //@SessionScoped
-@NavigatedDirective
+@NavigatedDirective(memoryContent="true")
 @Stateful
 @Local(i_action.class)
 public class EjbComponentLog extends action implements i_action, Serializable{

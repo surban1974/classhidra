@@ -92,7 +92,11 @@ public class tagInto extends  TagSupport {
 		if(formAction!=null) bean = null;
 		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
 		if(formAction==null) formAction = new action(); 
-		if(bean==null) formBean = formAction.get_bean();
+		if(bean==null){
+			formBean = formAction.get_bean();
+			if(formBean!=null)
+				formBean=formBean.asBean();
+		}
 
 		if(method_prefix==null) method_prefix="get";
 		Object writeValue=null;
@@ -141,7 +145,7 @@ public class tagInto extends  TagSupport {
 
 		if(valueFromBean!=null ){
 			try{
-				value = util_reflect.prepareWriteValueFromBean(valueFromBean, request, (formAction==null)?formBean:formAction.get_bean()).toString();
+				value = util_reflect.prepareWriteValueFromBean(valueFromBean, request, (formAction==null)?formBean:formAction.get_bean().asBean()).toString();
 /*				
 				Object rightBean = null;
 				String nameRightBean = "";

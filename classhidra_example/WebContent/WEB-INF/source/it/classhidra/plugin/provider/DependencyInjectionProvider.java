@@ -7,15 +7,13 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_provider;
+import it.classhidra.core.controller.info_context;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_provider;
-
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Local_container;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Navigation;
 import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Onlyinssession;
-
-import java.lang.reflect.Proxy;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -98,50 +96,13 @@ public class DependencyInjectionProvider implements i_provider {
 		if(instance!=null){
 	    	Class clazz=instance.getClass();
 
-	    	if(instance instanceof Proxy) {
-				if(bsController.getEjbDefaultProvider()!=null){
-					Object lookup_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
-					if(lookup_instance!=null){
-						try{
-							if(lookup_instance instanceof i_action){
-								i_bean ibean = ((i_action)lookup_instance).asBean();
-								Class clazz0i=ibean.getClass();
-								if(	clazz0i.getAnnotation(SessionScoped.class)!=null ||
-									clazz0i.getAnnotation(ApplicationScoped.class)!=null ||
-									clazz0i.getAnnotation(RequestScoped.class)!=null){
-									ibean.setNavigable(false);
-									ibean.setCdi(true);
-									ibean.setEjb(true);
-								}	
-								ibean.setNavigable(false);
-								ibean.setEjb(true);
-							}else if(lookup_instance instanceof i_bean){						
-								i_bean ibean = ((i_bean)lookup_instance).asBean();
-								Class clazz0i=ibean.getClass();
-								if(	clazz0i.getAnnotation(SessionScoped.class)!=null ||
-									clazz0i.getAnnotation(ApplicationScoped.class)!=null ||
-									clazz0i.getAnnotation(RequestScoped.class)!=null){
-									ibean.setNavigable(false);
-									ibean.setCdi(true);
-									ibean.setEjb(true);
-								}	
-								ibean.setNavigable(false);
-								ibean.setEjb(true);								
-							}
-						}catch(Exception e){						
-						}					
-						
-					}
-//					return lookup_instance;
-				}	
-	    	}
-	    	
-			if(instance instanceof i_bean){
+	    	if(instance instanceof i_bean){
 				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 					clazz.getAnnotation(ApplicationScoped.class)!=null ||
 					clazz.getAnnotation(RequestScoped.class)!=null){
 						((i_bean)instance).setNavigable(false);
-						((i_bean)instance).asBean().setCdi(true);
+						((i_bean)instance).setCdi(true);
+						((i_bean)instance).setEjb(false);
 				}else{
 					try{
 						i_bean ibean = ((i_bean)instance).asBean();
@@ -151,7 +112,7 @@ public class DependencyInjectionProvider implements i_provider {
 							clazzi.getAnnotation(RequestScoped.class)!=null){
 							ibean.setNavigable(false);
 							ibean.setCdi(true);
-							ibean.setEjb(true);
+							ibean.setEjb(false);
 						}else if(!clazzi.getName().equals(clazz.getName()))
 							anotherCheck4ejb=true;
 					}catch(Exception e){						
@@ -161,8 +122,9 @@ public class DependencyInjectionProvider implements i_provider {
 				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 					clazz.getAnnotation(ApplicationScoped.class)!=null ||
 					clazz.getAnnotation(RequestScoped.class)!=null){
-						((i_action)instance).asBean().setNavigable(false);
-						((i_action)instance).asBean().setCdi(true);
+						((i_action)instance).setNavigable(false);
+						((i_action)instance).setCdi(true);
+						((i_action)instance).setEjb(false);
 				}else{
 					try{
 						i_action iaction = ((i_action)instance).asAction();
@@ -172,7 +134,7 @@ public class DependencyInjectionProvider implements i_provider {
 							clazzi.getAnnotation(RequestScoped.class)!=null){
 							iaction.asBean().setNavigable(false);
 							iaction.asBean().setCdi(true);
-							iaction.asBean().setEjb(true);
+							iaction.asBean().setEjb(false);
 						}else if(!clazzi.getName().equals(clazz.getName()))
 							anotherCheck4ejb=true;
 					}catch(Exception e){						
@@ -181,24 +143,74 @@ public class DependencyInjectionProvider implements i_provider {
 			}
 		}
 		
-		anotherCheck4ejb = false;
-		
-		if(bsController.getEjbDefaultProvider()!=null && (instance==null || anotherCheck4ejb)){
-			Object lookup_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
-			if(lookup_instance!=null){
+		if(bsController.getEjbDefaultProvider()!=null && instance!=null && anotherCheck4ejb){
+			Object ejb_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
+			if(ejb_instance!=null){
 				try{
-			    	Class clazz=lookup_instance.getClass();
-					if(lookup_instance instanceof i_bean){
-						((i_bean)lookup_instance).setNavigable(false);
-						((i_bean)lookup_instance).setEjb(true);
-					}
-					if(lookup_instance instanceof i_action){
-						((i_action)lookup_instance).asBean().setNavigable(false);
-						((i_bean)lookup_instance).setEjb(true);
+					if(instance instanceof i_bean){
+						((i_bean)instance).setEjb(true);
+					}else if(ejb_instance instanceof i_action){
+						((i_bean)instance).setEjb(true);
 					}
 				}catch(Exception e){
 				}
-				return lookup_instance;
+			}
+			
+		}
+		
+		
+		
+		if(bsController.getEjbDefaultProvider()!=null && instance==null){
+			Object ejb_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
+			if(ejb_instance!=null){
+				try{
+			    	Class clazz=ejb_instance.getClass();
+
+					if(ejb_instance instanceof i_bean){
+						((i_bean)ejb_instance).setEjb(true);
+						if(	clazz.getAnnotation(SessionScoped.class)!=null ||
+							clazz.getAnnotation(ApplicationScoped.class)!=null ||
+							clazz.getAnnotation(RequestScoped.class)!=null){
+								((i_bean)instance).setNavigable(false);
+								((i_bean)instance).setCdi(true);
+						}else{
+							try{
+								i_bean ibean = ((i_bean)ejb_instance).asBean();
+								Class clazzi=ibean.getClass();
+								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+									clazzi.getAnnotation(RequestScoped.class)!=null){
+									ibean.setNavigable(false);
+									ibean.setCdi(true);
+								}
+							}catch(Exception e){
+							}
+						}
+					}else if(ejb_instance instanceof i_action){
+						((i_bean)ejb_instance).setEjb(true);
+						if(	clazz.getAnnotation(SessionScoped.class)!=null ||
+							clazz.getAnnotation(ApplicationScoped.class)!=null ||
+							clazz.getAnnotation(RequestScoped.class)!=null){
+								((i_bean)instance).setNavigable(false);
+								((i_bean)instance).setCdi(true);
+							}else{
+								try{
+									i_bean ibean = ((i_bean)ejb_instance).asBean();
+									Class clazzi=ibean.getClass();
+									if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+										clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+										clazzi.getAnnotation(RequestScoped.class)!=null){
+										ibean.setNavigable(false);
+										ibean.setCdi(true);
+									}
+								}catch(Exception e){						
+								}					
+							}
+					}
+					
+				}catch(Exception e){
+				}
+				return ejb_instance;
 			}
 		}
 		return instance;
@@ -365,5 +377,24 @@ public class DependencyInjectionProvider implements i_provider {
          }
      }
      
+     public static info_context checkInfoCdi(info_context info, i_bean bean) {
+    	if(info==null)
+    		info = new info_context();
+    	if(bean!=null){
+    		try{
+    			Class clazz = bean.getClass();
+         		if(clazz.getAnnotation(SessionScoped.class)!=null)
+         			info.setSessionScoped(true);
+         		if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+         			info.setApplicationScoped(true);
+         		if(clazz.getAnnotation(RequestScoped.class)!=null)
+         			info.setRequestScoped(true);
+ 
+    		 }catch(Exception e){
+    			 
+    		 }
+    	 }
+    	 return info;
+     }
 
 }

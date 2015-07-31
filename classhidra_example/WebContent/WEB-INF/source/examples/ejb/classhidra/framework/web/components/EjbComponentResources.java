@@ -44,13 +44,13 @@ import it.classhidra.core.tool.util.util_container;
 	}
 )
 
-@NavigatedDirective
+@NavigatedDirective(memoryContent="true")
 @Stateless
 @Local(i_action.class)
-public class EjbComponentRecources extends action implements i_action, Serializable{
+public class EjbComponentResources extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6641876370416839602L;
 
-public EjbComponentRecources(){
+public EjbComponentResources(){
 	super();
 }
 

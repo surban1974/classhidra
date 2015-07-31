@@ -208,7 +208,11 @@ public class tagList extends TagSupport{
 		if(formAction!=null) bean = null;
 		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
 		if(formAction==null) formAction = new action();
-		if(bean==null) formBean = formAction.get_bean();
+		if(bean==null){
+			formBean = formAction.get_bean();
+			if(formBean!=null)
+				formBean=formBean.asBean();
+		}
 
 		List				iterator = null;
 

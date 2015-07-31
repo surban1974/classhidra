@@ -84,7 +84,11 @@ public class tagSequence extends  TagSupport {
 			if(formAction!=null) bean = null;
 			else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
 			if(formAction==null) formAction = new action(); 
-			if(bean==null) formBean = formAction.get_bean();
+			if(bean==null){
+				formBean = formAction.get_bean();
+				if(formBean!=null)
+					formBean=formBean.asBean();
+			}
 			
 			
 			if(method_prefix==null) method_prefix="get";
@@ -135,7 +139,7 @@ public class tagSequence extends  TagSupport {
 				}
 				if(startSeq==-1 && startIndexFromBean!=null){
 					try{
-						startSeq = new Integer(util_reflect.prepareWriteValueFromBean(startIndexFromBean, request,(formAction==null)?formBean:formAction.get_bean()).toString().trim()).intValue();
+						startSeq = new Integer(util_reflect.prepareWriteValueFromBean(startIndexFromBean, request,(formAction==null)?formBean:formAction.get_bean().asBean()).toString().trim()).intValue();
 					}catch(Exception e){
 					}
 				}
@@ -147,7 +151,7 @@ public class tagSequence extends  TagSupport {
 				}	
 				if(finishSeq==-1 && finishIndexFromBean!=null){
 					try{
-						finishSeq = new Integer(util_reflect.prepareWriteValueFromBean(finishIndexFromBean, request,(formAction==null)?formBean:formAction.get_bean()).toString().trim()).intValue();
+						finishSeq = new Integer(util_reflect.prepareWriteValueFromBean(finishIndexFromBean, request,(formAction==null)?formBean:formAction.get_bean().asBean()).toString().trim()).intValue();
 					}catch(Exception e){
 					}
 				}				

@@ -58,6 +58,9 @@ import it.classhidra.core.tool.util.util_sort;
 
 
 
+
+
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.ObjectOutputStream;
@@ -84,6 +87,9 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+
+
 
 
 
@@ -586,10 +592,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 					(iBean!=null && action_instance.get_infoaction().getType().equals(iBean.getType()))
 				)
 			){
-				bean_instance = action_instance.asBean();
+//				bean_instance = action_instance.asBean();
+				bean_instance = action_instance;
 			}else if(iBean == null && !action_instance.get_infoaction().getName().equals("")){
-				if(action_instance.getRealBean()==null)
-					bean_instance = action_instance.asBean();
+				if(action_instance.getRealBean()==null){
+					info_context info = checkBeanContext(action_instance.asBean());
+					if(info.isStateful() || info.isSingleton())
+						bean_instance = action_instance;
+					else 
+						bean_instance = action_instance.asBean();
+				}
 			}else
 				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext(),action_instance);
 			
@@ -640,10 +652,38 @@ public class bsController extends HttpServlet implements bsConstants  {
 						action_instance = bean_instance.asAction();
 					}
 				}else{
-					if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable() && action_instance.get_bean().isEjb())
-						action_instance.get_bean().reInit(bean_instance);
-					else
+//					if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable() && action_instance.get_bean().isEjb()){
+					if(action_instance!=null && action_instance.get_bean()!=null && action_instance.get_bean().isEjb()){
+						info_context info = checkBeanContext(bean_instance.asBean());
+						if(info.isSingleton() || info.isStateful()){
+							if(action_instance.getRealBean()==null){
+								try{
+									action_instance = (i_action)bean_instance;
+								}catch(Exception e){
+									action_instance.get_bean().reInit(bean_instance);
+								}
+							}else
+								action_instance.set_bean(bean_instance);
+						}else	
+							action_instance.get_bean().reInit(bean_instance);
+					}else if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable()){
+						action_instance = (i_action)bean_instance;
+					}else{
+/*
+						info_context info = checkBeanContext(bean_instance.asBean());
+						if(info.isSingleton() || info.isStateful()){
+							if(action_instance.getRealBean()==null){
+								try{
+									action_instance = (i_action)bean_instance;
+								}catch(Exception e){
+									action_instance.get_bean().reInit(bean_instance);
+								}
+							}else
+								action_instance.set_bean(bean_instance);
+						}else	
+*/						
 						action_instance = bean_instance.asAction();
+					}
 				}
 			}
 			else{
@@ -661,10 +701,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 					else{
 						action_instance.onPreSet_bean();
-						if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable() && action_instance.get_bean().isEjb())
+//						if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable() && action_instance.get_bean().isEjb())
+						if(action_instance!=null && action_instance.get_bean()!=null && action_instance.get_bean().isEjb())
 							action_instance.get_bean().reInit(bean_instance);
 						else
 							action_instance.set_bean(bean_instance);
+						
 						action_instance.onPostSet_bean();
 					}
 				}
@@ -924,10 +966,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 							(iBean!=null && prev_action_instance.get_infoaction().getType().equals(iBean.getType()))
 						)
 				){
-					bean_instance_clone = prev_action_instance.asBean();
+//					bean_instance_clone = prev_action_instance.asBean();
+					bean_instance_clone = prev_action_instance;
 				}else if(iBean == null && !prev_action_instance.get_infoaction().getName().equals("")){
-					if(prev_action_instance.getRealBean()==null)
-						bean_instance_clone = prev_action_instance.asBean();
+					if(prev_action_instance.getRealBean()==null){
+//						bean_instance_clone = prev_action_instance.asBean();
+						info_context info = checkBeanContext(prev_action_instance.asBean());
+						if(info.isStateful() || info.isSingleton())
+							bean_instance_clone = prev_action_instance;
+						else 
+							bean_instance_clone = prev_action_instance.asBean();
+						
+					}
 				}else
 					bean_instance_clone = getAction_config().beanFactory(prev_action_instance.get_infoaction().getName(),request.getSession(),request.getSession().getServletContext(),prev_action_instance);
 
@@ -999,8 +1049,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 							prev_action_instance.get_infoaction().getName().equals("") ||
 							bean_instance_clone.asBean().getClass().getName().equals(prev_action_instance.asBean().getClass().getName())
 						)
-				)
-					prev_action_instance = bean_instance_clone.asAction();
+				){
+					info_context info = checkBeanContext(bean_instance_clone.asBean()); 
+					if(info.isSingleton() || info.isStateful()){
+						if(prev_action_instance.getRealBean()==null){
+							try{
+								prev_action_instance = (i_action)bean_instance_clone;
+							}catch(Exception e){
+								prev_action_instance.get_bean().reInit(bean_instance_clone);
+							}
+						}else
+							prev_action_instance.set_bean(bean_instance_clone);
+					}else
+						prev_action_instance = bean_instance_clone.asAction();
+					
+				}
+//					prev_action_instance = bean_instance_clone.asAction()
 
 				if(prev_action_instance.get_bean()==null){
 					prev_action_instance.onPreSet_bean();
@@ -2799,7 +2863,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return instance.get(id);
 	}
 
-	public static boolean setToOnlySession(String id,Object obj,HttpServletRequest request){
+	public static boolean setToOnlySession(String id,i_bean obj,HttpServletRequest request){
 		try{
 			Map instance = checkOnlySession(request);
 
@@ -2808,6 +2872,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(instance==null){
 				instance = new HashMap();
 				request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
+			}
+			if(obj!=null){
+				info_context info = checkBeanContext(obj.asBean());
+				if(info.isStateful() || info.isSingleton()){
+					if(instance.get(id)==null)
+						instance.put(id, obj);
+					return true;
+				}
 			}
 			instance.put(id, obj);
 			return true;
@@ -3074,6 +3146,32 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return false;
 	}
 
+	
+	public static info_context checkBeanContext(i_bean bean){
+		if(bean==null)
+			return new info_context();
+		if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
+			info_context info = util_provider.checkInfoContext(getAction_config().getProvider(), bean);
+			if(info!=null)
+				return info;
+		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+			info_context info = util_provider.checkInfoContext(getAppInit().get_cdi_provider(), bean);
+			if(info!=null)
+				return info;
+			else 
+				return new info_context();
+		}
+		if(getCdiDefaultProvider()!=null){
+			info_context info = util_provider.checkInfoContext(getCdiDefaultProvider(), bean);
+			if(info!=null)
+				return info;
+			else 
+				return new info_context();
+		}
+		return new info_context();
+
+	}
+	
 
 	public static void setReInit(boolean reInit) {
 		bsController.reInit = reInit;

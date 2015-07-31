@@ -27,6 +27,7 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_provider;
 import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.i_transformation;
+import it.classhidra.core.controller.info_context;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.plugin.provider.ejb.wrappers.Wrapper_EjbContextLocal;
@@ -834,6 +835,29 @@ public class EjbProvider implements i_provider {
          }
      }
 
+     public static info_context checkInfoEjb(info_context info, i_bean bean) {
+    	if(info==null)
+    		info = new info_context();
+    	if(bean!=null){
+    		try{
+    			Class clazz = bean.getClass();
+         		if(clazz.getAnnotation(Stateless.class)!=null)
+         			info.setStateless(true);
+         		if(clazz.getAnnotation(Stateful.class)!=null)
+         			info.setStateful(true);
+         		if(clazz.getAnnotation(Singleton.class)!=null)
+         			info.setSingleton(true);
+         		if(clazz.getAnnotation(MessageDriven.class)!=null)
+         			info.setMessageDriven(true);
+         		
+         		
+
+    		 }catch(Exception e){
+    			 
+    		 }
+    	 }
+    	 return info;
+     }
 
 
 

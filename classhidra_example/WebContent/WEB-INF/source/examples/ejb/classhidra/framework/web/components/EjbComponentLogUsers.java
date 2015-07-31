@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
-import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,9 +37,9 @@ import it.classhidra.core.tool.util.util_usersInSession;
 	}
 )
 
-@Named("log_users")
+//@Named("log_users")
 //@SessionScoped
-@NavigatedDirective
+@NavigatedDirective(memoryContent="true")
 @Stateful
 @Local(i_action.class)
 public class EjbComponentLogUsers extends action implements i_action, Serializable{

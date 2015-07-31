@@ -127,8 +127,10 @@ public class tagTranscode extends TagSupport{
 						else methodRightBean+="."+current;
 					}
 				}
-				if(formAction!=null && formAction.get_infoaction()!=null &&  formAction.get_infoaction().getName().equals(nameRightBean))
-					rightBean = formAction.get_bean();
+				if(formAction!=null && formAction.get_infoaction()!=null &&  formAction.get_infoaction().getName().equals(nameRightBean)){
+					if(formAction.get_bean()!=null)
+						rightBean = formAction.get_bean().asBean();
+				}
 				if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
 				if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
 				try{
@@ -166,8 +168,10 @@ public class tagTranscode extends TagSupport{
 						else methodRightBean+="."+current;
 					}
 				}
-				if(formAction!=null && formAction.get_infoaction()!=null &&  formAction.get_infoaction().getName().equals(nameRightBean))
-					rightBean = formAction.get_bean();
+				if(formAction!=null && formAction.get_infoaction()!=null &&  formAction.get_infoaction().getName().equals(nameRightBean)){
+					if(formAction.get_bean()!=null)
+						rightBean = formAction.get_bean().asBean();
+				}
 				if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
 				if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
 				try{

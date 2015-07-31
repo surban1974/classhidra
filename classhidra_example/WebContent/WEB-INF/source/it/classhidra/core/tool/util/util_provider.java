@@ -12,6 +12,7 @@ import it.classhidra.core.controller.i_provider;
 import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.i_transformation;
 import it.classhidra.core.controller.info_action;
+import it.classhidra.core.controller.info_context;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 
@@ -412,5 +413,96 @@ public class util_provider {
 		}
 		return null;
 	}	
+
+	public static info_context checkInfoEjbContext(info_context info, i_provider _provider, i_bean bean){
+		if(info==null)
+			info = new info_context();
+		if(_provider==null)
+			return info;
+		try{		
+			Class c_provider = _provider.getClass();
+			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoEjb", new Class[]{info_context.class, i_bean.class});
+			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
+			return info;
+		}catch(Exception e){
+			new bsControllerException(e,iStub.log_DEBUG);
+		}catch (Throwable t) {
+			new bsControllerException(t,iStub.log_DEBUG);
+		}
+		return info;
+	}	
 	
+	public static info_context checkInfoCdiContext(info_context info, String id_provider, i_bean bean){
+		if(info==null)
+			info = new info_context();
+		if(id_provider==null)
+			return info;
+
+		try{		
+			Class c_provider = Class.forName(id_provider);
+			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoCdi", new Class[]{info_context.class, i_bean.class});
+			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
+			return info;
+		}catch(Exception e){
+			new bsControllerException(e,iStub.log_DEBUG);
+		}catch (Throwable t) {
+			new bsControllerException(t,iStub.log_DEBUG);
+		}
+		return null;
+	}
+
+	public static info_context checkInfoCdiContext(info_context info, i_provider _provider, i_bean bean){
+		if(info==null)
+			info = new info_context();
+		if(_provider==null)
+			return info;
+
+		try{		
+			Class c_provider = _provider.getClass();
+			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoCdi", new Class[]{info_context.class, i_bean.class});
+			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
+			return info;
+		}catch(Exception e){
+			new bsControllerException(e,iStub.log_DEBUG);
+		}catch (Throwable t) {
+			new bsControllerException(t,iStub.log_DEBUG);
+		}
+		return null;
+	}
+	
+	
+	public static info_context checkInfoContext(String id_provider, i_bean bean){
+		info_context info = new info_context();
+		
+		if(id_provider==null || id_provider.equals("") || bean==null)
+			return info;
+		info = checkInfoCdiContext(null, id_provider, bean);
+		if(info==null)
+			info = checkInfoCdiContext(null, bsConstants.CONST_PROVIDER_PATH+id_provider, bean);
+	
+		if(info==null && bsController.getCdiDefaultProvider()!=null)
+			info = checkInfoCdiContext(null, bsController.getCdiDefaultProvider(), bean);
+
+		if(info==null)
+			info = new info_context();
+		info = checkInfoEjbContext(info, bsController.getEjbDefaultProvider(), bean);
+		
+		return info;
+	}
+
+	public static info_context checkInfoContext(i_provider _provider, i_bean bean){
+		info_context info = new info_context();
+		
+		if(_provider==null || bean==null)
+			return info;
+		info = checkInfoCdiContext(null, _provider, bean);
+
+		if(info==null)
+			info = new info_context();
+		info = checkInfoEjbContext(info, bsController.getEjbDefaultProvider(), bean);
+		
+		return info;
+	}
+	
+
 }

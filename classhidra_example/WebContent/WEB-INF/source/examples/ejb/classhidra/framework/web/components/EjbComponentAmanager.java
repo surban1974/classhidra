@@ -7,8 +7,6 @@ import java.util.Vector;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.Redirect;
+import it.classhidra.annotation.elements.SessionDirective;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
@@ -53,8 +52,7 @@ import it.classhidra.framework.web.beans.option_element;
 	}
 )
 
-@Named("amanager")
-@SessionScoped
+@SessionDirective
 @Stateful
 @Local(i_action.class)
 public class EjbComponentAmanager extends action implements i_action, Serializable{

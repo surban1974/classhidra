@@ -65,7 +65,11 @@ public class tagBean extends TagSupport{
 			if(formAction!=null) source = null;
 			else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
 			if(formAction==null) formAction = new action(); 
-			if(source==null) formBean = formAction.get_bean();
+			if(source==null){
+				formBean = formAction.get_bean();
+				if(formBean!=null)
+					formBean=formBean.asBean();
+			}
 			Object anotherBean=null;
 
 			if(method_prefix==null) method_prefix="get";

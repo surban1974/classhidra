@@ -9,6 +9,7 @@ import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.annotation.elements.Section;
+import it.classhidra.annotation.elements.SessionDirective;
 import it.classhidra.annotation.elements.Stream;
 import it.classhidra.annotation.elements.Transformation;
 import it.classhidra.core.controller.bsController;
@@ -295,6 +296,11 @@ public class annotation_scanner implements i_annotation_scanner {
 					checkClassAnnotation(class_path, subAnnotation, subAnnotations);
 					subAnnotations.put("NavigatedDirective", subAnnotation);
 				}
+			subAnnotation = classType.getAnnotation(SessionDirective.class);
+				if(subAnnotation!=null){
+					checkClassAnnotation(class_path, subAnnotation, subAnnotations);
+					subAnnotations.put("SessionDirective", subAnnotation);
+				}	
 	
 			ActionMapping annotationActionMapping = (ActionMapping)classType.getAnnotation(ActionMapping.class);
 			if(annotationActionMapping!=null){
@@ -452,6 +458,13 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	iAction.setRedirect(annotationAction.redirect());
 		    	iAction.setError(annotationAction.error());
 		    	iAction.setMemoryInSession(annotationAction.memoryInSession());
+		    	
+		    	SessionDirective sessionDirective = (SessionDirective)subAnnotations.get("SessionDirective");
+		    	if(sessionDirective!=null){
+		    		if(!iAction.getMemoryInSession().trim().equalsIgnoreCase("true"))
+			    		iAction.setMemoryInSession("true");
+		    	}
+		    	
 		    	iAction.setMemoryAsLastInstance(annotationAction.memoryAsLastInstance());
 		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
 		    	iAction.setReloadAfterNextNavigated(annotationAction.reloadAfterNextNavigated());
