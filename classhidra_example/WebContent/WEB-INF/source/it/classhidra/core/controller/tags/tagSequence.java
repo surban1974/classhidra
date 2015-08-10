@@ -53,6 +53,7 @@ public class tagSequence extends  TagSupport {
 	protected String startIndexFromBean=null;
 	protected String finishIndex=null;
 	protected String finishIndexFromBean=null;	
+	protected String toBean=null;
 	protected Object sequence=null;
 	protected int index = 0;
 	protected int size = 0;
@@ -61,10 +62,11 @@ public class tagSequence extends  TagSupport {
 	
 
 	public int doAfterBody() throws JspException {
+		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		index++;
 		if(index%2==0) pair=true;
 		else pair=false;
-		if (condition())
+		if (condition(request))
 			return (EVAL_BODY_AGAIN);
 		else
 			return (SKIP_BODY);
@@ -167,7 +169,7 @@ public class tagSequence extends  TagSupport {
 		
 //		}
 		
-		if (condition())
+		if (condition(request))
 			return (EVAL_BODY_INCLUDE);
 		else
 			return (SKIP_BODY);
@@ -191,12 +193,17 @@ public class tagSequence extends  TagSupport {
 		startIndexFromBean=null;
 		finishIndex=null;
 		finishIndexFromBean=null;		
+		toBean=null;
 	}
 	
-	private boolean condition() throws JspException{
+	private boolean condition(HttpServletRequest request) throws JspException{
 		if(sequence==null) return false;
 		try{
-			if(((Collection)sequence).size()>index) return true;			
+			if(((Collection)sequence).size()>index){
+				if(toBean!=null)
+					request.setAttribute(toBean, ((Collection)sequence).toArray()[index]);
+				return true;			
+			}
 		}catch(Exception e){
 		}
 		try{
@@ -289,6 +296,14 @@ public class tagSequence extends  TagSupport {
 
 	public void setFinishIndexFromBean(String finishIndexFromBean) {
 		this.finishIndexFromBean = finishIndexFromBean;
+	}
+
+	public String getToBean() {
+		return toBean;
+	}
+
+	public void setToBean(String toBean) {
+		this.toBean = toBean;
 	}
 
 

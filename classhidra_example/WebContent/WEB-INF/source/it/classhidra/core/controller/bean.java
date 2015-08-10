@@ -25,18 +25,6 @@ package it.classhidra.core.controller;
 
 
 
-import it.classhidra.core.init.auth_init;
-import it.classhidra.core.tool.elements.elementBeanBase;
-import it.classhidra.core.tool.elements.i_elementDBBase;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.exception.bsException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_find;
-import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_makeValue;
-import it.classhidra.core.tool.util.util_multipart;
-import it.classhidra.core.tool.util.util_reflect;
-
 import java.io.DataInputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -48,15 +36,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-
-
-
-
-
-
-
 import javax.servlet.http.HttpServletRequest;
 
+import it.classhidra.core.init.auth_init;
+import it.classhidra.core.tool.elements.elementBeanBase;
+import it.classhidra.core.tool.elements.i_elementDBBase;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_makeValue;
+import it.classhidra.core.tool.util.util_multipart;
+import it.classhidra.core.tool.util.util_reflect;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -89,9 +78,7 @@ public class bean extends elementBeanBase implements i_bean  {
 
 	protected Object delegated;
 	
-	protected boolean navigable=true;
-	protected boolean ejb=false;
-	protected boolean cdi=false;
+	protected info_context info_context = new info_context();
 
 
 
@@ -1361,28 +1348,12 @@ public i_bean asBean(){
 	return (bean)this;
 }
 
-public boolean isNavigable() {
-	return navigable;
+public info_context getInfo_context() {
+	return info_context;
 }
 
-public void setNavigable(boolean navigable) {
-	this.navigable = navigable;
-}
-
-public boolean isEjb() {
-	return ejb;
-}
-
-public void setEjb(boolean ejb) {
-	this.ejb = ejb;
-}
-
-public boolean isCdi() {
-	return cdi;
-}
-
-public void setCdi(boolean cdi) {
-	this.cdi = cdi;
+public void setInfo_context(info_context info_context) {
+	this.info_context = info_context;
 }
 
 

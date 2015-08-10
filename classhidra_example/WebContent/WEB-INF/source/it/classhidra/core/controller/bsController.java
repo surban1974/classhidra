@@ -596,8 +596,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				bean_instance = action_instance;
 			}else if(iBean == null && !action_instance.get_infoaction().getName().equals("")){
 				if(action_instance.getRealBean()==null){
-					info_context info = checkBeanContext(action_instance.asBean());
-					if(info.isStateful() || info.isSingleton())
+//					info_context info = checkBeanContext(action_instance.asBean());
+					if(action_instance.asBean().getInfo_context().isOnlyProxed())
 						bean_instance = action_instance;
 					else 
 						bean_instance = action_instance.asBean();
@@ -653,9 +653,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 				}else{
 //					if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable() && action_instance.get_bean().isEjb()){
-					if(action_instance!=null && action_instance.get_bean()!=null && action_instance.get_bean().isEjb()){
-						info_context info = checkBeanContext(bean_instance.asBean());
-						if(info.isSingleton() || info.isStateful()){
+					if(action_instance!=null && action_instance.get_bean()!=null && action_instance.get_bean().getInfo_context()!=null && action_instance.get_bean().getInfo_context().isProxedEjb()){
+//						info_context info = checkBeanContext(bean_instance.asBean());
+						if(action_instance.get_bean().getInfo_context().isOnlyProxed()){
 							if(action_instance.getRealBean()==null){
 								try{
 									action_instance = (i_action)bean_instance;
@@ -666,7 +666,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 								action_instance.set_bean(bean_instance);
 						}else	
 							action_instance.get_bean().reInit(bean_instance);
-					}else if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable()){
+					}else if(action_instance!=null && action_instance.get_bean()!=null && action_instance.get_bean().getInfo_context()!=null && action_instance.get_bean().getInfo_context().isScoped()){
 						action_instance = (i_action)bean_instance;
 					}else{
 /*
@@ -702,7 +702,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					else{
 						action_instance.onPreSet_bean();
 //						if(action_instance!=null && action_instance.get_bean()!=null && !action_instance.get_bean().isNavigable() && action_instance.get_bean().isEjb())
-						if(action_instance!=null && action_instance.get_bean()!=null && action_instance.get_bean().isEjb())
+						if(action_instance!=null && action_instance.get_bean()!=null && action_instance.get_bean().getInfo_context()!=null && action_instance.get_bean().getInfo_context().isProxedEjb())
 							action_instance.get_bean().reInit(bean_instance);
 						else
 							action_instance.set_bean(bean_instance);
@@ -971,8 +971,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else if(iBean == null && !prev_action_instance.get_infoaction().getName().equals("")){
 					if(prev_action_instance.getRealBean()==null){
 //						bean_instance_clone = prev_action_instance.asBean();
-						info_context info = checkBeanContext(prev_action_instance.asBean());
-						if(info.isStateful() || info.isSingleton())
+//						info_context info = checkBeanContext(prev_action_instance.asBean());
+						if(prev_action_instance.asBean().getInfo_context().isOnlyProxed())
 							bean_instance_clone = prev_action_instance;
 						else 
 							bean_instance_clone = prev_action_instance.asBean();
@@ -1050,8 +1050,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 							bean_instance_clone.asBean().getClass().getName().equals(prev_action_instance.asBean().getClass().getName())
 						)
 				){
-					info_context info = checkBeanContext(bean_instance_clone.asBean()); 
-					if(info.isSingleton() || info.isStateful()){
+//					info_context info = checkBeanContext(bean_instance_clone.asBean()); 
+					if(bean_instance_clone.asBean().getInfo_context().isOnlyProxed()){
 						if(prev_action_instance.getRealBean()==null){
 							try{
 								prev_action_instance = (i_action)bean_instance_clone;
@@ -2874,8 +2874,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
 			}
 			if(obj!=null){
-				info_context info = checkBeanContext(obj.asBean());
-				if(info.isStateful() || info.isSingleton()){
+//				info_context info = checkBeanContext(obj.asBean());
+				if(obj.asBean().getInfo_context().isOnlyProxed()){
 					if(instance.get(id)==null)
 						instance.put(id, obj);
 					return true;
@@ -3146,7 +3146,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return false;
 	}
 
-	
+/*	
 	public static info_context checkBeanContext(i_bean bean){
 		if(bean==null)
 			return new info_context();
@@ -3171,7 +3171,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return new info_context();
 
 	}
-	
+*/	
 
 	public static void setReInit(boolean reInit) {
 		bsController.reInit = reInit;

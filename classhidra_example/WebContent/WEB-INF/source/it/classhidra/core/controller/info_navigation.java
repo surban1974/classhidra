@@ -75,17 +75,17 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iRedirect = iRedirect;
 		this.id = iAction.getPath().trim();
 		if(content!=null){
-			info_context info = bsController.checkBeanContext(content.asBean());
+//			info_context info = bsController.checkBeanContext(content.asBean());
 			if(iAction!=null && iAction.getNavigatedMemoryContent()!=null && !iAction.getNavigatedMemoryContent().equals("")){
 				if(iAction.getNavigatedMemoryContent().equalsIgnoreCase("true")){
-					if(info.isStateful() || info.isSingleton()){
+					if(content.asBean().getInfo_context().isOnlyProxed()){
 						if(this._content==null)
 							this._content = content;
 					}else
 						this._content = content;
 				}else if(!iAction.getNavigatedMemoryContent().equalsIgnoreCase("false")){
-					if(content.isNavigable()){
-						if(info.isStateful() || info.isSingleton()){
+					if(!content.asBean().getInfo_context().isScoped()){
+						if(content.asBean().getInfo_context().isOnlyProxed()){
 							if(this._content==null)
 								this._content = content;
 						}else
@@ -93,8 +93,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 					}
 				}
 			}
-			else if(content.isNavigable()){
-				if(info.isStateful() || info.isSingleton()){
+			else if(!content.getInfo_context().isScoped()){
+				if(content.asBean().getInfo_context().isOnlyProxed()){
 					if(this._content==null)
 						this._content = content;
 				}else
@@ -118,9 +118,9 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iAction = second.getIAction();
 		this.iRedirect = second.getIRedirect();
 		this.id = second.getId();
-		if(second.get_realcontent()!=null && second.get_realcontent().isNavigable()){
-			info_context info = bsController.checkBeanContext(second.get_realcontent().asBean());
-			if(info.isStateful() || info.isSingleton()){
+		if(second.get_realcontent()!=null && !second.get_realcontent().getInfo_context().isScoped()){
+//			info_context info = bsController.checkBeanContext(second.get_realcontent().asBean());
+			if(second.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
 				if(this._content==null)
 					this._content = second.get_realcontent();
 			}else
@@ -137,9 +137,9 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iAction = second.getIAction();
 		this.iRedirect = second.getIRedirect();
 		this.id = second.getId();
-		if(second.get_realcontent()!=null && second.get_realcontent().isNavigable()){
-			info_context info = bsController.checkBeanContext(second.get_realcontent().asBean());
-			if(info.isStateful() || info.isSingleton()){
+		if(second.get_realcontent()!=null && !second.get_realcontent().getInfo_context().isScoped()){
+//			info_context info = bsController.checkBeanContext(second.get_realcontent().asBean());
+			if(second.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
 				if(this._content==null)
 					this._content = second.get_realcontent();
 			}else
@@ -278,17 +278,17 @@ public class info_navigation extends elementBase implements i_elementBase{
 //				_content = iNavigation.get_content();
 			if(!(_content!=null && iNavigation.get_realcontent()==null)){
 				if(iNavigation.get_realcontent()!=null){
-					info_context info = bsController.checkBeanContext(iNavigation.get_realcontent().asBean());
+//					info_context info = bsController.checkBeanContext(iNavigation.get_realcontent().asBean());
 					if(iAction!=null && iAction.getNavigatedMemoryContent()!=null && !iAction.getNavigatedMemoryContent().equals("")){
 						if(iAction.getNavigatedMemoryContent().equalsIgnoreCase("true")){
-							if(info.isStateful() || info.isSingleton()){
+							if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
 								if(_content==null)
 									_content = iNavigation.get_realcontent();
 							}else
 								_content = iNavigation.get_realcontent();
 						}else if(!iAction.getNavigatedMemoryContent().equalsIgnoreCase("false")){
-							if(iNavigation.get_realcontent().isNavigable()){
-								if(info.isStateful() || info.isSingleton()){
+							if(!iNavigation.get_realcontent().getInfo_context().isScoped()){
+								if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
 									if(_content==null)
 										_content = iNavigation.get_realcontent();
 								}else
@@ -296,8 +296,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 							}
 						}
 					}
-					else if(iNavigation.get_realcontent().isNavigable()){
-						if(info.isStateful() || info.isSingleton()){
+					else if(!iNavigation.get_realcontent().getInfo_context().isScoped()){
+						if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
 							if(_content==null)
 								_content = iNavigation.get_realcontent();
 						}else

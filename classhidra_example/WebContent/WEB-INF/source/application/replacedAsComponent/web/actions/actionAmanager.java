@@ -12,7 +12,6 @@ import it.classhidra.core.controller.info_relation;
 import it.classhidra.core.controller.info_section;
 import it.classhidra.core.controller.load_actions;
 import it.classhidra.core.controller.load_authentication;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.exception.message;

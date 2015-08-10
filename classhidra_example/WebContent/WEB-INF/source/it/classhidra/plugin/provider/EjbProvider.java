@@ -441,9 +441,9 @@ public class EjbProvider implements i_provider {
 	        	try{
 	        		result = ejbc.lookup(elName);
 	        		if(result instanceof i_bean)
-	        			((i_bean) result).asBean().setEjb(true);
+	        			setInfoContext(((i_bean) result).asBean());
 	        		if(result instanceof i_action)
-	        			((i_action) result).asBean().setEjb(true);
+	        			setInfoContext(((i_action) result).asBean());
 	        	}catch(Exception e){
 	        		return result;
 	        	}
@@ -457,9 +457,9 @@ public class EjbProvider implements i_provider {
 	        	try{
 	        		result = getStaticInitialContext().lookup(elName);
 	        		if(result instanceof i_bean)
-	        			((i_bean) result).asBean().setEjb(true);
+	        			setInfoContext(((i_bean) result).asBean());
 	        		if(result instanceof i_action)
-	        			((i_action) result).asBean().setEjb(true);
+	        			setInfoContext(((i_action) result).asBean());
 	        	}catch(Exception e){
 	        		return result;
 	        	}
@@ -486,9 +486,9 @@ public class EjbProvider implements i_provider {
        					getNamingMap().put(clazz.getName(),type+"|"+clazz.getSimpleName());
        					try{
 	    	        		if(result instanceof i_bean)
-	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
-	    	        			((i_action) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_action) result).asBean());
        					}catch(Exception e){
        					}
 	        			return result;
@@ -501,9 +501,9 @@ public class EjbProvider implements i_provider {
        					getNamingMap().put(clazz.getName(),type+"|"+prefix+clazz.getSimpleName());
        					try{
 	    	        		if(result instanceof i_bean)
-	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
-	    	        			((i_action) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_action) result).asBean());
        					}catch(Exception e){
        					}
 	        			return result;
@@ -516,9 +516,9 @@ public class EjbProvider implements i_provider {
        					getNamingMap().put(clazz.getName(),type+"|"+clazz.getName());
        					try{
 	    	        		if(result instanceof i_bean)
-	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
-	    	        			((i_action) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_action) result).asBean());
        					}catch(Exception e){
        					}
 	        			return result;
@@ -531,9 +531,9 @@ public class EjbProvider implements i_provider {
        					getNamingMap().put(clazz.getName(),type+"|"+prefix+clazz.getName());
        					try{
 	    	        		if(result instanceof i_bean)
-	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
-	    	        			((i_action) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_action) result).asBean());
        					}catch(Exception e){
        					}
 	        			return result;
@@ -559,9 +559,9 @@ public class EjbProvider implements i_provider {
        					getNamingMap().put(clazz.getName(),type+"|"+clazz.getSimpleName());
        					try{
 	    	        		if(result instanceof i_bean)
-	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
-	    	        			((i_action) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_action) result).asBean());
        					}catch(Exception e){
        					}
 	        			return result;
@@ -574,9 +574,9 @@ public class EjbProvider implements i_provider {
        					getNamingMap().put(clazz.getName(),type+"|"+prefix+clazz.getSimpleName());
        					try{
 	    	        		if(result instanceof i_bean)
-	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
-	    	        			((i_action) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_action) result).asBean());
        					}catch(Exception e){
        					}
 	        			return result;
@@ -589,9 +589,9 @@ public class EjbProvider implements i_provider {
        					getNamingMap().put(clazz.getName(),type+"|"+clazz.getName());
        					try{
 	    	        		if(result instanceof i_bean)
-	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
-	    	        			((i_action) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_action) result).asBean());
        					}catch(Exception e){
        					}
 	        			return result;
@@ -604,9 +604,9 @@ public class EjbProvider implements i_provider {
        					getNamingMap().put(clazz.getName(),type+"|"+prefix+clazz.getName());
        					try{
 	    	        		if(result instanceof i_bean)
-	    	        			((i_bean) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
-	    	        			((i_action) result).asBean().setEjb(true);
+	    	        			setInfoContext(((i_action) result).asBean());
        					}catch(Exception e){
        					}
 	        			return result;
@@ -621,6 +621,8 @@ public class EjbProvider implements i_provider {
        	
        	return null;
     }
+    
+    
     
      public static EJBContext getEjbContext() {
     	 if(ejbContext != null) 
@@ -859,6 +861,24 @@ public class EjbProvider implements i_provider {
     	 return info;
      }
 
+     public static void setInfoContext(i_bean bean) {
+    	if(bean!=null){
+    		try{
+    			Class clazz = bean.getClass();
+    			bean.getInfo_context().setProxedEjb(true);
+         		if(clazz.getAnnotation(Stateless.class)!=null)
+         			bean.getInfo_context().setStateless(true);
+         		if(clazz.getAnnotation(Stateful.class)!=null)
+         			bean.getInfo_context().setStateful(true);
+         		if(clazz.getAnnotation(Singleton.class)!=null)
+         			bean.getInfo_context().setSingleton(true);
+         		if(clazz.getAnnotation(MessageDriven.class)!=null)
+         			bean.getInfo_context().setMessageDriven(true);
+    		 }catch(Exception e){
+    			 
+    		 }
+    	 }
+     }
 
 
 }

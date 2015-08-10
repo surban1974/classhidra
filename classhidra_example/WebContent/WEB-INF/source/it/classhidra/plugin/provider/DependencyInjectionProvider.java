@@ -21,6 +21,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Named;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -100,9 +101,16 @@ public class DependencyInjectionProvider implements i_provider {
 				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 					clazz.getAnnotation(ApplicationScoped.class)!=null ||
 					clazz.getAnnotation(RequestScoped.class)!=null){
-						((i_bean)instance).setNavigable(false);
-						((i_bean)instance).setCdi(true);
-						((i_bean)instance).setEjb(false);
+						((i_bean)instance).getInfo_context().setProxedCdi(true);
+						((i_bean)instance).getInfo_context().setProxedEjb(false);
+						if(clazz.getAnnotation(SessionScoped.class)!=null)
+							((i_bean)instance).getInfo_context().setSessionScoped(true);
+						if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+							((i_bean)instance).getInfo_context().setApplicationScoped(true);
+						if(clazz.getAnnotation(RequestScoped.class)!=null)
+							((i_bean)instance).getInfo_context().setRequestScoped(true);
+						if(clazz.getAnnotation(Named.class)!=null)
+							((i_bean)instance).getInfo_context().setNamed(true);
 				}else{
 					try{
 						i_bean ibean = ((i_bean)instance).asBean();
@@ -110,9 +118,16 @@ public class DependencyInjectionProvider implements i_provider {
 						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 							clazzi.getAnnotation(RequestScoped.class)!=null){
-							ibean.setNavigable(false);
-							ibean.setCdi(true);
-							ibean.setEjb(false);
+							ibean.getInfo_context().setProxedCdi(true);
+							ibean.getInfo_context().setProxedEjb(false);
+							if(clazz.getAnnotation(SessionScoped.class)!=null)
+								ibean.getInfo_context().setSessionScoped(true);
+							if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+								ibean.getInfo_context().setApplicationScoped(true);
+							if(clazz.getAnnotation(RequestScoped.class)!=null)
+								ibean.getInfo_context().setRequestScoped(true);
+							if(clazz.getAnnotation(Named.class)!=null)
+								ibean.getInfo_context().setNamed(true);
 						}else if(!clazzi.getName().equals(clazz.getName()))
 							anotherCheck4ejb=true;
 					}catch(Exception e){						
@@ -122,9 +137,16 @@ public class DependencyInjectionProvider implements i_provider {
 				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 					clazz.getAnnotation(ApplicationScoped.class)!=null ||
 					clazz.getAnnotation(RequestScoped.class)!=null){
-						((i_action)instance).setNavigable(false);
-						((i_action)instance).setCdi(true);
-						((i_action)instance).setEjb(false);
+						((i_action)instance).getInfo_context().setProxedCdi(true);
+						((i_action)instance).getInfo_context().setProxedEjb(false);
+						if(clazz.getAnnotation(SessionScoped.class)!=null)
+							((i_action)instance).getInfo_context().setSessionScoped(true);
+						if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+							((i_action)instance).getInfo_context().setApplicationScoped(true);
+						if(clazz.getAnnotation(RequestScoped.class)!=null)
+							((i_action)instance).getInfo_context().setRequestScoped(true);
+						if(clazz.getAnnotation(Named.class)!=null)
+							((i_action)instance).getInfo_context().setNamed(true);
 				}else{
 					try{
 						i_action iaction = ((i_action)instance).asAction();
@@ -132,9 +154,16 @@ public class DependencyInjectionProvider implements i_provider {
 						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 							clazzi.getAnnotation(RequestScoped.class)!=null){
-							iaction.asBean().setNavigable(false);
-							iaction.asBean().setCdi(true);
-							iaction.asBean().setEjb(false);
+							iaction.getInfo_context().setProxedCdi(true);
+							iaction.getInfo_context().setProxedEjb(false);
+							if(clazz.getAnnotation(SessionScoped.class)!=null)
+								iaction.getInfo_context().setSessionScoped(true);
+							if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+								iaction.getInfo_context().setApplicationScoped(true);
+							if(clazz.getAnnotation(RequestScoped.class)!=null)
+								iaction.getInfo_context().setRequestScoped(true);
+							if(clazz.getAnnotation(Named.class)!=null)
+								iaction.getInfo_context().setNamed(true);
 						}else if(!clazzi.getName().equals(clazz.getName()))
 							anotherCheck4ejb=true;
 					}catch(Exception e){						
@@ -148,9 +177,11 @@ public class DependencyInjectionProvider implements i_provider {
 			if(ejb_instance!=null){
 				try{
 					if(instance instanceof i_bean){
-						((i_bean)instance).setEjb(true);
+						((i_bean)instance).getInfo_context().setProxedEjb(true);
+						((i_bean)instance).getInfo_context().reInitEjb(((i_bean)ejb_instance).getInfo_context());
 					}else if(ejb_instance instanceof i_action){
-						((i_bean)instance).setEjb(true);
+						((i_bean)instance).getInfo_context().setProxedEjb(true);
+						((i_bean)instance).getInfo_context().reInitEjb(((i_action)ejb_instance).getInfo_context());
 					}
 				}catch(Exception e){
 				}
@@ -166,13 +197,22 @@ public class DependencyInjectionProvider implements i_provider {
 				try{
 			    	Class clazz=ejb_instance.getClass();
 
-					if(ejb_instance instanceof i_bean){
-						((i_bean)ejb_instance).setEjb(true);
+
+			    	if(ejb_instance instanceof i_bean){
+			    		((i_bean)ejb_instance).getInfo_context().setProxedEjb(true);
 						if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 							clazz.getAnnotation(ApplicationScoped.class)!=null ||
 							clazz.getAnnotation(RequestScoped.class)!=null){
-								((i_bean)instance).setNavigable(false);
-								((i_bean)instance).setCdi(true);
+								((i_bean)ejb_instance).getInfo_context().setProxedCdi(true);
+								((i_bean)ejb_instance).getInfo_context().setProxedEjb(false);
+								if(clazz.getAnnotation(SessionScoped.class)!=null)
+									((i_bean)ejb_instance).getInfo_context().setSessionScoped(true);
+								if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+									((i_bean)ejb_instance).getInfo_context().setApplicationScoped(true);
+								if(clazz.getAnnotation(RequestScoped.class)!=null)
+									((i_bean)ejb_instance).getInfo_context().setRequestScoped(true);
+								if(clazz.getAnnotation(Named.class)!=null)
+									((i_bean)ejb_instance).getInfo_context().setNamed(true);
 						}else{
 							try{
 								i_bean ibean = ((i_bean)ejb_instance).asBean();
@@ -180,33 +220,58 @@ public class DependencyInjectionProvider implements i_provider {
 								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 									clazzi.getAnnotation(RequestScoped.class)!=null){
-									ibean.setNavigable(false);
-									ibean.setCdi(true);
+									ibean.getInfo_context().setProxedCdi(true);
+									ibean.getInfo_context().setProxedEjb(false);
+									if(clazz.getAnnotation(SessionScoped.class)!=null)
+										ibean.getInfo_context().setSessionScoped(true);
+									if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+										ibean.getInfo_context().setApplicationScoped(true);
+									if(clazz.getAnnotation(RequestScoped.class)!=null)
+										ibean.getInfo_context().setRequestScoped(true);
+									if(clazz.getAnnotation(Named.class)!=null)
+										ibean.getInfo_context().setNamed(true);
 								}
-							}catch(Exception e){
-							}
+							}catch(Exception e){						
+							}					
 						}
 					}else if(ejb_instance instanceof i_action){
-						((i_bean)ejb_instance).setEjb(true);
+			    		((i_action)ejb_instance).getInfo_context().setProxedEjb(true);
 						if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 							clazz.getAnnotation(ApplicationScoped.class)!=null ||
 							clazz.getAnnotation(RequestScoped.class)!=null){
-								((i_bean)instance).setNavigable(false);
-								((i_bean)instance).setCdi(true);
-							}else{
-								try{
-									i_bean ibean = ((i_bean)ejb_instance).asBean();
-									Class clazzi=ibean.getClass();
-									if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
-										clazzi.getAnnotation(ApplicationScoped.class)!=null ||
-										clazzi.getAnnotation(RequestScoped.class)!=null){
-										ibean.setNavigable(false);
-										ibean.setCdi(true);
-									}
-								}catch(Exception e){						
-								}					
-							}
+								((i_action)ejb_instance).getInfo_context().setProxedCdi(true);
+								((i_action)ejb_instance).getInfo_context().setProxedEjb(false);
+								if(clazz.getAnnotation(SessionScoped.class)!=null)
+									((i_action)ejb_instance).getInfo_context().setSessionScoped(true);
+								if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+									((i_action)ejb_instance).getInfo_context().setApplicationScoped(true);
+								if(clazz.getAnnotation(RequestScoped.class)!=null)
+									((i_action)ejb_instance).getInfo_context().setRequestScoped(true);
+								if(clazz.getAnnotation(Named.class)!=null)
+									((i_action)ejb_instance).getInfo_context().setNamed(true);
+						}else{
+							try{
+								i_action iaction = ((i_action)ejb_instance).asAction();
+								Class clazzi=iaction.getClass();
+								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+									clazzi.getAnnotation(RequestScoped.class)!=null){
+									iaction.getInfo_context().setProxedCdi(true);
+									iaction.getInfo_context().setProxedEjb(false);
+									if(clazz.getAnnotation(SessionScoped.class)!=null)
+										iaction.getInfo_context().setSessionScoped(true);
+									if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+										iaction.getInfo_context().setApplicationScoped(true);
+									if(clazz.getAnnotation(RequestScoped.class)!=null)
+										iaction.getInfo_context().setRequestScoped(true);
+									if(clazz.getAnnotation(Named.class)!=null)
+										iaction.getInfo_context().setNamed(true);
+								}
+							}catch(Exception e){						
+							}					
+						}
 					}
+					
 					
 				}catch(Exception e){
 				}

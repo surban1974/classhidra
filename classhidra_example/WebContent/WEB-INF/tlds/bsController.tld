@@ -5,7 +5,7 @@
 
 <taglib>
 
-  <tlib-version>classHidra 1.4.11</tlib-version>
+  <tlib-version>classHidra 1.5.1</tlib-version>
   <jsp-version>1.3</jsp-version>
   <short-name>bs</short-name>
   <description> Tag library for classHidra   </description>
@@ -1623,6 +1623,7 @@
 
 
  
+  
   <tag>
     <name>like</name>
     <tag-class>it.classhidra.core.controller.tags.tagLike</tag-class>
@@ -2084,7 +2085,31 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>
-
+    <attribute>
+        <name>startIndex</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>startIndexFromBean</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>finishIndex</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>finishIndexFromBean</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>				
+    <attribute>
+        <name>toBean</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag> 
 
 <tag>

@@ -118,12 +118,8 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void setVirtual(boolean virtual);
 	boolean getGzipoutput();
 	void setGzipoutput(boolean gzipoutput);
-	boolean isNavigable();
-	void setNavigable(boolean navigable);
-	boolean isEjb();
-	void setEjb(boolean ejb);
-	boolean isCdi();
-	void setCdi(boolean cdi);
+	info_context getInfo_context();
+	void setInfo_context(info_context info_context);
 	
 	
 	listener_bean getListener_b();
