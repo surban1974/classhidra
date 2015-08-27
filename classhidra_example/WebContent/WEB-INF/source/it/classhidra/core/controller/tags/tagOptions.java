@@ -41,6 +41,7 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
+import it.classhidra.core.tool.util.util_xml;
 
 public class tagOptions extends TagSupport{
 	private static final long serialVersionUID = -1L;
@@ -229,7 +230,7 @@ public class tagOptions extends TagSupport{
 		}
 		if (currentValue != null) {
 			results.append(" value=\"");
-			results.append(currentValue);
+			results.append(util_xml.normalHTML((currentValue==null)?"":currentValue.toString(),null));
 			results.append('"');
 		}else	results.append(" value=\"\"");
 

@@ -347,10 +347,31 @@ public static boolean validate() {
 }
 public static String convertAp(String value){
 	String result="";
+	char last=' ';
+	int countbackslash=0;
 	if(value==null) return result;
 	for(int i=0;i<value.length();i++){
-		if(value.charAt(i)=='\'') result+="''";
-		else result+=value.charAt(i);
+		last=value.charAt(i);
+		if(last=='\\')
+			countbackslash++;
+		else if(last=='\'' && countbackslash>0)
+			countbackslash+=0;
+		else	
+			countbackslash=0;
+		if(last=='\''){
+			if(countbackslash>0){
+				if(countbackslash%2==0)
+					result+="''";
+				else
+					result+="'";
+				countbackslash=0;
+			}else result+="''";	
+		}
+		else result+=last;
+	}
+	if(last=='\\'){
+		if(countbackslash%2!=0)
+			result+="\\";
 	}
 	return result;
 }

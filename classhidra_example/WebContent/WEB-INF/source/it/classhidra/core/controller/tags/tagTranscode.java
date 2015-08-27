@@ -243,7 +243,8 @@ public class tagTranscode extends TagSupport{
 		if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))
 			return util_xml.normalASCII(results.toString());
 
-		else return results.toString();
+		else 
+			return util_xml.normalHTML((results==null)?"":results.toString(),null);
 	}		
 	
 

@@ -189,7 +189,8 @@ public class tagFormelement extends TagSupport{
 			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
 				results.append(util_xml.normalASCII((writeValue==null)?"":writeValue.toString()));	
 			else	
-				results.append(writeValue);			
+				results.append(util_xml.normalHTML((writeValue==null)?"":writeValue.toString(), null));	
+			
 			if(styleClass!=null) results.append(" </span>");
 		}
 

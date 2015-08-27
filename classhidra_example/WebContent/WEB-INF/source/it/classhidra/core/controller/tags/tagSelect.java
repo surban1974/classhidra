@@ -40,6 +40,7 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
+import it.classhidra.core.tool.util.util_xml;
 
 
 public class tagSelect extends tagInput{
@@ -317,7 +318,7 @@ public class tagSelect extends tagInput{
 
 			try{
 				results.append(" value=\"");
-				results.append(value);
+				results.append(util_xml.normalHTML((value==null)?"":value.toString(),null));
 				results.append('"');
 		}catch(Exception e){}
 

@@ -41,6 +41,7 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
+import it.classhidra.core.tool.util.util_xml;
 
 public class tagInput extends BodyTagSupport{
 	private static final long serialVersionUID = -1L;
@@ -602,7 +603,7 @@ public class tagInput extends BodyTagSupport{
 				if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
 				if ( clear != null && clear.equalsIgnoreCase("true") && value.equalsIgnoreCase("0")) value="";
 
-				results.append(value);
+				results.append(util_xml.normalHTML((value==null)?"":value.toString(),null));
 				results.append('"');
 				if ( formBean != null &&
 					 type != null && (

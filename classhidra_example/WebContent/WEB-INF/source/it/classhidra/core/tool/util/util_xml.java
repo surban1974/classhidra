@@ -144,5 +144,36 @@ public static String normalASCII(String input){
 	return result;
 	
 }
+
+public static String normalHTML(String input, String charSet) {	
+	if (input==null) return "";
+	
+	try{
+		if(charSet!=null) input = new String(input.getBytes(),charSet);
+	}catch(Exception e){
+
+	}
+
+	String result="";
+	if (input.indexOf("&")>-1 ||
+		input.indexOf("\\")>-1 ||
+		input.indexOf(">")>-1 ||
+		input.indexOf("<")>-1 ||
+		input.indexOf("\"")>-1) { 
+
+		for (int i=0;i<input.length();i++) {
+			if (input.charAt(i)=='&') result+="&amp;";
+			else if (input.charAt(i)=='\'') result+="&apos;";
+			else if (input.charAt(i)=='>') result+="&gt;";
+			else if (input.charAt(i)=='<') result+="&lt;";
+			else if (input.charAt(i)=='"') result+="&quot;";
+			else result+=input.charAt(i);
+		}
+		return result;
+	}
+	else 
+		return input;
+}
+
 }
 
