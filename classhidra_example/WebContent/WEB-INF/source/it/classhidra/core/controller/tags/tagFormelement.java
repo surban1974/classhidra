@@ -56,6 +56,7 @@ public class tagFormelement extends TagSupport{
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
 	protected String normalASCII=null;
+	protected String normalHTML=null;
 
 
 
@@ -83,6 +84,7 @@ public class tagFormelement extends TagSupport{
 		formatCountry=null;
 		normalXML=null;
 		normalASCII=null;
+		normalHTML=null;
 	}
   
 	protected String createTagBody() {
@@ -188,8 +190,10 @@ public class tagFormelement extends TagSupport{
 				results.append(util_xml.normalXML((writeValue==null)?"":writeValue.toString(),null));	
 			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
 				results.append(util_xml.normalASCII((writeValue==null)?"":writeValue.toString()));	
-			else	
+			else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
 				results.append(util_xml.normalHTML((writeValue==null)?"":writeValue.toString(), null));	
+			else 
+				results.append(writeValue);
 			
 			if(styleClass!=null) results.append(" </span>");
 		}
@@ -269,6 +273,14 @@ public class tagFormelement extends TagSupport{
 
 	public void setNormalASCII(String normalASCII) {
 		this.normalASCII = normalASCII;
+	}
+
+	public String getNormalHTML() {
+		return normalHTML;
+	}
+
+	public void setNormalHTML(String normalHTML) {
+		this.normalHTML = normalHTML;
 	}
 
 

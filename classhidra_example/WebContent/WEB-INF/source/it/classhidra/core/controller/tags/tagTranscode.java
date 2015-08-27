@@ -62,6 +62,7 @@ public class tagTranscode extends TagSupport{
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
 	protected String normalASCII=null;
+	protected String normalHTML=null;
 
 
 
@@ -93,6 +94,7 @@ public class tagTranscode extends TagSupport{
 		formatCountry=null;
 		normalXML=null;
 		normalASCII=null;
+		normalHTML=null;
 	}
   
 	protected String createTagBody() {
@@ -234,17 +236,19 @@ public class tagTranscode extends TagSupport{
 			try{
 				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
 				if(replaceOnBlank != null) writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
-			}catch(Exception e){}	
-			results.append(writeValue);			
+			}catch(Exception e){}
+			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
+				results.append(util_xml.normalXML(writeValue.toString(),null));
+			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))
+				results.append(util_xml.normalASCII(writeValue.toString()));
+			else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
+				results.append(util_xml.normalHTML(writeValue.toString(),null));
+			else
+				results.append(writeValue);			
 			if(styleClass!=null) results.append(" </span>");
 		}
-		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
-			return util_xml.normalXML(results.toString(),null);
-		if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))
-			return util_xml.normalASCII(results.toString());
 
-		else 
-			return util_xml.normalHTML((results==null)?"":results.toString(),null);
+		return results.toString();
 	}		
 	
 
@@ -403,6 +407,14 @@ public class tagTranscode extends TagSupport{
 
 	public void setShowKeyAsDefaultValue(String showKeyAsDefaultValue) {
 		this.showKeyAsDefaultValue = showKeyAsDefaultValue;
+	}
+
+	public String getNormalHTML() {
+		return normalHTML;
+	}
+
+	public void setNormalHTML(String normalHTML) {
+		this.normalHTML = normalHTML;
 	}
 }
 
