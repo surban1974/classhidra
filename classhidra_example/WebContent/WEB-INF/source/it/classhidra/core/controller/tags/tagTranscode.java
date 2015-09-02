@@ -63,6 +63,7 @@ public class tagTranscode extends TagSupport{
 	protected String normalXML=null;
 	protected String normalASCII=null;
 	protected String normalHTML=null;
+	protected String additionalAttr=null;
 
 
 
@@ -95,6 +96,7 @@ public class tagTranscode extends TagSupport{
 		normalXML=null;
 		normalASCII=null;
 		normalHTML=null;
+		additionalAttr=null;
 	}
   
 	protected String createTagBody() {
@@ -228,10 +230,19 @@ public class tagTranscode extends TagSupport{
 		if(writeValue==null && valueKey!=null) writeValue=valueKey;
 		
 		if(writeValue!=null){
-			if(styleClass!=null){
-				results.append(" <span class=\"");
-				results.append(styleClass);
-				results.append("\">");
+			if(styleClass!=null || additionalAttr!=null){
+				results.append(" <span ");
+				if(styleClass!=null){
+					results.append(" class=\"");
+					results.append(styleClass);
+					results.append('"');
+				}
+				if(additionalAttr!=null){
+					results.append(" ");
+					results.append(additionalAttr);
+					results.append(" ");
+				}
+				results.append(">");
 			}
 			try{
 				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
@@ -244,8 +255,10 @@ public class tagTranscode extends TagSupport{
 			else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
 				results.append(util_xml.normalHTML(writeValue.toString(),null));
 			else
-				results.append(writeValue);			
-			if(styleClass!=null) results.append(" </span>");
+				results.append(writeValue);		
+			
+			if(styleClass!=null || additionalAttr!=null)
+				results.append(" </span>");
 		}
 
 		return results.toString();
@@ -415,6 +428,14 @@ public class tagTranscode extends TagSupport{
 
 	public void setNormalHTML(String normalHTML) {
 		this.normalHTML = normalHTML;
+	}
+
+	public String getAdditionalAttr() {
+		return additionalAttr;
+	}
+
+	public void setAdditionalAttr(String additionalAttr) {
+		this.additionalAttr = additionalAttr;
 	}
 }
 

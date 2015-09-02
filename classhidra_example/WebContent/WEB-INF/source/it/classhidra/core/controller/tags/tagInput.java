@@ -133,6 +133,7 @@ public class tagInput extends BodyTagSupport{
 	protected String ondragstart = null;
 	protected String ondrop = null;
 	protected String onmousewheel = null;
+	protected String additionalAttr=null;
 
 	protected String clear = null;
 
@@ -239,6 +240,7 @@ public class tagInput extends BodyTagSupport{
 		ondragstart = null;
 		ondrop = null;
 		onmousewheel = null;
+		additionalAttr = null;
 
 		clear = "false";
 		toUpperCase = null;
@@ -836,12 +838,18 @@ public class tagInput extends BodyTagSupport{
 			results.append(onmousewheel);
 			results.append('"');
 		}
+		
+		if(additionalAttr!=null){
+			results.append(" ");
+			results.append(additionalAttr);
+		}
+				
+		
 		results.append(" $modelWire=\"");
 		results.append("input:"+prefixName);
 		results.append('"');
 
 
-		
 		results.append('>');
 
 		if(name!=null && formatInput!=null){
@@ -1461,6 +1469,14 @@ public class tagInput extends BodyTagSupport{
 
 	public void setAsyncUpdateJsFunction(String asyncUpdateJsScript) {
 		this.asyncUpdateJsFunction = asyncUpdateJsScript;
+	}
+
+	public String getAdditionalAttr() {
+		return additionalAttr;
+	}
+
+	public void setAdditionalAttr(String additionalAttr) {
+		this.additionalAttr = additionalAttr;
 	}
 
 

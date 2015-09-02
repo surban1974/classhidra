@@ -5,7 +5,7 @@
 
 <taglib>
 
-  <tlib-version>classHidra 1.5.1.1</tlib-version>
+  <tlib-version>classHidra 1.5.2</tlib-version>
   <jsp-version>1.3</jsp-version>
   <short-name>bs</short-name>
   <description> Tag library for classHidra   </description>
@@ -266,6 +266,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
 
   </tag>
   
@@ -699,6 +704,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
   </tag>
 
   <tag>
@@ -1051,6 +1061,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>		
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
   </tag>
 
 
@@ -1255,7 +1270,11 @@
     	<required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
-	
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
 	
 
   </tag>
@@ -1352,8 +1371,184 @@
         <name>normalHTML</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>		  
+	</attribute>	
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+		  
   </tag> 
+  
+   <tag>
+    <name>htmlout</name>
+    <tag-class>it.classhidra.core.controller.tags.tagHtmlelement</tag-class>
+    <body-content>JSP</body-content>
+    <description>for formBean</description>
+    <attribute>
+        <name>bean</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>name</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>styleClass</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatOutput</name>
+    	<required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+   <attribute>
+    	<name>formatLanguage</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+   <attribute>
+    	<name>formatCountry</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>method_prefix</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>replaceOnBlank</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>  
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+	<attribute>
+        <name>charset</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+		  
+  </tag> 
+  
+    <tag>
+    <name>xmlout</name>
+    <tag-class>it.classhidra.core.controller.tags.tagXmlelement</tag-class>
+    <body-content>JSP</body-content>
+    <description>for formBean</description>
+    <attribute>
+        <name>bean</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>name</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>styleClass</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatOutput</name>
+    	<required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+   <attribute>
+    	<name>formatLanguage</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+   <attribute>
+    	<name>formatCountry</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>method_prefix</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>replaceOnBlank</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>  
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+	<attribute>
+        <name>charset</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+		  
+  </tag> 
+  
+   <tag>
+    <name>asciiout</name>
+    <tag-class>it.classhidra.core.controller.tags.tagAsciielement</tag-class>
+    <body-content>JSP</body-content>
+    <description>for formBean</description>
+    <attribute>
+        <name>bean</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>name</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>styleClass</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatOutput</name>
+    	<required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+   <attribute>
+    	<name>formatLanguage</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+   <attribute>
+    	<name>formatCountry</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>method_prefix</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>replaceOnBlank</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>  
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+
+		  
+  </tag>  
 
  
   <tag>
@@ -1938,6 +2133,11 @@
         <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>    
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
   </tag> 
   <tag>
     <name>link</name>
@@ -2069,6 +2269,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
     </attribute>
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
 </tag>
 <tag>
     <name>sequence</name>
@@ -2818,7 +3023,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>		  
-	
+	<attribute>
+        <name>additionalAttr</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
   </tag>      
   <tag>
     <name>into</name>

@@ -60,6 +60,7 @@ public class tagLink extends TagSupport{
 	protected String target = null;
 	protected String title = null;
 	protected String type = null;
+	protected String additionalAttr = null;
 
 
 	public int doStartTag() throws JspException {
@@ -115,6 +116,7 @@ public class tagLink extends TagSupport{
 		target = null;
 		title = null;
 		type = null;
+		additionalAttr = null;
 	}
 
 	protected String createTagBody() {
@@ -256,8 +258,13 @@ public class tagLink extends TagSupport{
 		}else{
 			results.append(" type=\"text/css\"");
 		}
+		
+		if(additionalAttr!=null){
+			results.append(" ");
+			results.append(additionalAttr);
+		}
 
-		results.append("/>"+System.getProperty("line.separator"));
+		results.append(" />");
 		return results.toString();
 
 	}
@@ -411,6 +418,12 @@ public class tagLink extends TagSupport{
 	}
 	public void setType(String string) {
 		type = string;
+	}
+	public String getAdditionalAttr() {
+		return additionalAttr;
+	}
+	public void setAdditionalAttr(String additionalAttr) {
+		this.additionalAttr = additionalAttr;
 	}
 
 }

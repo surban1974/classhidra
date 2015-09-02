@@ -511,6 +511,11 @@ public class tagSelect extends tagInput{
 			results.append('"');
 		}
 		
+		if(additionalAttr!=null){
+			results.append(" ");
+			results.append(additionalAttr);
+		}	
+		
 		results.append(" $modelWire=\"");
 		results.append("select:"+prefixName);
 		results.append('"');

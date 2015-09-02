@@ -70,6 +70,7 @@ public class tagImage extends TagSupport{
 	protected String alt = null;
 	protected String align = null;
 	protected String src = null;
+	protected String additionalAttr = null;
 
 	public tagImage()
 	{
@@ -125,6 +126,7 @@ public class tagImage extends TagSupport{
 		alt = null;
 		align = null;
 		src = null;
+		additionalAttr = null;
 	}
 
 	protected String createTagBody(){
@@ -322,7 +324,13 @@ public class tagImage extends TagSupport{
 			results.append(vspace);
 			results.append('"');
 		}
-		results.append("></img>");
+		
+		if(additionalAttr!=null){
+			results.append(" ");
+			results.append(additionalAttr);
+		}
+		
+		results.append(" />");
 		return results.toString();
 	}
 
@@ -745,6 +753,14 @@ public class tagImage extends TagSupport{
 	 */
 	public void setSrc(String string) {
 		src = string;
+	}
+
+	public String getAdditionalAttr() {
+		return additionalAttr;
+	}
+
+	public void setAdditionalAttr(String additionalAttr) {
+		this.additionalAttr = additionalAttr;
 	}
 
 }

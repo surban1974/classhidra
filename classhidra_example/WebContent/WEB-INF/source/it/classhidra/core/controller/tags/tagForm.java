@@ -94,6 +94,7 @@ public class tagForm extends TagSupport{
 	protected String ondragstart = null;
 	protected String ondrop = null;
 	protected String onmousewheel = null;
+	protected String additionalAttr=null;
 
 	protected String embedScript = null;
 
@@ -177,6 +178,7 @@ public class tagForm extends TagSupport{
 		ondragstart = null;
 		ondrop = null;
 		onmousewheel = null;
+		additionalAttr = null;
 
 		embedScript=null;
 	}
@@ -459,6 +461,11 @@ public class tagForm extends TagSupport{
 			results.append('"');
 		}
 
+		if(additionalAttr!=null){
+			results.append(" ");
+			results.append(additionalAttr);
+			results.append(" ");
+		}		
 
 
 
@@ -823,6 +830,14 @@ public class tagForm extends TagSupport{
 
 	public void setNovalidate(String novalidate) {
 		this.novalidate = novalidate;
+	}
+
+	public String getAdditionalAttr() {
+		return additionalAttr;
+	}
+
+	public void setAdditionalAttr(String additionalAttr) {
+		this.additionalAttr = additionalAttr;
 	}
 
 }

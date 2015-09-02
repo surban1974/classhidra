@@ -88,6 +88,7 @@ public class tagOptions extends TagSupport{
 	protected String ondragstart = null;
 	protected String ondrop = null;
 	protected String onmousewheel = null;
+	protected String additionalAttr=null;
 
 
 	protected String formatInput = null;
@@ -198,7 +199,8 @@ public class tagOptions extends TagSupport{
 		ondragstart = null;
 		ondrop = null;
 		onmousewheel = null;
-		ignoreCase =null;
+		ignoreCase = null;
+		additionalAttr= null;
 
 	}
 
@@ -414,7 +416,12 @@ public class tagOptions extends TagSupport{
 			results.append(onmousewheel);
 			results.append('"');
 		}
-
+		if(additionalAttr!=null){
+			results.append(" ");
+			results.append(additionalAttr);
+			results.append(" ");
+		}	
+		
 
 		results.append('>');
 		if (currentLabel != null){
@@ -711,6 +718,14 @@ public class tagOptions extends TagSupport{
 
 	public void setIgnoreCase(String ignoreCase) {
 		this.ignoreCase = ignoreCase;
+	}
+
+	public String getAdditionalAttr() {
+		return additionalAttr;
+	}
+
+	public void setAdditionalAttr(String additionalAttr) {
+		this.additionalAttr = additionalAttr;
 	}
 
 

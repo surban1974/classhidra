@@ -57,6 +57,7 @@ public class tagFormelement extends TagSupport{
 	protected String normalXML=null;
 	protected String normalASCII=null;
 	protected String normalHTML=null;
+	protected String additionalAttr=null;
 
 
 
@@ -85,6 +86,7 @@ public class tagFormelement extends TagSupport{
 		normalXML=null;
 		normalASCII=null;
 		normalHTML=null;
+		additionalAttr=null;
 	}
   
 	protected String createTagBody() {
@@ -108,7 +110,7 @@ public class tagFormelement extends TagSupport{
 		
 		if(method_prefix==null) method_prefix="get";
 		
-		StringBuffer results = new StringBuffer("");
+
 		Object writeValue=null;
 		Object anotherBean=null;
 		if(bean==null){
@@ -168,15 +170,31 @@ public class tagFormelement extends TagSupport{
 			prefixName=name;
 		else prefixName+="."+name;
 		
+		
+		String html = drawTagBody(writeValue, prefixName);
+
+		prefixName=null;
+		return html;
+	}	
+	
+	protected String drawTagBody(Object writeValue, String prefixName){
+		StringBuffer results = new StringBuffer("");
 		if(writeValue!=null){
-			if(styleClass!=null){
-				results.append(" <span class=\"");
-				results.append(styleClass);
-				results.append('"');
+			if(styleClass!=null || additionalAttr!=null){
+				results.append(" <span ");
+				if(styleClass!=null){
+					results.append(" class=\"");
+					results.append(styleClass);
+					results.append('"');
+				}
+				if(additionalAttr!=null){
+					results.append(" ");
+					results.append(additionalAttr);
+				}
 
 				results.append(" $modelWire=\"");
 				results.append("formelement:"+prefixName);
-				results.append('"');				
+				results.append('"');
 				
 				results.append(">");
 			}
@@ -195,13 +213,11 @@ public class tagFormelement extends TagSupport{
 			else 
 				results.append(writeValue);
 			
-			if(styleClass!=null) results.append(" </span>");
+			if(styleClass!=null || additionalAttr!=null)
+				results.append("</span>");
 		}
-
-
-		prefixName=null;
 		return results.toString();
-	}		
+	}
 	
 
 	public String getName() {
@@ -281,6 +297,14 @@ public class tagFormelement extends TagSupport{
 
 	public void setNormalHTML(String normalHTML) {
 		this.normalHTML = normalHTML;
+	}
+
+	public String getAdditionalAttr() {
+		return additionalAttr;
+	}
+
+	public void setAdditionalAttr(String additionalAttr) {
+		this.additionalAttr = additionalAttr;
 	}
 
 

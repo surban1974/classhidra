@@ -44,6 +44,7 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
+import it.classhidra.core.tool.util.util_xml;
 
 public class tagList extends TagSupport{
 	private static final long serialVersionUID = 1L;
@@ -909,7 +910,9 @@ results.append("</a>"+System.getProperty("line.separator"));
 			if(mark_styleClass!=null) results.append("span class=\""+mark_styleClass+"\">");
 			else results.append("<font color=\"red\">");
 		}
-		results.append(writeValue);
+		if(writeValue!=null)
+			results.append(util_xml.normalHTML(writeValue.toString(),null));
+ 
 		if(marked){
 			if(mark_styleClass!=null) results.append("</span>");
 			else results.append("</font>");
