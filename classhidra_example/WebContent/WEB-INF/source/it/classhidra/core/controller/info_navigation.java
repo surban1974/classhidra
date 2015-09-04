@@ -53,6 +53,32 @@ public class info_navigation extends elementBase implements i_elementBase{
 		super();
 		reimposta();
 	}
+	
+	public info_navigation clone(){
+		info_navigation result = new info_navigation();
+
+		result.iAction = this.getIAction();
+		result.iRedirect = this.getIRedirect();
+		result.id = this.getId();
+		if(this.get_realcontent()!=null && !this.get_realcontent().getInfo_context().isScoped())
+				result._content = this.get_realcontent();
+		else{
+			try{
+				result._content = (i_bean)util_cloner.clone(this.get_realcontent());
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		
+		result.iService = this.getIService();
+		if(this.child!=null){
+			result.child = this.child.clone();
+			result.child.setParent(result);
+		}
+
+		
+		return result;
+	}
 
 	public void decodeMessage(HttpServletRequest request){
 		if(this.iRedirect!=null && (desc_second==null || desc_second.equals("")))

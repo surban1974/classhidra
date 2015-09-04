@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.annotation.elements.Redirect;
-import it.classhidra.annotation.elements.SessionDirective;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
@@ -52,7 +52,8 @@ import it.classhidra.framework.web.beans.option_element;
 	}
 )
 
-@SessionDirective
+//@SessionDirective
+@NavigatedDirective(memoryContent="true")
 @Stateful
 @Local(i_action.class)
 public class EjbComponentAmanager extends action implements i_action, Serializable{

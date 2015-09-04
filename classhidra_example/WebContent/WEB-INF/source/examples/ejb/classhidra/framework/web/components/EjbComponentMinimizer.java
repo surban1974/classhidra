@@ -167,23 +167,59 @@ private info_navigation prepareDump(HttpServletRequest request){
 					}
 				}
 			}
+			if(lastInstance_clone==null && source!=null && fromSessionGlobal!=null && fromSessionGlobal.get(source)!=null){
+				if(fromSessionGlobal.get(source) instanceof i_bean){
+					i_bean second = (i_bean)fromSessionGlobal.get(source);
+		    		if(second.asBean().getInfo_context()!=null && !second.asBean().getInfo_context().isScoped()){
+		    			if(second.asBean().getInfo_context().isOnlyProxed())
+		    				lastInstance_clone = second;
+		    		}else if(second.asBean().getInfo_context()!=null && second.asBean().getInfo_context().isScoped()){
+		    			lastInstance_clone = second;
+		    		}else{
+		    			try{
+		    				lastInstance_clone = (i_bean)util_cloner.clone(second);
+		    			}catch(Exception e){
+		    				e.printStackTrace();
+		    			}
+		    		}
+		    	}
+			}
 			try{
 				HashMap fromSession_clone = new HashMap();
 				if(fromSessionGlobal!=null){
 					Iterator it = fromSessionGlobal.entrySet().iterator();
 					while (it.hasNext()) {
 						Map.Entry pair = (Map.Entry)it.next();
-					    if(!pair.getKey().toString().equalsIgnoreCase(get_infoaction().getPath()))
-					    	fromSession_clone.put(pair.getKey(), util_cloner.clone(pair.getValue()));
+					    if(!pair.getKey().toString().equalsIgnoreCase(get_infoaction().getPath())){
+					    	if(pair.getValue() instanceof i_bean){
+					    		i_bean second = (i_bean)pair.getValue();
+					    		if(second.asBean().getInfo_context()!=null && !second.asBean().getInfo_context().isScoped()){
+					    			if(second.asBean().getInfo_context().isOnlyProxed())
+					    				fromSession_clone.put(pair.getKey(), pair.getValue());
+					    		}else if(second.asBean().getInfo_context()!=null && second.asBean().getInfo_context().isScoped()){
+					    			fromSession_clone.put(pair.getKey(), pair.getValue());
+					    		}else
+					    			fromSession_clone.put(pair.getKey(), util_cloner.clone(pair.getValue()));
+					    	}else
+					    		fromSession_clone.put(pair.getKey(), util_cloner.clone(pair.getValue()));
+					    }
 					}
 				}
 
 				fromSessions.put(current.getIAction().getPath(), fromSession_clone);
-				elements.put(current.getIAction().getPath(), util_cloner.clone(formInfoNavigation));
-				if(lastInstance_clone!=null)
-					fromLastInstance.put(current.getIAction().getPath(), lastInstance_clone);
+				elements.put(current.getIAction().getPath(), formInfoNavigation.clone());
 				labels.put(current.getIAction().getPath(), current.getDesc_second());
 				keys=prepareKeys(elements, labels);
+				
+				if(lastInstance_clone!=null){
+					fromLastInstance.put(source, lastInstance_clone);
+					labels.clear();
+					labels.put(source, source);
+					keys.addAll(prepareKeys(fromLastInstance, labels));
+				}
+
+					
+				
 
 			}catch(Exception e){
 			}

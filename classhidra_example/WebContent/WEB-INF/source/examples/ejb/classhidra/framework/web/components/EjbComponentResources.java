@@ -60,7 +60,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 	boolean isScript=false;
 
-	if(!this.getMiddleAction().equals("")){
+	if(!this.getMiddleAction().equals("") && !this.getMiddleAction().equals("open") && !this.getMiddleAction().equals("close")){
 		String pinAuth = bsController.getAppInit().get_pin();
 		isScript=true;
 		if(pinAuth!=null && pinAuth.trim().length()>0){
@@ -97,6 +97,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				}
 			}
 		}
+		this.setMiddleAction("");
 	}
 
 	if(this.getMiddleAction().equals("users_config")){
