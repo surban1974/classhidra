@@ -1,22 +1,21 @@
 package examples.ejb.classhidra.framework.web.components;
 
+import java.io.Serializable;
+
+import javax.ejb.Local;
+import javax.ejb.Stateful;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
-
 import it.classhidra.core.tool.exception.bsControllerException;
-
-import java.io.Serializable;
-
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 
 @Action (
@@ -33,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 	}
 )
 
-@Stateless
+@Stateful
 @Local(i_action.class)
 public class EjbComponentReportNH extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6534122783978835682L;

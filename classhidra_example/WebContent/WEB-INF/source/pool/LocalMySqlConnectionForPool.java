@@ -20,6 +20,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 
 public class LocalMySqlConnectionForPool implements Connection, iConnectionForPool {
@@ -290,6 +291,36 @@ public class LocalMySqlConnectionForPool implements Connection, iConnectionForPo
 
 	public void setClientInfo(String arg0, String arg1) throws SQLClientInfoException {
 		conn.setClientInfo(arg0,arg1);
+		
+	}
+
+
+	public void abort(Executor arg0) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public int getNetworkTimeout() throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	public String getSchema() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void setSchema(String schema) throws SQLException {
+		// TODO Auto-generated method stub
 		
 	}
 }

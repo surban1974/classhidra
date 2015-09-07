@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app id="WebApp">
-	<display-name>classhidra_light_framework</display-name>
+	<display-name>classhidra_example</display-name>
 	<filter>
 		<filter-name>bsFilter</filter-name>
 		<display-name>bsFilter</display-name>
