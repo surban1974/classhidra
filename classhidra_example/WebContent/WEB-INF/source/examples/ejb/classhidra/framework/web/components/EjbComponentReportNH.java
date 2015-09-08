@@ -3,7 +3,7 @@ package examples.ejb.classhidra.framework.web.components;
 import java.io.Serializable;
 
 import javax.ejb.Local;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +32,7 @@ import it.classhidra.core.tool.exception.bsControllerException;
 	}
 )
 
-@Stateful
+@Stateless
 @Local(i_action.class)
 public class EjbComponentReportNH extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6534122783978835682L;

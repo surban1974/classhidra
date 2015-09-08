@@ -27,15 +27,10 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <tr>
 <td align="center" style="border-bottom-style: solid 1px;" valign="middle">	
 
-<jsp:include page="/jsp/included/panel_top.jsp"/>
+
 	<table>
 		<tr>
-			<td 		valign="middle" 
-						align="center" 
-						width="150"
-						
-						style="border-right-style: solid;border-right-width: 1px ; border-right-color: #D5E5F7"
-			><img src="images/logo.gif" border="0" ></td>
+
 			<td>
 				<table >
 					<tr>
@@ -44,7 +39,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 					</tr>	
 					<tr>
 						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_2" defaultValue="Version"/>:</b></nobr></td>
-						<td class="labelContent" width="400px"> 1.5.1</td>
+						<td class="labelContent" width="400px"> 1.5.2</td>
 					</tr>	
 					<tr>
 						<td align="right" width="100px" class="labelLeft"><nobr><b><bs:message code="about_3" defaultValue="Author"/>:</b></nobr></td>
@@ -70,7 +65,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 		
 		</tr>	
 	</table>
-<jsp:include page="/jsp/included/panel_bottom.jsp"/>
+
 </td>
 </tr>
 <tr>

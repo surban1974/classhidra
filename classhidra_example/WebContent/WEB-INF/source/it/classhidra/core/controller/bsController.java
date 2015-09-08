@@ -593,7 +593,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 				)
 			){
 //				bean_instance = action_instance.asBean();
-				bean_instance = action_instance;
+//				bean_instance = action_instance;
+				if(action_instance.asBean().getInfo_context().isStateless())
+					bean_instance = action_instance.asBean();
+				else
+					bean_instance = action_instance;
 			}else if(iBean == null && !action_instance.get_infoaction().getName().equals("")){
 				if(action_instance.getRealBean()==null){
 //					info_context info = checkBeanContext(action_instance.asBean());
@@ -967,7 +971,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 						)
 				){
 //					bean_instance_clone = prev_action_instance.asBean();
-					bean_instance_clone = prev_action_instance;
+//					bean_instance_clone = prev_action_instance;
+					if(prev_action_instance.asBean().getInfo_context().isStateless())
+						bean_instance_clone = prev_action_instance.asBean();
+					else
+						bean_instance_clone = prev_action_instance;					
 				}else if(iBean == null && !prev_action_instance.get_infoaction().getName().equals("")){
 					if(prev_action_instance.getRealBean()==null){
 //						bean_instance_clone = prev_action_instance.asBean();

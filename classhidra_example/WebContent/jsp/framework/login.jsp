@@ -38,6 +38,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <table border="0" width="100%" height="450" >
 <tr>
 <td align="center" style="border-bottom-style: solid 1px;" valign="middle">
+<br></br>	
 	
 
 	
@@ -90,7 +91,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 							<td width="150" class="signOnLabel"><bs:message code="login_3" defaultValue="Ruoli"/>&nbsp;&nbsp;&nbsp;</td>
 						</tr>								
 						<tr>
-							<td width="300" style="border-left: solid 1px silver;">
+							<td width="300" >
 					
 										<bs:list
 											addHiddenInput="false" 
@@ -99,7 +100,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 											key_values="code"
 											propertys="code;" 
 											tr_onclick="runSubmit('content')"
-											tr_styleClass="colTab1"	
+											tr_styleClass="rowSignOn"	
+											td_style="font-size: 14px; height:24px"											
+
 											styleClass="divLists0"	
 											tb_width="100%"
 											width="300"
@@ -122,12 +125,41 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <br></br>	
 <br></br>
 <br></br>
-<br></br>
+
 </td>
 
 </tr>
 <tr>
-	<td style="border-top-style: solid;border-top-width: 1px ; border-top-color:#D5E5F7; height: 10px" valign="bottom">
+	<td align="center">
+
+
+<jsp:include page="/jsp/included/panel_top.jsp"/>	
+			
+			<table  >
+	
+				<tr>
+					<td 
+						valign="middle" 
+						align="center" 
+						width="150"
+						style="cursor: pointer;"
+						>
+						<img src="images/decor/neohort/charts.gif" border="0" onclick="goAction('neohort')">
+						
+					</td>
+					<td align="center" valign="middle" width="305"><script>ObjectDraw("page1","button",18,"&nbsp;NeoHort PDF Vector Chart integration&nbsp;&nbsp;","goAction('neohort')","page_section_active","","images/menu/","",true,24);</script></td>
+				</tr>
+			</table>		
+<jsp:include page="/jsp/included/panel_bottom.jsp"/>	
+<br></br>
+<br></br>	
+	</td>
+</tr>	   
+
+
+<tr>
+	<td style="border-top-style: solid;border-top-width: 1px ; border-top-color:#D5E5F7; height: 10px; " valign="bottom">
+
 	</td>
 </tr>
 <tr>
