@@ -158,13 +158,20 @@ public class bsFilter implements Filter {
 				boolean elaborateBsCheck=true;
 				
 				if(url!=null){
-					if(url.indexOf("?")>-1)
-						url=url.substring(0,url.indexOf("?"));
+					if(url.indexOf('?')>-1)
+						url=url.substring(0,url.indexOf('?'));
 
 					if(bsController.getAppInit().get_extention_do().equals("")){
-						if(url.indexOf(".")>-1) elaborateBsCheck=false;
+						if(	url.lastIndexOf('.')>-1 &&
+							url.lastIndexOf('/')>-1 &&
+							url.lastIndexOf('/')<url.lastIndexOf('.')) 
+							elaborateBsCheck=false;
 					}else{
-						if(url.indexOf(bsController.getAppInit().get_extention_do())==-1 && url.indexOf(".")>-1) elaborateBsCheck=false;
+						if(	url.indexOf(bsController.getAppInit().get_extention_do())==-1 &&
+							url.indexOf('.')>-1  &&
+							url.lastIndexOf('/')>-1 &&
+							url.lastIndexOf('/')<url.lastIndexOf('.')) 
+							elaborateBsCheck=false;
 					}
 				}
 				
