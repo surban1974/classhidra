@@ -30,7 +30,21 @@
   
   <build>
 
-  
+  	<resources>
+ 		<resource>
+ 			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+ 			<includes>
+ 				<include>classhidra_app.properties</include>
+ 				<include>classhidra_auth.properties</include>
+ 				<include>classhidra_db.properties</include>
+ 				<include>classhidra_db.properties.pool</include>
+ 				<include>classhidra_log.properties</include>
+ 				<include>classhidra_log.properties.stub</include>
+ 				<include>classhidra_scheduler.properties</include>
+ 			</includes>
+ 
+ 		</resource>
+    </resources>  
 
 	<plugins>
 	
@@ -169,7 +183,7 @@
 			<artifactId>spring</artifactId>
 			<version>2.5.6</version>
 		</dependency>
- -->		
+		
  		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -180,7 +194,7 @@
 			<artifactId>jsp-api</artifactId>
 			<version>2.2</version>
 		</dependency>
-
+ -->
 	</dependencies>  
 
    	<organization>
