@@ -1,3 +1,0 @@
-# Module classhidra4ape
-# RPC service class, partial path of RPC policy file
-application.client.GreetingService, 2CE3575FBD99D6546A8D1651484E1856.gwt.rpc

@@ -1,0 +1,206 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.surban1974.classhidra</groupId>
+	<artifactId>classhidra-base</artifactId>
+	<version>1.5.2</version>
+	<name>ClassHidra Base Module</name>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development.</description>
+	<url>https://github.com/surban1974/classhidra</url>
+  
+	<issueManagement>
+		<url>https://github.com/surban1974/classhidra/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>  
+	
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2.0 (GPLv2)</name>
+			<url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+		
+ 	<distributionManagement>
+    	<repository>
+        	<id>internal.repo</id>
+        	<name>Temporary Staging Repository</name>
+        	<url>file://${project.build.directory}/mvn-repo</url>
+    	</repository>
+	</distributionManagement>   
+  
+  <build>
+     <resources>
+ 		<resource>
+ 			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+ 			<includes>
+ 				<include>config/messages/classhidra_messages.xml</include>
+ 				<include>it/classhidra/version.properties</include>
+ 				<include>it/classhidra/core/controller/resources/*.*</include>
+ 				<include>it/classhidra/framework/resources/**/*.*</include>
+ 				<include>it/classhidra/scheduler/*.properties</include>
+ 				<include>it/classhidra/scheduler/**/*.properties</include>
+ 				<include>it/classhidra/scheduler/**/*.sql</include>
+ 			</includes>
+ 		</resource>
+    </resources>  
+  
+
+	<plugins>
+	
+	   <plugin>
+	        <artifactId>maven-deploy-plugin</artifactId>
+	        <version>2.8.1</version>
+	        <configuration>
+	            <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+	        </configuration>
+	    </plugin> 
+	    	
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+		    <artifactId>build-helper-maven-plugin</artifactId>
+		    <executions>
+		        <execution>
+		            <phase>generate-sources</phase>
+		            <goals>
+		            	<goal>add-source</goal>
+		            </goals>
+		            <configuration>
+		                <sources>
+		                    <source>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</source>
+		                </sources>
+		            </configuration>
+		        </execution>
+		    </executions>
+		</plugin>
+	
+		
+		<plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+	        <version>3.3</version>
+	        <configuration>
+		 		<excludes>
+					<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
+		            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
+		            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
+		            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
+		            <exclude>it/classhidra/plugin/**/*.java</exclude>
+				</excludes>
+		                  
+				<includes>
+					<include>it/**/*.java</include>
+		            <include>external_loaders/**/*.java</include>
+		            <include>pool/**/*.java</include> 
+	     
+				</includes>        
+				<source>1.7</source>
+				<target>1.7</target>
+			</configuration>
+		</plugin>
+		
+	  	<plugin>
+	    	<groupId>org.apache.maven.plugins</groupId>
+	    	<artifactId>maven-install-plugin</artifactId>
+		    <executions>
+		        <execution>
+		            <goals>
+		                <goal>install</goal>
+		            </goals>
+		            <configuration>
+		                <createChecksum>true</createChecksum>
+		            </configuration>
+		        </execution>
+		    </executions>
+	  	</plugin>
+	  			
+ 		<plugin>
+        	<groupId>com.github.github</groupId>
+            <artifactId>site-maven-plugin</artifactId>
+            <version>0.12</version>
+            <configuration>
+                <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+                <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+                <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
+                <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
+                <includes><include>**/*</include></includes>
+                <repositoryName>classhidra</repositoryName>      <!-- github repo name -->
+                <repositoryOwner>surban1974</repositoryOwner>    <!-- github username  -->
+<!-- <merge>true</merge>	 --><!-- AVOID REWRITING !!!  -->
+                 
+                 
+            </configuration>
+            <executions>
+              <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+              <execution>
+                <goals>
+                  <goal>site</goal>
+                </goals>
+                <phase>deploy</phase>
+              </execution>
+            </executions>
+        </plugin>	  
+		
+	</plugins>
+
+
+	</build>
+  
+ 	<dependencies>
+ 
+ <!-- 
+		<dependency>
+			<groupId>com.github.surban1974.neohort</groupId>
+			<artifactId>neoHort5</artifactId>
+			<version>5.2.5.2</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>net.htmlparser.jericho</groupId>
+			<artifactId>jericho-html</artifactId>
+			<version>2.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss</groupId>
+			<artifactId>jboss-vfs</artifactId>
+			<version>3.1.0.Final</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.weld.servlet</groupId>
+			<artifactId>weld-servlet</artifactId>
+			<version>1.1.31.Final</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>ejb3-persistence</artifactId>
+			<version>3.3.2.Beta1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>2.5.6</version>
+		</dependency>
+ -->		
+ 		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+	</dependencies>  
+
+   	<organization>
+   		<name>Svyatoslav Urbanovych</name>
+   		<url>https://it.linkedin.com/pub/svyatoslav-urbanovych/2/241/754</url>
+   	</organization>
+   	<properties>
+   		<github.global.server>github</github.global.server>
+   	</properties>   
+</project>
