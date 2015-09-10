@@ -67,8 +67,6 @@
 	        <configuration>
                   
 				<includes>
-					<include>it/classhidra/plugin/provider/cdi/**/*.java</include>
-					<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>
 					<include>it/classhidra/plugin/provider/ejb/**/*.java</include>
 					<include>it/classhidra/plugin/provider/EjbProvider.java</include>					
 				</includes>        
