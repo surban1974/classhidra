@@ -12,18 +12,18 @@ Compatible:
 Google AppEngine - http://classhidra4ape.appspot.com 
 
 Maven dependencies (jar):
-&lt;dependency&rt;
-&lt;groupId&rt;com.github.surban1974.classhidra&lt;/groupId&rt;
+&lt;dependency&gt;
+&lt;groupId&gt;com.github.surban1974.classhidra&lt;/groupId&gt;
 &lt;!-- JAR
-&lt;artifactId&rt;classhidra-base&lt;/artifactId&rt;
-&lt;artifactId&rt;classhidra-cdi&lt;/artifactId&rt;
-&lt;artifactId&rt;classhidra-ejb&lt;/artifactId&rt;
-&lt;artifactId&rt;classhidra-jboss7-vfs&lt;/artifactId&rt;
---&rt;
+&lt;artifactId&gt;classhidra-base&lt;/artifactId&gt;
+&lt;artifactId&gt;classhidra-cdi&lt;/artifactId&gt;
+&lt;artifactId&gt;classhidra-ejb&lt;/artifactId&gt;
+&lt;artifactId&gt;classhidra-jboss7-vfs&lt;/artifactId&gt;
+--&gt;
 &lt;!-- WAR
-&lt;artifactId&rt;classhidra-base-example&lt;/artifactId&rt;
-&lt;artifactId&rt;classhidra-cdi-example&lt;/artifactId&rt;
-&lt;artifactId&rt;classhidra-ejb-example&lt;/artifactId&rt;
---&rt;
-&lt;version&rt;1.5.2&lt;/version&rt;
+&lt;artifactId&gt;classhidra-base-example&lt;/artifactId&gt;
+&lt;artifactId&gt;classhidra-cdi-example&lt;/artifactId&gt;
+&lt;artifactId&gt;classhidra-ejb-example&lt;/artifactId&gt;
+--&gt;
+&lt;version&gt;1.5.2&lt;/version&gt;
 &lt;/dependency
