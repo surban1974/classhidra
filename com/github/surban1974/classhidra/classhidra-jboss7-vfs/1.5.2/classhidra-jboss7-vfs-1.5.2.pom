@@ -74,6 +74,25 @@
 				<target>1.7</target>
 			</configuration>
 		</plugin>
+		
+		<plugin>
+		  	<groupId>org.apache.maven.plugins</groupId>
+		  	<artifactId>maven-source-plugin</artifactId>
+		  	<executions>
+		    	<execution>
+		      		<id>attach-sources</id>
+		      		<goals>
+		        		<goal>jar</goal>
+		      		</goals>
+		    	</execution>
+		  	</executions>
+ 			<configuration>
+				<includes>
+					<include>it/classhidra/plugin/vfs/util_vfs_classes.java</include>
+					<include>it/classhidra/plugin/was/jboss7/**/*.java</include>
+				</includes>        
+			</configuration>		  	
+		</plugin>				
 
 	  	<plugin>
 	    	<groupId>org.apache.maven.plugins</groupId>
