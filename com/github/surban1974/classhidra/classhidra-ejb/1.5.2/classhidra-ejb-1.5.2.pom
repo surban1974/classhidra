@@ -74,6 +74,25 @@
 				<target>1.7</target>
 			</configuration>
 		</plugin>
+		
+		<plugin>
+		  	<groupId>org.apache.maven.plugins</groupId>
+		  	<artifactId>maven-source-plugin</artifactId>
+		  	<executions>
+		    	<execution>
+		      		<id>attach-sources</id>
+		      		<goals>
+		        		<goal>jar</goal>
+		      		</goals>
+		    	</execution>
+		  	</executions>
+ 			<configuration>
+				<includes>
+					<include>it/classhidra/plugin/provider/ejb/**/*.java</include>
+					<include>it/classhidra/plugin/provider/EjbProvider.java</include>					
+				</includes>        
+			</configuration>		  	
+		</plugin>				
 
 	  	<plugin>
 	    	<groupId>org.apache.maven.plugins</groupId>
