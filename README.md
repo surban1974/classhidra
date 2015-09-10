@@ -11,19 +11,19 @@ Implementation:
 Compatible:
 Google AppEngine - http://classhidra4ape.appspot.com 
 
-Maven dependencies (jar):
-&lt;dependency&gt;
-&lt;groupId&gt;com.github.surban1974.classhidra&lt;/groupId&gt;
-&lt;!-- JAR
-&lt;artifactId&gt;classhidra-base&lt;/artifactId&gt;
-&lt;artifactId&gt;classhidra-cdi&lt;/artifactId&gt;
-&lt;artifactId&gt;classhidra-ejb&lt;/artifactId&gt;
-&lt;artifactId&gt;classhidra-jboss7-vfs&lt;/artifactId&gt;
---&gt;
-&lt;!-- WAR
-&lt;artifactId&gt;classhidra-base-example&lt;/artifactId&gt;
-&lt;artifactId&gt;classhidra-cdi-example&lt;/artifactId&gt;
-&lt;artifactId&gt;classhidra-ejb-example&lt;/artifactId&gt;
---&gt;
-&lt;version&gt;1.5.2&lt;/version&gt;
-&lt;/dependency
+Maven dependencies (jar):<br>
+&lt;dependency&gt;<br>
+&lt;groupId&gt;com.github.surban1974.classhidra&lt;/groupId&gt;<br>
+&lt;!-- JAR<br>
+&lt;artifactId&gt;classhidra-base&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-cdi&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-ejb&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-jboss7-vfs&lt;/artifactId&gt;<br>
+--&gt;<br>
+&lt;!-- WAR<br>
+&lt;artifactId&gt;classhidra-base-example&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-cdi-example&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-ejb-example&lt;/artifactId&gt;<br>
+--&gt;<br>
+&lt;version&gt;1.5.2&lt;/version&gt;<br>
+&lt;/dependency<br>
