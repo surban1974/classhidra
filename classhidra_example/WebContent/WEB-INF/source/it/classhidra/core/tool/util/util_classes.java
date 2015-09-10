@@ -373,9 +373,12 @@ public class util_classes {
 			buf_v.add(buf_tmp);
 		}
 		byte[] xslt= new byte[(int)size];
+		int pos = 0;
 		for(int i=0;i<buf_v.size();i++){
 			byte[] current = (byte[])buf_v.get(i);
-			System.arraycopy(buf_v.get(i),0,xslt,i*8 * 1024,current.length);
+//			System.arraycopy(buf_v.get(i),0,xslt,i*8 * 1024,current.length);
+			System.arraycopy(buf_v.get(i),0,xslt,pos,current.length);
+			pos+=current.length;
 		}
 		return xslt;
 	}	
@@ -426,6 +429,7 @@ public class util_classes {
 	    		result = readInputStream2Byte(is);
 	    	}
 	    }catch (Exception e) {
+	    	e.toString();
 	    }finally {
 	    	try {
 	    		if (is != null) is.close();

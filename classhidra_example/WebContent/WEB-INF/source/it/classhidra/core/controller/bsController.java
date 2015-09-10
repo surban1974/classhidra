@@ -484,7 +484,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
 						else
 							util_classes.getResourceAsByte("it/classhidra/core/controller/resources/"+loadSrc);
-						if(output==null)
+						if(output==null && resources==null)
 							resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
 					}
 					if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework)){
@@ -492,7 +492,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes());
 						else
 							output = util_classes.getResourceAsByte("it/classhidra/framework/resources/"+loadSrc);
-						if(output==null)
+						if(output==null && resources==null)
 							resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes());
 					}
 
@@ -512,8 +512,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(loadType!=null)
 							response.setContentType(loadType);
 						 OutputStream os = response.getOutputStream();
-						 for(int i=0;i<resources.size();i++)
-							 os.write((byte[])resources.get(i));
+						 for(int i=0;i<resources.size();i++){
+							 byte[] towrite = (byte[])resources.get(i);
+							 if(towrite!=null)
+								 os.write(towrite);
+						 }
 			    		 os.flush();
 			    		 os.close();
 					}
