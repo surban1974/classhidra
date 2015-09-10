@@ -97,6 +97,35 @@
 			</configuration>
 		</plugin>
 		
+		<plugin>
+		  	<groupId>org.apache.maven.plugins</groupId>
+		  	<artifactId>maven-source-plugin</artifactId>
+		  	<executions>
+		    	<execution>
+		      		<id>attach-sources</id>
+		      		<goals>
+		        		<goal>jar</goal>
+		      		</goals>
+		    	</execution>
+		  	</executions>
+ 			<configuration>
+		 		<excludes>
+					<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
+		            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
+		            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
+		            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
+		            <exclude>it/classhidra/plugin/**/*.java</exclude>
+				</excludes>
+		                  
+				<includes>
+					<include>it/**/*.java</include>
+		            <include>external_loaders/**/*.java</include>
+		            <include>pool/**/*.java</include> 
+	     
+				</includes>        
+			</configuration>		  	
+		</plugin>		
+		
 	  	<plugin>
 	    	<groupId>org.apache.maven.plugins</groupId>
 	    	<artifactId>maven-install-plugin</artifactId>
@@ -124,7 +153,7 @@
                 <includes><include>**/*</include></includes>
                 <repositoryName>classhidra</repositoryName>      <!-- github repo name -->
                 <repositoryOwner>surban1974</repositoryOwner>    <!-- github username  -->
-<!-- <merge>true</merge>	 --><!-- AVOID REWRITING !!!  -->
+ <merge>true</merge>	 <!-- AVOID REWRITING !!!  -->
                  
                  
             </configuration>
