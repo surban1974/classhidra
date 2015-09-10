@@ -4,7 +4,7 @@
 	<artifactId>classhidra-cdi</artifactId>
 	<version>1.5.2</version>
 	<name>ClassHidra CDI Implementation</name>
-	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development.</description>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
 	<issueManagement>
@@ -108,6 +108,40 @@
 				<target>1.7</target>
 			</configuration>
 		</plugin>
+
+		<plugin>
+		  	<groupId>org.apache.maven.plugins</groupId>
+		  	<artifactId>maven-source-plugin</artifactId>
+		  	<executions>
+		    	<execution>
+		      		<id>attach-sources</id>
+		      		<goals>
+		        		<goal>jar</goal>
+		      		</goals>
+		    	</execution>
+		  	</executions>
+ 			<configuration>
+		 		<excludes>
+					<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
+		            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
+		            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
+		            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
+		            <exclude>it/classhidra/plugin/vfs/**/*.java</exclude>
+		            <exclude>it/classhidra/plugin/was/**/*.java</exclude>
+		            <exclude>it/classhidra/plugin/provider/ejb/**/*.java</exclude>
+		            <exclude>it/classhidra/plugin/provider/EjbProvider.java</exclude>
+		            <exclude>it/classhidra/plugin/provider/spring.java</exclude>
+				</excludes>
+				                 
+				<includes>
+					<include>it/**/*.java</include>
+		            <include>external_loaders/**/*.java</include>
+		            <include>pool/**/*.java</include>				
+					<include>it/classhidra/plugin/provider/cdi/**/*.java</include>
+					<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>
+				</includes>        
+			</configuration>		  	
+		</plugin>		
 
 	  	<plugin>
 	    	<groupId>org.apache.maven.plugins</groupId>
@@ -230,7 +264,7 @@
 			<version>2.2</version>
 		</dependency>
  -->
-	</dependencies>  
+	</dependencies>
 
    	<organization>
    		<name>Svyatoslav Urbanovych</name>
