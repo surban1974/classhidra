@@ -11,8 +11,14 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -98,13 +104,14 @@ public class util_classes {
 	public static ArrayList getResources(String pckgname) throws ClassNotFoundException {
 		ArrayList res = new ArrayList();
 		URL resource = null;
+		String path = "";
 		
 		try {
 			ClassLoader cld = Thread.currentThread().getContextClassLoader();
 			if (cld == null) {
 				throw new ClassNotFoundException("Can't get class loader.");
 			}
-			String path = '/' + pckgname.replace('.', '/');
+			path = '/' + pckgname.replace('.', '/');
 			resource = cld.getResource(path);
 			
 			if (resource == null) {
@@ -137,8 +144,37 @@ public class util_classes {
 						res.add(files[i].getName());
 					}
 				} else {
-					throw new ClassNotFoundException(pckgname
-							+ " does not appear to be a valid package");
+					try{
+						if(directory!=null && resource.toURI().getScheme().equalsIgnoreCase("jar")){
+							String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
+						    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+						    Enumeration entries = jar.entries();
+//						    Set result = new HashSet();
+						    while(entries.hasMoreElements()) {
+						    	try{
+						    	String name = ((JarEntry)entries.nextElement()).getName();
+						        if (name.startsWith(path)) { //filter according to the path
+						        	String entry = name.substring(path.length());
+						            int checkSubdir = entry.indexOf("/");
+						            if (checkSubdir >= 0) {
+						              // if it is a subdirectory, we just return the directory name
+						              entry = entry.substring(0, checkSubdir);
+						            }
+						            if(!entry.trim().equals(""))
+						            	res.add(entry);
+						        }
+						    	}catch(Exception ex){
+						    		
+						    	}
+						   }
+						 							
+						}else{
+							throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
+						}
+					}catch(Exception ex){
+						throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
+					}
+					
 				}
 				
 			}
@@ -228,8 +264,15 @@ public class util_classes {
 		try{
 			f = new File(new URI(url.toString()));
 		}catch(URISyntaxException e) {
-			f = new File(url.getPath());
-		} catch (Exception e) {				
+			try{
+				f = new File(url.getPath());
+			}catch(Exception ex){				
+			}
+		} catch (Exception e) {
+			try{
+				f = new File(url.getPath());
+			}catch(Exception ex){				
+			}
 		}
 		return f;
 	}
