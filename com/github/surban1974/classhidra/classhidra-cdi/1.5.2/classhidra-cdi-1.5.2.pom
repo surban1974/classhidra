@@ -4,7 +4,7 @@
 	<artifactId>classhidra-cdi</artifactId>
 	<version>1.5.2</version>
 	<name>ClassHidra CDI Implementation</name>
-	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation.</description>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation. Java 1.6 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
 	<issueManagement>
@@ -104,8 +104,8 @@
 					<include>it/classhidra/plugin/provider/cdi/**/*.java</include>
 					<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>
 				</includes>        
-				<source>1.7</source>
-				<target>1.7</target>
+				<source>1.6</source>
+				<target>1.6</target>
 			</configuration>
 		</plugin>
 
