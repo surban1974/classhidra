@@ -5,6 +5,7 @@ import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_xml;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.servlets.servletBatchScheduling;
@@ -16,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
@@ -64,9 +66,10 @@ public abstract class generic_batch implements i_batch,Serializable{
 			if(input==null) input = new HashMap();
 			
 			for (int i=0;i<node.getChildNodes().getLength();i++) {
-				if (node.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE){
-					String valueTxt =  ((Text)node.getFirstChild()).getData();
-					String key = getNodeAttr(node, "name");
+				Node child = node.getChildNodes().item(i);
+				if (child.getNodeType() == Node.ELEMENT_NODE){
+					String valueTxt =  ((Text)child.getFirstChild()).getData();
+					String key = getNodeAttr(child, "name");
 					input.put(key,valueTxt);
 			
 				}					
@@ -98,7 +101,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 		return map2xml(output);
 	}
 	
-	public static String map2xml(HashMap map){
+	public static String map2xml(Map map){
 		if(map==null) return "";
 		String preffix="<area>"+System.getProperty("line.separator");
 		String suffix="</area>";
@@ -107,7 +110,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 		Vector keys = new Vector(map.keySet());
 		for(int i=0;i<keys.size();i++){
 			String key = (String)keys.get(i);
-			content+="\t<item name=\""+key+"\">"+map.get(key)+"</item>"+System.getProperty("line.separator");
+			content+="\n<item name=\""+key+"\">"+util_xml.normalXML((String)map.get(key),null)+"</item>"+System.getProperty("line.separator");
 		}
 		return preffix+content+suffix;
 	}

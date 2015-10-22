@@ -5,7 +5,7 @@
 
 <taglib>
 
-  <tlib-version>classHidra 1.5.2</tlib-version>
+  <tlib-version>classHidra 1.5.2.1</tlib-version>
   <jsp-version>1.3</jsp-version>
   <short-name>bs</short-name>
   <description> Tag library for classHidra   </description>
@@ -434,6 +434,11 @@
         <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>	
+    <attribute>
+        <name>placeholder_messagecode</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
         <name>required</name>
         <required>false</required>

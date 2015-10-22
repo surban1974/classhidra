@@ -87,6 +87,7 @@ public class tagInput extends BodyTagSupport{
 	protected String multiple = null;
 	protected String pattern = null;
 	protected String placeholder = null;
+	protected String placeholder_messagecode = null;
 	protected String required = null;
 	protected String step = null;
 
@@ -207,6 +208,7 @@ public class tagInput extends BodyTagSupport{
 		multiple = null;
 		pattern = null;
 		placeholder = null;
+		placeholder_messagecode = null;
 		required = null;
 		step = null;
 
@@ -586,6 +588,10 @@ public class tagInput extends BodyTagSupport{
 			results.append(" placeholder=\"");
 			results.append(placeholder);
 			results.append('"');
+		}else if(placeholder_messagecode !=null){
+			results.append(" placeholder=\"");
+			results.append(bsController.writeLabel(request,placeholder_messagecode,"",null));
+			results.append('"');			
 		}
 		if (required != null) {
 			results.append(" required=\"");
@@ -1477,6 +1483,14 @@ public class tagInput extends BodyTagSupport{
 
 	public void setAdditionalAttr(String additionalAttr) {
 		this.additionalAttr = additionalAttr;
+	}
+
+	public String getPlaceholder_messagecode() {
+		return placeholder_messagecode;
+	}
+
+	public void setPlaceholder_messagecode(String placeholder_messagecode) {
+		this.placeholder_messagecode = placeholder_messagecode;
 	}
 
 

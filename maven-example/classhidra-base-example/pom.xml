@@ -102,6 +102,8 @@
 	            	<resource>
 	              		<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent</directory>
 	              		<includes>
+	              			<include>index.html</include>
+	              			<include>error.jsp</include>
 	              			<include>css/**</include>
 	              			<include>images/**</include>
 	              			<include>javascript2012/**</include>

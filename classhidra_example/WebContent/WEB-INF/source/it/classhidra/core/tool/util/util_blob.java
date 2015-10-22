@@ -358,7 +358,6 @@ public class util_blob {
 	   
 	   public static int update_db_element(Connection ext_conn, String sql) throws Exception{
 		   int result = 0;
-			i_elementDBBase clone_element = null;
 			Connection conn=null;
 			Statement st=null;
 

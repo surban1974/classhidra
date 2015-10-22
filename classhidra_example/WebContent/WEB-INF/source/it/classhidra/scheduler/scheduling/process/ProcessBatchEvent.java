@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.HashMap;
 //import java.util.Vector;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 
 
@@ -61,6 +63,30 @@ public class ProcessBatchEvent  {
 			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
 		}
 	}
+	
+	public String[] launchR(Integer cd_ist, String cd_btch, boolean recalc, boolean sequence){
+		String[] result_eb = null;
+		try {
+			result_eb = executeBatch(cd_ist,cd_btch, "",recalc,sequence);
+		}catch(Exception ex){
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
+		}catch(Throwable th){
+			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
+		}
+		return result_eb;
+	}
+	
+	public String[] launchR(Integer cd_ist, String cd_btch){
+		String[] result_eb = null;
+		try {
+			result_eb = executeBatch(cd_ist,cd_btch, "",true,false);
+		}catch(Exception ex){
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
+		}catch(Throwable th){
+			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
+		}
+		return result_eb;
+	}	
 
 
 	private String[] executeBatch(Integer cd_ist, String cd_btch, String common_area, boolean recalc, boolean sequence){
@@ -94,7 +120,7 @@ public class ProcessBatchEvent  {
 			changeState(batch, new Integer(db_batch.STATE_INEXEC));
 
 			String output = "";
-			HashMap h_common_area = new HashMap();
+			SortedMap h_common_area = new TreeMap();
 			try{
 				
 				if(batch.getCls_btch()!=null && !batch.getCls_btch().equals(""))
@@ -157,7 +183,7 @@ public class ProcessBatchEvent  {
 							String[] current_eb = executeBatch(current.getCd_ist(), current.getCd_btch(), common_area,false,true);
 							common_area = current_eb[0];
 							short current_state = Short.parseShort(current_eb[1]);
-							h_common_area.put(current.getCd_btch().trim(), current.getCd_btch().trim()+" -> "+current.getDesSt_exec(new Integer(current_state)));
+							h_common_area.put(current.getOrd()+"_"+current.getCd_btch().trim(), current.getCd_btch().trim()+" -> "+current.getDesSt_exec(new Integer(current_state)));
 							
 							if( current_state>batch.getSt_exec().shortValue()) batch.setSt_exec(new Integer(current_state));
 					}

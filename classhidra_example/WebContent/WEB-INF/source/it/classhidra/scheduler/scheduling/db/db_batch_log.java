@@ -164,6 +164,12 @@ public void setSt_exec(Integer value) {
 public String getDsc_exec() {
     return dsc_exec;
 }
+public String getDsc_exec_br() {
+    if(dsc_exec==null)
+    	return dsc_exec;
+    else 
+    	return dsc_exec.replace("\n", "<br>");
+}
 public void setDsc_exec(String value) {
     if(value==null) dsc_exec=value;
     else{
