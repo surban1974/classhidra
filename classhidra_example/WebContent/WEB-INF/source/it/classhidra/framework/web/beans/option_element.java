@@ -13,6 +13,7 @@ public class option_element extends elementDBBase implements i_elementDBBase{
 	protected String desc;
 	protected boolean filtered;
 	protected String filterCode;
+	protected String anotherCode; 
 
 	public option_element(){
 		super();
@@ -30,6 +31,13 @@ public class option_element extends elementDBBase implements i_elementDBBase{
 			this.desc = desc;
 			this.filterCode = filterCode;
 	}
+	public option_element(String code, String desc, String filterCode, String anotherCode){
+		reimposta();
+		this.code = code;
+		this.desc = desc;
+		this.filterCode = filterCode;
+		this.anotherCode = anotherCode;
+	}	
 
 	public void reInit(java.sql.ResultSet rs) {
 		if(rs==null) return;
@@ -49,6 +57,7 @@ public class option_element extends elementDBBase implements i_elementDBBase{
 		desc="";
 		filtered=false;
 		filterCode="";
+		anotherCode=""; 
 	}
 	public String getCode() {
 		return code;
@@ -81,6 +90,22 @@ public class option_element extends elementDBBase implements i_elementDBBase{
 	}
 	public String getFiltercode(){
 		return filterCode;
+	}
+
+	public String getFilterCode() {
+		return filterCode;
+	}
+
+	public void setFilterCode(String filterCode) {
+		this.filterCode = filterCode;
+	}
+
+	public String getAnotherCode() {
+		return anotherCode;
+	}
+
+	public void setAnotherCode(String anotherCode) {
+		this.anotherCode = anotherCode;
 	}
 
 }
