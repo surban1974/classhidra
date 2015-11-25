@@ -3,15 +3,15 @@ package it.classhidra.scheduler.scheduling.thread;
 
 
 
-import it.classhidra.core.tool.db.db_connection;
-import it.classhidra.core.tool.exception.bsControllerMessageException;
+import java.util.Date;
+import java.util.HashMap;
+
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
-import it.classhidra.scheduler.servlets.servletBatchScheduling;
-
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.Date;
 
 
 
@@ -23,7 +23,7 @@ public class schedulingThreadProcess extends Thread {
 
     private boolean threadDone = false;
     private Date scan_time;
-    private ProcessBatchEngine pbe;
+//    private ProcessBatchEngine pbe;
  
 
 
@@ -36,26 +36,33 @@ public class schedulingThreadProcess extends Thread {
     public void run() {
 
 
-    	batch_init binit = servletBatchScheduling.getConfiguration(); 
+    	batch_init binit = DriverScheduling.getConfiguration(); 
     	
         while (!threadDone) {
     		try {
-				pbe = new ProcessBatchEngine();
+if(DriverScheduling.getPbe()!=null) 
+	DriverScheduling.getPbe().interruptThreadEvents();
+//else
+//	servletBatchScheduling.setPbe(new ProcessBatchEngine());
 
-				pbe.launch();
+	
+//				pbe = new ProcessBatchEngine();
+
+DriverScheduling.getPbe().launch();
+//				pbe.launch();
 	
      			if(binit.getLsleep()>0){
      				scan_time = new Date(new Date().getTime()+binit.getLsleep());
      				Thread.sleep(binit.getLsleep());
     			}else{
     				threadDone=true;
-        			pbe=null;
+//        			pbe=null;
         			Thread.currentThread().interrupt();    				
     			}
     			
     		} catch (InterruptedException e) {
     			threadDone=true;
-    			pbe=null;
+ //   			pbe=null;
     			Thread.currentThread().interrupt();
     		}
         }
@@ -66,8 +73,18 @@ public class schedulingThreadProcess extends Thread {
 	}
 
 
-	public void clearBatchState(){
-		batch_init binit = servletBatchScheduling.getConfiguration(); 
+	public void clearBatchState(){		
+		batch_init binit = DriverScheduling.getConfiguration(); 
+		
+		
+		HashMap form = new HashMap();
+
+		try{
+			binit.get4BatchManager().operation(i_4Batch.o_CLEAR_BATCH_STATES, form);
+		}catch(Exception e){
+			new bsException(e,iStub.log_ERROR);
+		}		
+/*		
 		Connection conn=null;
 		Statement st=null;
 		try{
@@ -81,7 +98,7 @@ public class schedulingThreadProcess extends Thread {
 		}finally{
 			db_connection.release(null, st, conn);
 		}
-
+*/
 	}
 
 	public Date getScan_time() {
@@ -89,6 +106,8 @@ public class schedulingThreadProcess extends Thread {
 	}
 
 	public ProcessBatchEngine getPbe() {
-		return pbe;
+		return DriverScheduling.getPbe();
+//		return pbe;
 	}
+	
 }

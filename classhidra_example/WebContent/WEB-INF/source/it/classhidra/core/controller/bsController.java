@@ -45,6 +45,7 @@ import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_supportbean;
+import it.classhidra.scheduler.scheduling.IBatchScheduling;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_cloner;
@@ -3073,6 +3074,45 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return local_container;
 
 	}
+	
+	public static IBatchScheduling checkSchedulerContainer(){
+		if(action_config==null || !action_config.isReadOk()){
+			return null;
+		}else{
+			bsProvidedWrapper wrapper = null;
+			String bean_id = bsConstants.CONST_BEAN_$SCHEDULER_CONTAINER;
+			if(!getAction_config().getInstance_local_container().equals("") && !getAction_config().getInstance_local_container().equalsIgnoreCase("false"))
+				bean_id = getAction_config().getInstance_local_container();
+
+				if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
+					try{
+						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(), bean_id, getAction_config().getInstance_local_container(), null);
+						if(wrapper!=null)
+							return (IBatchScheduling)wrapper.getInstance();
+					}catch(Exception e){
+					}
+				}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+					try{
+						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						if(wrapper!=null)
+							return (IBatchScheduling)wrapper.getInstance();
+					}catch(Exception e){
+					}
+				}
+				if(wrapper==null && getCdiDefaultProvider()!=null){
+					try{
+						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						if(wrapper!=null)
+							return (IBatchScheduling)wrapper.getInstance();
+					}catch(Exception e){
+					}
+
+				}
+//			}
+		}
+		return null;
+
+	}	
 
 	public static Object getFromLocalContainer(String key) {
 		Map container = checkLocalContainer();

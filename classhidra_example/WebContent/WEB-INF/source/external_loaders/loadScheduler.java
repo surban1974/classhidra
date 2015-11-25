@@ -1,7 +1,9 @@
 package external_loaders;
 
+import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_externalloader;
-import it.classhidra.scheduler.servlets.servletBatchScheduling;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
+
 
 public class loadScheduler implements i_externalloader{
 
@@ -15,7 +17,9 @@ public class loadScheduler implements i_externalloader{
 	
 	public void load() {
 		try{
-			servletBatchScheduling.reStart();
+			DriverScheduling.init(bsController.checkSchedulerContainer());
+			DriverScheduling.reStart();
+//			servletBatchScheduling.reStart();
 
 		}catch(Exception e){
 			e.toString();

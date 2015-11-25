@@ -6,8 +6,9 @@ import java.util.*;
 import it.classhidra.core.tool.elements.elementDBBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.init.batch_init;
-import it.classhidra.scheduler.servlets.servletBatchScheduling;
+
 public class db_batch extends elementDBBase implements i_elementDBBase, java.io.Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -24,6 +25,7 @@ public class db_batch extends elementDBBase implements i_elementDBBase, java.io.
     private String period;
     private java.sql.Timestamp tm_next;
     private Integer state;
+    private Integer initialState;
     private Integer st_exec;
     
     private batch_init b_init;
@@ -36,18 +38,19 @@ public db_batch() {
 }
 public void reimposta() {
     super.reimposta_super();
-    cd_ist = new Integer("0");
+    cd_ist = new Integer(0);
     cd_btch = "";
     cd_p_btch = "";
     cls_btch = "";
     dsc_btch = "";
-    ord = new Integer("0");
+    ord = new Integer(0);
     period = "";
     tm_next = new java.sql.Timestamp(new java.util.Date().getTime());
-    state = new Integer("0");
-    st_exec = new Integer("0");
+    state = new Integer(0);
+    initialState = new Integer(0);
+    st_exec = new Integer(0);
     try{
-    	b_init = servletBatchScheduling.getConfiguration();
+    	b_init = DriverScheduling.getConfiguration();
     }catch(Exception e){
     	b_init = new batch_init();
     }
@@ -173,6 +176,20 @@ public String sql_Update(i_elementDBBase _i_element_mod) {
     result+="cd_btch='"+this.getCd_btch()+"' \n";
     return result;
 }
+
+public String sql_UpdateOnlyState(i_elementDBBase _i_element_mod) {
+    String result="";
+    db_batch element_mod = (db_batch)_i_element_mod;
+    result+="UPDATE "+b_init.get_db_prefix()+"batch \n";
+    result+="SET \n";
+    result+="state="+element_mod.getState()+", \n";
+    result+="tm_next=null,  \n";
+    result+="st_exec=0 \n";
+    result+="WHERE ";
+    result+="cd_ist="+this.getCd_ist()+" AND \n";
+    result+="cd_btch='"+this.getCd_btch()+"' \n";
+    return result;
+}
 public boolean find(i_elementDBBase _i_el) {
     return true;
 }
@@ -278,6 +295,12 @@ public Integer getCd_ist() {
 }
 public void setCd_ist(Integer cdIst) {
 	cd_ist = cdIst;
+}
+public Integer getInitialState() {
+	return initialState;
+}
+public void setInitialState(Integer initialState) {
+	this.initialState = initialState;
 }
 
 

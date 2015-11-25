@@ -31,7 +31,7 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 
 
 
-	public schedulingThreadEvent(long _delta_time, db_batch _batch, ProcessBatchEngine _pbe ) {
+	private schedulingThreadEvent(long _delta_time, db_batch _batch, ProcessBatchEngine _pbe ) {
 		super();
 		delta_time = _delta_time;
 		try{
@@ -41,9 +41,19 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 		threadDone=false;
 		state=0;
 		pbe=_pbe;
-
-
 	}
+	
+	public schedulingThreadEvent(db_batch _batch, ProcessBatchEngine _pbe ) {
+		super();
+		delta_time = -1;
+		try{
+			batch = (db_batch)util_cloner.clone(_batch);
+		}catch(Exception e){
+		}
+		threadDone=false;
+		state=0;
+		pbe=_pbe;
+	}	
 
 	public void run() {
 		
@@ -66,6 +76,9 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 		}
 		
 		try{
+			if(delta_time==-1 && batch!=null && batch.getTm_next()!=null){
+				delta_time = batch.getTm_next().getTime()-new Date().getTime();
+			}
 			if(delta_time>0){
 				threadDone=true;
 				exec_time = new Date(new Date().getTime()+delta_time);

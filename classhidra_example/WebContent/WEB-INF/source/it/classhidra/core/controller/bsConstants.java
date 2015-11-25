@@ -167,6 +167,7 @@ public interface bsConstants {
 	public final static String CONST_ID_EXEC_TYPE_CLONED				= 	"cloned";
 	
 	public final static String CONST_CONTAINER_STREAMS_INSTANCE			=	"$container_streams_instance";
+	public final static String CONST_BEAN_$SCHEDULER_CONTAINER 			=	"$scheduler_container";
 
 
 

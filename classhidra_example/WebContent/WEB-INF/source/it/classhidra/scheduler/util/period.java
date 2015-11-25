@@ -57,7 +57,7 @@ public class period {
 
 	}
 
-	public void setIncrement(int current, int value, String currentTime){
+	public void setIncrement_(int current, int value, String currentTime){
 		try{
 			int prevTime=nextTime[current];
 			Date prev = util_format.stringToData(toString(), "yyyy-MM-dd-HH-mm");
@@ -78,6 +78,79 @@ public class period {
 						if(current-3>-1 && fixedTime[current-3]==-1) nextTime[current-2]+=increment[current-2];
 					else
 						if(current-4>-1 && fixedTime[current-4]==-1) nextTime[current-3]+=increment[current-3];
+/*
+					else
+						if(current-5>-1 && fixedTime[current-5]==-1) nextTime[current-4]+=increment[current-4];
+*/
+				}
+			}
+		}catch(Exception e){
+
+		}
+
+	}
+	
+	public void setIncrement(int current, int value, String currentTime){
+		try{
+			int prevTime=nextTime[current];
+			Date prev = util_format.stringToData(toString(), "yyyy-MM-dd-HH-mm");
+			nextTime[current]=value;
+			Date curr = util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm");
+			if(prev.getTime()>curr.getTime()){
+
+			}else{
+				if(fixedTime[current]!=-1 || prevTime==0) 
+					nextTime[current]=value;
+				else 
+					nextTime[current]=prevTime;
+				if(current==0){
+
+				}else{
+					if(fixedTime[current-1]==-1){
+						if(current == 2){
+							for(int i=current;i>=0;i--){
+								if(fixedTime[i]==-1){
+									nextTime[i]+=increment[i+1];
+									break;
+								}
+							}
+						}else
+							nextTime[current]+=increment[current];
+					}else 
+						if(current-2>-1 && fixedTime[current-2]==-1){
+							if(current-1 == 2){
+								for(int i=current-1;i>=0;i--){
+									if(fixedTime[i]==-1){
+										nextTime[i]+=increment[i+1];
+										break;
+									}
+								}
+							}else
+								nextTime[current-1]+=increment[current-1];
+							
+					}else
+						if(current-3>-1 && fixedTime[current-3]==-1){
+							if(current-2 == 2){
+								for(int i=current-2;i>=0;i--){
+									if(fixedTime[i]==-1){
+										nextTime[i]+=increment[i+1];
+										break;
+									}
+								}
+							}else
+								nextTime[current-2]+=increment[current-2];
+					}else
+						if(current-4>-1 && fixedTime[current-4]==-1){
+							if(current-3 == 2){
+								for(int i=current-3;i>=0;i--){
+									if(fixedTime[i]==-1){
+										nextTime[i]+=increment[i+1];
+										break;
+									}
+								}
+							}else
+								nextTime[current-3]+=increment[current-3];
+						}
 /*
 					else
 						if(current-5>-1 && fixedTime[current-5]==-1) nextTime[current-4]+=increment[current-4];

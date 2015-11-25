@@ -1,10 +1,19 @@
 package it.classhidra.scheduler.util;
 
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.db.db_batch_log;
+import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
+import it.classhidra.scheduler.scheduling.process.ProcessBatchEvent;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -24,6 +33,47 @@ public class util_batch {
 	public static String writeOutput(HashMap out){
 		return "";
 	}
+	
+	public static synchronized db_batch checkBatchAndState(Integer cd_ist, String cd_btch, db_batch_log log) throws Exception{
+
+
+		db_batch batch = new db_batch();
+		batch = new db_batch();
+		batch.setCd_ist(cd_ist);
+		batch.setCd_btch(cd_btch);
+		
+		batch_init binit = DriverScheduling.getConfiguration();		
+		HashMap form = new HashMap();
+		form.put("selected",batch);
+
+		try{
+			batch = (db_batch)binit.get4BatchManager().operation(i_4Batch.o_FIND_SIMPLE, form);
+		}catch(Exception e){
+			new bsException(e,iStub.log_ERROR);
+		}
+		
+//		batch = (db_batch)util_blob.load_db_element(batch, null);
+		
+		if(	batch==null ||
+			batch.getState().shortValue()== db_batch.STATE_INEXEC ||
+			batch.getState().shortValue()== db_batch.STATE_SUSPEND){
+			if(log!=null){				
+				log.setCd_btch(cd_btch);
+				log.setSt_exec(new Integer(db_batch_log.STATE_KO));
+				log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+"Batch ["+cd_btch+"] is null or in execution.");
+				log.setTm_fin(new Timestamp(new Date().getTime()));
+			}
+			return null;
+		}
+
+		log.setCd_btch(batch.getCd_btch());
+		batch.setInitialState(batch.getState());
+
+		ProcessBatchEvent.changeState(batch, new Integer(db_batch.STATE_INEXEC));	
+		
+		return batch;
+
+}
 
 	public static String calcolatePeriod_(String currentTime, String periodTime){
 
@@ -168,21 +218,10 @@ public class util_batch {
 				StringTokenizer st_currentTime = new StringTokenizer(newTime,"-");
 				StringTokenizer st_periodTime = new StringTokenizer(periodTime,"-");
 	
-	
-	
-	
 				while(st_periodTime.hasMoreTokens()){
-	
-	
 					String key_periodTime = st_periodTime.nextToken();
 					String key_currentTime = st_currentTime.nextToken();
-	
-	
-	
 					try{
-	
-	
-	
 						int int_key_periodTime = Integer.parseInt(key_periodTime);
 						int int_key_currentTime = Integer.parseInt(key_currentTime);
 	
@@ -199,6 +238,15 @@ public class util_batch {
 					current++;
 				}
 				newTime = pr.toNewTime();
+// New 20151124				
+				try{
+					Date prev = util_format.stringToData(newTime, "yyyy-MM-dd-HH-mm");
+					Date curr = util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm");
+					if(prev.getTime()>curr.getTime())
+						return newTime;
+				}catch(Exception e){
+				}
+//				
 				maxcycle++;
 			}
 	
@@ -206,7 +254,7 @@ public class util_batch {
 		}
 	}
 
-	public static boolean reCalcNextTime(db_batch el, String currentTime) throws Exception{
+	public static boolean reCalcNextTime_(db_batch el, String currentTime) throws Exception{
 		return reCalcNextTime(el, currentTime, 0);
 	}
 

@@ -6,8 +6,9 @@ import java.util.*;
 import it.classhidra.core.tool.elements.elementDBBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.init.batch_init;
-import it.classhidra.scheduler.servlets.servletBatchScheduling;
+
 public class db_batch_log extends elementDBBase implements i_elementDBBase, java.io.Serializable {
     private static final long serialVersionUID = 1L;
     public final static short STATE_WARNING = 1;
@@ -32,10 +33,10 @@ public void reimposta() {
     cd_btch = "";
     tm_start = new java.sql.Timestamp(new java.util.Date().getTime());
     tm_fin = new java.sql.Timestamp(new java.util.Date().getTime());
-    st_exec = new Integer("0");
+    st_exec = new Integer(0);
     dsc_exec = "";
     try{
-    	b_init = servletBatchScheduling.getConfiguration();
+    	b_init = DriverScheduling.getConfiguration();
     }catch(Exception e){
     	b_init = new batch_init();
     }}

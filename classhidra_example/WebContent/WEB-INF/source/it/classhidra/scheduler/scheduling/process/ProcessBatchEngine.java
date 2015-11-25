@@ -3,21 +3,6 @@ package it.classhidra.scheduler.scheduling.process;
 
 
 
-import it.classhidra.core.tool.db.db_connection;
-import it.classhidra.core.tool.exception.bsControllerMessageException;
-import it.classhidra.core.tool.exception.bsException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_format;
-import it.classhidra.framework.web.integration.i_module_integration;
-import it.classhidra.scheduler.common.i_4Batch;
-import it.classhidra.scheduler.scheduling.db.db_batch;
-import it.classhidra.scheduler.scheduling.init.batch_init;
-import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
-import it.classhidra.scheduler.servlets.servletBatchScheduling;
-import it.classhidra.scheduler.util.util_batch;
-
-import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +10,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_format;
+import it.classhidra.framework.web.integration.i_module_integration;
+import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
+import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.init.batch_init;
+import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
+import it.classhidra.scheduler.util.util_batch;
 
 
 
@@ -45,7 +41,7 @@ public class ProcessBatchEngine  {
 	public void launch(){
 		scan=true;
 
-		batch_init binit = servletBatchScheduling.getConfiguration();
+		batch_init binit = DriverScheduling.getConfiguration();
 
 		new bsException("Scheduler: BatchEngine:launch:scan", iStub.log_DEBUG);
 
@@ -106,7 +102,7 @@ public class ProcessBatchEngine  {
 		for(int i=0;i<elementsAll.size();i++){
 			db_batch el = (db_batch)elementsAll.get(i);
 			if(el.getState().shortValue()==db_batch.STATE_SCHEDULED){
-				if(servletBatchScheduling.getThProcess()!=null){
+				if(DriverScheduling.getThProcess()!=null){
 					schedulingThreadEvent ste = getFromThreadEvents(el);
 					if(ste==null){
 						el.setState(new Integer(db_batch.STATE_NORMAL));
@@ -125,14 +121,21 @@ public class ProcessBatchEngine  {
 		}
 
 		List sql_updates=new ArrayList();
+		List batch_updated=new ArrayList();
 
 		for(int i=0;i<elements.size();i++){
 			db_batch el = (db_batch)elements.get(i);
 			boolean updated=false;
 			try{
-				if(util_batch.reCalcNextTime(el,currentTime,0)){
+				Date rec = new java.util.Date();
+				long recT = rec.getTime()+60*1000;
+				if(util_batch.reCalcNextTime(el, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000)){
 					updated=true;
 				}
+					
+//				if(util_batch.reCalcNextTime(el,currentTime,0)){
+//					updated=true;
+//				}
 			}catch(Exception e){
 			}
 			long deltaTmp = el.getTm_next().getTime() - currentTimeL;
@@ -141,10 +144,28 @@ public class ProcessBatchEngine  {
 				updated=true;
 				h_batchs.put(el.getCd_btch(), el);
 			}
-			if(updated) sql_updates.add(el.sql_Update(el));
+			if(updated){
+				if(
+						(el.getPeriod()!=null && !el.getPeriod().equals("")) ||
+						(el.getCd_p_btch()!=null && !el.getCd_p_btch().equals("")) ||
+						(el.getCls_btch()!=null && !el.getCls_btch().equals(""))
+					)
+					batch_updated.add(el);
+//				sql_updates.add(el.sql_Update(el));
+			}
 		}
+		
+	
+		form = new HashMap();
+		form.put("list",batch_updated);
 
+		try{
+			binit.get4BatchManager().operation(i_4Batch.o_UPDATE_STATES_AND_NEXTEXEC, form);
+		}catch(Exception e){
+			new bsException(e,iStub.log_ERROR);
+		}		
 
+/*
 		Connection conn=null;
 		Statement st=null;
 
@@ -166,12 +187,13 @@ public class ProcessBatchEngine  {
 		}finally{
 			db_connection.release(null, st, conn);
 		}
-
+*/
+		
 		if(h_batchs!=null && h_batchs.size()>0){
 			Iterator it = h_batchs.entrySet().iterator();
 		    while (it.hasNext()) {
 				db_batch el = (db_batch)((Map.Entry)it.next()).getValue();
-				long deltaBatch = el.getTm_next().getTime() - new Date().getTime();
+//				long deltaBatch = el.getTm_next().getTime() - new Date().getTime();
 				schedulingThreadEvent t_ev_old = util_batch.findFromPbe(this, el.getCd_btch());
 				if(t_ev_old!=null){
 					t_ev_old.setStateThread(2);
@@ -179,11 +201,13 @@ public class ProcessBatchEngine  {
 					t_ev_old.interrupt();
 					this.getContainer_threadevents().remove(t_ev_old);
 				}
-				
+/*				
 				schedulingThreadEvent t_ev = new schedulingThreadEvent(
 						deltaBatch,
 						el,
 						this);
+*/
+				schedulingThreadEvent t_ev = new schedulingThreadEvent(el,this);
 				t_ev.start();
 			}
 		}
@@ -201,13 +225,44 @@ public class ProcessBatchEngine  {
 	}
 	
 	private schedulingThreadEvent getFromThreadEvents(db_batch el){
-		if(el!=null && servletBatchScheduling.getThProcess()!=null){
-			for(int i=0;i<servletBatchScheduling.getThProcess().getPbe().getContainer_threadevents().size();i++){
-				schedulingThreadEvent ste = (schedulingThreadEvent)servletBatchScheduling.getThProcess().getPbe().getContainer_threadevents().get(i);
+		if(el!=null && DriverScheduling.getThProcess()!=null){
+			for(int i=0;i<DriverScheduling.getThProcess().getPbe().getContainer_threadevents().size();i++){
+				schedulingThreadEvent ste = (schedulingThreadEvent)DriverScheduling.getThProcess().getPbe().getContainer_threadevents().get(i);
 				if(ste.getBatch()!=null && ste.getBatch().getCd_btch().equals(el.getCd_btch())) return ste;
 			}
 		}
 		return null;
+	}
+	
+	public void interruptThreadEvents(){
+		try{
+
+			int initialSize = getContainer_threadevents().size();
+			for(int i=0; i<getContainer_threadevents().size();i++){
+				schedulingThreadEvent ste =  (schedulingThreadEvent)getContainer_threadevents().get(i);
+				if(ste!=null){
+					if(ste.getStateThread()==0){
+						ste.setThreadDone(true);
+						ste.setStateThread(2);				
+					}
+					try{
+						ste.interrupt();
+					}catch(Exception ex){					
+					}
+				}
+				if(getContainer_threadevents().size()<initialSize){
+					initialSize = getContainer_threadevents().size();
+					i--;
+				}
+			}
+			scan = false;
+			nextScanTime = null; 
+
+
+		}catch (Exception e) {
+
+		}	
+
 	}
 
 

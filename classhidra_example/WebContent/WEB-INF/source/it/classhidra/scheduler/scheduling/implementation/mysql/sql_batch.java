@@ -2,6 +2,7 @@ package it.classhidra.scheduler.scheduling.implementation.mysql;
 
 
 
+import it.classhidra.core.tool.util.util_format;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.servlets.servletBatchScheduling;
@@ -145,4 +146,27 @@ public class sql_batch {
 		return result;
 	}
 	
+	public static String sql_ClearBatchState(){
+		batch_init b_init = null;
+	    try{
+	    	b_init = servletBatchScheduling.getConfiguration();
+	    }catch(Exception e){
+	    	b_init = new batch_init();
+	    }
+		return "update "+b_init.get_db_prefix()+"batch set state=0, st_exec=0, tm_next=null";
+	}
+	
+	public static String sql_LoadBatchProperties(HashMap form){
+		batch_init b_init = null;
+	    try{
+	    	b_init = servletBatchScheduling.getConfiguration();
+	    }catch(Exception e){
+	    	b_init = new batch_init();
+	    }
+	    db_batch batch = (db_batch)form.get("selected");
+	    String result="";
+	    result="SELECT * FROM "+b_init.get_db_prefix()+"batch_property \n";
+	    result+="where cd_btch='"+util_format.convertAp(batch.getCd_btch())+"' and cd_ist="+batch.getCd_ist()+" \n";
+		return result;
+	}
 }

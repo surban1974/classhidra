@@ -1,6 +1,6 @@
 /**
 * Name: jsTool.js
-* Version: 1.5.2.3 (compatible classHidra 1.5.2)
+* Version: 1.4.11.1 (compatible classHidra 1.4.11)
 * Creation date: (25/05/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
@@ -1326,113 +1326,7 @@ function ajustPopupOnScroll(){
 	}
 }
 
-
-function downloadAsPopupSimple(action,img_wait){
-	try{
-		if(Blob && isIE()!=8 && isIE()!=9 && Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor')==-1){
-			downloadAsPopup(action, 400,300,false,
-				function(http_request,target){
-					try{
-						closePanel('panel_Popup');
-						document.getElementById('content_Panel_Popup').style.display='none';
-					}catch(e){};
-				},
-				img_wait
-			);
-		}else{
-			location.replace(action, "report");
-		}
-	}catch(e){
-		location.replace(action, "report");
-	}	
-
-	return;	
-}
-
-function downloadAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,img_wait){
-	showAsPopup(action, panel_width,panel_height,scroll,
-			afterJSFunction,
-			function(http_request,target){
-
-				if(document.getElementById('content_Panel_Popup').style.display!="none"){
-					try{
-						var filename = "";
-				        var disposition = http_request.getResponseHeader('Content-Disposition');
-				        if (disposition && disposition.indexOf('attachment') !== -1) {
-				            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-				            var matches = filenameRegex.exec(disposition);
-				            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-				        }
-		
-				        var type = http_request.getResponseHeader('Content-Type');
-				        var blob;
-				        if(http_request.response)
-				        	blob = new Blob([http_request.response], { type: type });
-				        else 
-				        	blob = new Blob([http_request.responseText], { type: type });
-				        
-				        if (typeof window.navigator.msSaveOrOpenBlob !== 'undefined') {
-				            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-	//			            window.navigator.msSaveBlob(blob, filename);
-				            window.navigator.msSaveOrOpenBlob(blob, filename);
-				        }else if (typeof window.navigator.msSaveBlob !== 'undefined') {
-				        	window.navigator.msSaveBlob(blob, filename);
-				        } else {
-				            var URL = window.URL || window.webkitURL;
-				            var downloadUrl = URL.createObjectURL(blob);
-		
-				            if (filename) {
-				                // use HTML5 a[download] attribute to specify filename
-				                var a = document.createElement("a");
-				                // safari doesn't support this yet
-				                if (typeof a.download === 'undefined') {
-				                    window.location = downloadUrl;
-				                } else {
-				                    a.href = downloadUrl;
-				                    a.download = filename;
-				                    document.body.appendChild(a);
-				                    a.click();
-				                }
-				            } else {
-				                window.location = downloadUrl;
-				            }
-		
-				            setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
-				        }
-					}catch(e){
-						location.replace(action);
-						try{
-							closePanel('panel_Popup');
-							document.getElementById('content_Panel_Popup').style.display='none';
-						}catch(e){};
-					}
-				}
-			},
-			"arraybuffer"
-		);
-	if(document.getElementById("content_body_Panel_Popup")){
-		if(img_wait){
-			try{
-				document.getElementById("img_ajax_makeRequest").src=img_wait;
-			}catch(e){
-			}
-		}
-	}else{
-		window.setTimeout(
-				function(){
-					if(img_wait){
-						try{
-							document.getElementById("img_ajax_makeRequest").src=img_wait;
-						}catch(e){
-						}
-					}
-				},
-				1000
-			);		
-	}
-}
-
-function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType){
+function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction){
 
 
 	if(document.getElementById("content_body_Panel_Popup")){
@@ -1446,13 +1340,13 @@ function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,redr
 								"tmp_container",
 								function(http_request,target){
 									if(http_request.status == 200){
-										showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+										showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction);
 									}else{
 										ajax_makeRequest(	
 												"jsp/included/page_popup.jsp",
 												"tmp_container",
 												function(http_request,target){
-													showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+													showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction);
 												},
 												"",
 												false		
@@ -1506,9 +1400,9 @@ function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,redr
 	if(action!=""){
 		try{
 			if(afterJSFunction){
-				ajax_makeRequest(action,"content_body_Panel_Popup",afterJSFunction,redrawTargetJSFunction,true,responseType);
+				ajax_makeRequest(action,"content_body_Panel_Popup",afterJSFunction);
 			}else{	
-				ajax_makeRequest(action,"content_body_Panel_Popup","JSAfter_showAsPopup",redrawTargetJSFunction,true,responseType);
+				ajax_makeRequest(action,"content_body_Panel_Popup","JSAfter_showAsPopup");
 			}
 		}catch(e){
 		}
@@ -1547,7 +1441,7 @@ function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,redr
 }
 
 
-function showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType){
+function showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,afterJSFunction){
 
 	if(document.getElementById("content_body_Panel_Popup")){
 	}else{
@@ -1560,13 +1454,13 @@ function showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,after
 								"tmp_container",
 								function(http_request,target){
 									if(http_request.status == 200){
-										showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+										showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,afterJSFunction);
 									}else{
 										ajax_makeRequest(	
 												"jsp/included/page_popup.jsp",
 												"tmp_container",
 												function(){
-													showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+													showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,afterJSFunction);
 												},
 												"",
 												false		
@@ -1615,9 +1509,9 @@ function showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,after
 	try{
 		document.getElementById(formName).middleAction.value=middle;
 		if(afterJSFunction){
-			ajax_submit(document.getElementById(formName),"content_body_Panel_Popup",afterJSFunction,redrawTargetJSFunction,responseType);
+			ajax_submit(document.getElementById(formName),"content_body_Panel_Popup",afterJSFunction);
 		}else{	
-			ajax_submit(document.getElementById(formName),"content_body_Panel_Popup","JSAfter_showAsPopup",redrawTargetJSFunction,responseType);
+			ajax_submit(document.getElementById(formName),"content_body_Panel_Popup","JSAfter_showAsPopup");
 		}
 	}catch(e){
 //		alert(e);
@@ -1651,7 +1545,7 @@ function showAsPopupSubmit(formName,middle,panel_width,panel_height,scroll,after
 
 }
 
-function showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType){
+function showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,afterJSFunction){
 
 	if(document.getElementById("content_body_Panel_Popup")){
 	}else{
@@ -1664,13 +1558,13 @@ function showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,af
 								"tmp_container",
 								function(http_request,target){
 									if(http_request.status == 200){
-										showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+										showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,afterJSFunction);
 									}else{
 										ajax_makeRequest(	
 												"jsp/included/page_popup.jsp",
 												"tmp_container",
 												function(){
-													showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+													showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,afterJSFunction);
 												},
 												"",
 												false		
@@ -1718,9 +1612,9 @@ function showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,af
 	ajustPanel();
 	try{
 		if(afterJSFunction){
-			ajax_submitExt(document.getElementById(formName),action,"content_body_Panel_Popup",afterJSFunction,redrawTargetJSFunction,responseType);
+			ajax_submitExt(document.getElementById(formName),action,"content_body_Panel_Popup",afterJSFunction);
 		}else{
-			ajax_submitExt(document.getElementById(formName),action,"content_body_Panel_Popup","JSAfter_showAsPopup",redrawTargetJSFunction,responseType);
+			ajax_submitExt(document.getElementById(formName),action,"content_body_Panel_Popup","JSAfter_showAsPopup");
 		}
 	}catch(e){
 //		alert(e);
@@ -1754,114 +1648,7 @@ function showAsPopupSubmitExt(formName,action,panel_width,panel_height,scroll,af
 
 //JSON
 
-function downloadAsPopup_jsonSimple(action,img_wait){
-	try{
-		if(Blob && isIE()!=8 && isIE()!=9 && Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor')==-1){
-			downloadAsPopup_json(action, 400,300,false,
-				function(http_request,target){
-					try{
-						closePanel('panel_Popup');
-						document.getElementById('content_Panel_Popup').style.display='none';
-					}catch(e){};
-				},
-				img_wait
-			);
-		}else{
-			location.replace(action, "report");
-		}
-	}catch(e){
-		location.replace(action, "report");
-	}	
-
-	return;	
-}
-
-function downloadAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction,img_wait){
-	showAsPopup_json(action, panel_width,panel_height,scroll,
-			afterJSFunction,
-			function(http_request,target){
-
-				if(document.getElementById('content_Panel_Popup').style.display!="none"){
-					try{
-						var filename = "";
-				        var disposition = http_request.getResponseHeader('Content-Disposition');
-				        if (disposition && disposition.indexOf('attachment') !== -1) {
-				            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-				            var matches = filenameRegex.exec(disposition);
-				            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-				        }
-		
-				        var type = http_request.getResponseHeader('Content-Type');
-				        if(http_request.response)
-				        	blob = new Blob([http_request.response], { type: type });
-				        else 
-				        	blob = new Blob([http_request.responseText], { type: type });
-				        
-				        if (typeof window.navigator.msSaveOrOpenBlob !== 'undefined') {
-				            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-	//			            window.navigator.msSaveBlob(blob, filename);
-				            window.navigator.msSaveOrOpenBlob(blob, filename);
-				        }else if (typeof window.navigator.msSaveBlob !== 'undefined') {
-				        	window.navigator.msSaveBlob(blob, filename);
-				        } else {
-				            var URL = window.URL || window.webkitURL;
-				            var downloadUrl = URL.createObjectURL(blob);
-		
-				            if (filename) {
-				                // use HTML5 a[download] attribute to specify filename
-				                var a = document.createElement("a");
-				                // safari doesn't support this yet
-				                if (typeof a.download === 'undefined') {
-				                    window.location = downloadUrl;
-				                } else {
-				                    a.href = downloadUrl;
-				                    a.download = filename;
-				                    document.body.appendChild(a);
-				                    a.click();
-				                }
-				            } else {
-				                window.location = downloadUrl;
-				            }
-		
-				            setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
-				        }	
-					}catch(e){
-						location.replace(action);
-						try{
-							closePanel('panel_Popup');
-							document.getElementById('content_Panel_Popup').style.display='none';
-						}catch(e){};
-					}				        
-				}
-			},
-			"arraybuffer"
-		);
-	if(document.getElementById("content_body_Panel_Popup")){
-		if(img_wait){
-			try{
-				document.getElementById("img_ajax_makeJSONRequest").src=img_wait;
-			}catch(e){
-			}
-		}
-	}else{
-		window.setTimeout(
-				function(){
-					if(img_wait){
-						try{
-							document.getElementById("img_ajax_makeJSONRequest").src=img_wait;
-						}catch(e){
-						}
-					}
-				},
-				1000
-			);		
-	}
-
-
-}
-
-
-function showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType){
+function showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction){
 
 	if(document.getElementById("content_body_Panel_Popup")){
 	}else{
@@ -1874,13 +1661,13 @@ function showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction
 								"tmp_container",
 								function(http_request,target){
 									if(http_request.status == 200){
-										showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+										showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction);
 									}else{
 										ajax_makeRequest(	
 												"jsp/included/page_popup.jsp",
 												"tmp_container",
 												function(){
-													showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+													showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction);
 												},
 												"",
 												false		
@@ -1932,9 +1719,9 @@ function showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction
 	if(action!=""){
 		try{		
 			if(afterJSFunction){
-				ajax_makeJSONRequest(action,{},"content_body_Panel_Popup",afterJSFunction,redrawTargetJSFunction,true,responseType);
+				ajax_makeJSONRequest(action,{},"content_body_Panel_Popup",afterJSFunction);
 			}else{
-				ajax_makeJSONRequest(action,{},"content_body_Panel_Popup","JSAfter_showAsPopup",redrawTargetJSFunction,true,responseType);
+				ajax_makeJSONRequest(action,{},"content_body_Panel_Popup","JSAfter_showAsPopup");
 			}
 	
 		}catch(e){
@@ -1976,7 +1763,7 @@ function showAsPopup_json(action,panel_width,panel_height,scroll,afterJSFunction
 
 }
 
-function showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType){
+function showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,afterJSFunction){
 
 	if(document.getElementById("content_body_Panel_Popup")){
 	}else{
@@ -1989,13 +1776,13 @@ function showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,
 								"tmp_container",
 								function(http_request,target){
 									if(http_request.status == 200){
-										showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+										showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,afterJSFunction);
 									}else{
 										ajax_makeRequest(	
 												"jsp/included/page_popup.jsp",
 												"tmp_container",
 												function(){
-													showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+													showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,afterJSFunction);
 												},
 												"",
 												false		
@@ -2044,9 +1831,9 @@ function showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,
 	try{
 		document.getElementById(formName).middleAction.value=middle;
 		if(afterJSFunction){
-			ajax_submit_json(document.getElementById(formName),"content_body_Panel_Popup",afterJSFunction,redrawTargetJSFunction,responseType);
+			ajax_submit_json(document.getElementById(formName),"content_body_Panel_Popup",afterJSFunction);
 		}else{
-			ajax_submit_json(document.getElementById(formName),"content_body_Panel_Popup","JSAfter_showAsPopup",redrawTargetJSFunction,responseType);
+			ajax_submit_json(document.getElementById(formName),"content_body_Panel_Popup","JSAfter_showAsPopup");
 		}
 
 	}catch(e){
@@ -2080,7 +1867,7 @@ function showAsPopupSubmit_json(formName,middle,panel_width,panel_height,scroll,
 
 }
 
-function showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType){
+function showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scroll,afterJSFunction){
 
 	if(document.getElementById("content_body_Panel_Popup")){
 	}else{
@@ -2093,13 +1880,13 @@ function showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scro
 								"tmp_container",
 								function(http_request,target){
 									if(http_request.status == 200){
-										showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+										showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scroll,afterJSFunction);
 									}else{
 										ajax_makeRequest(	
 												"jsp/included/page_popup.jsp",
 												"tmp_container",
 												function(){
-													showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType);
+													showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scroll,afterJSFunction);
 												},
 												"",
 												false		
@@ -2147,9 +1934,9 @@ function showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scro
 	ajustPanel();
 	try{
 		if(afterJSFunction){
-			ajax_submitExt_json(document.getElementById(formName),action,"content_body_Panel_Popup",afterJSFunction,redrawTargetJSFunction,responseType);
+			ajax_submitExt_json(document.getElementById(formName),action,"content_body_Panel_Popup",afterJSFunction);
 		}else{
-			ajax_submitExt_json(document.getElementById(formName),action,"content_body_Panel_Popup","JSAfter_showAsPopup",redrawTargetJSFunction,responseType);
+			ajax_submitExt_json(document.getElementById(formName),action,"content_body_Panel_Popup","JSAfter_showAsPopup");
 		}
 
 	}catch(e){
@@ -2251,12 +2038,7 @@ function showAlertAsPopup(label){
 			
 			var f_exec_alert = function(http_request,target){
 				document.getElementById(target).innerHTML=http_request.responseText;
-				if (typeof label === "function") {
-					label("confirm_label");
-	    		}else{
-	    			document.getElementById("confirm_label").innerHTML = label;
-	    		}
-				
+				document.getElementById("confirm_label").innerHTML = label;
 			}	
 			
 			ajax_makeRequest(	
@@ -2264,11 +2046,7 @@ function showAlertAsPopup(label){
 					"content_body_Panel_Popup",
 					function(http_request,target){
 						if(http_request.status == 200){
-							if (typeof f_exec_alert === "function") {
-								f_exec_alert(http_request,target);
-		            		}else{
-		            			eval(f_exec_alert + "(http_request,target)");
-		            		}
+							f_exec_alert;
 						}else{
 							ajax_makeRequest(
 									"jsp/framework/viewalert.jsp",
@@ -2389,42 +2167,25 @@ function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo){
 		var f_exec_confirm = function(http_request,target){
 
 			document.getElementById(target).innerHTML=http_request.responseText;
-			if (typeof label === "function") {
-				label("confirm_label");
-    		}else{
-    			document.getElementById("confirm_label").innerHTML = label;
-    		}
-			
+			document.getElementById("confirm_label").innerHTML = label;
 			if(document.getElementById("action_ok")){
 				document.getElementById("action_ok").onclick = callOk;
 				if(labelBtnOk){
-					if (typeof labelBtnOk === "function") {
-						labelBtnOk("action_ok");
-		    		}else{
-		    			document.getElementById("action_ok").innerHTML = labelBtnOk;
-		    		}
-					
+					document.getElementById("action_ok").innerHTML = labelBtnOk;
 					document.getElementById("action_ok").style.width=labelBtnOk.length*10;
 				}
 			}
 			if(document.getElementById("action_confirm")){
 				document.getElementById("action_confirm").onclick = callOk;
 				if(labelBtnOk){
-					if (typeof labelBtnOk === "function") {
-						labelBtnOk("action_confirm");
-		    		}else{
-		    			document.getElementById("action_confirm").innerHTML = labelBtnOk;
-		    		}
+					document.getElementById("action_confirm").innerHTML = labelBtnOk;
 					document.getElementById("action_confirm").style.width=labelBtnOk.length*10;
 				}
 			}	
 			if(document.getElementById("action_ko")){
 				if(labelBtnKo){
-					if (typeof labelBtnKo === "function") {
-						labelBtnKo("action_ko");
-		    		}else{
-		    			document.getElementById("action_ko").innerHTML = labelBtnKo;
-		    		}
+
+					document.getElementById("action_ko").innerHTML = labelBtnKo;
 					document.getElementById("action_ko").style.width=labelBtnKo.length*10;
 					document.getElementById("action_ko").onclick = callKo;
 
@@ -2444,11 +2205,7 @@ function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo){
 				"content_body_Panel_Popup",
 				function(http_request,target){
 					if(http_request.status == 200){
-						if (typeof f_exec_confirm === "function") {
-							f_exec_confirm(http_request,target);
-	            		}else{
-	            			eval(f_exec_confirm + "(http_request,target)");
-	            		}
+						f_exec_confirm;
 					}else{
 						ajax_makeRequest(
 								"jsp/framework/viewconfirm.jsp",

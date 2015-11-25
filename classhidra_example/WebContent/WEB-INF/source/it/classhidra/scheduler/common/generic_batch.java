@@ -1,20 +1,7 @@
 package it.classhidra.scheduler.common;
 
-import it.classhidra.core.tool.db.db_connection;
-import it.classhidra.core.tool.exception.bsException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_file;
-import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_xml;
-import it.classhidra.scheduler.scheduling.db.db_batch;
-import it.classhidra.scheduler.scheduling.init.batch_init;
-import it.classhidra.scheduler.servlets.servletBatchScheduling;
-
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +15,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_file;
+import it.classhidra.core.tool.util.util_xml;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
+import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.init.batch_init;
 
 
 public abstract class generic_batch implements i_batch,Serializable{
@@ -145,12 +140,25 @@ public abstract class generic_batch implements i_batch,Serializable{
 	public static Properties loadProperty(db_batch _batch){
 		batch_init b_init = null;
 	    try{
-	    	b_init = servletBatchScheduling.getConfiguration();
+	    	b_init = DriverScheduling.getConfiguration();
 	    }catch(Exception e){
 	    	b_init = new batch_init();
 	    }
 
 		Properties property = new Properties();
+		
+
+		HashMap form = new HashMap();
+		form.put("selected",_batch);
+
+		try{
+			property = (Properties)b_init.get4BatchManager().operation(i_4Batch.o_LOAD_BATCH_PROPERTIES, form);
+			if(property==null)
+				 property = new Properties();
+		}catch(Exception e){
+			new bsException(e,iStub.log_ERROR);
+		}		
+/*		
 		Connection conn=null;
 		Statement st=null;
 		ResultSet rs=null;
@@ -171,10 +179,11 @@ public abstract class generic_batch implements i_batch,Serializable{
 				}
 			}
 		}catch(Exception ex){
-
+			new bsException("Scheduler: "+ex.toString(), iStub.log_ERROR);
 		}finally{
 			db_connection.release(rs, st, conn);
 		}
+*/		
 		return property;
 	}
 

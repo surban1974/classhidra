@@ -1,6 +1,6 @@
 /**
 * Name: js4ajax.js
-* Version: 1.4.11 (compatible classHidra 1.4.11)
+* Version: 1.5.2 (compatible classHidra 1.5.2)
 * Creation date: (21/04/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
@@ -202,7 +202,7 @@ function dhtmlLoadScript_submit(url,frm,type,rel,charset,inbase64,afterJSFunctio
 
 // Simple parameters string way
 
-function ajax_submit(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack){
+function ajax_submit(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 
 	if(document.getElementById(target) ){
 		var parameters;
@@ -211,13 +211,13 @@ function ajax_submit(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,
 		   else parameters = ajax_makeParameters(frm,frm.action);
 
 
-		ajax_makeRequest(frm.action+parameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack);
+		ajax_makeRequest(frm.action+parameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType);
 	}else{
 		frm.submit();
 	}
 }
 
-function ajax_submitExt(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack){
+function ajax_submitExt(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 
 	if(document.getElementById(target) ){
 		var parameters;
@@ -226,7 +226,7 @@ function ajax_submitExt(frm,action,target,afterJSFunction,inbase64,redrawTargetJ
 		   else parameters = ajax_makeParameters(frm,action);
 
 
-		ajax_makeRequest(action+parameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack);
+		ajax_makeRequest(action+parameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType);
 	}else{
 		frm.submit();
 	}
@@ -340,7 +340,7 @@ function ajax_makeParameters64(frm,url) {
     return getstr;
  }
 
-function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack) {
+function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType) {
 		var urlOnly="";
 		var parametersOnly="";
 
@@ -366,12 +366,13 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 			}
 			try{
 				if(viewBack==true)
-					document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img src='images/wait.gif' border='0'></td></tr></table>";
+					document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>";
 			}catch(e){
 			}
 		}
 
 		var http_request = false;
+		var setResponseType=false;
 
 
 
@@ -389,9 +390,18 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 	    }
 	    if (window.XMLHttpRequest) { // Mozilla, Safari,...
 		       http_request = new XMLHttpRequest();
-		       if (http_request.overrideMimeType) {
-		          //http_request.overrideMimeType('text/xml');
-		          http_request.overrideMimeType('text/html');
+		       
+		       if(responseType && responseType!=""){
+		    	   try{
+		    		   http_request.responseType = responseType;
+		    		   setResponseType=true;
+		    	   }catch(e){
+		    	   }
+		       }else{   
+			       if (http_request.overrideMimeType) {
+			          //http_request.overrideMimeType('text/xml');
+			          http_request.overrideMimeType('text/html');
+			       }
 		       }
 
 	    }
@@ -442,9 +452,15 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 
 
 	    http_request.open("POST", urlOnly, true);
+	    if(responseType && responseType!="" && setResponseType==false){
+	    	try{
+	    		   http_request.responseType = responseType;
+	    	}catch(e){
+	    	}
+	    }
 
-	    http_request.setRequestHeader("Content-length", parametersOnly.length);
-	    http_request.setRequestHeader("Connection", "close");
+//	    http_request.setRequestHeader("Content-length", parametersOnly.length);
+//	    http_request.setRequestHeader("Connection", "close");
 	    http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	    http_request.setRequestHeader("Content-Encoding", "iso-8859-1");
 //	    http_request.setRequestHeader("Content-Encoding", "utf-8");
@@ -456,7 +472,7 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 
 
 //JSON way
-function ajax_submit_json(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack){
+function ajax_submit_json(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 
 	if(document.getElementById(target) ){
 		var json;
@@ -464,20 +480,20 @@ function ajax_submit_json(frm,target,afterJSFunction,inbase64,redrawTargetJSFunc
 			json = ajax_makeJSONParameters64(frm,url);
 		else json = ajax_makeJSONParameters(frm,frm.action);
 
-		ajax_makeJSONRequest(frm.action,json,target,afterJSFunction,redrawTargetJSFunction,showImgBack);
+		ajax_makeJSONRequest(frm.action,json,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType);
 	}else{
 		frm.submit();
 	}
 }
 
-function ajax_submitExt_json(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack){
+function ajax_submitExt_json(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 
 	if(document.getElementById(target) ){
 		var json;
 		if(inbase64)
 			json = ajax_makeJSONParameters64(frm,url);
 		else json = ajax_makeJSONParameters(frm,frm.action);
-		ajax_makeJSONRequest(action,json,target,afterJSFunction,redrawTargetJSFunction,showImgBack);
+		ajax_makeJSONRequest(action,json,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType);
 	}else{
 		frm.submit();
 	}
@@ -617,7 +633,7 @@ function ajax_makeJSONParameters64(frm,url) {
  }
 
 
-function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack) {
+function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType) {
 
 		var urlOnly="";
 
@@ -651,13 +667,13 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 			}
 			try{
 				if(viewBack==true)
-					document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img src='images/wait.gif' border='0'></td></tr></table>";
+					document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='images/wait.gif' border='0'></td></tr></table>";
 			}catch(e){
 			}
 		}
 
 		var http_request = false;
-
+		var setResponseType = false;
 
 
 
@@ -674,11 +690,18 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 	    }
 	    if (window.XMLHttpRequest) { // Mozilla, Safari,...
 		       http_request = new XMLHttpRequest();
-		       if (http_request.overrideMimeType) {
-		          //http_request.overrideMimeType('text/xml');
-		          http_request.overrideMimeType('text/html');
+		       if(responseType && responseType!=""){
+		    	   try{
+		    		   http_request.responseType = responseType;
+		    		   setResponseType=true;
+		    	   }catch(e){
+		    	   }
+		       }else{   
+			       if (http_request.overrideMimeType) {
+			          //http_request.overrideMimeType('text/xml');
+			          http_request.overrideMimeType('text/html');
+			       }
 		       }
-
 	    }
 	    if (!http_request) {
 	       alert('Cannot create XMLHTTP instance');
@@ -727,9 +750,15 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
         var json_string = JSON.stringify(jsonParameters);
 
 	    http_request.open("POST", urlOnly, true);
-
-	    http_request.setRequestHeader("Content-length", json_string.length);
-	    http_request.setRequestHeader("Connection", "close");
+	    if(responseType && responseType!="" && setResponseType==false){
+	       try{
+	    	   http_request.responseType = responseType;
+	    	   setResponseType=true;
+	       }catch(e){
+	       }
+	    }
+//	    http_request.setRequestHeader("Content-length", json_string.length);
+//	    http_request.setRequestHeader("Connection", "close");
 	    http_request.setRequestHeader("Content-type", "application/json");
 	    http_request.setRequestHeader("Content-Encoding", "iso-8859-1");
 //	    http_request.setRequestHeader("Content-Encoding", "utf-8");
