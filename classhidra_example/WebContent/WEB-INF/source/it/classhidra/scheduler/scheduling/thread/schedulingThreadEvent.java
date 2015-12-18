@@ -1,6 +1,7 @@
 package it.classhidra.scheduler.scheduling.thread;
 
 import it.classhidra.core.tool.util.util_cloner;
+import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEvent;
@@ -31,7 +32,7 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 
 
 
-	private schedulingThreadEvent(long _delta_time, db_batch _batch, ProcessBatchEngine _pbe ) {
+	public schedulingThreadEvent(long _delta_time, db_batch _batch, ProcessBatchEngine _pbe ) {
 		super();
 		delta_time = _delta_time;
 		try{
@@ -61,7 +62,7 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 			
 			schedulingThreadEvent ste_mem =  util_batch.findFromPbe(pbe, batch.getCd_btch());
 			if(ste_mem!=null ){
-				if(ste_mem.getBatch()!=null && ste_mem.getBatch().getState()==db_batch.STATE_INEXEC){
+				if(ste_mem.getBatch()!=null && ste_mem.getBatch().getState()==i_batch.STATE_INEXEC){
 					state=2;
 					threadDone=true;
 					Thread.currentThread().interrupt();

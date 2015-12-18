@@ -15,6 +15,8 @@ public interface IBatchScheduling {
 	void stop();
 
 	void clearContainer();
+	
+	void kill4timeout();
 
 	batch_init getConfiguration();
 

@@ -33,7 +33,9 @@ public abstract class generic_batch implements i_batch,Serializable{
 	protected HashMap output = new HashMap();
 	protected String exit = "OK";
 	protected int state = 0;
-	protected static String db_property_name = "batchdb";
+	protected static String db_property_name 				= "batchdb";
+ 
+	
 	
 	public void readInput(String xml){
 		if(xml==null || xml.trim().equals("")) return;

@@ -15,6 +15,7 @@ public interface i_4Batch {
 	public final static String o_UPDATE_STATES_AND_NEXTEXEC = "UPDATE_STATES_AND_NEXTEXEC";
 	public final static String o_CLEAR_STATE = "CLEAR_STATE";
 	public final static String o_CLEAR_BATCH_STATES = "CLEAR_BATCH_STATES";
+	public final static String o_KILL4TIMEOUT = "KILL4TIMEOUT";
 	public final static String o_WRITE_LOG = "WRITE_LOG";
 
 	public abstract Object operation(String oper, HashMap form)

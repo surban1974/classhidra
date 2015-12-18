@@ -6,11 +6,14 @@ package it.classhidra.scheduler.scheduling.process;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 //import java.util.Vector;
 import java.util.List;
+import java.util.Properties;
 import java.util.SortedMap;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import it.classhidra.core.tool.exception.bsException;
@@ -44,7 +47,7 @@ public class ProcessBatchEvent  {
 
 	public void launch(Integer cd_ist, String cd_btch, boolean recalc, boolean sequence){
 		try {
-			executeBatch(cd_ist,cd_btch, "",recalc,sequence);
+			executeBatch(cd_ist,cd_btch, "",recalc,sequence,recalc);
 		}catch(Exception ex){
 			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
@@ -54,7 +57,7 @@ public class ProcessBatchEvent  {
 	
 	public void launch(Integer cd_ist, String cd_btch){
 		try {
-			executeBatch(cd_ist,cd_btch, "",true,false);
+			executeBatch(cd_ist,cd_btch, "",true,false,true);
 		}catch(Exception ex){
 			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
@@ -65,7 +68,7 @@ public class ProcessBatchEvent  {
 	public String[] launchR(Integer cd_ist, String cd_btch, boolean recalc, boolean sequence){
 		String[] result_eb = null;
 		try {
-			result_eb = executeBatch(cd_ist,cd_btch, "",recalc,sequence);
+			result_eb = executeBatch(cd_ist,cd_btch, "",recalc,sequence,recalc);
 		}catch(Exception ex){
 			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
@@ -77,7 +80,7 @@ public class ProcessBatchEvent  {
 	public String[] launchR(Integer cd_ist, String cd_btch){
 		String[] result_eb = null;
 		try {
-			result_eb = executeBatch(cd_ist,cd_btch, "",true,false);
+			result_eb = executeBatch(cd_ist,cd_btch, "",true,false,true);
 		}catch(Exception ex){
 			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
@@ -87,7 +90,7 @@ public class ProcessBatchEvent  {
 	}	
 
 
-	private String[] executeBatch(Integer cd_ist, String cd_btch, String common_area, boolean recalc, boolean sequence){
+	private String[] executeBatch(Integer cd_ist, String cd_btch, String common_area, boolean recalc, boolean sequence, boolean parent_recalc){
 		
 		batch_init binit = DriverScheduling.getConfiguration();
 		String[] result_eb = new String[2];
@@ -110,6 +113,17 @@ public class ProcessBatchEvent  {
 			else
 				initialBatchState = batch.getInitialState();
 			
+			if(!recalc && batch.getTm_next()!=null){
+				Calendar nextTime = Calendar.getInstance();
+				nextTime.set(Calendar.SECOND,0);
+				nextTime.set(Calendar.MILLISECOND,0);
+				long deltaPrecision = nextTime.getTimeInMillis() - new Date().getTime();
+				if(deltaPrecision>0 && deltaPrecision<60*1000){
+					java.util.concurrent.TimeUnit.MILLISECONDS.sleep(deltaPrecision);
+				}
+			}
+			log.setTm_start(new Timestamp(new Date().getTime()));
+			
 /*			
 			batch = new db_batch();
 			batch.setCd_ist(cd_ist);
@@ -131,8 +145,15 @@ public class ProcessBatchEvent  {
 			SortedMap h_common_area = new TreeMap();
 			try{
 				
-				if(batch.getCls_btch()!=null && !batch.getCls_btch().equals(""))
-				currentBatchClass = loadBatchsClass(batch);
+				if(batch.getCls_btch()!=null && !batch.getCls_btch().equals("")){
+//					currentBatchClass = loadBatchsClass(batch);	
+					currentBatchClass = DriverScheduling.getBatchInstance(batch.getCd_btch(), batch.getCls_btch());
+					if(currentBatchClass!=null)
+						currentBatchClass.setDb(batch);
+				}
+				
+				if(recalc || parent_recalc)
+					checkExcluded(batch);
 
 
 				
@@ -157,14 +178,14 @@ public class ProcessBatchEvent  {
 						
 						log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+output);
 						if(currentBatchClass.getExit().equals("OK")){
-							log.setSt_exec(new Integer(db_batch_log.STATE_OK));
+							log.setSt_exec(new Integer(i_batch.STATE_OK));
 						} else if(currentBatchClass.getExit().equals("KO")){
-							log.setSt_exec(new Integer(db_batch_log.STATE_KO));
-						} else log.setSt_exec(new Integer(db_batch_log.STATE_WARNING));
+							log.setSt_exec(new Integer(i_batch.STATE_KO));
+						} else log.setSt_exec(new Integer(i_batch.STATE_WARNING));
 
 					}catch (Exception e) {
 						log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+e.toString());
-						log.setSt_exec(new Integer(db_batch_log.STATE_KO));
+						log.setSt_exec(new Integer(i_batch.STATE_KO));
 						currentBatchClass.onErrorExecute();
 					}
 
@@ -178,7 +199,7 @@ public class ProcessBatchEvent  {
 					HashMap form = new HashMap();
 					form.put("cd_ist", batch.getCd_ist());
 					form.put("cd_btch", batch.getCd_btch());
-					form.put("state", new Short(db_batch.STATE_NORMAL));
+					form.put("state", new Short(i_batch.STATE_NORMAL));
 					try{
 						child_batch = (List)m4b.operation(i_module_integration.o_FINDFORMLIST, form);
 					}catch(Exception e){
@@ -188,19 +209,20 @@ public class ProcessBatchEvent  {
 					for(int i=0;i<child_batch.size();i++){
 //							isChild=true;
 							db_batch current = (db_batch)child_batch.get(i);
-							String[] current_eb = executeBatch(current.getCd_ist(), current.getCd_btch(), common_area,false,true);
+							String[] current_eb = executeBatch(current.getCd_ist(), current.getCd_btch(), common_area,false,true,parent_recalc);
 							common_area = current_eb[0];
 							short current_state = Short.parseShort(current_eb[1]);
 							h_common_area.put(current.getOrd()+"_"+current.getCd_btch().trim(), current.getCd_btch().trim()+" -> "+current.getDesSt_exec(new Integer(current_state)));
 							
-							if( current_state>batch.getSt_exec().shortValue()) batch.setSt_exec(new Integer(current_state));
+							if( current_state>batch.getSt_exec().shortValue()) 
+								batch.setSt_exec(new Integer(current_state));
 					}
 					log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec()) + generic_batch.map2xml(h_common_area));	
 
 				}
 			}catch(Exception e){
 				log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+e.toString());
-				log.setSt_exec(new Integer(db_batch_log.STATE_KO));
+				log.setSt_exec(new Integer(i_batch.STATE_KO));
 				batch.setSt_exec(log.getSt_exec());
 			}
 
@@ -209,11 +231,14 @@ public class ProcessBatchEvent  {
 			log.setSt_exec(batch.getSt_exec());
 //			log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec()) + generic_batch.map2xml(h_common_area));
 
-			if(!recalc && !sequence) batch.setState(initialBatchState);
-			else batch.setState(new Integer(db_batch.STATE_NORMAL));
+			if(!recalc && !sequence) 
+				batch.setState(initialBatchState);
+			else 
+				batch.setState(new Integer(i_batch.STATE_NORMAL));
 			if(batch.getCd_p_btch()==null || batch.getCd_p_btch().equals("")){
 
-				if(batch.getSt_exec().shortValue()==db_batch.STATE_NORMAL && batch.getPeriod()!=null && !batch.getPeriod().equals("")){
+//				if(batch.getSt_exec().shortValue()==db_batch.STATE_NORMAL && batch.getPeriod()!=null && !batch.getPeriod().equals("")){
+				if(batch.getState().shortValue()==i_batch.STATE_NORMAL && batch.getPeriod()!=null && !batch.getPeriod().equals("")){
 					try{
 						if(recalc){
 							Date rec = new java.util.Date();
@@ -244,7 +269,7 @@ public class ProcessBatchEvent  {
 //							long deltaTmp = batch.getTm_next().getTime() - recT;
 							long deltaTmp = batch.getTm_next().getTime() - new Date().getTime();
 							if(delta>0 && 0 <= deltaTmp && deltaTmp <= delta){
-								batch.setState(new Integer(db_batch.STATE_SCHEDULED));
+								batch.setState(new Integer(i_batch.STATE_SCHEDULED));
 	
 //								long deltaBatch = batch.getTm_next().getTime() - new Date().getTime();
 
@@ -274,7 +299,8 @@ public class ProcessBatchEvent  {
 					}catch (Exception e) {
 					}			
 				}else{
-					if(batch.getSt_exec().shortValue()==db_batch.STATE_NORMAL)
+					if(batch.getState().shortValue()==i_batch.STATE_NORMAL)
+//					if(batch.getSt_exec().shortValue()==db_batch.STATE_NORMAL)
 						new bsException("BatchEngine:reScheduling after exec->false: batch->"+batch.getCd_btch()+": state->"+batch.getSt_exec().shortValue()+": period->"+batch.getPeriod(), iStub.log_WARN);
 				}
 			}
@@ -282,12 +308,12 @@ public class ProcessBatchEvent  {
 			
 		}catch(Exception ex){
 			log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+ex.toString());
-			log.setSt_exec(new Integer(db_batch_log.STATE_KO));
+			log.setSt_exec(new Integer(i_batch.STATE_KO));
 			batch.setSt_exec(log.getSt_exec());
 
 		}catch(Throwable th){
 			log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+th.toString());
-			log.setSt_exec(new Integer(db_batch_log.STATE_KO));
+			log.setSt_exec(new Integer(i_batch.STATE_KO));
 			batch.setSt_exec(log.getSt_exec());
 		}finally{
 
@@ -300,13 +326,59 @@ public class ProcessBatchEvent  {
 		return result_eb;
 	}
 
+/*
 	private i_batch loadBatchsClass(db_batch batch) throws Exception{
 		i_batch objBatch = null;
 		objBatch = (i_batch)Class.forName(batch.getCls_btch()).newInstance();
 		if(objBatch!=null) objBatch.setDb(batch);
 		return objBatch;
 	}
+*/
+	private void checkExcluded(db_batch batch) throws Exception{
+		bsException exReturn = null;
+		Properties properties = generic_batch.loadProperty(batch);
+		if(properties!=null && properties.size()>0){
+			String exclude_dayofweek = properties.getProperty(generic_batch.PROPERTY_EXCLUDE_DAYOFWEEK);
+			String exclude_date = properties.getProperty(generic_batch.PROPERTY_EXCLUDE_DATE); 
+			if(exclude_dayofweek==null && exclude_date==null)
+				return;
+			try{
 
+				if(exclude_dayofweek!=null){
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(new Date());
+					StringTokenizer sto = new StringTokenizer(exclude_dayofweek, ";");
+					while(exReturn==null && sto.hasMoreTokens()){						
+						try{
+							int exclude_day = Integer.valueOf(sto.nextToken()).intValue();
+							if(calendar.get(Calendar.DAY_OF_WEEK) == exclude_day)
+								exReturn = new bsException("BLOCK. Processing blocked by exclusion of the week's day = ["+ exclude_day+"] from the days allowed.");							
+						}catch(Exception e){							
+						}
+					}
+
+				}
+				if(exclude_date!=null){
+					String date = util_format.dataToString(new Date(), "yyyy-MM-dd");
+					StringTokenizer sto = new StringTokenizer(exclude_date, ";");
+					while(sto.hasMoreTokens()){						
+						try{
+							String exclude = sto.nextToken();
+							if(exReturn==null && exclude.equals(date))
+								exReturn = new bsException("BLOCK. Processing blocked for exclusion of data = ["+ exclude+"] from the dates allowed.");	
+						}catch(Exception e){							
+						}
+					}
+
+				}
+
+			}catch(Exception e){
+				
+			}
+			if(exReturn!=null)
+				throw exReturn;
+		}
+	}
 
 	public static void changeState(db_batch batch, Integer state){
 		

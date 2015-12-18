@@ -2,7 +2,10 @@ package external_loaders;
 
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_externalloader;
+import it.classhidra.core.tool.util.util_provider;
+import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
+import it.classhidra.scheduler.scheduling.IBatchFactory;
 
 
 public class loadScheduler implements i_externalloader{
@@ -17,7 +20,40 @@ public class loadScheduler implements i_externalloader{
 	
 	public void load() {
 		try{
-			DriverScheduling.init(bsController.checkSchedulerContainer());
+			DriverScheduling.init(
+					bsController.checkSchedulerContainer(),
+					
+					new IBatchFactory() {
+						
+						@Override
+						public i_batch getInstance(String cd_btch, String cls_batch) {
+							try{
+								i_batch instance = null;
+								if(bsController.getAppInit()!=null && bsController.getAppInit().get_cdi_provider()!=null && !bsController.getAppInit().get_cdi_provider().equals("")){
+									try{
+										instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getAppInit().get_cdi_provider(),  cd_btch, cls_batch, null);
+									}catch(Exception e){
+									}
+								}
+								if(instance==null && bsController.getCdiDefaultProvider()!=null){
+									try{
+										instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getCdiDefaultProvider(),   cd_btch, cls_batch, null);
+									}catch(Exception e){
+									}
+								}
+
+								if(instance == null)
+									instance = (i_batch)Class.forName(cls_batch).newInstance();
+
+								return instance;
+							}catch(Exception e){
+							}catch(Throwable t){
+							}
+							
+							return null;
+						}
+					}
+			);
 			DriverScheduling.reStart();
 //			servletBatchScheduling.reStart();
 

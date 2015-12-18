@@ -139,7 +139,14 @@ public class servletBatchScheduling extends HttpServlet {
 		
 	}
 	
-
+	public static void kill4timeout(){
+		try{
+			if(thProcess!=null)
+				thProcess.kill4Timeout();
+		}catch(Exception e){
+			new bsException("ERROR Scheduler:Kill4Timeout schedulingThreadProcess "+e.toString(),iStub.log_ERROR);
+		}		
+	}	
 
 	public static batch_init getConfiguration() {
 		if(configuration==null) configuration=new batch_init(); 

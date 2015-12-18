@@ -16,6 +16,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.framework.web.integration.i_module_integration;
 import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
@@ -101,21 +102,21 @@ public class ProcessBatchEngine  {
 		List elements = new ArrayList();
 		for(int i=0;i<elementsAll.size();i++){
 			db_batch el = (db_batch)elementsAll.get(i);
-			if(el.getState().shortValue()==db_batch.STATE_SCHEDULED){
+			if(el.getState().shortValue()==i_batch.STATE_SCHEDULED){
 				if(DriverScheduling.getThProcess()!=null){
 					schedulingThreadEvent ste = getFromThreadEvents(el);
 					if(ste==null){
-						el.setState(new Integer(db_batch.STATE_NORMAL));
+						el.setState(new Integer(i_batch.STATE_NORMAL));
 						elements.add(el);
 					}
 					else if(ste.getStateThread()==2){
 						ste.interrupt();
-						el.setState(new Integer(db_batch.STATE_NORMAL));
+						el.setState(new Integer(i_batch.STATE_NORMAL));
 						elements.add(el);
 					}
 				}
 			}
-			if(el.getState().shortValue()==db_batch.STATE_NORMAL){
+			if(el.getState().shortValue()==i_batch.STATE_NORMAL){
 				elements.add(el);
 			}
 		}
@@ -140,7 +141,7 @@ public class ProcessBatchEngine  {
 			}
 			long deltaTmp = el.getTm_next().getTime() - currentTimeL;
 			if(delta>0 && 0 <= deltaTmp && deltaTmp <= delta){
-				el.setState(new Integer(db_batch.STATE_SCHEDULED));
+				el.setState(new Integer(i_batch.STATE_SCHEDULED));
 				updated=true;
 				h_batchs.put(el.getCd_btch(), el);
 			}

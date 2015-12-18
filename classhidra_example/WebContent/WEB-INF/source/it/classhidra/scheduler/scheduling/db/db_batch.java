@@ -6,16 +6,22 @@ import java.util.*;
 import it.classhidra.core.tool.elements.elementDBBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 
 public class db_batch extends elementDBBase implements i_elementDBBase, java.io.Serializable {
     private static final long serialVersionUID = 1L;
     
-    public final static short STATE_NORMAL = 0; 
-    public final static short STATE_SCHEDULED = -1;
-    public final static short STATE_INEXEC = 1;
+    @Deprecated
+    public final static short STATE_NORMAL = 0;    
+    @Deprecated
+    public final static short STATE_SCHEDULED = -1;    
+    @Deprecated
+    public final static short STATE_INEXEC = 1;    
+    @Deprecated
     public final static short STATE_SUSPEND = 10;
+    
     private Integer cd_ist;
     private String cd_btch;
     private String cd_p_btch;
@@ -260,16 +266,16 @@ public void setSt_exec(Integer value) {
 }
 
 public String getDesSt_exec() {
-	if(st_exec.shortValue()== db_batch_log.STATE_KO) return "KO";
-	if(st_exec.shortValue()== db_batch_log.STATE_OK) return "OK";
-	if(st_exec.shortValue()== db_batch_log.STATE_WARNING) return "WARNING";
+	if(st_exec.shortValue()== i_batch.STATE_KO) return "KO";
+	if(st_exec.shortValue()== i_batch.STATE_OK) return "OK";
+	if(st_exec.shortValue()== i_batch.STATE_WARNING) return "WARNING";
 	return "WARNING";
 }
 public String getDesSt_exec(Integer _st_exec) {
 	st_exec=_st_exec;
-	if(st_exec.shortValue()== db_batch_log.STATE_KO) return "KO";
-	if(st_exec.shortValue()== db_batch_log.STATE_OK) return "OK";
-	if(st_exec.shortValue()== db_batch_log.STATE_WARNING) return "WARNING";
+	if(st_exec.shortValue()== i_batch.STATE_KO) return "KO";
+	if(st_exec.shortValue()== i_batch.STATE_OK) return "OK";
+	if(st_exec.shortValue()== i_batch.STATE_WARNING) return "WARNING";
 	return "WARNING";
 }
 public java.sql.Timestamp getTm_last() {

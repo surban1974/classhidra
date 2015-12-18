@@ -3,6 +3,8 @@ package it.classhidra.scheduler.scheduling.implementation.mysql;
 
 
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.servlets.servletBatchScheduling;
@@ -122,7 +124,7 @@ public class sql_batch {
 
 		result+="( cd_btch = '"+form.get("cd_btch")+"'  \n";
 		result+="OR cd_p_btch = '"+form.get("cd_btch")+"')  \n";
-		result+="AND state != "+db_batch.STATE_SUSPEND+" \n";
+		result+="AND state != "+i_batch.STATE_SUSPEND+" \n";
 		return result;
 	}
 
@@ -135,16 +137,36 @@ public class sql_batch {
 	    }
 		String result="";
 		result+="UPDATE "+b_init.get_db_prefix()+"batch \n";
-		result+="SET state = "+db_batch.STATE_NORMAL+" \n";
+		result+="SET state = "+i_batch.STATE_NORMAL+" \n";
 		result+="WHERE \n";
 		if(form.get("cd_ist")!=null )
 			result+=" cd_ist = "+form.get("cd_ist")+" AND \n";
 
 		result+="cd_btch = '"+form.get("cd_btch")+"'  \n";
 //		result+="OR cd_p_btch = '"+form.get("cd_btch")+"')  \n";
-		result+="AND state != "+db_batch.STATE_SUSPEND+" \n";
+		result+="AND state != "+i_batch.STATE_SUSPEND+" \n";
 		return result;
 	}
+	
+	public static String sql_Kill4Timeout(HashMap form){
+		batch_init b_init = null;
+	    try{
+	    	b_init = servletBatchScheduling.getConfiguration();
+	    }catch(Exception e){
+	    	b_init = new batch_init();
+	    }
+		String result="";	
+		result+="update "+b_init.get_db_prefix()+"batch \n";
+		result+="inner join ( \n";
+		result+="SELECT cd_btch, CONVERT(value, SIGNED INTEGER) as timeout FROM "+b_init.get_db_prefix()+"batch_property \n";
+		result+="where cd_property = '"+i_4Batch.o_KILL4TIMEOUT+"' \n";
+		result+=") prop on prop.cd_btch= "+b_init.get_db_prefix()+"batch.cd_btch \n";
+		result+="set state = "+i_batch.STATE_NORMAL+" \n"; 
+		result+="WHERE \n"; 
+		result+=""+b_init.get_db_prefix()+"batch.state = "+i_batch.STATE_INEXEC+" \n";
+		result+="and ROUND(time_to_sec((TIMEDIFF(NOW(), tm_next))) / 60) > prop.timeout \n"; 
+		return result;
+	}	
 	
 	public static String sql_ClearBatchState(){
 		batch_init b_init = null;

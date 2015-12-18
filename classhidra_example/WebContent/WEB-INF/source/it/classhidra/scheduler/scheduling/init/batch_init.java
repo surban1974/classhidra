@@ -39,7 +39,7 @@ import java.util.Properties;
 
 public class batch_init implements Serializable{
 	private static final long serialVersionUID = -1L;
-	public static final String environment_id_property =	"application.batch.property";
+	public static final String environment_id_property =			"application.batch.property";
 
 	public static final String id_active=							"active";
 	public static final String id_db_prefix=						"db_prefix";

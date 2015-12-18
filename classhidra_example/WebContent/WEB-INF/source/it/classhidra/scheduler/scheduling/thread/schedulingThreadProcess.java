@@ -30,6 +30,7 @@ public class schedulingThreadProcess extends Thread {
     public schedulingThreadProcess() {
         super();
         clearBatchState();
+        kill4Timeout();
         threadDone=false;
     }
 
@@ -100,6 +101,18 @@ DriverScheduling.getPbe().launch();
 		}
 */
 	}
+	
+	public void kill4Timeout(){		
+		batch_init binit = DriverScheduling.getConfiguration(); 		
+		
+		HashMap form = new HashMap();
+
+		try{
+			binit.get4BatchManager().operation(i_4Batch.o_KILL4TIMEOUT, form);
+		}catch(Exception e){
+			new bsException(e,iStub.log_ERROR);
+		}		
+	}	
 
 	public Date getScan_time() {
 		return scan_time;

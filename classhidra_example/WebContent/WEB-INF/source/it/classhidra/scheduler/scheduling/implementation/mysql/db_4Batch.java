@@ -7,6 +7,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
@@ -61,7 +62,10 @@ public class db_4Batch implements i_4Batch  {
 			return operation_FIND_SIMPLE(form);		
 		
 		if(oper.equals(o_CLEAR_BATCH_STATES))
-			return operation_CLEAR_BATCH_STATES(form);		
+			return operation_CLEAR_BATCH_STATES(form);	
+		
+		if(oper.equals(o_KILL4TIMEOUT))
+			return operation_KILL4TIMEOUT(form);			
 
 		if(oper.equals(o_WRITE_LOG))
 			return operation_WRITE_LOG(form);			
@@ -124,12 +128,13 @@ public class db_4Batch implements i_4Batch  {
 			original = (db_batch)util_blob.load_db_element(selected, conn, st);
 			if(original==null) return new Boolean(false);
 
-			if(original.getState().shortValue()==db_batch.STATE_INEXEC)
+			if(original.getState().shortValue()==i_batch.STATE_INEXEC)
 				return new Boolean(false);
 
-			if(original.getState().shortValue()==db_batch.STATE_SCHEDULED)
-				original.setState(new Integer(db_batch.STATE_NORMAL));
+			if(original.getState().shortValue()==i_batch.STATE_SCHEDULED)
+				original.setState(new Integer(i_batch.STATE_NORMAL));
 
+			original.setOrd(selected.getOrd());
 			original.setDsc_btch(selected.getDsc_btch());
 			original.setPeriod(selected.getPeriod());
 			original.setTm_next(null);
@@ -385,7 +390,8 @@ public class db_4Batch implements i_4Batch  {
 			conn = new db_connection().getContent();
 			st = conn.createStatement();
 			conn.setAutoCommit(false);
-			st.executeUpdate(sql_batch.sql_ClearStateBatch(form));
+//			st.executeUpdate(sql_batch.sql_ClearStateBatch(form));
+			st.executeUpdate(sql_batch.sql_ClearBatchState());
 			conn.commit();
 			conn.close();
 			return new Boolean(true);
@@ -396,6 +402,34 @@ public class db_4Batch implements i_4Batch  {
 		}
 
 	}
+	
+	private Object operation_KILL4TIMEOUT(HashMap form) throws Exception{
+
+		if(form==null) return new Boolean(false);
+
+
+		Connection conn=null;
+		Statement st=null;
+
+		try{
+
+			conn = new db_connection().getContent();
+			st = conn.createStatement();
+			conn.setAutoCommit(false);
+			st.executeUpdate(sql_batch.sql_Kill4Timeout(form));
+			conn.commit();
+			conn.close();
+			return new Boolean(true);
+		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+		}finally{
+			db_connection.release(null, st, conn);
+		}
+		return new Boolean(false);
+	}	
 	
 	private Object operation_WRITE_LOG(HashMap form) throws Exception{
 

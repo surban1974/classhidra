@@ -33,6 +33,7 @@ import it.classhidra.core.tool.util.util_reflect;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -76,18 +77,8 @@ public void reInit(i_bean another_bean){
 		new bsException(ex,iStub.log_ERROR);
 	}
 }
-public String sql_Select(){
-	return "";
-}
-public String sql_Select(String alias){
-	return "";
-}
-public String sql_Delete(){
-	return "";
-}
-public String sql_Delete(String alias){
-	return "";
-}
+
+
 public void reInit(java.sql.ResultSet rs){
 	try{
 		sql_getFromResultSet(rs,rs.getMetaData());
@@ -248,18 +239,8 @@ public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMet
 	}
 	return true;
 }
-public String sql_Insert(){
-	return "";
-}
-public String sql_Insert(String alias){
-	return "";
-}
-public String sql_Update(i_elementDBBase element_mod){
-	return "";
-}
-public String sql_Update(i_elementDBBase element_mod,String alias){
-	return "";
-}
+
+
 
 public String get_real_column_method(String column_name){
 	String set_column_method="";
@@ -608,4 +589,63 @@ public HashMap getHashDatas() {
 public void setHashDatas(HashMap hashDatas) {
 	this.hashDatas = hashDatas;
 }
+
+
+public String sql_Select(){
+	return "";
+}
+public String sql_Select(String alias){
+	return "";
+}
+public String sql_Delete(){
+	return "";
+}
+public String sql_Delete(String alias){
+	return "";
+}
+public String sql_Insert(){
+	return "";
+}
+public String sql_Insert(String alias){
+	return "";
+}
+public String sql_Update(i_elementDBBase element_mod){
+	return "";
+}
+public String sql_Update(i_elementDBBase element_mod,String alias){
+	return "";
+}
+
+public PreparedStatement sql_Select(PreparedStatement pst){
+	return pst;
+}
+
+public PreparedStatement sql_Delete(PreparedStatement pst){
+	return pst;
+}
+
+public PreparedStatement sql_Insert(PreparedStatement pst){
+	return pst;
+}
+
+public PreparedStatement sql_Update(i_elementDBBase element_mod,PreparedStatement pst){
+	return pst;
+}
+
+public PreparedStatement sql_Select(String alias,PreparedStatement pst){
+	return pst;
+}
+
+public PreparedStatement sql_Delete(String alias,PreparedStatement pst){
+	return pst;
+}
+
+public PreparedStatement sql_Insert(String alias,PreparedStatement pst){
+	return pst;
+}
+
+public PreparedStatement sql_Update(i_elementDBBase element_mod,String alias,PreparedStatement pst){
+	return pst;
+}
+
 }

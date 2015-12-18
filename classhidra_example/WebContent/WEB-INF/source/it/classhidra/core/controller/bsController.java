@@ -78,6 +78,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -169,7 +170,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(appInit==null){
 
 			appInit = new app_init();
-				appInit.init();
+			
+			Properties initParameters = new Properties();
+			Enumeration paramNames = getInitParameterNames();
+			while (paramNames.hasMoreElements()){
+				String name = (String) paramNames.nextElement();
+				initParameters.put(name, getInitParameter(name));
+			}
+			if(initParameters.size()>0)
+				appInit.init(initParameters);
+			
+			
+			appInit.init();
 
 			if(cdiDefaultProvider==null && appInit.get_cdi_provider()!=null && !appInit.get_cdi_provider().equalsIgnoreCase("false"))
 				cdiDefaultProvider = util_provider.checkDeafaultCdiProvider(appInit.get_cdi_jndi_name(), getServletContext());

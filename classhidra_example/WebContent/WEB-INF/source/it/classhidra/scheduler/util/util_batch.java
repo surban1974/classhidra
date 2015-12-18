@@ -2,9 +2,9 @@ package it.classhidra.scheduler.util;
 
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
@@ -55,11 +55,11 @@ public class util_batch {
 //		batch = (db_batch)util_blob.load_db_element(batch, null);
 		
 		if(	batch==null ||
-			batch.getState().shortValue()== db_batch.STATE_INEXEC ||
-			batch.getState().shortValue()== db_batch.STATE_SUSPEND){
+			batch.getState().shortValue()== i_batch.STATE_INEXEC ||
+			batch.getState().shortValue()== i_batch.STATE_SUSPEND){
 			if(log!=null){				
 				log.setCd_btch(cd_btch);
-				log.setSt_exec(new Integer(db_batch_log.STATE_KO));
+				log.setSt_exec(new Integer(i_batch.STATE_KO));
 				log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+"Batch ["+cd_btch+"] is null or in execution.");
 				log.setTm_fin(new Timestamp(new Date().getTime()));
 			}
@@ -69,7 +69,7 @@ public class util_batch {
 		log.setCd_btch(batch.getCd_btch());
 		batch.setInitialState(batch.getState());
 
-		ProcessBatchEvent.changeState(batch, new Integer(db_batch.STATE_INEXEC));	
+		ProcessBatchEvent.changeState(batch, new Integer(i_batch.STATE_INEXEC));	
 		
 		return batch;
 

@@ -42,6 +42,18 @@ public String sql_Select(String alias);
 public String sql_Delete(String alias);
 public String sql_Insert(String alias);
 public String sql_Update(i_elementDBBase element_mod,String alias);
+
+public java.sql.PreparedStatement sql_Select(java.sql.PreparedStatement pst);
+public java.sql.PreparedStatement sql_Delete(java.sql.PreparedStatement pst);
+public java.sql.PreparedStatement sql_Insert(java.sql.PreparedStatement pst);
+public java.sql.PreparedStatement sql_Update(i_elementDBBase element_mod,java.sql.PreparedStatement pst);
+public java.sql.PreparedStatement sql_Select(String alias,java.sql.PreparedStatement pst);
+public java.sql.PreparedStatement sql_Delete(String alias,java.sql.PreparedStatement pst);
+public java.sql.PreparedStatement sql_Insert(String alias,java.sql.PreparedStatement pst);
+public java.sql.PreparedStatement sql_Update(i_elementDBBase element_mod,String alias,java.sql.PreparedStatement pst);
+
+
+
 public void reInit(java.sql.ResultSet rs);
 public void reInit(i_bean another_bean);
 public boolean sql_getFromResultSet(java.sql.ResultSet rs);

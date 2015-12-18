@@ -8,6 +8,17 @@ import java.util.HashMap;
 
 
 public interface i_batch extends listener_batch{
+	
+	public final static String PROPERTY_EXCLUDE_DAYOFWEEK 	= "exclude_dayofweek";
+	public final static String PROPERTY_EXCLUDE_DATE 		= "exclude_date";	
+    public final static short STATE_NORMAL = 0; 
+    public final static short STATE_SCHEDULED = -1;
+    public final static short STATE_INEXEC = 1;
+    public final static short STATE_SUSPEND = 10;
+    public final static short STATE_WARNING = 1;
+    public final static short STATE_OK = 0;
+    public final static short STATE_KO = 2;   	
+	
 	public void readInput(String xml);
 	public String execute() throws Exception;	
 	public String writeOutput();

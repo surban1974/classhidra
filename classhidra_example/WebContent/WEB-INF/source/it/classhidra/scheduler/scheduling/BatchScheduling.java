@@ -100,7 +100,15 @@ public class BatchScheduling implements Serializable, IBatchScheduling{
 		}
 	}
 	
-
+	@Override
+	public void kill4timeout(){
+		try{
+			if(thProcess!=null)
+				thProcess.kill4Timeout();
+		}catch(Exception e){
+			new bsException("ERROR Scheduler:Kill4Timeout schedulingThreadProcess "+e.toString(),iStub.log_ERROR);
+		}		
+	}
 
 	@Override
 	public batch_init getConfiguration() {
