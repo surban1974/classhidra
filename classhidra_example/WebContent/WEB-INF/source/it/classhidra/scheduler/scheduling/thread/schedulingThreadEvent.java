@@ -62,7 +62,7 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 			
 			schedulingThreadEvent ste_mem =  util_batch.findFromPbe(pbe, batch.getCd_btch());
 			if(ste_mem!=null ){
-				if(ste_mem.getBatch()!=null && ste_mem.getBatch().getState()==i_batch.STATE_INEXEC){
+				if(ste_mem.getBatch()!=null && ste_mem.getBatch().getState().shortValue()==i_batch.STATE_INEXEC){
 					state=2;
 					threadDone=true;
 					Thread.currentThread().interrupt();

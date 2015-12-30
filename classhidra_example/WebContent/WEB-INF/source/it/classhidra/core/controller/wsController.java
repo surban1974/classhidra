@@ -287,7 +287,7 @@ public class wsController   {
 			String id_current = null;
 			if(id_current==null){
 				try{
-					if(url.lastIndexOf("/actions")+8==url.length()) url+="/";
+					if(url.indexOf("/actions")>-1 && url.lastIndexOf("/actions")+8==url.length()) url+="/";
 					if(url.lastIndexOf("/")>-1) id_current = url.substring(url.lastIndexOf("/")+1);
 				}catch(Exception e){}
 			}
@@ -296,8 +296,9 @@ public class wsController   {
 					id_current = util_format.replace(id_current,bsConstants.CONST_EXTENTION_DO,"");
 					return id_current;
 				}
-				if(	id_current.equals("") &&
-					(url.lastIndexOf("/actions/")+9==url.length())
+				if(	id_current.equals("") && 
+					url.indexOf("/actions/")>-1 && 
+					url.lastIndexOf("/actions/")+9==url.length()
 				){
 					return bsController.getAppInit().get_enterpoint();
 				}

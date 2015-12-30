@@ -60,7 +60,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						<table cellpadding="0" cellspacing="0" width="100%">
 							<tr>
 								<td width="100%" align="center">
-								<td width="1%" ><script>ObjectDraw("page1","button",0,"<bs:message code="sendMail_action1" defaultValue="Send"/>","runSubmit('send')","page_section","","images/menu/","",true,24);</script></td>
+								<td width="1%" ><script>ObjectDraw("page1","button",0,"<bs:message code="sendMail_action1" defaultValue="Send"/>","goAction('sendMail-send')","page_section","","images/menu/","",true,24);</script></td>
 							</tr>
 						</table>
 

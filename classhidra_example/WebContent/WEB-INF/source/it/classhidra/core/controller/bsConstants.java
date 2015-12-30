@@ -64,22 +64,22 @@ public interface bsConstants {
 	public final static String CONST_ID_$ACTION_HELP 					=	"$help";
 	public final static String CONST_ID_$NAVIGATION 					=	"$navigation";
 	
-	@Deprecated
+//	TODO	@Deprecated
 	public final static String CONST_ID_$ONLYISSESSION_ 				=	"$onlyissession";
 	
 	public final static String CONST_ID_$ACTION_FROM 					=	"$action_from";
 	public final static String CONST_ID_$ACTION_WAC 					=	"$wac_fascia";
 	public final static String CONST_BEAN_$AUTHENTIFICATION 			=	"$authentication";
 
-	@Deprecated
+//	TODO	@Deprecated
 	public final static String CONST_BEAN_$NAVIGATION 					=	"$navigation";
 
-	@Deprecated
+//	TODO	@Deprecated
 	public final static String CONST_BEAN_$ONLYINSSESSION 				=	"$onlyinssession";
 	
 	public final static String CONST_BEAN_$ONLYASLASTINSTANCE			=	"$onlyaslastinstance";
 	
-	@Deprecated
+//	TODO	@Deprecated
 	public final static String CONST_BEAN_$LOCAL_CONTAINER 				=	"$local_container";
 	
 	public final static String CONST_SERVICE_$PARENT_POINTOFLAUNCH 		=	"$parent_pointOfLaunch";

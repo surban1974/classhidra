@@ -106,7 +106,7 @@ public class ProcessBatchEvent  {
 		i_batch currentBatchClass = null;
 //		boolean isChild=false;
 		try {
-			Integer initialBatchState = 0; 
+			Integer initialBatchState = Integer.valueOf(0); 
 			batch = util_batch.checkBatchAndState(cd_ist, cd_btch, log);
 			if(batch==null)
 				return result_eb;

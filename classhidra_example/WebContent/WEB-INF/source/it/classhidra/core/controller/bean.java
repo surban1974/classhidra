@@ -222,7 +222,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 						String current_field_name = st.nextToken();
 						try{
 							if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
-							if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
+							if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 							if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
@@ -432,7 +432,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
 								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
-								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
+								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 
 							}catch(Exception e){
 							}
@@ -575,7 +575,7 @@ public void init(HashMap _content) throws bsControllerException{
 						writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 						if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
-						if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
+						if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 					}catch(Exception e){
 					}
 					current_requested = writeValue;

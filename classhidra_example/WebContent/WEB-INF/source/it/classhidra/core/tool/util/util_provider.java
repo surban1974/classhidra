@@ -20,13 +20,13 @@ import it.classhidra.core.tool.log.stubs.iStub;
 public class util_provider {
 
 	public static i_provider checkDeafaultCdiProvider(String cdi_jndi_name, ServletContext servletContext){
-		i_provider provider  = null;
+//		i_provider provider  = null;
 		try{
 			Class c_provider = Class.forName("it.classhidra.plugin.provider.DependencyInjectionProvider");
 			try{
 				Method m_getInstance = c_provider.getDeclaredMethod("checkInitialContext", new Class[]{String.class, ServletContext.class});
 				Object instance = m_getInstance.invoke(null, new Object[]{cdi_jndi_name, servletContext});
-				if(instance instanceof Boolean && (Boolean)instance)
+				if(instance instanceof Boolean && ((Boolean)instance).booleanValue())
 					return (i_provider)c_provider.newInstance();
 			}catch(Exception e){				
 			}
@@ -39,13 +39,13 @@ public class util_provider {
 	}
 	
 	public static i_provider checkDeafaultEjbProvider(String ejb_jndi_name, ServletContext servletContext){
-		i_provider provider  = null;
+//		i_provider provider  = null;
 		try{
 			Class c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
 			try{
 				Method m_getInstance = c_provider.getDeclaredMethod("checkInitialContext", new Class[]{String.class, ServletContext.class});
 				Object instance = m_getInstance.invoke(null, new Object[]{ejb_jndi_name, servletContext});
-				if(instance instanceof Boolean && (Boolean)instance)
+				if(instance instanceof Boolean && ((Boolean)instance).booleanValue())
 					return (i_provider)c_provider.newInstance();
 			}catch(Exception e){				
 			}
@@ -58,14 +58,14 @@ public class util_provider {
 	}	
 	
 	public static boolean clearkDeafaultEjbProviderNamingMap(){
-		i_provider provider  = null;
+//		i_provider provider  = null;
 		try{
 			Class c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
 			try{
 				Method m_getInstance = c_provider.getDeclaredMethod("clearNamingMap", new Class[]{});
 				Object instance = m_getInstance.invoke(null, new Object[]{});
-				if(instance instanceof Boolean && (Boolean)instance)
-					return (Boolean)instance;
+				if(instance instanceof Boolean && ((Boolean)instance).booleanValue())
+					return ((Boolean)instance).booleanValue();
 			}catch(Exception e){				
 			}
 		}catch (Exception e) {
@@ -353,7 +353,7 @@ public class util_provider {
 				try{
 					Method m_destroyInstance = c_provider.getDeclaredMethod("destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
 					Object instance = m_destroyInstance.invoke(null, new Object[]{id_bean,class_bean,servletContext});
-					return (Boolean)instance;
+					return ((Boolean)instance).booleanValue();
 				}catch(Exception e){				
 				}
 				return false;
@@ -374,7 +374,7 @@ public class util_provider {
 				try{
 					Method m_destroyInstance = c_provider.getDeclaredMethod("destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
 					Object instance = m_destroyInstance.invoke(null, new Object[]{id_bean,class_bean,servletContext});
-					return (Boolean)instance;
+					return ((Boolean)instance).booleanValue();
 				}catch(Exception e){				
 				}
 				return false;
@@ -392,7 +392,7 @@ public class util_provider {
 		if(_provider==null)
 			return null;
 		try{		
-			i_provider provider  = null;
+//			i_provider provider  = null;
 			try{
 				Class c_provider = _provider.getClass();
 				try{

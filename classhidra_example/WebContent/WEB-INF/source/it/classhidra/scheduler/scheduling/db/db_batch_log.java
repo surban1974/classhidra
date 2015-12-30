@@ -12,11 +12,11 @@ import it.classhidra.scheduler.scheduling.init.batch_init;
 public class db_batch_log extends elementDBBase implements i_elementDBBase, java.io.Serializable {
     private static final long serialVersionUID = 1L;
     
-    @Deprecated
+//	TODO @Deprecated
     public final static short STATE_WARNING = 1;
-    @Deprecated    
+//	TODO @Deprecated    
     public final static short STATE_OK = 0;
-    @Deprecated    
+//	TODO @Deprecated
     public final static short STATE_KO = 2;
     
     private String cd_btch;

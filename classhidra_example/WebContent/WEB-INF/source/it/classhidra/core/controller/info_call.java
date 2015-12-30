@@ -35,6 +35,7 @@ import org.w3c.dom.Node;
 
 public class info_call extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -605542733311006711L;
+	private String owner;
 	private String name;	
 	private String method;
 	private String navigated;
@@ -70,6 +71,7 @@ public class info_call extends info_entity implements i_elementBase{
 	}
 
 	public void reimposta(){
+		owner="";
 		name="";
 		method="";
 		navigated="";
@@ -87,6 +89,7 @@ public class info_call extends info_entity implements i_elementBase{
 	
 	public String toXml(){
 		String result=System.getProperty("line.separator")+"            <call";
+		if(owner!=null && !owner.trim().equals("")) result+=" owner=\""+util_format.normaliseXMLText(owner)+"\"";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(method!=null && !method.trim().equals("")) result+=" method=\""+util_format.normaliseXMLText(method)+"\"";
 		result+=super.toXml();
@@ -114,6 +117,14 @@ public class info_call extends info_entity implements i_elementBase{
 
 	public void setNavigated(String navigated) {
 		this.navigated = navigated;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
 	}
 
 

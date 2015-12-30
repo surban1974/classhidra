@@ -773,7 +773,7 @@ public static Object prepareWriteValueFromBean(String fromBean, HttpServletReque
 
 
 
-@Deprecated
+//	TODO @Deprecated
 public static Object convertType(Class CTarget, Object source, String format) throws Exception {
 	String classNameSource = source.getClass().getName();
 	String classNameTarget = CTarget.getName();
@@ -847,7 +847,7 @@ public static Object convertType(Class CTarget, Object source, String format) th
 	return source;
 }
 
-@Deprecated
+//TODO @Deprecated
 public Field findField(String name, Object obj) throws Exception {
 	Field fld = null;
 	Field[] allFld= null;
@@ -870,7 +870,7 @@ public Field findField(String name, Object obj) throws Exception {
 	return fld;
 }
 
-@Deprecated
+//TODO @Deprecated
 public Field findFieldArray(String name, Object obj) throws Exception {
 	Field fld = null;
 	Field[] allFld= null;
@@ -895,7 +895,7 @@ public Field findFieldArray(String name, Object obj) throws Exception {
 	return fld;
 }
 
-@Deprecated
+//TODO @Deprecated
 public Field findFieldList(String name, Object obj) throws Exception {
 	//class CopyField { public Object field; };
 	//CopyField newField = new CopyField();
@@ -932,7 +932,7 @@ public Field findFieldList(String name, Object obj) throws Exception {
 	return fld; // nel caso in cui non venga trovato il campo viene restituito null
 }
 
-@Deprecated
+//TODO @Deprecated
 public Object getField(Field fld, Object obj) throws Exception {
 	Object result = null;
 	result = getFieldOnly(fld, obj);
@@ -951,7 +951,7 @@ public Object getField(Field fld, Object obj) throws Exception {
 	return result;
 }
 
-@Deprecated
+//TODO @Deprecated
 public static Object getFieldOnly(Field fld, Object obj) throws Exception {
 	Object result = null;
 	try {
@@ -965,23 +965,23 @@ public static Object getFieldOnly(Field fld, Object obj) throws Exception {
 	}
 	return result;
 }
-@Deprecated
+//TODO @Deprecated
 public int getIndexOfList() {
 	return indexOfList;
 }
-@Deprecated
+//TODO @Deprecated
 public int getLeng() {
 	return leng;
 }
-@Deprecated
+//TODO @Deprecated
 public StringBuffer getLogString() {
 	return logString;
 }
-@Deprecated
+//TODO @Deprecated
 protected Object getObject() {
 	return object;
 }
-@Deprecated
+//TODO @Deprecated
 public Class getType(Field fld) throws Exception {
 	if ( fld.getType().isArray() ) { // se è un array
 		Object campo = getFieldOnly(fld,getObject()); // calcola il valore
@@ -989,7 +989,7 @@ public Class getType(Field fld) throws Exception {
 	}
 	return fld.getType();
 }
-@Deprecated
+//TODO @Deprecated
 public static Object invocaGet(Method mtd, Object obj) throws Exception {
 	Object value = null;
 	Object[] prm = null;
@@ -1006,7 +1006,7 @@ public static Object invocaGet(Method mtd, Object obj) throws Exception {
 	}
 	return value;
 }
-@Deprecated
+//TODO @Deprecated
 public static Object invocaMetodo(Method mtd, Object obj, Object dato) throws Exception {
 	Object value = null;
 	Object prm[] = new Object[1];
@@ -1024,7 +1024,7 @@ public static Object invocaMetodo(Method mtd, Object obj, Object dato) throws Ex
 	}
 	return value;
 }
-@Deprecated
+//TODO @Deprecated
 public static void invocaSet(Method mtd, Object obj, Object dato) throws Exception {
 	Object prm[] = new Object[1];
 	prm[0] = dato;
@@ -1040,11 +1040,11 @@ public static void invocaSet(Method mtd, Object obj, Object dato) throws Excepti
 		errorMsg("invocaSet", "Il methodo: " + mtd + " è invocato su un oggetto nullo.", e);
 	}
 }
-@Deprecated
+//TODO @Deprecated
 public boolean isError() {
 	return error;
 }
-@Deprecated
+//TODO @Deprecated
 public void setField(Field fld, Object obj, Object value) throws Exception {
 	if ( fld.getType().isArray() ) { // se è un array
 		Object campo = getFieldOnly(fld,obj); // calcola il valore
@@ -1073,23 +1073,23 @@ public void setField(Field fld, Object obj, Object value) throws Exception {
 
 
 
-@Deprecated
+//TODO @Deprecated
 public void setIndexOfList(int newValue) {
 	this.indexOfList = newValue;
 }
-@Deprecated
+//TODO @Deprecated
 public void setLeng(int newValue) {
 	this.leng = newValue;
 }
-@Deprecated
+//TODO @Deprecated
 public static void setLogString(String newValue) {
 	logString.append(newValue);
 }
-@Deprecated
+//TODO @Deprecated
 public void setLogString(StringBuffer newValue) {
 	logString = newValue;
 }
-@Deprecated
+//TODO @Deprecated
 private void setObject(Object newValue) {
 	this.object = newValue;
 }

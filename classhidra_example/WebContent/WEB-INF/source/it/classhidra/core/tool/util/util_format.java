@@ -777,7 +777,9 @@ public static String normaliseXMLText(String input) {
 public static String normaliseURLParameter(String par){
 
         StringBuilder resultStr = new StringBuilder();
-        for (char ch : par.toCharArray()) {
+        char[] arr = par.toCharArray();
+        for (int i=0;i<arr.length;i++ ) {
+        	char ch = arr[i];
             if (isUnsafe(ch)) {
                 resultStr.append('%');
                 resultStr.append(toHex(ch / 16));

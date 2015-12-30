@@ -192,7 +192,7 @@ public static void init(i_bean bean, HttpServletRequest request) throws bsContro
 						String current_field_name = st.nextToken();
 						try{
 							if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
-							if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name));
+							if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
 							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 							if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);

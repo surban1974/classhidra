@@ -62,6 +62,14 @@ public class bsFilter implements Filter {
 	public final static String CONST_INIT_CONTENT_TYPE 						= "ContentType";
 	public final static String CONST_INIT_CHARACTER_ENCODING 				= "CharacterEncoding";
 
+	class ForCheckBs{
+		private String id_action;
+		private String id_call;
+		private String id_complete;
+		ForCheckBs(){
+			super();
+		}
+	}
 
 		public void init(FilterConfig config) throws ServletException {
 			this.config = config;
@@ -153,7 +161,7 @@ public class bsFilter implements Filter {
 				
 			
 				
-				String id_bs = null;
+				ForCheckBs id_bs = new ForCheckBs();
 
 				boolean elaborateBsCheck=true;
 				
@@ -162,10 +170,12 @@ public class bsFilter implements Filter {
 						url=url.substring(0,url.indexOf('?'));
 
 					if(bsController.getAppInit().get_extention_do().equals("")){
-						if(	url.lastIndexOf('.')>-1 &&
-							url.lastIndexOf('/')>-1 &&
-							url.lastIndexOf('/')<url.lastIndexOf('.')) 
-							elaborateBsCheck=false;
+						if(bsController.getAppInit().get_actioncall_separator()==null || !bsController.getAppInit().get_actioncall_separator().equals(".")){
+							if(	url.lastIndexOf('.')>-1 &&
+								url.lastIndexOf('/')>-1 &&
+								url.lastIndexOf('/')<url.lastIndexOf('.')) 
+								elaborateBsCheck=false;
+						}
 					}else{
 						if(	url.indexOf(bsController.getAppInit().get_extention_do())==-1 &&
 							url.indexOf('.')>-1  &&
@@ -176,14 +186,16 @@ public class bsFilter implements Filter {
 				}
 				
 				if(elaborateBsCheck){
-					id_bs=check_BS(request);		
-					if(id_bs!=null){
-						if(elaborate_BS(id_bs,chain,request,response)) return;
+					id_bs=check_BSCall(request);		
+					if(id_bs.id_action!=null){
+						if(elaborate_BS(id_bs.id_action,id_bs.id_call,id_bs.id_complete,chain,request,response))
+							return;
 					}
 					
 				}
-				if(elaborate_neoHort(id_bs,chain,request,response)) return;
-				if(id_bs==null){
+				if(elaborate_neoHort(id_bs.id_action,id_bs.id_call,id_bs.id_complete,chain,request,response))
+					return;
+				if(id_bs.id_action==null){
 					try{
 						chain.doFilter(req, resp);
 					}catch(Exception e){
@@ -202,10 +214,12 @@ public class bsFilter implements Filter {
 		}
 
 		
-
+		public boolean elaborate_BS(String id_current, FilterChain chain,HttpServletRequest request, HttpServletResponse response) throws ServletException{
+			return elaborate_BS(id_current, null, id_current, chain, request, response);
+		}
 
 		
-		public boolean elaborate_BS(String id_current, FilterChain chain,HttpServletRequest request, HttpServletResponse response) throws ServletException{
+		public boolean elaborate_BS(String id_current, String id_call, String id_complete, FilterChain chain, HttpServletRequest request, HttpServletResponse response) throws ServletException{
 			boolean result=false;
 			if(id_current!=null){
 				try{
@@ -213,7 +227,7 @@ public class bsFilter implements Filter {
 					String def_TransformationElPoint = bsController.getAppInit().get_transf_elaborationpoint();
 					if(def_TransformationElPoint==null || def_TransformationElPoint.trim().length()==0) def_TransformationElPoint=bsConstants.CONST_TRANSFORMATION_ELPOINT_CONTROLLER;
 					
-					responseWrapped = bsController.service(id_current, request.getSession().getServletContext(), request,response);
+					responseWrapped = bsController.service(id_current, id_call, id_complete, request.getSession().getServletContext(), request,response);
 
 					if(responseWrapped instanceof a_ResponseWrapper){
 						
@@ -308,8 +322,12 @@ public class bsFilter implements Filter {
 			}
 			return result;
 		}
+		
+		public boolean elaborate_neoHort(String id_current, FilterChain chain, HttpServletRequest request, HttpServletResponse response) throws ServletException{
+			return elaborate_neoHort(id_current, null, id_current, chain, request, response);
+		}
 
-		public boolean elaborate_neoHort(String id_current,FilterChain chain, HttpServletRequest request, HttpServletResponse response) throws ServletException{
+		public boolean elaborate_neoHort(String id_current, String id_call, String id_complete, FilterChain chain, HttpServletRequest request, HttpServletResponse response) throws ServletException{
 			boolean result=false;
 			String url = request.getRequestURI();
 			String xmlSource=null;
@@ -320,7 +338,10 @@ public class bsFilter implements Filter {
 					)
 				){
 					StatisticEntity stat = null;
-					if(System.getProperty("application.log.stub")==null || System.getProperty("application.log.stub").equals(""))
+					if(
+							(request.getParameter("$log")==null || request.getParameter("$log").equals(""))	&&
+							(System.getProperty("application.log.stub")==null || System.getProperty("application.log.stub").equals(""))
+						)
 						System.setProperty("application.log.stub","it.classhidra.core.tool.log.stubs.stub_neoHort_log");
 					try{
 						
@@ -344,7 +365,7 @@ public class bsFilter implements Filter {
 						
 						a_ResponseWrapper responseWrapper =  responseWrapperFactory.getWrapper(response);
 						if(id_current!=null)
-							bsController.service(id_current, request.getSession().getServletContext(), request,responseWrapper);
+							bsController.service(id_current, id_call, id_complete, request.getSession().getServletContext(), request,responseWrapper);
 						else chain.doFilter(request, responseWrapper);
 						xmlSource = responseWrapper.toString();
 						xmlSource = analizeXML4neoHort(xmlSource);
@@ -460,9 +481,15 @@ public class bsFilter implements Filter {
 				return input;
 
 		}
+		
+		public String check_BS_(HttpServletRequest request) throws ServletException{
+			return check_BSCall(request).id_action;
+		}
 
-		public String check_BS(HttpServletRequest request) throws ServletException{
-			String id_current = null;
+		public ForCheckBs check_BSCall(HttpServletRequest request) throws ServletException{
+			ForCheckBs resultBs = new ForCheckBs();
+			
+			String id_current = null; 
 			String url = null;
 			boolean isIncluded = false;
 			url = (String)request.getAttribute("javax.servlet.include.request_uri");
@@ -477,7 +504,7 @@ public class bsFilter implements Filter {
 				
 
 				try{
-					if(url.lastIndexOf("/actions")+8==url.length()) url+="/";
+					if(url.indexOf("/actions")>-1 && url.lastIndexOf("/actions")+8==url.length()) url+="/";
 					if(url.lastIndexOf("/")>-1) id_current = url.substring(url.lastIndexOf("/")+1);
 				}catch(Exception e){}
 
@@ -493,47 +520,83 @@ public class bsFilter implements Filter {
 						if(lastInOf>-1){
 							String f_id_current=id_current.substring(0,lastInOf);
 							if(f_id_current.length()+bsController.getAppInit().get_extention_do().length()!=id_current.length())
-								return null;
+								return resultBs;;
 							id_current=f_id_current;
 							
-							if(bsController.getAction_config().get_actions().get(id_current)!=null)
-								return id_current;
-							else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+							if(bsController.getAction_config().get_actions().get(id_current)!=null){
+								resultBs.id_action = id_current;
+								return resultBs;
+							}else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
 								char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
-								if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null)
-									return id_current;
-								else return null;
+								if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
+									resultBs.id_action = id_current;
+									resultBs.id_complete = id_current;
+									return resultBs;
+								}else if(bsController.getAction_config().get_actioncalls().get(id_current)!=null){
+									info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current);
+									resultBs.id_action = iCall.getOwner();
+									resultBs.id_call = iCall.getName();
+									resultBs.id_complete = id_current;
+									return resultBs;
+								}else
+									return resultBs;
 							}
-							else return null;
+							else 
+								return resultBs;
 						}
 					}
 					if(	
-						(id_current.equals("") && url.lastIndexOf("/actions/")+9==url.length()) ||
-						(id_current.equals("") && url.lastIndexOf("actions/")+8==url.length()) ||
+						(id_current.equals("") && url.indexOf("/actions/")>-1 && url.lastIndexOf("/actions/")+9==url.length()) ||
+						(id_current.equals("") && url.indexOf("actions/")>-1 && url.lastIndexOf("actions/")+8==url.length()) ||
 						(id_current.equals("") && url.lastIndexOf("/")+1==url.length())
 					){
 						id_current = bsController.getAppInit().get_enterpoint();
-						if(bsController.getAction_config().get_actions().get(id_current)!=null)
-							return id_current;
-						else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+						if(bsController.getAction_config().get_actions().get(id_current)!=null){
+							resultBs.id_action = id_current;
+							resultBs.id_complete = id_current;
+							return resultBs;
+						}else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
 							char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
-							if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null)
-								return id_current;
-							else return null;
+							if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
+								resultBs.id_action = id_current.substring(0,id_current.indexOf(separator));
+								resultBs.id_call = id_current.substring(id_current.indexOf(separator)+1, id_current.length());
+								resultBs.id_complete = id_current;
+								return resultBs;
+							}else if(bsController.getAction_config().get_actioncalls().get(id_current)!=null){
+								info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current);
+								resultBs.id_action = iCall.getOwner();
+								resultBs.id_call = iCall.getName();
+								resultBs.id_complete = id_current;
+								return resultBs;
+							}else
+								return resultBs;
 						}
-						else return null;
+						else 
+							return resultBs;
 					}
 				}
 			}
-			if(bsController.getAction_config().get_actions().get(id_current)!=null)
-				return id_current;
-			else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+			if(bsController.getAction_config().get_actions().get(id_current)!=null){
+				resultBs.id_action = id_current;
+				resultBs.id_complete = id_current;
+				return resultBs;
+			}else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
 				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
-				if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null)
-					return id_current;
-				else return null;
-			}
-			else return null;
+				if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
+					resultBs.id_action = id_current.substring(0,id_current.indexOf(separator));
+					resultBs.id_call = id_current.substring(id_current.indexOf(separator)+1, id_current.length());
+					resultBs.id_complete = id_current;
+					return resultBs;
+				}else if(bsController.getAction_config().get_actioncalls().get(id_current)!=null){
+					info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current);
+					resultBs.id_action = iCall.getOwner();
+					resultBs.id_call = iCall.getName();
+					resultBs.id_complete = id_current;
+					return resultBs;
+				}else
+					return resultBs;
+			}else 
+				return resultBs;
 			
 
 		}

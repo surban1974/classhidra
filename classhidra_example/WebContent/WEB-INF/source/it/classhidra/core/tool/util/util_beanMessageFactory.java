@@ -454,14 +454,14 @@ public class util_beanMessageFactory {
 				
 				Object sub_obj2=list_sub_obj.get(i);
 				if(sub_obj2!=null){								
-					if(avoidCyclicPointers.get(System.identityHashCode(sub_obj2))!=null){
+					if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 						result_tmp+=generateJsonItemTag_Start(new Object(), null,level+1, nFirst);
 						result_tmp+="\"WARNING: cyclic pointer\"";
 						result_tmp+=generateJsonItemTag_Finish(new Object(), null,level+1, nFirst);
 					}else{
-						avoidCyclicPointers.put(System.identityHashCode(sub_obj2), sub_obj2.getClass().getName());
+						avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 						result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers);
-						avoidCyclicPointers.remove(System.identityHashCode(sub_obj2));									
+						avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 					}
 				}else
 					result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers);
@@ -484,14 +484,14 @@ public class util_beanMessageFactory {
 				
 				Object sub_obj2=pair.getValue();
 				if(sub_obj2!=null){								
-					if(avoidCyclicPointers.get(System.identityHashCode(sub_obj2))!=null){
+					if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 						result_tmp+=generateJsonItemTag_Start(new Object(), pair.getKey().toString(),level+1, nFirst);
 						result_tmp+="\"WARNING: cyclic pointer\"";
 						result_tmp+=generateJsonItemTag_Finish(new Object(), pair.getKey().toString(),level+1, nFirst);
 					}else{
-						avoidCyclicPointers.put(System.identityHashCode(sub_obj2), sub_obj2.getClass().getName());
+						avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 						result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers);
-						avoidCyclicPointers.remove(System.identityHashCode(sub_obj2));									
+						avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 					}
 				}else
 					result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers);
@@ -575,14 +575,14 @@ public class util_beanMessageFactory {
 							if(result_tmp.length()==0) nFirst=false;
 							
 							if(sub_obj2!=null){								
-								if(avoidCyclicPointers.get(System.identityHashCode(sub_obj2))!=null){
+								if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 									result_tmp+=generateJsonItemTag_Start(new Object(), methodName,level+1, nFirst);
 									result_tmp+="\"WARNING: cyclic pointer\"";
 									result_tmp+=generateJsonItemTag_Finish(new Object(), methodName,level+1, nFirst);
 								}else{
-									avoidCyclicPointers.put(System.identityHashCode(sub_obj2), sub_obj2.getClass().getName());
+									avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 									result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers);
-									avoidCyclicPointers.remove(System.identityHashCode(sub_obj2));									
+									avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 								}
 							}else
 								result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers);
@@ -688,14 +688,14 @@ public class util_beanMessageFactory {
 				
 				Object sub_obj2=list_sub_obj.get(i);
 				if(sub_obj2!=null){								
-					if(avoidCyclicPointers.get(System.identityHashCode(sub_obj2))!=null){
+					if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 						result+=generateXmlItemTag_Start(new Object(), null,level+1, normalized,lowerCase1char);
 						result+="\"WARNING: cyclic pointer\"";
 						result+=generateXmlItemTag_Finish(new Object(), null,level+1, normalized,lowerCase1char);
 					}else{
-						avoidCyclicPointers.put(System.identityHashCode(sub_obj2), sub_obj2.getClass().getName());
+						avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 						result+=generateXmlItem(sub_obj2, null,level+1,normalized,lowerCase1char,avoidCyclicPointers);
-						avoidCyclicPointers.remove(System.identityHashCode(sub_obj2));									
+						avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 					}
 				}else
 					result+=generateXmlItem(sub_obj2, null,level+1,normalized,lowerCase1char,avoidCyclicPointers);				
@@ -713,14 +713,14 @@ public class util_beanMessageFactory {
 		        
 				Object sub_obj2=pair.getValue();
 				if(sub_obj2!=null){								
-					if(avoidCyclicPointers.get(System.identityHashCode(sub_obj2))!=null){
+					if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 						result+=generateXmlItemTag_Start(new Object(), pair.getKey().toString(),level+1, normalized,lowerCase1char);
 						result+="\"WARNING: cyclic pointer\"";
 						result+=generateXmlItemTag_Finish(new Object(), pair.getKey().toString(),level+1, normalized,lowerCase1char);
 					}else{
-						avoidCyclicPointers.put(System.identityHashCode(sub_obj2), sub_obj2.getClass().getName());
+						avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 						result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,normalized,lowerCase1char,avoidCyclicPointers);
-						avoidCyclicPointers.remove(System.identityHashCode(sub_obj2));									
+						avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 					}
 				}else
 					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,normalized,lowerCase1char,avoidCyclicPointers);
@@ -788,14 +788,14 @@ public class util_beanMessageFactory {
 					if(sub_obj2!=null){
 						if(!sub_obj2.equals(sub_obj)){
 							if(sub_obj2!=null){								
-								if(avoidCyclicPointers.get(System.identityHashCode(sub_obj2))!=null){
+								if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 									result+=generateXmlItemTag_Start(new Object(), methodName,level+1, normalized,lowerCase1char);
 									result+="\"WARNING: cyclic pointer\"";
 									result+=generateXmlItemTag_Finish(new Object(), methodName,level+1, normalized,lowerCase1char);
 								}else{
-									avoidCyclicPointers.put(System.identityHashCode(sub_obj2), sub_obj2.getClass().getName());
+									avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 									result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,lowerCase1char,avoidCyclicPointers);
-									avoidCyclicPointers.remove(System.identityHashCode(sub_obj2));									
+									avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 								}
 							}else
 								result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,lowerCase1char,avoidCyclicPointers);

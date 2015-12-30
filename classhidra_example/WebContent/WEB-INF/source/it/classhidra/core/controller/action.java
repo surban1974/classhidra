@@ -212,6 +212,7 @@ public class action extends bean implements i_action, Serializable{
 					if(a_call.navigated()==null || a_call.navigated().equals(""))
 						call.setNavigated("false");
 					else call.setNavigated(a_call.navigated());
+					call.setAnnotated("true");
 					return new Object[]{current,call};
 				}
 			}catch (Exception e) {

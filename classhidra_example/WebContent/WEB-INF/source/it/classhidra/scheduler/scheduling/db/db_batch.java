@@ -13,13 +13,13 @@ import it.classhidra.scheduler.scheduling.init.batch_init;
 public class db_batch extends elementDBBase implements i_elementDBBase, java.io.Serializable {
     private static final long serialVersionUID = 1L;
     
-    @Deprecated
+//	TODO @Deprecated
     public final static short STATE_NORMAL = 0;    
-    @Deprecated
+//	TODO @Deprecated
     public final static short STATE_SCHEDULED = -1;    
-    @Deprecated
+//	TODO @Deprecated
     public final static short STATE_INEXEC = 1;    
-    @Deprecated
+//	TODO @Deprecated
     public final static short STATE_SUSPEND = 10;
     
     private Integer cd_ist;

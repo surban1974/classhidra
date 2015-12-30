@@ -43,6 +43,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String path;
 	private String type;
 	private String name;
+	private String method;
 	private String redirect;
 	private String error;
 	private String memoryInSession;	
@@ -62,11 +63,13 @@ public class info_action extends info_entity implements i_elementBase{
 	private HashMap _transformationoutput;
 	private HashMap _auth_redirects;
 	private HashMap _calls;
+	private HashMap _beans;
 	private info_bean infobean;
 
 	private Vector  v_info_redirects;
 	private Vector  v_info_transformationoutput;
 	private Vector  v_info_calls;
+	private Vector  v_info_beans;
 	
 	private Vector  vm_streams;
 
@@ -76,6 +79,10 @@ public class info_action extends info_entity implements i_elementBase{
 	}
 
 	public void init(Node node, HashMap glob_redirects) throws bsControllerException{
+		init(node, glob_redirects, null);
+	}
+	
+	public void init(Node node, HashMap glob_redirects, HashMap glob_beans) throws bsControllerException{
 		if(node==null) return;
 		try{
 			NamedNodeMap nnm = node.getAttributes();
@@ -99,6 +106,8 @@ public class info_action extends info_entity implements i_elementBase{
 		NodeList nodeList = node.getChildNodes();
 		int order_r=0;
 		int order_t=0;
+		int order_c=0;
+		
 		for(int i=0;i<nodeList.getLength();i++){
 			if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
 				if(nodeList.item(i).getNodeName().toLowerCase().equals("redirect")){
@@ -107,6 +116,10 @@ public class info_action extends info_entity implements i_elementBase{
 					order_r++;
 					iRedirect.setOrder(Integer.valueOf(order_r).toString());
 					_redirects.put(bodyURI(iRedirect.getPath()),iRedirect);
+					if(glob_redirects!=null && glob_redirects.get(iRedirect.getPath())==null){
+						iRedirect.setOrder(Integer.valueOf(glob_redirects.size()).toString());
+						glob_redirects.put(iRedirect.getPath(),iRedirect);
+					}
 				}
 				if(nodeList.item(i).getNodeName().toLowerCase().equals("transformationoutput")){
 					info_transformation iTransformationoutput = new info_transformation();
@@ -118,9 +131,19 @@ public class info_action extends info_entity implements i_elementBase{
 				if(nodeList.item(i).getNodeName().toLowerCase().equals("call")){
 					info_call iCall = new info_call();
 					iCall.init(nodeList.item(i));
-					order_t++;
-					iCall.setOrder(Integer.valueOf(order_t).toString());
+					order_c++;
+					iCall.setOrder(Integer.valueOf(order_c).toString());
+					iCall.setOwner(this.getPath());
 					_calls.put(iCall.getName(),iCall);
+				}
+				if(nodeList.item(i).getNodeName().toLowerCase().equals("form-bean")){
+					info_bean iBean = new info_bean();
+					iBean.init(node.getChildNodes().item(i));
+					_beans.put(iBean.getName(),iBean);
+					if(glob_beans!=null && glob_beans.get(iBean.getName())==null){
+						iBean.setOrder(Integer.valueOf(glob_beans.size()).toString());
+						glob_beans.put(iBean.getName(),iBean);
+					}
 				}
 
 			}
@@ -135,6 +158,9 @@ public class info_action extends info_entity implements i_elementBase{
 		v_info_calls.addAll(new Vector(_calls.values()));
 		v_info_calls = new util_sort().sort(v_info_calls,"int_order");
 		
+		v_info_beans.addAll(new Vector(_beans.values()));
+		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+		
 
 		Object[] keys = _redirects.keySet().toArray();
 		for (int i = 0; i < keys.length; i++){
@@ -143,6 +169,18 @@ public class info_action extends info_entity implements i_elementBase{
 			if(!iRedirect.getAuth_id().equals("")) _auth_redirects.put(iRedirect.getAuth_id(),iRedirect);
 		}
 	}
+	public HashMap get_beans() {
+		return _beans;
+	}
+
+	public Vector getV_info_beans() {
+		return v_info_beans;
+	}
+
+	public void setV_info_beans(Vector v_info_beans) {
+		this.v_info_beans = v_info_beans;
+	}
+
 	public String bodyURI(String uri){
 		if(uri==null || uri.indexOf("?")==-1) return uri;
 		return uri.substring(0,uri.indexOf("?"));
@@ -151,6 +189,7 @@ public class info_action extends info_entity implements i_elementBase{
 		path="";
 		type="";
 		name="";
+		method="";
 		redirect="";
 		error="";
 		wac="";
@@ -170,10 +209,12 @@ public class info_action extends info_entity implements i_elementBase{
 		_transformationoutput=new HashMap();
 		_auth_redirects=new HashMap();
 		_calls=new HashMap();
+		_beans=new HashMap();
 
 		v_info_redirects=new Vector();
 		v_info_transformationoutput=new Vector();
 		v_info_calls=new Vector();
+		v_info_beans=new Vector();
 
 	}
 
@@ -293,6 +334,7 @@ public class info_action extends info_entity implements i_elementBase{
 		if(path!=null && !path.trim().equals("")) result+=" path=\""+util_format.normaliseXMLText(path)+"\"";
 		if(type!=null && !type.trim().equals("")) result+=" type=\""+util_format.normaliseXMLText(type)+"\"";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
+		if(method!=null && !method.trim().equals("")) result+=" method=\""+util_format.normaliseXMLText(method)+"\"";
 		if(redirect!=null && !redirect.trim().equals("")) result+=" redirect=\""+util_format.normaliseXMLText(redirect)+"\"";
 		if(navigated!=null && !navigated.trim().equals("")) result+=" navigated=\""+util_format.normaliseXMLText(navigated)+"\"";
 		if(navigatedMemoryContent!=null && !navigatedMemoryContent.trim().equals("")) result+=" navigatedMemoryContent=\""+util_format.normaliseXMLText(navigatedMemoryContent)+"\"";
@@ -323,7 +365,10 @@ public class info_action extends info_entity implements i_elementBase{
 			isEntity=true;
 			for(int i=0;i<v_info_transformationoutput.size();i++){
 				info_transformation iTransformation = (info_transformation)v_info_transformationoutput.get(i);
-				if(iTransformation!=null) result+=iTransformation.toXml();
+				if(iTransformation!=null){
+					result+=iTransformation.toXml();
+					isEntity=true;
+				}
 			}
 		}
 		if(v_info_calls!=null && v_info_calls.size()>0){
@@ -336,6 +381,16 @@ public class info_action extends info_entity implements i_elementBase{
 				}
 			}
 		}
+		if(v_info_beans!=null && v_info_beans.size()>0){
+
+			for(int i=0;i<v_info_beans.size();i++){
+				info_bean iBean = (info_bean)v_info_beans.get(i);
+				if(iBean!=null){
+					result+=iBean.toXml();
+					isEntity=true;
+				}
+			}
+		}		
 		
 		if(isEntity)
 			result+=System.getProperty("line.separator")+"      </action>";
@@ -484,6 +539,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setNavigatedMemoryContent(String navigatedMemoryContent) {
 		this.navigatedMemoryContent = navigatedMemoryContent;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
 	}
 
 

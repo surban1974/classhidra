@@ -801,13 +801,38 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(action_instance.get_bean().getCurrent_auth()==null)
 					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
 
-				try{
-					current_redirect = action_instance.syncroservice(request,response);
-				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					current_redirect = action_instance.syncroservice(request2map);
+				Method iActionMethod = null;
+				if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
+					try{
+						iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+					}catch(Exception e){
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch(Throwable t){
+						new bsControllerException(t, iStub.log_ERROR);
+					}
 				}
+				
+				if(iActionMethod==null){
+					try{
+						current_redirect = action_instance.syncroservice(request,response);
+					}catch(Exception e){
+						if(request2map==null)
+							request2map = util_supportbean.request2map(request);
+						current_redirect = action_instance.syncroservice(request2map);
+					}
+					
+				}else{
+					
+					try{
+						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
+					}catch(Exception e){
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch(Throwable t){
+						new bsControllerException(t, iStub.log_ERROR);
+					}
+					
+				}
+				
 				try{
 					action_instance.onPostSyncroservice(current_redirect,request,response);
 				}catch(Exception e){
@@ -826,13 +851,40 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 				if(action_instance.get_bean().getCurrent_auth()==null)
 					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
-				try{
-					current_redirect = action_instance.actionservice(request,response);
-				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					current_redirect = action_instance.actionservice(request2map);
+				
+				Method iActionMethod = null;
+				if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
+					try{
+						iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+					}catch(Exception e){
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch(Throwable t){
+						new bsControllerException(t, iStub.log_ERROR);
+					}
 				}
+				
+				if(iActionMethod==null){
+				
+					try{
+						current_redirect = action_instance.actionservice(request,response);
+					}catch(Exception e){
+						if(request2map==null)
+							request2map = util_supportbean.request2map(request);
+						current_redirect = action_instance.actionservice(request2map);
+					}
+					
+				}else{
+					
+					try{
+						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
+					}catch(Exception e){
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch(Throwable t){
+						new bsControllerException(t, iStub.log_ERROR);
+					}
+					
+				}
+				
 				try{
 					action_instance.onPostActionservice(current_redirect,request,response);
 				}catch(Exception e){
@@ -857,6 +909,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 					try{
 						current_redirect = (redirects)util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response});
 					}catch(Exception e){
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch(Throwable t){
+						new bsControllerException(t, iStub.log_ERROR);
 					}
 					try{
 						action_instance.onPostActionCall(current_redirect,id_call, request, response);
@@ -1535,6 +1590,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static HttpServletResponse service(String id_action, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response)throws ServletException, UnavailableException {
+		return service(id_action, null, id_action, servletContext, request, response);
+	}	
+	
+	public static HttpServletResponse service(String id_action, String id_call, String id_complete, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response)throws ServletException, UnavailableException {
 
 		auth_init auth = checkAuth_init(request);
 		try{
@@ -1553,7 +1612,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					auth.get_user_ip(),
 					auth.get_matricola(),
 					auth.get_language(),
-					id_action,
+					id_complete,
 					null,
 					new Date(),
 					null,
@@ -1563,20 +1622,39 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		String id_rtype=request.getParameter(CONST_ID_REQUEST_TYPE);
 		if(id_rtype==null) id_rtype = (String)request.getAttribute(CONST_ID_REQUEST_TYPE);
-		if(id_rtype==null) id_rtype = CONST_REQUEST_TYPE_FORWARD;
+		if(id_rtype==null) id_rtype = CONST_REQUEST_TYPE_FORWARD; 
 
 		request.setAttribute(CONST_ID_REQUEST_TYPE, id_rtype);
-		request.setAttribute(CONST_ID_COMPLETE,id_action);
 
-		String id_call=null;
-		if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
-			char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
-			if(id_action!=null && id_action.indexOf(separator)>-1){
-				try{
-					id_call = id_action.substring(id_action.indexOf(separator)+1,id_action.length());
-				}catch(Exception e){
+/*		
+		if(id_call==null)
+			request.setAttribute(CONST_ID_COMPLETE,id_action);
+		else
+			request.setAttribute(CONST_ID_COMPLETE,
+					id_action+
+					((bsController.getAppInit().get_actioncall_separator()==null)?"":bsController.getAppInit().get_actioncall_separator())+
+					id_call);
+*/
+		if(id_complete==null){
+			if(id_call==null)
+				id_complete = id_action;
+			else
+				id_complete = id_action+
+				((bsController.getAppInit().get_actioncall_separator()==null)?"":bsController.getAppInit().get_actioncall_separator())+
+				id_call;
+		}
+		request.setAttribute(CONST_ID_COMPLETE,id_complete);
+		
+		if(id_call==null){
+			if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
+				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
+				if(id_action!=null && id_action.indexOf(separator)>-1){
+					try{
+						id_call = id_action.substring(id_action.indexOf(separator)+1,id_action.length());
+					}catch(Exception e){
+					}
+					id_action = id_action.substring(0,id_action.indexOf(separator));
 				}
-				id_action = id_action.substring(0,id_action.indexOf(separator));
 			}
 		}
 		request.setAttribute(CONST_ID_CALL,id_call);
@@ -2079,8 +2157,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 
-	public static String writeLabel(String lang, String cd_mess, String def,HashMap parameters) {
-		if(lang==null || cd_mess==null) return def;
+	public static String writeLabel(String lang, String cd_mess, String def, HashMap parameters) {
+		if(lang==null || cd_mess==null) 
+			return message.decodeParameters(def,parameters);
 		try{
 			if(bsController.getMess_config().get_messages().get(lang+"."+cd_mess)!=null)
 				return ((message)bsController.getMess_config().get_messages().get(lang+"."+cd_mess)).getDESC_MESS(parameters);
@@ -2094,8 +2173,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 	}
 
-	public static String writeLabel(HttpServletRequest request, String cd_mess, String def,HashMap parameters) {
-		if(request==null || cd_mess==null) return def;
+	public static String writeLabel(HttpServletRequest request, String cd_mess, String def, HashMap parameters) {
+		if(request==null || cd_mess==null)
+			return message.decodeParameters(def,parameters);
 		String lang="IT";
 		try{
 			auth_init aInit = (auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
@@ -2804,7 +2884,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static void setCache(HttpServletResponse response, String cacheInSec){
 		if(cacheInSec==null) return;
 		try{
-			final int CACHE_DURATION_IN_SECOND = Integer.valueOf(cacheInSec);
+			final int CACHE_DURATION_IN_SECOND = Integer.valueOf(cacheInSec).intValue();
 			long now = System.currentTimeMillis();
 			((HttpServletResponse)response).addHeader("Cache-Control", "max-age=" + CACHE_DURATION_IN_SECOND);
 			((HttpServletResponse)response).addHeader("Cache-Control", "must-revalidate");//optional

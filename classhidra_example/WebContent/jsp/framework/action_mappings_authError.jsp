@@ -8,6 +8,8 @@
 
 
 <center>
+<bs:switch>
+
 <bs:equal  bean="REQUEST.PARAMETER" name="js4ajax" value="true">
 <table width="100%" >
 	<tr>
@@ -39,7 +41,7 @@
 </bs:equal>
 
 
-<bs:notEqual  bean="REQUEST.PARAMETER" name="js4ajax" value="true">
+<bs:otherwise>
 
 <div id="content_Panel_Messages_AMA" 
 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;  "
@@ -70,7 +72,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;  "
 					<br>
 					<b><bs:message code="ajax_carrello_60" defaultValue="Authentication Controller ERROR."/>
 					<br>
-					<bs:message code="ajax_carrello_61" defaultValue="Access for requested resource is forbidden or the credential is not sufficient."/> </b>
+					<bs:message code="ajax_carrello_61" defaultValue="Requested resource is unaviable / Access is forbidden / The credentials is not sufficient."/> </b>
 					</font>
 				</td>
 			</tr>
@@ -98,7 +100,8 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;  "
 
 
 </div>
-</bs:notEqual>
+</bs:otherwise>
+</bs:switch>
 </center>
 
 <script>

@@ -10,8 +10,9 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Action {
 	Entity entity() default @Entity;
 	String path() default "";
-	String type() default "";
+	String type() default "";	
 	String name() default "";
+	String method() default "";
 	String redirect() default "";
 	String error() default "";
 	String memoryInSession() default "";
@@ -27,4 +28,5 @@ public @interface Action {
 	Redirect[] redirects() default {};
 	Transformation[] transformations() default {};
 	ActionCall[] calls() default {};
+	Bean[] beans() default {};
 }

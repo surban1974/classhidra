@@ -82,6 +82,7 @@ public class load_actions extends elementBase{
 
 
 	private static HashMap _actions;
+	private static HashMap _actioncalls;
 	private static HashMap _streams;
 	private static HashMap _streams_apply_to_actions;
 
@@ -191,6 +192,10 @@ public void reInit(i_externalloader _externalloader){
 		_externalloader.getProperty(i_externalloader.ACTIONS_actions) instanceof HashMap){
 		_actions.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_actions));
 	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_actioncalls)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_actioncalls) instanceof HashMap){
+		_actioncalls.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_actioncalls));
+	}	
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_streams)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_streams) instanceof HashMap){
 		_streams.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_streams));
@@ -287,6 +292,7 @@ public void reimposta(){
 	if(v_info_transformationoutput==null) v_info_transformationoutput=new Vector();
 
 	if(_actions==null) _actions = new HashMap();
+	if(_actioncalls==null) _actioncalls = new HashMap();
 	if(_streams==null){
 		_streams = new HashMap();
 		readDef = false;
@@ -420,6 +426,7 @@ public void load_def_actions() {
 public void loadFromAnnotations(){
 	
 	if(_actions==null) _actions = new HashMap();
+	if(_actioncalls==null) _actioncalls = new HashMap();
 	if(_streams==null){
 		_streams = new HashMap();
 		readDef = false;
@@ -609,6 +616,15 @@ public void loadFromAnnotations(){
 		for(int i=0;i<a_actions.size();i++){
 			if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
+			if(((info_action)a_actions.get(i)).get_calls().size()>0){
+				Vector a_actioncalls = new Vector(((info_action)a_actions.get(i)).get_calls().values());
+				for(int j=0;j<a_actioncalls.size();j++)
+					_actioncalls.put(
+							((info_call)a_actioncalls.get(j)).getOwner()+
+							((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
+							((info_call)a_actioncalls.get(j)).getName(),
+							a_actioncalls.get(j));
+			}
 		}
 		v_info_actions = (new Vector(_actions.values()));
 		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
@@ -835,6 +851,15 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 		for(int i=0;i<a_actions.size();i++){
 			if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
+			if(((info_action)a_actions.get(i)).get_calls().size()>0){
+				Vector a_actioncalls = new Vector(((info_action)a_actions.get(i)).get_calls().values());
+				for(int j=0;j<a_actioncalls.size();j++)
+					_actioncalls.put(
+							((info_call)a_actioncalls.get(j)).getOwner()+
+							((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
+							((info_call)a_actioncalls.get(j)).getName(),
+							a_actioncalls.get(j));
+			}
 		}
 		v_info_actions = (new Vector(_actions.values()));
 		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
@@ -1078,6 +1103,7 @@ public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 private boolean readDocumentXml(Document documentXML) throws Exception{
 	if(documentXML!=null){
 		if(_actions==null) _actions = new HashMap();
+		if(_actioncalls==null) _actioncalls = new HashMap();
 		if(_streams==null){
 			_streams = new HashMap();
 			readDef = false;
@@ -1117,7 +1143,8 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 				}
 			}
 		}
-	}else return false;
+	}else 
+		return false;
 	return true;
 }
 
@@ -1903,10 +1930,21 @@ private void readFormElements(Node node) throws Exception{
 		for(int k=0;k<node.getChildNodes().getLength();k++){
 			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 				info_action iAction = new info_action();
-				iAction.init(node.getChildNodes().item(k),_redirects);
+				iAction.init(node.getChildNodes().item(k),_redirects,_beans); 
 				order++;
 				iAction.setOrder(Integer.valueOf(order).toString());
-				if(iAction!=null) _actions.put(iAction.getPath(),iAction);
+				if(iAction!=null){
+					_actions.put(iAction.getPath(),iAction);
+					if(iAction.get_calls().size()>0){
+						Vector a_actioncalls = new Vector(iAction.get_calls().values());
+						for(int j=0;j<a_actioncalls.size();j++)
+							_actioncalls.put(
+									((info_call)a_actioncalls.get(j)).getOwner()+
+									((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
+									((info_call)a_actioncalls.get(j)).getName(),
+									a_actioncalls.get(j));
+					}					
+				}
 			}
 		}
 //		v_info_actions.addAll(new Vector(_actions.values()));
@@ -2264,9 +2302,19 @@ public void setInstance_onlysession(String instance_onlysession) {
 }
 
 
+public static HashMap get_actioncalls() {
+	return _actioncalls;
+}
+
+public static void set_actioncalls(HashMap _actioncalls) {
+	load_actions._actioncalls = _actioncalls;
+}
+
+
 class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private HashMap _b_actions=null;
+	private HashMap _b_actioncalls=null;
 	private HashMap _b_streams=null;
 	private HashMap _b_streams_apply_to_actions=null;
 
@@ -2277,6 +2325,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	load_actions_builder(){
 		super();
 		if(_b_actions==null) _b_actions = new HashMap();
+		if(_b_actioncalls==null) _b_actioncalls = new HashMap();
 		if(_b_streams==null) _b_streams = new HashMap();
 		if(_b_streams_apply_to_actions==null){
 			_b_streams_apply_to_actions = new HashMap();
@@ -2290,6 +2339,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 
 	public void syncroWithBuilder(){
 		load_actions._actions =_b_actions;
+		load_actions._actioncalls =_b_actioncalls;
 		load_actions._streams = _b_streams;
 		load_actions._streams_apply_to_actions = _b_streams_apply_to_actions;
 		load_actions._beans = _b_beans;
@@ -2424,6 +2474,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	private void builder_loadFromAnnotations(){
 		
 		if(_b_actions==null) _b_actions = new HashMap();
+		if(_b_actioncalls==null) _b_actioncalls = new HashMap();
 		if(_b_streams==null){
 			_b_streams = new HashMap();
 			readDef = false;
@@ -2601,6 +2652,15 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 		for(int i=0;i<a_actions.size();i++){
 			if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_b_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
+			if(((info_action)a_actions.get(i)).get_calls().size()>0){
+				Vector a_actioncalls = new Vector(((info_action)a_actions.get(i)).get_calls().values());
+				for(int j=0;j<a_actioncalls.size();j++)
+					_b_actioncalls.put(
+							((info_call)a_actioncalls.get(j)).getOwner()+
+							((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
+							((info_call)a_actioncalls.get(j)).getName(),
+							a_actioncalls.get(j));
+			}			
 		}
 		v_info_actions = (new Vector(_b_actions.values()));
 		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
@@ -2778,10 +2838,21 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			for(int k=0;k<node.getChildNodes().getLength();k++){
 				if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 					info_action iAction = new info_action();
-					iAction.init(node.getChildNodes().item(k),_b_redirects);
+					iAction.init(node.getChildNodes().item(k),_b_redirects,_b_beans);
 					order++;
 					iAction.setOrder(Integer.valueOf(order).toString());
-					if(iAction!=null) _b_actions.put(iAction.getPath(),iAction);
+					if(iAction!=null){
+						_b_actions.put(iAction.getPath(),iAction);
+						if(iAction.get_calls().size()>0){
+							Vector a_actioncalls = new Vector(iAction.get_calls().values());
+							for(int j=0;j<a_actioncalls.size();j++)
+								_actioncalls.put(
+										((info_call)a_actioncalls.get(j)).getOwner()+
+										((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
+										((info_call)a_actioncalls.get(j)).getName(),
+										a_actioncalls.get(j));
+						}
+					}
 				}
 			}
 //			v_info_actions.addAll(new Vector(_b_actions.values()));
@@ -2818,7 +2889,13 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	public HashMap get_b_transformationoutput() {
 		return _b_transformationoutput;
 	}
+
+	public HashMap get_b_actioncalls() {
+		return _b_actioncalls;
+	}
 }
+
+
 
 
 

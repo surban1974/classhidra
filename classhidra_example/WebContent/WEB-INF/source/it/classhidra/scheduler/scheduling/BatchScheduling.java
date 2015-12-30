@@ -19,7 +19,7 @@ public class BatchScheduling implements Serializable, IBatchScheduling{
 	private boolean active = false;
 
 	
-	@Override
+
 	public void start(){
 
 		configuration=new batch_init();
@@ -43,12 +43,12 @@ public class BatchScheduling implements Serializable, IBatchScheduling{
 		}
 	}	
 
-	@Override
+	
 	public void reScan(){
 		reStart();
 	}
 	
-	@Override
+	
 	public void reStart(){
 		active = false;
 		try{
@@ -70,7 +70,7 @@ public class BatchScheduling implements Serializable, IBatchScheduling{
 		}
 	}
 	
-	@Override
+	
 	public void stop(){
 		try{
 			configuration=new batch_init();
@@ -90,7 +90,7 @@ public class BatchScheduling implements Serializable, IBatchScheduling{
 
 
 
-	@Override
+	
 	public void clearContainer(){
 		try{
 			if(pbe!=null)
@@ -100,7 +100,7 @@ public class BatchScheduling implements Serializable, IBatchScheduling{
 		}
 	}
 	
-	@Override
+	
 	public void kill4timeout(){
 		try{
 			if(thProcess!=null)
@@ -110,7 +110,7 @@ public class BatchScheduling implements Serializable, IBatchScheduling{
 		}		
 	}
 
-	@Override
+	
 	public batch_init getConfiguration() {
 		if(configuration==null) configuration=new batch_init(); 
 		if(configuration.getLoadedFrom().trim().equals("")){
@@ -119,17 +119,17 @@ public class BatchScheduling implements Serializable, IBatchScheduling{
 		return configuration;
 	}
 
-	@Override
+	
 	public ProcessBatchEngine getPbe() {
 		return pbe;
 	}
 	
-	@Override
+	
 	public schedulingThreadProcess getThProcess() {
 		return thProcess;
 	}
 
-	@Override
+	
 	public boolean isActive() {
 		return active;
 	}	

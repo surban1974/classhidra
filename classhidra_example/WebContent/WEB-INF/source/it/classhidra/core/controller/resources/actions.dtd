@@ -28,9 +28,15 @@
 	listener CDATA #IMPLIED>
 <!ELEMENT form-redirect EMPTY>
 <!ATTLIST form-redirect 
+	auth_id CDATA #REQUIRED
 	path CDATA #REQUIRED
-	descr CDATA #REQUIRED
-	mess_id CDATA #REQUIRED
+	navigated (true | false) #IMPLIED
+	transformationName CDATA #IMPLIED
+	contentType CDATA #IMPLIED
+	contentEncoding CDATA #IMPLIED
+	contentName CDATA #IMPLIED
+	descr CDATA #IMPLIED
+	mess_id CDATA #IMPLIED
 	property CDATA #IMPLIED>
 <!ELEMENT form-redirects (form-redirect)*>
 <!ELEMENT redirect-transformations (transformationoutput)*>
@@ -45,14 +51,29 @@
 <!ATTLIST redirect 
 	auth_id CDATA #REQUIRED
 	path CDATA #REQUIRED
-	navigated (true | false) #IMPLIED>
-<!ELEMENT action ((redirect)*,(transformationoutput)*)>
+	navigated (true | false) #IMPLIED
+	transformationName CDATA #IMPLIED
+	contentType CDATA #IMPLIED
+	contentEncoding CDATA #IMPLIED
+	contentName CDATA #IMPLIED
+	descr CDATA #IMPLIED
+	mess_id CDATA #IMPLIED
+	property CDATA #IMPLIED
+	>
+<!ELEMENT call EMPTY>
+<!ATTLIST call 
+	owner CDATA #IMPLIED
+	name CDATA #REQUIRED
+	method CDATA #IMPLIED>	
+<!ELEMENT action ((redirect)*,(transformationoutput)*,(form-bean)*,(call)*)>
 <!ATTLIST action 
 	path CDATA #REQUIRED
 	name CDATA #IMPLIED
+	method CDATA #IMPLIED
 	type CDATA #IMPLIED
 	redirect CDATA #IMPLIED
 	navigated (true | false) #IMPLIED
+	navigatedMemoryContent (true | false) #IMPLIED
 	memoryInSession (true | false) #IMPLIED
 	memoryAsLastInstance (true | false) #IMPLIED
 	reloadAfterAction (true | false) #IMPLIED

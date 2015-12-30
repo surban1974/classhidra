@@ -13,6 +13,7 @@ import it.classhidra.annotation.elements.SessionDirective;
 import it.classhidra.annotation.elements.Stream;
 import it.classhidra.annotation.elements.Transformation;
 import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_apply_to_action;
 import it.classhidra.core.controller.info_bean;
@@ -30,6 +31,7 @@ import it.classhidra.core.tool.util.util_sort;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -293,12 +295,12 @@ public class annotation_scanner implements i_annotation_scanner {
 			Map subAnnotations = new HashMap();
 			Annotation subAnnotation = classType.getAnnotation(NavigatedDirective.class);
 				if(subAnnotation!=null){
-					checkClassAnnotation(class_path, subAnnotation, subAnnotations);
+					checkClassAnnotation(classType, class_path, subAnnotation, subAnnotations);
 					subAnnotations.put("NavigatedDirective", subAnnotation);
 				}
 			subAnnotation = classType.getAnnotation(SessionDirective.class);
 				if(subAnnotation!=null){
-					checkClassAnnotation(class_path, subAnnotation, subAnnotations);
+					checkClassAnnotation(classType, class_path, subAnnotation, subAnnotations);
 					subAnnotations.put("SessionDirective", subAnnotation);
 				}	
 	
@@ -320,41 +322,83 @@ public class annotation_scanner implements i_annotation_scanner {
 				Stream[] streams = annotationActionMapping.streams();
 				if(streams!=null && streams.length>0){
 					for(int i=0;i<streams.length;i++)
-						checkClassAnnotation(class_path, streams[i], subAnnotations);
+						checkClassAnnotation(classType, class_path, streams[i], subAnnotations);
 				}
 				Bean[] beans = annotationActionMapping.beans();
 				if(beans!=null && beans.length>0){
 					for(int i=0;i<beans.length;i++)
-						checkClassAnnotation(class_path, beans[i], subAnnotations);
+						checkClassAnnotation(classType, class_path, beans[i], subAnnotations);
 				}
 				Redirect[] redirects = annotationActionMapping.redirects();
 				if(redirects!=null && redirects.length>0){
 					for(int i=0;i<redirects.length;i++)
-						checkClassAnnotation(class_path, redirects[i], subAnnotations);
+						checkClassAnnotation(classType, class_path, redirects[i], subAnnotations);
 				}
 				Action[] actions = annotationActionMapping.actions();
 				if(actions!=null && actions.length>0){
 					for(int i=0;i<actions.length;i++)
-						checkClassAnnotation(class_path, actions[i], subAnnotations);
+						checkClassAnnotation(classType, class_path, actions[i], subAnnotations);
 				}
 				Transformation[] transformations = annotationActionMapping.transformations();
 				if(transformations!=null && transformations.length>0){
 					for(int i=0;i<transformations.length;i++)
-						checkClassAnnotation(class_path, transformations[i], subAnnotations);
+						checkClassAnnotation(classType, class_path, transformations[i], subAnnotations);
 				}
+				
+				if(i_action.class.isAssignableFrom(classType)){
+					
+					List callMethods = new ArrayList();
+					List actionMethods = new ArrayList();
+					Method[] mtds = classType.getMethods();
+					for(int i=0;i<mtds.length;i++){
+						Method current = mtds[i];
+						if(current.getAnnotation(Action.class)!=null)
+							actionMethods.add( mtds[i]);
+						if(current.getAnnotation(ActionCall.class)!=null)
+							callMethods.add( mtds[i]);
+					}
+					for(int i=0;i<actionMethods.size();i++)
+						checkActionAnnotations(classType, class_path, ((Method)actionMethods.get(i)).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
+					
+					for(int i=0;i<callMethods.size();i++)
+						checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), null, (Method)callMethods.get(i), i);
+				}
+				
 			}
 			
 
 				
 				
 			Annotation annotation = classType.getAnnotation(Bean.class);
-				if(annotation!=null) checkClassAnnotation(class_path, annotation, subAnnotations);
+				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
 			annotation = classType.getAnnotation(Action.class);
-				if(annotation!=null) checkClassAnnotation(class_path, annotation, subAnnotations);
+				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
+/*				
+				else if(i_action.class.isAssignableFrom(classType)){
+					
+					List callMethods = new ArrayList();
+					List actionMethods = new ArrayList();
+					Method[] mtds = classType.getMethods();
+					for(int i=0;i<mtds.length;i++){
+						Method current = mtds[i];
+						if(current.getAnnotation(Action.class)!=null)
+							actionMethods.add( mtds[i]);
+						if(current.getAnnotation(ActionCall.class)!=null)
+							callMethods.add( mtds[i]);
+					}
+					for(int i=0;i<actionMethods.size();i++)
+						checkActionAnnotations(classType, class_path, ((Method)actionMethods.get(i)).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
+					
+					for(int i=0;i<callMethods.size();i++)
+						checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), null, (Method)callMethods.get(i), i);
+
+				
+				}
+*/				
 			annotation = classType.getAnnotation(Stream.class);
-				if(annotation!=null) checkClassAnnotation(class_path, annotation, subAnnotations);
+				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
 			annotation = classType.getAnnotation(Transformation.class);
-				if(annotation!=null) checkClassAnnotation(class_path, annotation, subAnnotations);
+				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
 		    
 		    
 		}catch(Exception e){			
@@ -362,7 +406,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	    
 	}
 	
-	private void checkClassAnnotation(String class_path, Annotation annotation, Map subAnnotations) {
+	private void checkClassAnnotation(Class classType, String class_path, Annotation annotation, Map subAnnotations) {
 		try{
 			
 		    Bean annotationBean = null;
@@ -451,154 +495,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		    }
 		    
 		    if (annotationAction != null) {
-		    	info_action iAction = new info_action();
-		    	iAction.setPath(annotationAction.path());
-		    	iAction.setType(class_path);
-		    	iAction.setName(annotationAction.name());
-		    	iAction.setRedirect(annotationAction.redirect());
-		    	iAction.setError(annotationAction.error());
-		    	iAction.setMemoryInSession(annotationAction.memoryInSession());
-		    	
-		    	SessionDirective sessionDirective = (SessionDirective)subAnnotations.get("SessionDirective");
-		    	if(sessionDirective!=null){
-		    		if(!iAction.getMemoryInSession().trim().equalsIgnoreCase("true"))
-			    		iAction.setMemoryInSession("true");
-		    	}
-		    	
-		    	iAction.setMemoryAsLastInstance(annotationAction.memoryAsLastInstance());
-		    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
-		    	iAction.setReloadAfterNextNavigated(annotationAction.reloadAfterNextNavigated());
-		    	iAction.setNavigated(annotationAction.navigated());
-		    	iAction.setNavigatedMemoryContent(annotationAction.navigatedMemoryContent());
-		    	
-		    	NavigatedDirective navigatedDirective = (NavigatedDirective)subAnnotations.get("NavigatedDirective");
-		    	if(navigatedDirective!=null){
-		    		if(!iAction.getNavigated().trim().equalsIgnoreCase("true"))
-			    		iAction.setNavigated("true");
-		    		if(navigatedDirective.memoryContent()!=null && !navigatedDirective.memoryContent().equals(""))
-		    			iAction.setNavigatedMemoryContent(navigatedDirective.memoryContent());
-		    	}
-
-		    		
-		    	iAction.setSyncro(annotationAction.syncro());
-		    	iAction.setStatistic(annotationAction.statistic());
-		    	iAction.setHelp(annotationAction.help());
-		    	iAction.setListener(annotationAction.listener());
-		    	setEntity(iAction,annotationAction.entity());
-		    	iAction.setAnnotationLoaded(true);
-		    	Redirect[] redirects = annotationAction.redirects();
-		    	if(redirects!=null && redirects.length>0){
-		    		for(int i=0;i<redirects.length;i++){
-		    			Redirect annotationRedirect1 = redirects[i];
-		    			info_redirect iRedirect = new info_redirect();		    			
-		    			iRedirect.setPath(annotationRedirect1.path());
-		    			iRedirect.setAuth_id(annotationRedirect1.auth_id());
-		    			iRedirect.setError(annotationRedirect1.error());
-		    			iRedirect.setDescr(annotationRedirect1.descr());
-		    			iRedirect.setMess_id(annotationRedirect1.mess_id());
-		    			iRedirect.setUnited_id(annotationRedirect1.united_id());
-		    			iRedirect.setImg(annotationRedirect1.img());
-		    			iRedirect.setNavigated(annotationRedirect1.navigated());
-		    			iRedirect.setContentType(annotationRedirect1.contentType());
-		    			iRedirect.setContentEncoding(annotationRedirect1.contentEncoding());
-		    			iRedirect.setContentName(annotationRedirect1.contentName());
-		    			iRedirect.setTransformationName(annotationRedirect1.transformationName());
-		    			setEntity(iRedirect,annotationRedirect1.entity());
-		    			if(iRedirect.getOrder().equals("")) iRedirect.setOrder(Integer.valueOf(i+1).toString()); 
-		    			iRedirect.setAnnotationLoaded(true);
-		    			
-		    			Section[] sections = annotationRedirect1.sections();
-		    			if(sections!=null && sections.length>0){
-		    				for(int j=0;j<sections.length;j++){
-		    					Section annotationSection = sections[j];
-		    					info_section iSection = new info_section();
-		    					iSection.setName(annotationSection.name());
-		    					iSection.setAllowed(annotationSection.allowed());
-		    					setEntity(iSection,annotationSection.entity());
-		    					if(iSection.getOrder().equals("")) iSection.setOrder(Integer.valueOf(j+1).toString());
-		    					iSection.setAnnotationLoaded(true);
-		    					iRedirect.get_sections().put(iSection.getName(),iSection);
-		    				}
-
-		    				iRedirect.getV_info_sections().addAll(new Vector(iRedirect.get_sections().values()));
-		    				iRedirect.setV_info_sections(new util_sort().sort(iRedirect.getV_info_sections(),"int_order"));
-
-		    			}
-		    			Transformation[] transformations = annotationRedirect1.transformations();
-		    			if(transformations!=null && transformations.length>0){
-		    				for(int j=0;j<transformations.length;j++){
-		    					Transformation annotationTransf = transformations[j];
-		    					info_transformation iTransformationoutput = new info_transformation();
-		    					iTransformationoutput.setName(annotationTransf.name());
-		    					iTransformationoutput.setType(annotationTransf.type());
-		    					iTransformationoutput.setPath(annotationTransf.path());
-		    					iTransformationoutput.setEvent(annotationTransf.event());
-		    					iTransformationoutput.setInputformat(annotationTransf.inputformat());
-		    					setEntity(iTransformationoutput,annotationTransf.entity());
-		    					if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(j+1).toString());
-		    					iTransformationoutput.setAnnotationLoaded(true);
-		    					iRedirect.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
-		    				}
-		    				
-		    				iRedirect.getV_info_transformationoutput().addAll(new Vector(iRedirect.get_transformationoutput().values()));
-		    				iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
-
-		    			}
-		    			iAction.get_redirects().put(bodyURI(iRedirect.getPath()),iRedirect);
-		    		}
-		    	}
-		    	
-		    	if(iAction.get_redirects().size()>0){
-		    		iAction.getV_info_redirects().addAll(new Vector(iAction.get_redirects().values()));
-		    		iAction.setV_info_redirects(new util_sort().sort(iAction.getV_info_redirects(),"int_order"));
-		    		
-		    		Object[] keys = iAction.get_redirects().keySet().toArray();
-		    		for (int i = 0; i < keys.length; i++){
-		    			info_redirect iRedirect = (info_redirect)iAction.get_redirects().get((String)keys[i]);
-		    			iRedirect.init((info_redirect)_redirects.get((String)keys[i]));
-		    			if(!iRedirect.getAuth_id().equals("")) iAction.get_auth_redirects().put(iRedirect.getAuth_id(),iRedirect);
-		    		}
-		    	}
-
-		    	
-    			Transformation[] transformations = annotationAction.transformations();
-    			if(transformations!=null && transformations.length>0){
-    				for(int i=0;i<transformations.length;i++){
-    					Transformation annotationTransf = transformations[i];
-    					info_transformation iTransformationoutput = new info_transformation();
-    					iTransformationoutput.setName(annotationTransf.name());
-    					iTransformationoutput.setType(annotationTransf.type());
-    					iTransformationoutput.setPath(annotationTransf.path());
-    					iTransformationoutput.setEvent(annotationTransf.event());
-    					iTransformationoutput.setInputformat(annotationTransf.inputformat());
-    					setEntity(iTransformationoutput,annotationTransf.entity());
-    					if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(i+1).toString());
-    					iTransformationoutput.setAnnotationLoaded(true);
-    					iAction.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
-    				}
-    				
-    				iAction.getV_info_transformationoutput().addAll(new Vector(iAction.get_transformationoutput().values()));
-    				iAction.setV_info_transformationoutput(new util_sort().sort(iAction.getV_info_transformationoutput(),"int_order"));
-    			}
-
-    			ActionCall[] calls = annotationAction.calls();
-    			if(calls!=null && calls.length>0){
-    				for(int i=0;i<calls.length;i++){
-    					ActionCall annotationCall = calls[i];
-    					info_call iCall = new info_call();
-    					iCall.setName(annotationCall.name());
-    					iCall.setMethod(annotationCall.method());
-    					iCall.setNavigated(annotationCall.navigated());
-    					setEntity(iCall,annotationCall.entity());
-    					if(iCall.getOrder().equals("")) iCall.setOrder(Integer.valueOf(i+1).toString());
-    					iCall.setAnnotationLoaded(true);
-    					iAction.get_calls().put(iCall.getName(),iCall);
-    				}
-    				iAction.getV_info_calls().addAll(new Vector(iAction.get_calls().values()));
-    				iAction.setV_info_calls(new util_sort().sort(iAction.getV_info_calls(),"int_order"));
-    			}
-    			
-		    	_actions.put(iAction.getPath(),iAction);
+		    	checkActionAnnotations(classType, class_path, annotationAction, subAnnotations, null);
 		    }
 	
 		    if (annotationTransformation != null) {
@@ -641,9 +538,258 @@ public class annotation_scanner implements i_annotation_scanner {
 		    }
 		    
 		    
-		}catch(Exception e){			
+		}catch(Exception e){	
+			new bsException(e, iStub.log_ERROR);
 		}
 	    
+	}
+	
+	
+	private void checkActionAnnotations(Class classType, String class_path, Action annotationAction, Map  subAnnotations, Method method) throws Exception{
+    	info_action iAction = new info_action();
+    	iAction.setPath(annotationAction.path());
+    	iAction.setType(class_path);
+    	iAction.setName(annotationAction.name());
+    	if(method==null)
+    		iAction.setMethod(annotationAction.method());
+    	else{
+    		if(annotationAction.method()!=null && !annotationAction.method().equals(""))
+    			iAction.setMethod(annotationAction.method());
+    		else if(method!=null)
+    			iAction.setMethod(method.getName());
+    	}
+    		
+    	iAction.setRedirect(annotationAction.redirect());
+    	iAction.setError(annotationAction.error());
+    	iAction.setMemoryInSession(annotationAction.memoryInSession());
+    	
+    	SessionDirective sessionDirective = (SessionDirective)subAnnotations.get("SessionDirective");
+    	if(sessionDirective!=null){
+    		if(!iAction.getMemoryInSession().trim().equalsIgnoreCase("true"))
+	    		iAction.setMemoryInSession("true");
+    	}
+    	
+    	iAction.setMemoryAsLastInstance(annotationAction.memoryAsLastInstance());
+    	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
+    	iAction.setReloadAfterNextNavigated(annotationAction.reloadAfterNextNavigated());
+    	iAction.setNavigated(annotationAction.navigated());
+    	iAction.setNavigatedMemoryContent(annotationAction.navigatedMemoryContent());
+    	
+    	NavigatedDirective navigatedDirective = (NavigatedDirective)subAnnotations.get("NavigatedDirective");
+    	if(navigatedDirective!=null){
+    		if(!iAction.getNavigated().trim().equalsIgnoreCase("true"))
+	    		iAction.setNavigated("true");
+    		if(navigatedDirective.memoryContent()!=null && !navigatedDirective.memoryContent().equals(""))
+    			iAction.setNavigatedMemoryContent(navigatedDirective.memoryContent());
+    	}
+
+    		
+    	iAction.setSyncro(annotationAction.syncro());
+    	iAction.setStatistic(annotationAction.statistic());
+    	iAction.setHelp(annotationAction.help());
+    	iAction.setListener(annotationAction.listener());
+    	setEntity(iAction,annotationAction.entity());
+    	iAction.setAnnotationLoaded(true);
+    	Redirect[] redirects = annotationAction.redirects();
+    	if(redirects!=null && redirects.length>0){
+    		for(int i=0;i<redirects.length;i++){
+    			Redirect annotationRedirect1 = redirects[i];
+    			info_redirect iRedirect = new info_redirect();		    			
+    			iRedirect.setPath(annotationRedirect1.path());
+    			iRedirect.setAuth_id(annotationRedirect1.auth_id());
+    			iRedirect.setError(annotationRedirect1.error());
+    			iRedirect.setDescr(annotationRedirect1.descr());
+    			iRedirect.setMess_id(annotationRedirect1.mess_id());
+    			iRedirect.setUnited_id(annotationRedirect1.united_id());
+    			iRedirect.setImg(annotationRedirect1.img());
+    			iRedirect.setNavigated(annotationRedirect1.navigated());
+    			iRedirect.setContentType(annotationRedirect1.contentType());
+    			iRedirect.setContentEncoding(annotationRedirect1.contentEncoding());
+    			iRedirect.setContentName(annotationRedirect1.contentName());
+    			iRedirect.setTransformationName(annotationRedirect1.transformationName());
+    			setEntity(iRedirect,annotationRedirect1.entity());
+    			if(iRedirect.getOrder().equals("")) iRedirect.setOrder(Integer.valueOf(i+1).toString()); 
+    			iRedirect.setAnnotationLoaded(true);
+    			
+    			Section[] sections = annotationRedirect1.sections();
+    			if(sections!=null && sections.length>0){
+    				for(int j=0;j<sections.length;j++){
+    					Section annotationSection = sections[j];
+    					info_section iSection = new info_section();
+    					iSection.setName(annotationSection.name());
+    					iSection.setAllowed(annotationSection.allowed());
+    					setEntity(iSection,annotationSection.entity());
+    					if(iSection.getOrder().equals("")) iSection.setOrder(Integer.valueOf(j+1).toString());
+    					iSection.setAnnotationLoaded(true);
+    					iRedirect.get_sections().put(iSection.getName(),iSection);
+    				}
+
+    				iRedirect.getV_info_sections().addAll(new Vector(iRedirect.get_sections().values()));
+    				iRedirect.setV_info_sections(new util_sort().sort(iRedirect.getV_info_sections(),"int_order"));
+
+    			}
+    			Transformation[] transformations = annotationRedirect1.transformations();
+    			if(transformations!=null && transformations.length>0){
+    				for(int j=0;j<transformations.length;j++){
+    					Transformation annotationTransf = transformations[j];
+    					info_transformation iTransformationoutput = new info_transformation();
+    					iTransformationoutput.setName(annotationTransf.name());
+    					iTransformationoutput.setType(annotationTransf.type());
+    					iTransformationoutput.setPath(annotationTransf.path());
+    					iTransformationoutput.setEvent(annotationTransf.event());
+    					iTransformationoutput.setInputformat(annotationTransf.inputformat());
+    					setEntity(iTransformationoutput,annotationTransf.entity());
+    					if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(j+1).toString());
+    					iTransformationoutput.setAnnotationLoaded(true);
+    					iRedirect.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
+    				}
+    				
+    				iRedirect.getV_info_transformationoutput().addAll(new Vector(iRedirect.get_transformationoutput().values()));
+    				iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
+
+    			}
+    			iAction.get_redirects().put(bodyURI(iRedirect.getPath()),iRedirect);
+    		}
+    	}
+    	
+    	if(iAction.get_redirects().size()>0){
+    		iAction.getV_info_redirects().addAll(new Vector(iAction.get_redirects().values()));
+    		iAction.setV_info_redirects(new util_sort().sort(iAction.getV_info_redirects(),"int_order"));
+    		
+    		Object[] keys = iAction.get_redirects().keySet().toArray();
+    		for (int i = 0; i < keys.length; i++){
+    			info_redirect iRedirect = (info_redirect)iAction.get_redirects().get((String)keys[i]);
+    			if(_redirects.get((String)keys[i])==null && iRedirect.getPath()!=null && !iRedirect.getPath().equals("*") && !iRedirect.getPath().equals("")){
+        			_redirects.put(bodyURI(iRedirect.getPath()),iRedirect);
+        			_redirectsjustloaded.put(bodyURI(iRedirect.getPath()),iRedirect);
+    			}
+    			iRedirect.init((info_redirect)_redirects.get((String)keys[i]));
+    			if(!iRedirect.getAuth_id().equals("")) iAction.get_auth_redirects().put(iRedirect.getAuth_id(),iRedirect);
+    		}
+    	}
+
+    	
+		Transformation[] transformations = annotationAction.transformations();
+		if(transformations!=null && transformations.length>0){
+			for(int i=0;i<transformations.length;i++){
+				Transformation annotationTransf = transformations[i];
+				info_transformation iTransformationoutput = new info_transformation();
+				iTransformationoutput.setName(annotationTransf.name());
+				iTransformationoutput.setType(annotationTransf.type());
+				iTransformationoutput.setPath(annotationTransf.path());
+				iTransformationoutput.setEvent(annotationTransf.event());
+				iTransformationoutput.setInputformat(annotationTransf.inputformat());
+				setEntity(iTransformationoutput,annotationTransf.entity());
+				if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(i+1).toString());
+				iTransformationoutput.setAnnotationLoaded(true);
+				iAction.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
+			}
+			
+			iAction.getV_info_transformationoutput().addAll(new Vector(iAction.get_transformationoutput().values()));
+			iAction.setV_info_transformationoutput(new util_sort().sort(iAction.getV_info_transformationoutput(),"int_order"));
+		}
+
+		
+		ActionCall[] calls = annotationAction.calls();
+		if(calls!=null && calls.length>0){
+			for(int i=0;i<calls.length;i++){
+				ActionCall annotationCall = calls[i];
+				info_call iCall = new info_call();
+				iCall.setName(annotationCall.name());
+				iCall.setMethod(annotationCall.method());
+				iCall.setNavigated(annotationCall.navigated());
+				setEntity(iCall,annotationCall.entity());
+				if(iCall.getOrder().equals("")) iCall.setOrder(Integer.valueOf(i+1).toString());
+				iCall.setAnnotationLoaded(true);
+				if(iAction.get_calls().get(iCall.getName())==null)
+					iAction.get_calls().put(iCall.getName(),iCall);
+			}
+			iAction.getV_info_calls().addAll(new Vector(iAction.get_calls().values()));
+			iAction.setV_info_calls(new util_sort().sort(iAction.getV_info_calls(),"int_order"));
+		}
+		
+		Bean[] beans = annotationAction.beans();
+		if(beans!=null && beans.length>0){
+			for(int i=0;i<beans.length;i++){
+				Bean annotationBean = beans[i];
+				info_bean iBean = new info_bean();
+				iBean.setName(annotationBean.name());
+		    	iBean.setType(class_path);
+		    	iBean.setListener(annotationBean.listener());
+		    	setEntity(iBean,annotationBean.entity());
+		    	iBean.setAnnotationLoaded(true);
+				if(iAction.get_beans().get(iBean.getName())==null)
+					iAction.get_beans().put(iBean.getName(),iBean);
+    			if(_beans.get(iBean.getName())==null)
+    				_beans.put(bodyURI(iBean.getName()),iBean);
+
+
+			}
+			iAction.getV_info_beans().addAll(new Vector(iAction.get_beans().values()));
+			iAction.setV_info_beans(new util_sort().sort(iAction.getV_info_beans(),"int_order"));
+		}
+
+		
+		if(method==null){
+			if(classType!=null){
+				List callMethods = new ArrayList();
+				List actionMethods = new ArrayList();
+				Method[] mtds = classType.getMethods();
+				for(int i=0;i<mtds.length;i++){
+					Method current = mtds[i];
+					if(current.getAnnotation(Action.class)!=null)
+						actionMethods.add( mtds[i]);
+					if(current.getAnnotation(ActionCall.class)!=null)
+						callMethods.add( mtds[i]);
+				}
+				for(int i=0;i<actionMethods.size();i++)
+					checkActionAnnotations(classType, class_path, ((Method)actionMethods.get(i)).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
+				
+				for(int i=0;i<callMethods.size();i++){
+					checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), iAction, (Method)callMethods.get(i), i);
+
+				}
+			}
+		}
+		
+		
+    	_actions.put(iAction.getPath(),iAction);
+
+	}
+	
+	private void checkActionCallAnnotation(ActionCall annotationCall, info_action iAction, Method current, int i){
+		info_call iCall = new info_call();
+		if((annotationCall.owner()==null || annotationCall.owner().equals("")) && iAction==null)
+			return;
+		if(annotationCall.owner()==null || annotationCall.owner().equals("")){
+			if(iAction!=null)
+				iCall.setOwner(iAction.getPath());
+		}else
+			iCall.setOwner(annotationCall.owner());
+		iCall.setName(annotationCall.name());
+		if(annotationCall.method()==null || annotationCall.method().equals(""))
+			iCall.setMethod(current.getName());
+		else
+			iCall.setMethod(annotationCall.method());
+		if(annotationCall.navigated()==null || annotationCall.navigated().equals(""))
+			iCall.setNavigated("false");
+		else iCall.setNavigated(annotationCall.navigated());
+		
+		setEntity(iCall,annotationCall.entity());
+		if(iCall.getOrder().equals("")) iCall.setOrder(Integer.valueOf(i+1).toString());
+		iCall.setAnnotationLoaded(true);
+		
+		if(iAction!=null && iCall.getOwner().equals(iAction.getPath())){
+			if(iAction.get_calls().get(iCall.getName())==null)
+				iAction.get_calls().put(iCall.getName(),iCall);
+		}else{
+			info_action iActionOwner = (info_action)_actions.get(iCall.getOwner());
+			if(iActionOwner!=null){
+				if(iActionOwner.get_calls().get(iCall.getName())==null)
+					iActionOwner.get_calls().put(iCall.getName(),iCall);
+			}
+		}
+
 	}
 	
 	private void setEntity(info_entity iEntity, Entity entity){

@@ -157,7 +157,7 @@ public class bsResources extends HttpServlet implements bsConstants  {
 	private static void setCache(HttpServletResponse response, String cacheInSec){
 		if(cacheInSec==null) return;
 		try{
-			final int CACHE_DURATION_IN_SECOND = Integer.valueOf(cacheInSec);
+			final int CACHE_DURATION_IN_SECOND = Integer.valueOf(cacheInSec).intValue();
 			long now = System.currentTimeMillis();
 			((HttpServletResponse)response).addHeader("Cache-Control", "max-age=" + CACHE_DURATION_IN_SECOND);
 			((HttpServletResponse)response).addHeader("Cache-Control", "must-revalidate");//optional

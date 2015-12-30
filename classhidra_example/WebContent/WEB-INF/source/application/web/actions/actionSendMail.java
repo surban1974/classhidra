@@ -30,11 +30,12 @@ public actionSendMail(){
 }
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
+	return new redirects(get_infoaction().getRedirect());
+}
 
+public redirects send_mail(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 
-	if(get_bean().getMiddleAction().equals("send")){
-
-		if(get_bean().get("s_mess").equals("")){
+	if(get_bean().get("s_mess").equals("")){
 			new bsControllerMessageException("error_1",request,null,iStub.log_ERROR);
 			return new redirects(get_infoaction().getRedirect());
 		}
@@ -55,10 +56,8 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			new bsControllerMessageException(e.toString(),request,null,iStub.log_ERROR);
 		}
 
-	}
-
-
 	return new redirects(get_infoaction().getRedirect());
 }
+
 
 }
