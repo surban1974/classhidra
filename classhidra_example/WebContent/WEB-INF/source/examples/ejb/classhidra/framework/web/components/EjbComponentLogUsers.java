@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import it.classhidra.annotation.elements.Access;
+import it.classhidra.annotation.elements.AccessRelation;
 import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
@@ -34,7 +37,15 @@ import it.classhidra.core.tool.util.util_usersInSession;
 				auth_id="logu_id",
 				path="*"
 			)
-	}
+	},
+    entity=@Entity(
+		permissions=@Access(
+				forbidden={
+						@AccessRelation(targets="default_target;", rules="GUESTS;" )	
+				}
+		)
+	)
+
 )
 
 //@Named("log_users")

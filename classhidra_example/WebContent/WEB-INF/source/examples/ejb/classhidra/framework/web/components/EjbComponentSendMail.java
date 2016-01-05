@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import application.util.mail.mail_manager_smtp;
 import application.util.mail.mail_message;
 import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.NavigatedDirective;
+import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
@@ -27,7 +29,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 				@Action (
 						path="sendMail",
 						name="formMail",
-						redirect="/jsp/framework/content.jsp",
+						redirect="/jsp/pages/sendmail.jsp",
 						reloadAfterAction="true"
 				)
 
@@ -49,11 +51,16 @@ public class EjbComponentSendMail extends action implements i_action, Serializab
 public EjbComponentSendMail(){
 	super();
 }
+@ActionCall(name="send", 
+		Redirect=@Redirect(
+				path="/jsp/pages/sendmail.jsp",
+				descr="Send Messages",
+				mess_id="title_fw_SendMail"
+		)
+)
+public redirects send_mail(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 
-public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 
-
-	if(get_bean().getMiddleAction().equals("send")){
 
 		if(get_bean().get("s_mess").equals("")){
 			new bsControllerMessageException("error_1",request,null,iStub.log_ERROR);
@@ -76,7 +83,6 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 			new bsControllerMessageException(e.toString(),request,null,iStub.log_ERROR);
 		}
 
-	}
 
 
 	return new redirects(get_infoaction().getRedirect());

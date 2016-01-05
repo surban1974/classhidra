@@ -763,6 +763,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		info_call iCall = null;
 		Method iCallMethod = null;
+		boolean useAsAction = false;
 
 		if(id_call!=null){
 			try{
@@ -777,6 +778,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else{
 					try{
 						iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
+						if(iCallMethod==null){
+							iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
+							if(iCallMethod!=null)
+								useAsAction=true;
+						}
 					}catch(Exception em){
 					}
 				}
@@ -800,6 +806,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
 				try{
 					iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+					if(iActionMethod==null)
+						iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+					if(iActionMethod!=null)
+						useAsAction=true;
 				}catch(Exception e){
 					new bsControllerException(e, iStub.log_ERROR);
 				}catch(Throwable t){
@@ -832,10 +842,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 					
 					try{
 //						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
-						current_redirect = prepareActionResponse(
-								util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
-								iActionMethod, action_instance.get_infoaction(),
-								response);
+						if(useAsAction)
+							current_redirect = prepareActionResponse(
+									util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
+									iActionMethod, action_instance.get_infoaction(),
+									response);
+						else
+							current_redirect = prepareActionResponse(
+									util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+									iActionMethod, action_instance.get_infoaction(),
+									response);
+
 					}catch(Exception e){
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch(Throwable t){
@@ -879,10 +896,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 					
 					try{
 //						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
-						current_redirect = prepareActionResponse(
-								util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
-								iActionMethod, action_instance.get_infoaction(),
-								response);
+						if(useAsAction)
+							current_redirect = prepareActionResponse(
+									util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
+									iActionMethod, action_instance.get_infoaction(),
+									response);
+						else
+							current_redirect = prepareActionResponse(
+									util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+									iActionMethod, action_instance.get_infoaction(),
+									response);
 					}catch(Exception e){
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch(Throwable t){
@@ -914,12 +937,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 					try{
 						if(iCallMethod!=null){
-							current_redirect = prepareActionCallResponse(
-									util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response}),
-									iCallMethod,
-									action_instance.get_infoaction(),
-									iCall,
-									response);
+							if(useAsAction)
+								current_redirect = prepareActionCallResponse(
+										util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request,response}),
+										iCallMethod,
+										action_instance.get_infoaction(),
+										iCall,
+										response);
+							else
+								current_redirect = prepareActionCallResponse(
+										util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response}),
+										iCallMethod,
+										action_instance.get_infoaction(),
+										iCall,
+										response);
+
 						}else{
 							current_redirect = prepareActionCallResponse(
 									null,
