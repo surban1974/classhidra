@@ -316,8 +316,10 @@ public void initTop(Node node) throws bsControllerException{
 
 private boolean readDocumentXml(Document documentXML) throws Exception{
 	if(documentXML!=null){
-		_targets = new HashMap();
-		_targets_allowed = new HashMap();
+		if(_targets==null)
+			_targets = new HashMap();
+		if(_targets_allowed==null)
+			_targets_allowed = new HashMap();
 		Node node = null;
 
 
@@ -370,6 +372,140 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 	return true;
 }
 
+
+public void addIRelation(info_relation iRelation) throws Exception{
+	if(iRelation==null) return;
+
+			v_info_relations.add(iRelation);
+
+			String sTargets=iRelation.getTargets();
+			String sGroups=iRelation.getGroups();
+			String sElements=iRelation.getElements();
+			String sMiddleactions=iRelation.getMiddleactions();
+
+
+			if(sTargets!=null){
+				sTargets=sTargets.replace('\n', ' ').replace('\r', ' ');
+				sTargets = util_format.replace(sTargets, " ", "");
+			}
+			if(sGroups!=null){
+				sGroups=sGroups.replace('\n', ' ').replace('\r', ' ');
+				sGroups = util_format.replace(sGroups, " ", "");
+			}
+			if(sElements!=null){
+				sElements=sElements.replace('\n', ' ').replace('\r', ' ');
+				sElements = util_format.replace(sElements, " ", "");
+			}
+			if(sMiddleactions!=null){
+				sMiddleactions=sMiddleactions.replace('\n', ' ').replace('\r', ' ');
+				sMiddleactions = util_format.replace(sMiddleactions, " ", "");
+			}
+			
+
+			if(!sTargets.equals("") && !sGroups.equals("") && !sElements.equals("")){
+
+				HashMap _type_targets = null;
+				if(iRelation.getType().equals(info_relation.TYPE_FORBIDDEN))
+					_type_targets = _targets;
+				if(iRelation.getType().equals(info_relation.TYPE_ALLOWED))
+					_type_targets = _targets_allowed;
+
+				StringTokenizer st_targets = new StringTokenizer(sTargets,";");
+				while(st_targets.hasMoreTokens()){
+					String target = st_targets.nextToken();
+					if(_type_targets.get(target)==null) _type_targets.put(target,new HashMap());
+					HashMap current_groups = (HashMap)_type_targets.get(target);
+					StringTokenizer st_groups = new StringTokenizer(sGroups,";");
+					while(st_groups.hasMoreTokens()){
+						String group = st_groups.nextToken();
+						if(current_groups.get(group)==null) current_groups.put(group,new HashMap());
+						HashMap current_actions = (HashMap)current_groups.get(group);
+						StringTokenizer st_elements = new StringTokenizer(sElements,";");
+						while(st_elements.hasMoreTokens()){
+							String element = st_elements.nextToken();
+							StringTokenizer st_actions =new StringTokenizer(element,".");
+							if(st_actions.hasMoreTokens()){
+								String action = st_actions.nextToken();
+								if(current_actions.get(action)==null) current_actions.put(action,new HashMap());
+								HashMap redirects = (HashMap)current_actions.get(action);
+								if(st_actions.hasMoreTokens()){
+									String redirect = st_actions.nextToken();
+									if(redirects.get(redirect)==null) redirects.put(redirect,new HashMap());
+									HashMap sections = (HashMap)redirects.get(redirect);
+									if(st_actions.hasMoreTokens()){
+									
+										String section = st_actions.nextToken();
+										sections.put(section,Boolean.valueOf(true));
+									}else{
+										sections.put("*",Boolean.valueOf(true));
+									}
+								}else{
+									HashMap sections = new HashMap();
+									sections.put("*",Boolean.valueOf(true));
+									redirects.put("*",sections);
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			
+			if(!sTargets.equals("") && !sGroups.equals("") && !sMiddleactions.equals("")){
+
+				HashMap _type_targets = null;
+				if(iRelation.getType().equals(info_relation.TYPE_FORBIDDEN))
+					_type_targets = _mtargets;
+				if(iRelation.getType().equals(info_relation.TYPE_ALLOWED))
+					_type_targets = _mtargets_allowed;
+
+				StringTokenizer st_targets = new StringTokenizer(sTargets,";");
+				while(st_targets.hasMoreTokens()){
+					String target = st_targets.nextToken();
+					if(_type_targets.get(target)==null) _type_targets.put(target,new HashMap());
+					HashMap current_groups = (HashMap)_type_targets.get(target);
+					StringTokenizer st_groups = new StringTokenizer(sGroups,";");
+					while(st_groups.hasMoreTokens()){
+						String group = st_groups.nextToken();
+						if(current_groups.get(group)==null) current_groups.put(group,new HashMap());
+						HashMap current_actions = (HashMap)current_groups.get(group);
+						StringTokenizer st_elements = new StringTokenizer(sMiddleactions,";");
+						while(st_elements.hasMoreTokens()){
+							String element = st_elements.nextToken();
+							StringTokenizer st_actions =new StringTokenizer(element,".");
+							if(st_actions.hasMoreTokens()){
+								String action = st_actions.nextToken();
+								if(current_actions.get(action)==null) current_actions.put(action,new HashMap());
+								HashMap mactions = (HashMap)current_actions.get(action);
+								if(st_actions.hasMoreTokens()){
+									String maction = st_actions.nextToken();
+									mactions.put(maction,maction);
+								}else{
+									mactions.put("*","*");
+								}
+							}
+						}
+					}
+				}
+			}			
+
+}
+private void readGroupElements(Node node, int order) throws Exception{
+	if(node==null) return;
+
+	if(node.getNodeName().equals("relation")){
+		if(node.getNodeType()== Node.ELEMENT_NODE){
+
+			info_relation iRelation = new info_relation();
+			iRelation.init(node);
+			iRelation.setOrder(Integer.valueOf(order).toString());
+			if(iRelation.getName()==null || iRelation.getName().equals(""))
+				iRelation.setName("relation: "+iRelation.getOrder());
+			addIRelation(iRelation);
+		}
+	}
+}
+/*
 private void readGroupElements(Node node, int order) throws Exception{
 	if(node==null) return;
 
@@ -496,6 +632,7 @@ private void readGroupElements(Node node, int order) throws Exception{
 		}
 	}
 }
+*/
 public HashMap get_targets() {
 	return _targets;
 }

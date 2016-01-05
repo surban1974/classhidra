@@ -11,6 +11,8 @@ public @interface ActionCall {
 	Entity entity() default @Entity;
 	String owner() default "";
 	String name();
+	String path() default "";
 	String method() default "";
 	String navigated() default "true";
+	Redirect Redirect() default @Redirect;
 }

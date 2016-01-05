@@ -9,7 +9,6 @@ import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.info_action;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.stream;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -35,7 +34,10 @@ public class def_control_permission extends stream implements i_stream{
 		if(i_a!=null && (i_a.getProperty("allway").equalsIgnoreCase("public") || i_a.getProperty("always").equalsIgnoreCase("public")))
 			return super.streamservice_enter(request, response);
 
-		if(	!auth.get_authentication_filter().check_actionIsPermitted(auth,id_action)){
+		if(	auth!=null &&
+			auth.get_authentication_filter()!=null &&
+			!auth.get_authentication_filter().check_actionIsPermitted(auth,id_action)){
+
 			redirectURI = service_AuthRedirect(id_action,request.getSession().getServletContext(),request, response);
 			return new redirects(redirectURI);
 		}
@@ -44,7 +46,9 @@ public class def_control_permission extends stream implements i_stream{
 		if(id_complete==null || id_complete.equals(id_action))
 			return super.streamservice_enter(request, response);
 
-		if(	!auth.get_authentication_filter().check_actionIsPermitted(auth,id_complete)){
+		if(	auth!=null &&
+			auth.get_authentication_filter()!=null &&
+			!auth.get_authentication_filter().check_actionIsPermitted(auth,id_complete)){
 			redirectURI = service_AuthRedirect(id_complete,request.getSession().getServletContext(),request, response);
 			return new redirects(redirectURI);
 		}

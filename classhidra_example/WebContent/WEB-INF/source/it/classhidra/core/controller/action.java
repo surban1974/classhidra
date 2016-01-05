@@ -34,6 +34,7 @@ import it.classhidra.core.tool.util.util_format;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.servlet.http.*;
 import javax.servlet.*;
@@ -159,8 +160,22 @@ public class action extends bean implements i_action, Serializable{
 						local.setContentEncoding(global.getContentEncoding());	
 					if((local.getTransformationName()==null || local.getTransformationName().equals("")) && (global.getTransformationName()!=null && !global.getTransformationName().equals("")))
 						local.setTransformationName(global.getTransformationName());	
+					if((local.getAvoidPermissionCheck()==null || local.getAvoidPermissionCheck().equals("")) && (global.getAvoidPermissionCheck()!=null && !global.getAvoidPermissionCheck().equals("")))
+						local.setAvoidPermissionCheck(global.getAvoidPermissionCheck());	
+					
+
+					
 					current_redirect.set_inforedirect(local);
 				}
+			}else{
+				info_redirect global = null;
+				try{
+					global = (info_redirect)bsController.getAction_config().get_redirects().get(uri);
+				}catch(Exception e){
+				}
+				if(global!=null)
+					current_redirect.set_inforedirect(global);
+				
 			}
 		}catch(Exception e){
 			if( e instanceof java.lang.NullPointerException){

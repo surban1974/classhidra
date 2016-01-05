@@ -618,12 +618,17 @@ public void loadFromAnnotations(){
 			_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
 			if(((info_action)a_actions.get(i)).get_calls().size()>0){
 				Vector a_actioncalls = new Vector(((info_action)a_actions.get(i)).get_calls().values());
-				for(int j=0;j<a_actioncalls.size();j++)
+				for(int j=0;j<a_actioncalls.size();j++){
 					_actioncalls.put(
 							((info_call)a_actioncalls.get(j)).getOwner()+
 							((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
 							((info_call)a_actioncalls.get(j)).getName(),
 							a_actioncalls.get(j));
+					if(((info_call)a_actioncalls.get(j)).getPath()!=null && !((info_call)a_actioncalls.get(j)).getPath().equals(""))
+						_actioncalls.put(
+								((info_call)a_actioncalls.get(j)).getPath(),
+								a_actioncalls.get(j));
+				}
 			}
 		}
 		v_info_actions = (new Vector(_actions.values()));
@@ -853,12 +858,18 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 			_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
 			if(((info_action)a_actions.get(i)).get_calls().size()>0){
 				Vector a_actioncalls = new Vector(((info_action)a_actions.get(i)).get_calls().values());
-				for(int j=0;j<a_actioncalls.size();j++)
+				for(int j=0;j<a_actioncalls.size();j++){
 					_actioncalls.put(
 							((info_call)a_actioncalls.get(j)).getOwner()+
 							((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
 							((info_call)a_actioncalls.get(j)).getName(),
 							a_actioncalls.get(j));
+				if(((info_call)a_actioncalls.get(j)).getPath()!=null && !((info_call)a_actioncalls.get(j)).getPath().equals(""))
+					_actioncalls.put(
+							((info_call)a_actioncalls.get(j)).getPath(),
+							a_actioncalls.get(j));
+				}
+
 			}
 		}
 		v_info_actions = (new Vector(_actions.values()));
@@ -1937,12 +1948,18 @@ private void readFormElements(Node node) throws Exception{
 					_actions.put(iAction.getPath(),iAction);
 					if(iAction.get_calls().size()>0){
 						Vector a_actioncalls = new Vector(iAction.get_calls().values());
-						for(int j=0;j<a_actioncalls.size();j++)
+						for(int j=0;j<a_actioncalls.size();j++){
 							_actioncalls.put(
 									((info_call)a_actioncalls.get(j)).getOwner()+
 									((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
 									((info_call)a_actioncalls.get(j)).getName(),
 									a_actioncalls.get(j));
+							if(((info_call)a_actioncalls.get(j)).getPath()!=null && !((info_call)a_actioncalls.get(j)).getPath().equals(""))
+								_actioncalls.put(
+										((info_call)a_actioncalls.get(j)).getPath(),
+										a_actioncalls.get(j));
+
+						}
 					}					
 				}
 			}
@@ -2845,12 +2862,17 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 						_b_actions.put(iAction.getPath(),iAction);
 						if(iAction.get_calls().size()>0){
 							Vector a_actioncalls = new Vector(iAction.get_calls().values());
-							for(int j=0;j<a_actioncalls.size();j++)
-								_actioncalls.put(
+							for(int j=0;j<a_actioncalls.size();j++){
+								_b_actioncalls.put(
 										((info_call)a_actioncalls.get(j)).getOwner()+
 										((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
 										((info_call)a_actioncalls.get(j)).getName(),
 										a_actioncalls.get(j));
+								if(((info_call)a_actioncalls.get(j)).getPath()!=null && !((info_call)a_actioncalls.get(j)).getPath().equals(""))
+									_b_actioncalls.put(
+											((info_call)a_actioncalls.get(j)).getPath(),
+											a_actioncalls.get(j));
+							}
 						}
 					}
 				}

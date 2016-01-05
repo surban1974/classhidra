@@ -267,7 +267,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 
-		action_config = new load_actions();
+		if(action_config==null)
+			action_config = new load_actions();
 			try{
 				action_config.load_from_resources();
 				action_config.init();
@@ -278,7 +279,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 			}catch(bsControllerException je){}
 
-		mess_config = new load_message();
+		if(mess_config==null)	
+			mess_config = new load_message();
 			try{
 				mess_config.load_from_resources();
 				mess_config.init();
@@ -288,7 +290,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 			}catch(bsControllerException je){}
 
-		auth_config = new load_authentication();
+		if(auth_config==null)	
+			auth_config = new load_authentication();
 			try{
 				auth_config.load_from_resources();
 				auth_config.init();
@@ -299,7 +302,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 			}catch(bsControllerException je){}
 
-		org_config = new load_organization();
+		if(org_config==null)	
+			org_config = new load_organization();
 			try{
 				org_config.load_from_resources();
 				org_config.init();
@@ -309,7 +313,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 			}catch(bsControllerException je){}
 
-		menu_config = new load_menu(null);
+		if(menu_config==null)	
+			menu_config = new load_menu(null);
 			try{
 				menu_config.load_from_resources();
 				menu_config.init();
@@ -790,6 +795,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 // ACTIONSEVICE
 		redirects current_redirect = null;
 		if(id_call==null){
+			
+			Method iActionMethod = null;
+			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
+				try{
+					iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+				}catch(Exception e){
+					new bsControllerException(e, iStub.log_ERROR);
+				}catch(Throwable t){
+					new bsControllerException(t, iStub.log_ERROR);
+				}
+			}
+			
+
 			if(action_instance.get_infoaction().getSyncro().equalsIgnoreCase("true")){
 				try{
 					action_instance.onPreSyncroservice(request,response);
@@ -800,17 +818,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 				if(action_instance.get_bean().getCurrent_auth()==null)
 					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
-
-				Method iActionMethod = null;
-				if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
-					try{
-						iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
-					}catch(Exception e){
-						new bsControllerException(e, iStub.log_ERROR);
-					}catch(Throwable t){
-						new bsControllerException(t, iStub.log_ERROR);
-					}
-				}
 				
 				if(iActionMethod==null){
 					try{
@@ -824,7 +831,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else{
 					
 					try{
-						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
+//						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
+						current_redirect = prepareActionResponse(
+								util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+								iActionMethod, action_instance.get_infoaction(),
+								response);
 					}catch(Exception e){
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch(Throwable t){
@@ -852,16 +863,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(action_instance.get_bean().getCurrent_auth()==null)
 					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
 				
-				Method iActionMethod = null;
-				if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
-					try{
-						iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
-					}catch(Exception e){
-						new bsControllerException(e, iStub.log_ERROR);
-					}catch(Throwable t){
-						new bsControllerException(t, iStub.log_ERROR);
-					}
-				}
+
 				
 				if(iActionMethod==null){
 				
@@ -876,7 +878,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else{
 					
 					try{
-						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
+//						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
+						current_redirect = prepareActionResponse(
+								util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+								iActionMethod, action_instance.get_infoaction(),
+								response);
 					}catch(Exception e){
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch(Throwable t){
@@ -895,7 +901,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}else{
 			try{
-				if(iCallMethod!=null){
+				
 					try{
 						action_instance.onPreActionCall(id_call, request, response);
 					}catch(Exception e){
@@ -907,7 +913,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 						action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
 
 					try{
-						current_redirect = (redirects)util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response});
+						if(iCallMethod!=null){
+							current_redirect = prepareActionCallResponse(
+									util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response}),
+									iCallMethod,
+									action_instance.get_infoaction(),
+									iCall,
+									response);
+						}else{
+							current_redirect = prepareActionCallResponse(
+									null,
+									null,
+									action_instance.get_infoaction(),
+									iCall,
+									response);
+						}
 					}catch(Exception e){
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch(Throwable t){
@@ -921,7 +941,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						action_instance.onPostActionCall(current_redirect,id_call, request2map);
 
 					}
-				}
+				
 			}catch(Exception ex){
 				new bsControllerException(ex, iStub.log_ERROR);
 			}catch(Throwable th){
@@ -1318,6 +1338,110 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return new Object[]{response, Boolean.valueOf(false)};
 
 	}
+	
+	public static redirects prepareActionCallResponse(Object retVal, Method method, info_action iAction, info_call iCall, HttpServletResponse response) throws Exception{
+		
+		redirects current_redirect = null;
+		if(method!=null){
+			if(method.getReturnType()!=null && !method.getReturnType().equals(Void.TYPE)){
+				if(redirects.class.isAssignableFrom(method.getReturnType()))
+					current_redirect = (redirects)retVal;
+				else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
+					if(retVal!=null){
+						if(iCall!=null && iCall.getIRedirect()!=null){
+							if(iCall.getIRedirect().getContentType()!=null && !iCall.getIRedirect().getContentType().equals("")){
+								if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
+				    				response.setHeader("Content-Type",iCall.getIRedirect().getContentType().toLowerCase()+
+				    						((iCall.getIRedirect().getContentEncoding()!=null)?";charset="+iCall.getIRedirect().getContentEncoding():"")
+				    				);
+								else
+									response.setHeader("Content-Type",iCall.getIRedirect().getContentType().toLowerCase());
+								
+							}
+							if(iCall.getIRedirect().getContentName()!=null && !iCall.getIRedirect().getContentName().equals(""))
+								response.setHeader("Content-Disposition","attachment; filename="+iCall.getIRedirect().getContentName());
+							if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
+								response.setHeader("Content-Transfer-Encoding",iCall.getIRedirect().getContentEncoding());
+						}
+						if(String.class.isAssignableFrom(method.getReturnType()))
+							response.getOutputStream().write(((String)retVal).getBytes());
+						if(byte[].class.isAssignableFrom(method.getReturnType()))
+							response.getOutputStream().write(((byte[])retVal));
+					}
+				}
+			}else if((method.getReturnType()!=null && method.getReturnType().equals(Void.TYPE)) || method.getReturnType()==null){
+				if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getPath()!=null && !iCall.getIRedirect().getPath().equals(""))
+					current_redirect = new redirects(iCall.getIRedirect().getPath());
+				else if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getAuth_id()!=null && !iCall.getIRedirect().getAuth_id().equals("")){
+					if(iAction!=null){
+						String uri = iAction.getRedirect(iCall.getIRedirect().getAuth_id());
+						if(uri!=null && !uri.equals(""))
+							current_redirect = new redirects(uri);
+					}
+				}else if(iAction!=null && iAction.getRedirect()!=null && !iAction.getRedirect().equals(""))
+					current_redirect = new redirects(iAction.getRedirect());
+			}
+		}else{
+			if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getPath()!=null && !iCall.getIRedirect().getPath().equals(""))
+				current_redirect = new redirects(iCall.getIRedirect().getPath());
+			else if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getAuth_id()!=null && !iCall.getIRedirect().getAuth_id().equals("")){
+				if(iAction!=null){
+					String uri = iAction.getRedirect(iCall.getIRedirect().getAuth_id());
+					if(uri!=null && !uri.equals(""))
+						current_redirect = new redirects(uri);
+				}
+			}else if(iAction!=null && iAction.getRedirect()!=null && !iAction.getRedirect().equals(""))
+				current_redirect = new redirects(iAction.getRedirect());			
+		}
+		return current_redirect;
+
+	}
+	
+	public static redirects prepareActionResponse(Object retVal, Method method, info_action iAction, HttpServletResponse response) throws Exception{
+		
+		redirects current_redirect = null;
+		if(method!=null){
+			if(method.getReturnType()!=null && !method.getReturnType().equals(Void.TYPE)){
+				if(redirects.class.isAssignableFrom(method.getReturnType()))
+					current_redirect = (redirects)retVal;
+				else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
+					if(retVal!=null){
+						info_redirect iRedirect = null;
+						if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
+							iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
+						
+						if(iRedirect!=null){
+							if(iRedirect.getContentType()!=null && !iRedirect.getContentType().equals("")){
+								if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+				    				response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase()+
+				    						((iRedirect.getContentEncoding()!=null)?";charset="+iRedirect.getContentEncoding():"")
+				    				);
+								else
+									response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase());
+								
+							}
+							if(iRedirect.getContentName()!=null && !iRedirect.getContentName().equals(""))
+								response.setHeader("Content-Disposition","attachment; filename="+iRedirect.getContentName());
+							if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+								response.setHeader("Content-Transfer-Encoding",iRedirect.getContentEncoding());
+						}
+						if(String.class.isAssignableFrom(method.getReturnType()))
+							response.getOutputStream().write(((String)retVal).getBytes());
+						if(byte[].class.isAssignableFrom(method.getReturnType()))
+							response.getOutputStream().write(((byte[])retVal));
+					}
+				}
+			}else if((method.getReturnType()!=null && method.getReturnType().equals(Void.TYPE)) || method.getReturnType()==null){
+				if(iAction!=null && iAction.getRedirect()!=null && !iAction.getRedirect().equals(""))
+					current_redirect = new redirects(iAction.getRedirect());
+			}
+		}else{
+			if(iAction!=null && iAction.getRedirect()!=null && !iAction.getRedirect().equals(""))
+				current_redirect = new redirects(iAction.getRedirect());
+		}
+		return current_redirect;
+
+	}	
 
 	public static HttpServletResponse execRedirect(i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws Exception, bsControllerException,ServletException, UnavailableException{
 		return execRedirect(action_instance, servletContext, request, response, false);
@@ -1717,9 +1841,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 
-				if(action_instance.getCurrent_redirect()!=null){
-
-					if( !action_instance.getCurrent_redirect().is_avoidPermissionCheck()){
+//				if(action_instance.getCurrent_redirect()!=null){
+//					if( !action_instance.getCurrent_redirect().is_avoidPermissionCheck()){
 						info_stream blockStreamExit = performStream_ExitRS(_streams, id_action,action_instance, servletContext, request, response);
 						if(blockStreamExit!=null){
 							isException(action_instance, request);
@@ -1730,8 +1853,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 							}
 							return response;
 						}
-					}
-
+//					}
+//				}
+				if(action_instance.getCurrent_redirect()!=null){
 					request.removeAttribute(CONST_ID_REQUEST_TYPE);
 					response = execRedirect(action_instance,servletContext,request,response,true);
 				}

@@ -112,54 +112,62 @@ public class bs_authentication_filters implements i_authentication_filter {
 					Vector keys = new Vector(hActions.keySet());
 					for(int i=0;i<keys.size();i++){
 						try{
-							if(	hActions.get(keys.get(i))!=null &&
-								((HashMap)hActions.get(keys.get(i))).get("*")!=null &&
-								((HashMap)((HashMap)hActions.get(keys.get(i))).get("*")).get("*")!=null
+							String k_keys = (String)keys.get(i);
+							if(	hActions.get(k_keys)!=null &&
+								((HashMap)hActions.get(k_keys)).get("*")!=null &&
+								((HashMap)((HashMap)hActions.get(k_keys)).get("*")).get("*")!=null
 							){
 								
 								if(	hAllowedActions!=null &&
-									hAllowedActions.get(keys.get(i))!=null &&
-									((HashMap)hAllowedActions.get(keys.get(i))).get("*")!=null &&
-									((HashMap)((HashMap)hAllowedActions.get(keys.get(i))).get("*")).get("*")!=null
+									hAllowedActions.get(k_keys)!=null &&
+									((HashMap)hAllowedActions.get(k_keys)).get("*")!=null &&
+									((HashMap)((HashMap)hAllowedActions.get(k_keys)).get("*")).get("*")!=null
 								){
 									
 								}else								
-									permited_current.remove(keys.get(i));
+									permited_current.remove(k_keys);
 							}
 							else{
 								if(	hAllowedActions!=null &&
-										hAllowedActions.get(keys.get(i))!=null &&
-										((HashMap)hAllowedActions.get(keys.get(i))).get("*")!=null){
+										hAllowedActions.get(k_keys)!=null &&
+										((HashMap)hAllowedActions.get(k_keys)).get("*")!=null){
 								}else{
-									Vector keys_redirect = new Vector(((HashMap)hActions.get(keys.get(i))).keySet());
+									Vector keys_redirect = new Vector(((HashMap)hActions.get(k_keys)).keySet());
 									for(int j=0;j<keys_redirect.size();j++){
+										String k_redirect = (String)keys_redirect.get(j);
 										if(	hAllowedActions!=null &&
-												hAllowedActions.get(keys.get(i))!=null &&
-												((HashMap)hAllowedActions.get(keys.get(i))).get(keys_redirect.get(j))!=null &&
-												((HashMap)((HashMap)hAllowedActions.get(keys.get(i))).get(keys_redirect.get(j))).get("*")!=null){
+												hAllowedActions.get(k_keys)!=null &&
+												((HashMap)hAllowedActions.get(k_keys)).get(k_redirect)!=null &&
+												((HashMap)((HashMap)hAllowedActions.get(k_keys)).get(k_redirect)).get("*")!=null){
 										}else{
 											
-											HashMap permited_current_auth_redirects = ((info_action)permited_current.get(keys.get(i))).get_auth_redirects();
-											HashMap permited_current_redirects = ((info_action)permited_current.get(keys.get(i))).get_redirects();
-											info_redirect ir_a = (info_redirect)permited_current_auth_redirects.get(keys_redirect.get(j));
+											HashMap permited_current_auth_redirects = ((info_action)permited_current.get(k_keys)).get_auth_redirects();
+											HashMap permited_current_redirects = ((info_action)permited_current.get(k_keys)).get_redirects();
+											info_redirect ir_a = (info_redirect)permited_current_auth_redirects.get(k_redirect);
 		
 											
 											if(ir_a!=null){
 												info_redirect ir = (info_redirect)permited_current_redirects.get(ir_a.getPath());
 												
-												Vector keys_sections= new Vector( ((HashMap)((HashMap)hActions.get(keys.get(i))).get(keys_redirect.get(j))).keySet());
+												Vector keys_sections= new Vector( ((HashMap)((HashMap)hActions.get(k_keys)).get(k_redirect)).keySet());
 												for(int k=0;k<keys_sections.size();k++){
+													String k_section = (String)keys_sections.get(k);
 													if(	hAllowedActions!=null &&
-															hAllowedActions.get(keys.get(i))!=null &&
-															((HashMap)hAllowedActions.get(keys.get(i))).get(keys_redirect.get(j))!=null &&
-															((HashMap)((HashMap)hAllowedActions.get(keys.get(i))).get(keys_redirect.get(j))).get(keys_sections.get(k))!=null){
+															hAllowedActions.get(k_keys)!=null &&
+															((HashMap)hAllowedActions.get(k_keys)).get(k_redirect)!=null &&
+															((HashMap)((HashMap)hAllowedActions.get(k_keys)).get(k_redirect)).get(k_section)!=null){
 													}else{
-														((info_section)ir.get_sections().get(keys_sections.get(k))).setAllowed(false);
-														((info_section)ir_a.get_sections().get(keys_sections.get(k))).setAllowed(false);
-														if(keys_sections.get(k).equals("*")){
-															((info_redirect)permited_current_auth_redirects.get(keys_redirect.get(j))).setAllowedSection(false);
+														if(ir.get_sections().get(k_section)!=null){
+															((info_section)ir.get_sections().get(k_section)).setAllowed(false);
+															((info_section)ir_a.get_sections().get(k_section)).setAllowed(false);
+														}
+														if(k_section!=null && k_section.equals("*")){
+															((info_redirect)permited_current_auth_redirects.get(k_redirect)).setAllowedSection(false);
 															String ir_path = ir.getPath();
 															((info_redirect)permited_current_redirects.get(ir_path)).setAllowedSection(false);
+// Update 05/01/2016															
+															permited_current_auth_redirects.remove(k_redirect);
+															permited_current_redirects.remove(ir_path);
 														}
 													}
 												}
@@ -244,6 +252,13 @@ public class bs_authentication_filters implements i_authentication_filter {
 						auth.get_actions_permitted().get(id_action)!=null &&
 						auth.get_actions_forbidden().get(id_complete)==null){}
 					else result = false;
+				}else if(bsController.getAction_config().get_actioncalls().get(id_complete)!=null){
+					info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_complete);
+					id_action = iCall.getOwner();
+					if(	id_action!=null &&
+						auth.get_actions_permitted().get(id_action)!=null &&
+						auth.get_actions_forbidden().get(id_complete)==null){}
+					else result = false;
 				}else result = false;
 			}else result = false;
 		}
@@ -251,6 +266,12 @@ public class bs_authentication_filters implements i_authentication_filter {
 		
 	}
 	public boolean check_redirectIsPermitted(auth_init auth, i_action _action){	
+		
+		if(	_action==null ||
+			_action.getCurrent_redirect()==null ||
+			_action.getCurrent_redirect().is_avoidPermissionCheck())
+			return true;
+
 		
 		if(_action.get_infoaction().getPath().equals(bsController.CONST_ID_$ACTION_HELP)) return true;
 		if(!bsController.getAppInit().get_enterpoint().equals("*")){
@@ -289,8 +310,14 @@ public class bs_authentication_filters implements i_authentication_filter {
 						else{
 							if(	iAction.get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
 						}
-					}
-					else return false;
+					}else if(bsController.getAction_config().get_actioncalls().get(id_complete)!=null){
+						info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_complete);
+						id_action = iCall.getOwner();
+						if(	id_action!=null &&
+							auth.get_actions_permitted().get(id_action)!=null &&
+							auth.get_actions_forbidden().get(id_complete)==null){}
+						else result = false;
+					}else return false;
 				}else return false;
 				
 			}else return false;

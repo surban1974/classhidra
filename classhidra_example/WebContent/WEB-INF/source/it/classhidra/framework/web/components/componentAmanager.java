@@ -10,8 +10,11 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import it.classhidra.annotation.elements.Access;
+import it.classhidra.annotation.elements.AccessRelation;
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
+import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
@@ -23,7 +26,6 @@ import it.classhidra.core.controller.info_relation;
 import it.classhidra.core.controller.info_section;
 import it.classhidra.core.controller.load_actions;
 import it.classhidra.core.controller.load_authentication;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
@@ -63,7 +65,14 @@ import it.classhidra.framework.web.beans.option_element;
 				auth_id="amn_id",
 				path="*"
 			)
-	}
+	},
+    entity=@Entity(
+		permissions=@Access(
+				forbidden={
+						@AccessRelation(targets="default_target;", rules="GUESTS;" )	
+				}
+		)
+	)
 )
 
 

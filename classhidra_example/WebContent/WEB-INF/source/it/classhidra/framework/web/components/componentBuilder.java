@@ -1,8 +1,11 @@
 package it.classhidra.framework.web.components;
 
 
+import it.classhidra.annotation.elements.Access;
+import it.classhidra.annotation.elements.AccessRelation;
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
+import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
@@ -62,7 +65,14 @@ import javax.servlet.http.HttpServletResponse;
 				auth_id="bld_id",
 				path="*"
 			)
-	}
+		},
+        entity=@Entity(
+			permissions=@Access(
+					forbidden={
+							@AccessRelation(targets="default_target;", rules="GUESTS;" )	
+					}
+			)
+		)
 )
 
 

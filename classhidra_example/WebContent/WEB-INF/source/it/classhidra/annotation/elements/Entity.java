@@ -12,4 +12,5 @@ public @interface Entity {
 	String system() default "false";
 	String annotated() default "true";
 	String lookup() default "";
+	Access permissions() default @Access;
 }

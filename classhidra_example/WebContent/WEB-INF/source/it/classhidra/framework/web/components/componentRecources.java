@@ -1,6 +1,8 @@
 package it.classhidra.framework.web.components;
 
 
+import it.classhidra.annotation.elements.Access;
+import it.classhidra.annotation.elements.AccessRelation;
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Entity;
@@ -24,15 +26,7 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@ActionMapping (
-		redirects={
-				@Redirect(
-						path="/jsp/framework/resources.jsp",
-						descr="Resources",
-						mess_id="title_fw_Resources"
-				)
-			}
-)
+@ActionMapping
 
 
 
@@ -42,9 +36,28 @@ import javax.servlet.http.HttpServletResponse;
 	navigated="true",
 	syncro="true",
 	entity=@Entity(
-			property="allway:public"
+			property="allway:public",
+			permissions=@Access(
+				forbidden={
+					@AccessRelation(targets="default_target;", rules="GUESTS;" )	
+				}
+			)
 	),
 	redirects={
+			@Redirect(
+					auth_id="def_id",
+					path="/jsp/framework/resources.jsp",
+					descr="Resources",
+					mess_id="title_fw_Resources"
+//					,
+//					entity=@Entity(
+//							permissions=@Access(
+//									forbidden={
+//										@AccessRelation(targets="default_target;", rules="USERS;" )	
+//									}
+//								)
+//							)
+			),			
 			@Redirect(
 				auth_id="res_id",
 				path="*"

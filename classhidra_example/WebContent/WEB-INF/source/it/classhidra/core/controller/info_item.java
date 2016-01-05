@@ -24,14 +24,19 @@
 
 package it.classhidra.core.controller;
 
+import java.util.HashMap;
+import java.util.Vector;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_sort;
 
 public class info_item extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = 1L;
@@ -40,6 +45,9 @@ public class info_item extends info_entity implements i_elementBase{
 	private String type;
 	private String defValue;
 	private boolean collection=false;
+	
+	private HashMap _items;
+	private Vector v_info_items;
 	
 	public info_item(){
 		super();
@@ -50,6 +58,8 @@ public class info_item extends info_entity implements i_elementBase{
 		type="";
 		defValue="";
 		collection=false;
+		_items=new HashMap();
+		v_info_items=new Vector();		
 	}
 
 	public void init(Node node) throws bsControllerException{
@@ -72,10 +82,49 @@ public class info_item extends info_entity implements i_elementBase{
 							
 				}
 			}
-			try{
-				String fixedValue = ((Text)node.getFirstChild()).getData();
-				if(!fixedValue.trim().equals("")) defValue = fixedValue;
-			}catch(Exception e){			
+			NodeList nodeList = node.getChildNodes();
+			boolean valueAsText = true;
+			if(nodeList.getLength()==0){
+				valueAsText=false;
+				try{
+					String fixedValue = ((Text)node.getFirstChild()).getData();
+					if(!fixedValue.trim().equals("")) defValue = fixedValue;
+				}catch(Exception e){			
+				}
+			}else{
+				int order_r=0;
+				for(int i=0;i<nodeList.getLength();i++){
+					if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
+						if(nodeList.item(i).getNodeName().toLowerCase().equals("item")){
+							valueAsText=false;
+							info_item iItem = new info_item();
+							iItem.init(nodeList.item(i));
+							order_r++;
+							iItem.setOrder(Integer.valueOf(order_r).toString());
+							iItem.setCollection(false);
+							if(iItem!=null) _items.put(iItem.getName(),iItem);
+						}
+						if(nodeList.item(i).getNodeName().toLowerCase().equals("items")){
+							valueAsText=false;
+							info_item iItem = new info_item();
+							iItem.init(nodeList.item(i));
+							order_r++;
+							iItem.setOrder(Integer.valueOf(order_r).toString());
+							iItem.setCollection(true);
+							if(iItem!=null) _items.put(iItem.getName(),iItem);
+						}
+					}
+				}
+				v_info_items.addAll(new Vector(_items.values()));
+				v_info_items = new util_sort().sort(v_info_items,"int_order");
+				
+			}
+			if(valueAsText){
+				try{
+					String fixedValue = ((Text)node.getFirstChild()).getData();
+					if(!fixedValue.trim().equals("")) defValue = fixedValue;
+				}catch(Exception e){			
+				}
 			}
 		}catch(Exception e){
 			new bsControllerException(e,iStub.log_DEBUG);
@@ -85,9 +134,13 @@ public class info_item extends info_entity implements i_elementBase{
 	public String toString(){		
 		return toXml();
 	}
-
+	
 	public String toXml(){
-		String result=System.getProperty("line.separator")+"            ";
+		return toXml("");
+	}
+
+	public String toXml(String space){
+		String result=System.getProperty("line.separator")+space+"            ";
 		if(collection) result+="<items";
 		else result+="<item";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
@@ -95,6 +148,15 @@ public class info_item extends info_entity implements i_elementBase{
 		result+=super.toXml();
 		result+=">";
 		result+=util_format.normaliseXMLText(defValue);
+
+		if(v_info_items!=null && v_info_items.size()>0){
+			for(int i=0;i<v_info_items.size();i++){
+				info_item iItem = (info_item)v_info_items.get(i);
+				if(iItem!=null) result+=iItem.toXml(space+"      ");
+			}
+		}
+
+		
 		if(collection) result+="</items>";
 		else result+="</item>";
 		return result;
@@ -123,5 +185,17 @@ public class info_item extends info_entity implements i_elementBase{
 	}
 	public void setCollection(boolean collection) {
 		this.collection = collection;
+	}
+	public HashMap get_items() {
+		return _items;
+	}
+	public void set_items(HashMap _items) {
+		this._items = _items;
+	}
+	public Vector getV_info_items() {
+		return v_info_items;
+	}
+	public void setV_info_items(Vector v_info_items) {
+		this.v_info_items = v_info_items;
 	}	
 }

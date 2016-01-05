@@ -54,6 +54,7 @@ public class info_redirect extends info_entity implements i_elementBase{
 	private String contentName;
 	private String contentEncoding;
 	private String transformationName;
+	private String avoidPermissionCheck;
 
 	private Vector v_info_sections;
 	private Vector v_info_transformationoutput;
@@ -82,6 +83,9 @@ public class info_redirect extends info_entity implements i_elementBase{
 			this.contentName = iRedirect.getContentName();
 		if((this.transformationName==null || this.transformationName.equals("")) && (iRedirect.getTransformationName()!=null && !iRedirect.getTransformationName().equals("")))
 			this.transformationName = iRedirect.getTransformationName();
+		
+		if((this.avoidPermissionCheck==null || this.avoidPermissionCheck.equals("")) && (iRedirect.getAvoidPermissionCheck()!=null && !iRedirect.getAvoidPermissionCheck().equals("")))
+			this.avoidPermissionCheck = iRedirect.getAvoidPermissionCheck();
 		
 		if((this.mess_id==null || this.mess_id.equals("")) && (iRedirect.getMess_id()!=null && !iRedirect.getMess_id().equals("")))
 			this.mess_id = iRedirect.getMess_id();
@@ -169,6 +173,7 @@ public class info_redirect extends info_entity implements i_elementBase{
 		united_id="";
 		img="";
 		navigated="true";
+		avoidPermissionCheck="false";
 		_sections=new HashMap();
 		_transformationoutput=new HashMap();
 		v_info_transformationoutput=new Vector();
@@ -294,7 +299,8 @@ public class info_redirect extends info_entity implements i_elementBase{
 		if(navigated!=null && !navigated.trim().equals("") && !navigated.trim().equals("true")) result+=" navigated=\""+util_format.normaliseXMLText(navigated)+"\"";
 		if(descr!=null && !descr.trim().equals("")) result+=" descr=\""+util_format.normaliseXMLText(descr)+"\"";
 		if(mess_id!=null && !mess_id.trim().equals("")) result+=" mess_id=\""+util_format.normaliseXMLText(mess_id)+"\"";
-
+		if(avoidPermissionCheck!=null && !avoidPermissionCheck.trim().equals("") && !avoidPermissionCheck.trim().equalsIgnoreCase("false")) result+=" avoidPermissionCheck=\""+util_format.normaliseXMLText(avoidPermissionCheck)+"\"";
+		
 		result+=super.toXml();
 		result+=">";
 		boolean isEntity=false;
@@ -392,5 +398,27 @@ public class info_redirect extends info_entity implements i_elementBase{
 
 	public HashMap get_transformationoutput() {
 		return _transformationoutput;
+	}
+	
+	public boolean isEmpty(){
+		if(auth_id!=null && !auth_id.trim().equals("")) return false;
+		if(path!=null && !path.trim().equals("")) return false;
+		if(contentType!=null && !contentType.trim().equals("")) return false;
+		if(contentEncoding!=null && !contentEncoding.trim().equals("")) return false;
+		if(contentName!=null && !contentName.trim().equals("")) return false;
+		if(transformationName!=null && !transformationName.trim().equals("")) return false;
+		if(navigated!=null && !navigated.trim().equals("") && !navigated.trim().equals("true")) return false;
+		if(descr!=null && !descr.trim().equals("")) return false;
+		if(mess_id!=null && !mess_id.trim().equals("")) return false;
+
+		return true;
+	}
+
+	public String getAvoidPermissionCheck() {
+		return avoidPermissionCheck;
+	}
+
+	public void setAvoidPermissionCheck(String avoidPermissionCheck) {
+		this.avoidPermissionCheck = avoidPermissionCheck;
 	}
 }

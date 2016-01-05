@@ -187,7 +187,7 @@ public class bsFilter implements Filter {
 				
 				if(elaborateBsCheck){
 					id_bs=check_BSCall(request);		
-					if(id_bs.id_action!=null){
+					if(id_bs.id_action!=null && !id_bs.id_action.equals("")){
 						if(elaborate_BS(id_bs.id_action,id_bs.id_call,id_bs.id_complete,chain,request,response))
 							return;
 					}
@@ -195,7 +195,7 @@ public class bsFilter implements Filter {
 				}
 				if(elaborate_neoHort(id_bs.id_action,id_bs.id_call,id_bs.id_complete,chain,request,response))
 					return;
-				if(id_bs.id_action==null){
+				if(id_bs.id_action==null || id_bs.id_action.equals("")){
 					try{
 						chain.doFilter(req, resp);
 					}catch(Exception e){

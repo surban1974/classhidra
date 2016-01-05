@@ -1,5 +1,7 @@
 package it.classhidra.annotation;
 
+import it.classhidra.annotation.elements.Access;
+import it.classhidra.annotation.elements.AccessRelation;
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.ActionMapping;
@@ -20,6 +22,7 @@ import it.classhidra.core.controller.info_bean;
 import it.classhidra.core.controller.info_call;
 import it.classhidra.core.controller.info_entity;
 import it.classhidra.core.controller.info_redirect;
+import it.classhidra.core.controller.info_relation;
 import it.classhidra.core.controller.info_section;
 import it.classhidra.core.controller.info_stream;
 import it.classhidra.core.controller.info_transformation;
@@ -35,6 +38,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -53,6 +57,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	protected HashMap _redirects = new HashMap();
 	protected HashMap _redirectsjustloaded = new HashMap();
 	protected HashMap _transformationoutput = new HashMap();
+	protected List v_permissions = new ArrayList();
 	
 	protected String error;
 	protected String auth_error;
@@ -289,8 +294,11 @@ public class annotation_scanner implements i_annotation_scanner {
 
 
 	public void checkClassAnnotation(String class_path) {
+		v_permissions = new ArrayList();
 		try{
 			Class classType = Class.forName(class_path);
+			if(classType==null)
+				return;
 			
 			Map subAnnotations = new HashMap();
 			Annotation subAnnotation = classType.getAnnotation(NavigatedDirective.class);
@@ -306,18 +314,28 @@ public class annotation_scanner implements i_annotation_scanner {
 	
 			ActionMapping annotationActionMapping = (ActionMapping)classType.getAnnotation(ActionMapping.class);
 			if(annotationActionMapping!=null){
-				error=annotationActionMapping.error();
-				session_error=annotationActionMapping.session_error();
-				auth_error=annotationActionMapping.auth_error();
-
-				listener_actions=annotationActionMapping.listener_actions();
-				listener_beans=annotationActionMapping.listener_beans();
-				listener_streams=annotationActionMapping.listener_streams();
-				memoryInContainer_streams=annotationActionMapping.memoryInContainer_streams();
-				provider=annotationActionMapping.provider();
-				instance_navigated=annotationActionMapping.instance_navigated();
-				instance_local_container=annotationActionMapping.instance_local_container();
-				instance_onlysession=annotationActionMapping.instance_onlysession();
+				if(!annotationActionMapping.error().equals(""))
+					error=annotationActionMapping.error();
+				if(!annotationActionMapping.session_error().equals(""))
+					session_error=annotationActionMapping.session_error();
+				if(!annotationActionMapping.auth_error().equals(""))
+					auth_error=annotationActionMapping.auth_error();
+				if(!annotationActionMapping.listener_actions().equals(""))
+					listener_actions=annotationActionMapping.listener_actions();
+				if(!annotationActionMapping.listener_beans().equals(""))
+					listener_beans=annotationActionMapping.listener_beans();
+				if(!annotationActionMapping.listener_streams().equals(""))
+					listener_streams=annotationActionMapping.listener_streams();
+				if(!annotationActionMapping.memoryInContainer_streams().equals(""))
+					memoryInContainer_streams=annotationActionMapping.memoryInContainer_streams();
+				if(!annotationActionMapping.provider().equals(""))
+					provider=annotationActionMapping.provider();
+				if(!annotationActionMapping.instance_navigated().equals(""))
+					instance_navigated=annotationActionMapping.instance_navigated();
+				if(!annotationActionMapping.instance_local_container().equals(""))
+					instance_local_container=annotationActionMapping.instance_local_container();
+				if(!annotationActionMapping.instance_onlysession().equals(""))
+					instance_onlysession=annotationActionMapping.instance_onlysession();
 				
 				Stream[] streams = annotationActionMapping.streams();
 				if(streams!=null && streams.length>0){
@@ -401,7 +419,40 @@ public class annotation_scanner implements i_annotation_scanner {
 				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
 		    
 		    
-		}catch(Exception e){			
+
+			if(bsController.getAuth_config()!=null){
+				if(v_permissions.size()>0){
+					for(int i=0;i<v_permissions.size();i++){
+						info_entity iEntity = (info_entity)v_permissions.get(i);
+						if(iEntity.getAccess_allowed()!=null && iEntity.getAccess_allowed().size()>0){
+							Iterator it = iEntity.getAccess_allowed().entrySet().iterator();
+						    while (it.hasNext()) {
+						        Map.Entry pair = (Map.Entry)it.next();
+						        try{
+						        	bsController.getAuth_config().addIRelation((info_relation)pair.getValue());
+						        }catch(Exception e){
+						        	e.toString();
+						        }
+						    }
+						}
+						if(iEntity.getAccess_forbidden()!=null && iEntity.getAccess_forbidden().size()>0){
+							Iterator it = iEntity.getAccess_forbidden().entrySet().iterator();
+						    while (it.hasNext()) {
+						        Map.Entry pair = (Map.Entry)it.next();
+						        try{
+						        	bsController.getAuth_config().addIRelation((info_relation)pair.getValue());
+						        }catch(Exception e){
+						        	e.toString();
+						        }
+						    }
+						}
+						
+					}
+					
+				}
+			}
+		}catch(Exception e){	
+			new bsException("Load_actions Loader Error Annotation scaner for class: "+class_path+" : "+e.toString(), iStub.log_ERROR);
 		}
 	    
 	}
@@ -448,6 +499,7 @@ public class annotation_scanner implements i_annotation_scanner {
     			iRedirect.setContentEncoding(annotationRedirect.contentEncoding());
     			iRedirect.setContentName(annotationRedirect.contentName());
     			iRedirect.setTransformationName(annotationRedirect.transformationName());
+    			iRedirect.setAvoidPermissionCheck(annotationRedirect.avoidPermissionCheck());
     			setEntity(iRedirect,annotationRedirect.entity());
     			iRedirect.setAnnotationLoaded(true);
 
@@ -545,7 +597,9 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 	
 	
-	private void checkActionAnnotations(Class classType, String class_path, Action annotationAction, Map  subAnnotations, Method method) throws Exception{
+	private info_action checkActionAnnotations(Class classType, String class_path, Action annotationAction, Map  subAnnotations, Method method) throws Exception{
+		if(annotationAction==null || annotationAction.path()==null || annotationAction.path().equals(""))
+			return null;
     	info_action iAction = new info_action();
     	iAction.setPath(annotationAction.path());
     	iAction.setType(class_path);
@@ -590,69 +644,41 @@ public class annotation_scanner implements i_annotation_scanner {
     	iAction.setListener(annotationAction.listener());
     	setEntity(iAction,annotationAction.entity());
     	iAction.setAnnotationLoaded(true);
-    	Redirect[] redirects = annotationAction.redirects();
-    	if(redirects!=null && redirects.length>0){
-    		for(int i=0;i<redirects.length;i++){
-    			Redirect annotationRedirect1 = redirects[i];
-    			info_redirect iRedirect = new info_redirect();		    			
-    			iRedirect.setPath(annotationRedirect1.path());
-    			iRedirect.setAuth_id(annotationRedirect1.auth_id());
-    			iRedirect.setError(annotationRedirect1.error());
-    			iRedirect.setDescr(annotationRedirect1.descr());
-    			iRedirect.setMess_id(annotationRedirect1.mess_id());
-    			iRedirect.setUnited_id(annotationRedirect1.united_id());
-    			iRedirect.setImg(annotationRedirect1.img());
-    			iRedirect.setNavigated(annotationRedirect1.navigated());
-    			iRedirect.setContentType(annotationRedirect1.contentType());
-    			iRedirect.setContentEncoding(annotationRedirect1.contentEncoding());
-    			iRedirect.setContentName(annotationRedirect1.contentName());
-    			iRedirect.setTransformationName(annotationRedirect1.transformationName());
-    			setEntity(iRedirect,annotationRedirect1.entity());
-    			if(iRedirect.getOrder().equals("")) iRedirect.setOrder(Integer.valueOf(i+1).toString()); 
-    			iRedirect.setAnnotationLoaded(true);
-    			
-    			Section[] sections = annotationRedirect1.sections();
-    			if(sections!=null && sections.length>0){
-    				for(int j=0;j<sections.length;j++){
-    					Section annotationSection = sections[j];
-    					info_section iSection = new info_section();
-    					iSection.setName(annotationSection.name());
-    					iSection.setAllowed(annotationSection.allowed());
-    					setEntity(iSection,annotationSection.entity());
-    					if(iSection.getOrder().equals("")) iSection.setOrder(Integer.valueOf(j+1).toString());
-    					iSection.setAnnotationLoaded(true);
-    					iRedirect.get_sections().put(iSection.getName(),iSection);
-    				}
-
-    				iRedirect.getV_info_sections().addAll(new Vector(iRedirect.get_sections().values()));
-    				iRedirect.setV_info_sections(new util_sort().sort(iRedirect.getV_info_sections(),"int_order"));
-
-    			}
-    			Transformation[] transformations = annotationRedirect1.transformations();
-    			if(transformations!=null && transformations.length>0){
-    				for(int j=0;j<transformations.length;j++){
-    					Transformation annotationTransf = transformations[j];
-    					info_transformation iTransformationoutput = new info_transformation();
-    					iTransformationoutput.setName(annotationTransf.name());
-    					iTransformationoutput.setType(annotationTransf.type());
-    					iTransformationoutput.setPath(annotationTransf.path());
-    					iTransformationoutput.setEvent(annotationTransf.event());
-    					iTransformationoutput.setInputformat(annotationTransf.inputformat());
-    					setEntity(iTransformationoutput,annotationTransf.entity());
-    					if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(j+1).toString());
-    					iTransformationoutput.setAnnotationLoaded(true);
-    					iRedirect.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
-    				}
-    				
-    				iRedirect.getV_info_transformationoutput().addAll(new Vector(iRedirect.get_transformationoutput().values()));
-    				iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
-
-    			}
-    			iAction.get_redirects().put(bodyURI(iRedirect.getPath()),iRedirect);
+    	
+    	
+    	Redirect redirect = annotationAction.Redirect();
+    	if(redirect!=null){
+    		info_redirect iRedirect = checkRedirectAnnotation(iAction, redirect, -1);
+    		if(iRedirect!=null && !iRedirect.isEmpty()){
+	    		if(iAction.getRedirect()==null || iAction.getRedirect().equals("")){
+	    			if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+	    				iAction.setRedirect(iRedirect.getPath());
+	    		}
     		}
     	}
     	
-    	if(iAction.get_redirects().size()>0){
+    	Bean bean = annotationAction.Bean();
+    	if(bean!=null){
+    		info_bean iBean = checkBeanAnnotation(iAction, bean, class_path, -1);
+    		if(iBean!=null && (iAction.getName()==null || iAction.getName().equals("")) && iBean.getName()!=null && !iBean.getName().equals(""))
+    			iAction.setName(iBean.getName());
+    		
+    	}
+    	
+    	Redirect[] redirects = annotationAction.redirects();
+    	if(redirects!=null && redirects.length>0){
+    		for(int i=0;i<redirects.length;i++){
+    			info_redirect iRedirect = checkRedirectAnnotation(iAction, redirects[i], i);
+        		if(iRedirect!=null && !iRedirect.isEmpty()){
+    	    		if(iAction.getRedirect()==null || iAction.getRedirect().equals("")){
+    	    			if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+    	    				iAction.setRedirect(iRedirect.getPath());
+    	    		}
+        		}
+    		}
+    	}
+    	
+    	if(iAction.get_redirects().size()>0 || redirect!=null){
     		iAction.getV_info_redirects().addAll(new Vector(iAction.get_redirects().values()));
     		iAction.setV_info_redirects(new util_sort().sort(iAction.getV_info_redirects(),"int_order"));
     		
@@ -695,12 +721,26 @@ public class annotation_scanner implements i_annotation_scanner {
 			for(int i=0;i<calls.length;i++){
 				ActionCall annotationCall = calls[i];
 				info_call iCall = new info_call();
+				iCall.setOwner(iAction.getPath());
 				iCall.setName(annotationCall.name());
+				iCall.setPath(annotationCall.path());
 				iCall.setMethod(annotationCall.method());
 				iCall.setNavigated(annotationCall.navigated());
 				setEntity(iCall,annotationCall.entity());
 				if(iCall.getOrder().equals("")) iCall.setOrder(Integer.valueOf(i+1).toString());
 				iCall.setAnnotationLoaded(true);
+				
+				Redirect callRedirect = annotationCall.Redirect();
+		    	if(callRedirect!=null){
+		    		info_redirect iRedirect = checkRedirectAnnotation(iAction, callRedirect, -1);
+		    		if(iRedirect!=null && !iRedirect.isEmpty()){
+			    		iCall.setIRedirect(iRedirect);
+			    		if(iRedirect!=null && iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+							_redirects.put(iRedirect.getPath(),iRedirect);
+		    		}
+		    	}
+
+				
 				if(iAction.get_calls().get(iCall.getName())==null)
 					iAction.get_calls().put(iCall.getName(),iCall);
 			}
@@ -711,23 +751,16 @@ public class annotation_scanner implements i_annotation_scanner {
 		Bean[] beans = annotationAction.beans();
 		if(beans!=null && beans.length>0){
 			for(int i=0;i<beans.length;i++){
-				Bean annotationBean = beans[i];
-				info_bean iBean = new info_bean();
-				iBean.setName(annotationBean.name());
-		    	iBean.setType(class_path);
-		    	iBean.setListener(annotationBean.listener());
-		    	setEntity(iBean,annotationBean.entity());
-		    	iBean.setAnnotationLoaded(true);
-				if(iAction.get_beans().get(iBean.getName())==null)
-					iAction.get_beans().put(iBean.getName(),iBean);
-    			if(_beans.get(iBean.getName())==null)
-    				_beans.put(bodyURI(iBean.getName()),iBean);
-
-
+				info_bean iBean = checkBeanAnnotation(iAction, beans[i], class_path, i);
+	    		if(iBean!=null && iAction.getName()==null || iAction.getName().equals("") && iBean.getName()!=null && !iBean.getName().equals(""))
+	    			iAction.setName(iBean.getName());
 			}
+		}
+		if((beans!=null && beans.length>0) || bean!=null){
 			iAction.getV_info_beans().addAll(new Vector(iAction.get_beans().values()));
 			iAction.setV_info_beans(new util_sort().sort(iAction.getV_info_beans(),"int_order"));
 		}
+		
 
 		
 		if(method==null){
@@ -754,19 +787,105 @@ public class annotation_scanner implements i_annotation_scanner {
 		
 		
     	_actions.put(iAction.getPath(),iAction);
+    	
+    	return iAction;
+	}
+	
+	private info_bean checkBeanAnnotation(info_action iAction, Bean annotationBean, String class_path, int i){
+		if(annotationBean==null || annotationBean.name()==null || annotationBean.name().equals(""))
+			return null;
+		info_bean iBean = new info_bean();
+		iBean.setName(annotationBean.name());
+    	iBean.setType(class_path);
+    	iBean.setListener(annotationBean.listener());
+    	setEntity(iBean,annotationBean.entity());
+    	if(iBean.getOrder().equals("")) iBean.setOrder(Integer.valueOf(i+1).toString()); 
+    	iBean.setAnnotationLoaded(true);
+		if(iAction.get_beans().get(iBean.getName())==null)
+			iAction.get_beans().put(iBean.getName(),iBean);
+		if(_beans.get(iBean.getName())==null)
+			_beans.put(bodyURI(iBean.getName()),iBean);
+
+		return iBean;
+	}
+	
+	private info_redirect checkRedirectAnnotation(info_action iAction, Redirect annotationRedirect1, int i){
+		info_redirect iRedirect = new info_redirect();		    			
+		iRedirect.setPath(annotationRedirect1.path());
+		iRedirect.setAuth_id(annotationRedirect1.auth_id());
+		iRedirect.setError(annotationRedirect1.error());
+		iRedirect.setDescr(annotationRedirect1.descr());
+		iRedirect.setMess_id(annotationRedirect1.mess_id());
+		iRedirect.setUnited_id(annotationRedirect1.united_id());
+		iRedirect.setImg(annotationRedirect1.img());
+		iRedirect.setNavigated(annotationRedirect1.navigated());
+		iRedirect.setContentType(annotationRedirect1.contentType());
+		iRedirect.setContentEncoding(annotationRedirect1.contentEncoding());
+		iRedirect.setContentName(annotationRedirect1.contentName());
+		iRedirect.setTransformationName(annotationRedirect1.transformationName());
+		iRedirect.setAvoidPermissionCheck(annotationRedirect1.avoidPermissionCheck());
+		iRedirect.setParent(iAction);
+		setEntity(iRedirect,annotationRedirect1.entity());
+		if(iRedirect.getOrder().equals("")) iRedirect.setOrder(Integer.valueOf(i+1).toString()); 
+		iRedirect.setAnnotationLoaded(true);
+		
+		Section[] sections = annotationRedirect1.sections();
+		if(sections!=null && sections.length>0){
+			for(int j=0;j<sections.length;j++){
+				Section annotationSection = sections[j];
+				info_section iSection = new info_section();
+				iSection.setName(annotationSection.name());
+				iSection.setAllowed(annotationSection.allowed());
+				iSection.setParent(iRedirect);
+				setEntity(iSection,annotationSection.entity());
+				if(iSection.getOrder().equals("")) iSection.setOrder(Integer.valueOf(j+1).toString());
+				iSection.setAnnotationLoaded(true);
+				iRedirect.get_sections().put(iSection.getName(),iSection);
+			}
+
+			iRedirect.getV_info_sections().addAll(new Vector(iRedirect.get_sections().values()));
+			iRedirect.setV_info_sections(new util_sort().sort(iRedirect.getV_info_sections(),"int_order"));
+
+		}
+		Transformation[] transformations = annotationRedirect1.transformations();
+		if(transformations!=null && transformations.length>0){
+			for(int j=0;j<transformations.length;j++){
+				Transformation annotationTransf = transformations[j];
+				info_transformation iTransformationoutput = new info_transformation();
+				iTransformationoutput.setName(annotationTransf.name());
+				iTransformationoutput.setType(annotationTransf.type());
+				iTransformationoutput.setPath(annotationTransf.path());
+				iTransformationoutput.setEvent(annotationTransf.event());
+				iTransformationoutput.setInputformat(annotationTransf.inputformat());
+				iTransformationoutput.setParent(iRedirect);
+				setEntity(iTransformationoutput,annotationTransf.entity());
+				if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(j+1).toString());
+				iTransformationoutput.setAnnotationLoaded(true);
+				iRedirect.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
+			}
+			
+			iRedirect.getV_info_transformationoutput().addAll(new Vector(iRedirect.get_transformationoutput().values()));
+			iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
+
+		}
+		if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+			iAction.get_redirects().put(bodyURI(iRedirect.getPath()),iRedirect);
+		
+		return iRedirect;
 
 	}
 	
-	private void checkActionCallAnnotation(ActionCall annotationCall, info_action iAction, Method current, int i){
+	private info_call checkActionCallAnnotation(ActionCall annotationCall, info_action iAction, Method current, int i){
 		info_call iCall = new info_call();
 		if((annotationCall.owner()==null || annotationCall.owner().equals("")) && iAction==null)
-			return;
+			return null;
 		if(annotationCall.owner()==null || annotationCall.owner().equals("")){
 			if(iAction!=null)
 				iCall.setOwner(iAction.getPath());
 		}else
 			iCall.setOwner(annotationCall.owner());
 		iCall.setName(annotationCall.name());
+		iCall.setPath(annotationCall.path());
 		if(annotationCall.method()==null || annotationCall.method().equals(""))
 			iCall.setMethod(current.getName());
 		else
@@ -774,10 +893,23 @@ public class annotation_scanner implements i_annotation_scanner {
 		if(annotationCall.navigated()==null || annotationCall.navigated().equals(""))
 			iCall.setNavigated("false");
 		else iCall.setNavigated(annotationCall.navigated());
-		
+		iCall.setParent(iAction);
 		setEntity(iCall,annotationCall.entity());
 		if(iCall.getOrder().equals("")) iCall.setOrder(Integer.valueOf(i+1).toString());
 		iCall.setAnnotationLoaded(true);
+		
+		Redirect redirect = annotationCall.Redirect();
+    	if(redirect!=null){
+    		info_redirect iRedirect = checkRedirectAnnotation(iAction, redirect, -1);
+    		if(iRedirect!=null && !iRedirect.isEmpty()){
+	    		iCall.setIRedirect(iRedirect);
+	    		if(iRedirect!=null && iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+					_redirects.put(iRedirect.getPath(),iRedirect);
+    		}
+    	}
+    	
+		
+		
 		
 		if(iAction!=null && iCall.getOwner().equals(iAction.getPath())){
 			if(iAction.get_calls().get(iCall.getName())==null)
@@ -790,6 +922,7 @@ public class annotation_scanner implements i_annotation_scanner {
 			}
 		}
 
+		return iCall;
 	}
 	
 	private void setEntity(info_entity iEntity, Entity entity){
@@ -801,6 +934,75 @@ public class annotation_scanner implements i_annotation_scanner {
 		iEntity.setComment(entity.comment());
 		iEntity.setSystem(entity.system());
 		iEntity.setAnnotated(entity.annotated());
+		
+		String element = "";
+		if(iEntity instanceof info_action)
+			element=((info_action)iEntity).getPath()+".*.*;";
+		else if(iEntity instanceof info_call){
+			if(((info_call)iEntity).getPath()!=null && !((info_call)iEntity).getPath().equals(""))
+				element=((info_call)iEntity).getPath()+".*.*;";
+			else if(bsController.getAppInit()!=null && bsController.getAppInit().get_actioncall_separator()!=null)
+				element=((info_call)iEntity).getOwner()+bsController.getAppInit().get_actioncall_separator()+((info_call)iEntity).getName()+".*.*;";
+		}else if(iEntity instanceof info_redirect){
+			info_entity parent_a = iEntity.getParent();			
+			element=((parent_a==null || !(parent_a instanceof info_action))?"*":((info_action)parent_a).getPath())+"."+((info_redirect)iEntity).getAuth_id()+".*;";
+		}
+		else if(iEntity instanceof info_section ){
+			info_entity parent_r = iEntity.getParent();	
+			info_entity parent_a = (parent_r==null || !(parent_r instanceof info_redirect))?null:parent_r.getParent();
+			
+			element=((parent_a==null || !(parent_a instanceof info_action))?"*":((info_action)parent_a).getPath())+
+					"."+
+					((parent_r==null || !(parent_r instanceof info_redirect))?"*":((info_redirect)parent_r).getAuth_id())+
+					"."
+					+((info_section)iEntity).getName()+";";
+		}
+		
+		Access permissions = entity.permissions();
+		if(permissions!=null){
+			AccessRelation[] relations = permissions.allowed();
+			if(relations!=null && relations.length>0){
+				for(int i=0;i<relations.length;i++){
+					info_relation iRelation = new info_relation();
+					if(relations[i].targets()!=null)
+						iRelation.setTargets(relations[i].targets());
+					if(relations[i].rules()!=null)
+						iRelation.setGroups(relations[i].rules());
+					if(relations[i].elements()!=null)
+						iRelation.setElements(relations[i].elements());
+					if(relations[i].middleactions()!=null)
+						iRelation.setMiddleactions(relations[i].middleactions());
+					if(!element.equals(""))
+						iRelation.setElements(iRelation.getElements()+element);
+					iRelation.parse();
+					if(!iRelation.isEmpty())
+						iEntity.addRelation(iRelation);
+					v_permissions.add(iEntity);
+				}					
+			}
+			relations = permissions.forbidden();
+			if(relations!=null && relations.length>0){
+				for(int i=0;i<relations.length;i++){
+					info_relation iRelation = new info_relation();
+					if(relations[i].targets()!=null)
+						iRelation.setTargets(relations[i].targets());
+					if(relations[i].rules()!=null)
+						iRelation.setGroups(relations[i].rules());
+					if(relations[i].elements()!=null)
+						iRelation.setElements(relations[i].elements());
+					if(relations[i].middleactions()!=null)
+						iRelation.setMiddleactions(relations[i].middleactions());
+					if(!element.equals(""))
+						iRelation.setElements(iRelation.getElements()+element);
+					iRelation.parse();
+					if(!iRelation.isEmpty())
+						iEntity.addRelation(iRelation);
+					v_permissions.add(iEntity);
+				}
+					
+			}
+		}
+		
 	}
 
 	private String bodyURI(String uri){

@@ -41,6 +41,7 @@ public class redirects implements Serializable{
 	private String _transformationName;
 	private String _uriError;
 	private boolean _avoidPermissionCheck=false;
+	private boolean def_avoidPermissionCheck=true;
 	private String description;
 
 	public redirects(String uri){
@@ -57,6 +58,7 @@ public class redirects implements Serializable{
 		super();
 		_uri = uri;
 		_avoidPermissionCheck = avoidPermissionCheck;
+		def_avoidPermissionCheck = false;
 	}
 
 	public redirects(String uri, String transformationName){
@@ -70,6 +72,7 @@ public class redirects implements Serializable{
 		_uri = uri;
 		_transformationName=transformationName;
 		_avoidPermissionCheck = avoidPermissionCheck;
+		def_avoidPermissionCheck = false;
 	}
 
 	public redirects(URL resource, boolean avoidPermissionCheck){
@@ -227,6 +230,8 @@ public class redirects implements Serializable{
 
 	public void set_inforedirect(info_redirect redirect) {
 		_inforedirect = redirect;
+		if(def_avoidPermissionCheck && _inforedirect!=null && _inforedirect.getAvoidPermissionCheck()!=null && _inforedirect.getAvoidPermissionCheck().equalsIgnoreCase("true"))
+			_avoidPermissionCheck=true;
 	}
 
 	public void set_uri(String string) {

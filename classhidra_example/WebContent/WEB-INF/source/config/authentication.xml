@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <authentication-forbidden externalloader="">
+<!-- Replaced with @Access annotation into *.java declarations of components -->
+<!-- 
    <relation name="example_1" targets="default_target;" groups="USERS;" elements="
       "
       middleactions=""
@@ -14,4 +16,6 @@
       middleactions=""
       comment="Example of Relation - will be create automatically">
    </relation>
+ -->   
+
 </authentication-forbidden > 

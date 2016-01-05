@@ -30,22 +30,27 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 
+import java.util.HashMap;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class info_call extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -605542733311006711L;
 	private String owner;
 	private String name;	
+	private String path;
 	private String method;
 	private String navigated;
+	private info_redirect iRedirect;
 	
 	public info_call(){
 		super();
 		reimposta();
 	}
 
-	public void init(Node node) throws bsControllerException{
+	public void init(Node node, HashMap glob_redirects) throws bsControllerException{
 		if(node==null) return;
 		try{
 			NamedNodeMap nnm = node.getAttributes();	 		
@@ -65,6 +70,22 @@ public class info_call extends info_entity implements i_elementBase{
 							
 				}
 			}
+			NodeList nodeList = node.getChildNodes();
+			
+			for(int i=0;i<nodeList.getLength();i++){
+				if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
+					if(nodeList.item(i).getNodeName().toLowerCase().equals("redirect")){
+						iRedirect = new info_redirect();
+						iRedirect.init(nodeList.item(i));
+
+						if(glob_redirects!=null && glob_redirects.get(iRedirect.getPath())==null){
+							iRedirect.setOrder(Integer.valueOf(glob_redirects.size()).toString());
+							if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+								glob_redirects.put(iRedirect.getPath(),iRedirect);
+						}
+					}
+				}
+			}
 		}catch(Exception e){
 			new bsControllerException(e,iStub.log_DEBUG);
 		}
@@ -73,6 +94,7 @@ public class info_call extends info_entity implements i_elementBase{
 	public void reimposta(){
 		owner="";
 		name="";
+		path="";
 		method="";
 		navigated="";
 	}
@@ -91,9 +113,16 @@ public class info_call extends info_entity implements i_elementBase{
 		String result=System.getProperty("line.separator")+"            <call";
 		if(owner!=null && !owner.trim().equals("")) result+=" owner=\""+util_format.normaliseXMLText(owner)+"\"";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
+		if(path!=null && !path.trim().equals("")) result+=" path=\""+util_format.normaliseXMLText(path)+"\"";
 		if(method!=null && !method.trim().equals("")) result+=" method=\""+util_format.normaliseXMLText(method)+"\"";
 		result+=super.toXml();
-		result+="/>";
+		if(iRedirect==null)
+			result+="/>";
+		else{
+			result+=">";
+			result+=iRedirect.toXml();
+			result+=System.getProperty("line.separator")+"            </call>";
+		}
 		return result;
 	}
 	
@@ -125,6 +154,22 @@ public class info_call extends info_entity implements i_elementBase{
 
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+
+	public info_redirect getIRedirect() {
+		return iRedirect;
+	}
+
+	public void setIRedirect(info_redirect iRedirect) {
+		this.iRedirect = iRedirect;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 

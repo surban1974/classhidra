@@ -22,6 +22,7 @@ public @interface Redirect {
 	String united_id() default "";
 	String img() default "";
 	String navigated() default "true";
+	String avoidPermissionCheck() default "false";
 	Section[] sections() default {};
 	Transformation[] transformations() default {};
 }

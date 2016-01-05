@@ -115,11 +115,19 @@ public class info_action extends info_entity implements i_elementBase{
 					iRedirect.init(nodeList.item(i));
 					order_r++;
 					iRedirect.setOrder(Integer.valueOf(order_r).toString());
-					_redirects.put(bodyURI(iRedirect.getPath()),iRedirect);
+					if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+						_redirects.put(bodyURI(iRedirect.getPath()),iRedirect);
 					if(glob_redirects!=null && glob_redirects.get(iRedirect.getPath())==null){
 						iRedirect.setOrder(Integer.valueOf(glob_redirects.size()).toString());
-						glob_redirects.put(iRedirect.getPath(),iRedirect);
+						if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+							glob_redirects.put(iRedirect.getPath(),iRedirect);
 					}
+					if(iRedirect!=null && !iRedirect.isEmpty()){
+	    	    		if(getRedirect()==null || getRedirect().equals("")){
+	    	    			if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+	    	    				setRedirect(iRedirect.getPath());
+	    	    		}
+	        		}
 				}
 				if(nodeList.item(i).getNodeName().toLowerCase().equals("transformationoutput")){
 					info_transformation iTransformationoutput = new info_transformation();
@@ -130,7 +138,7 @@ public class info_action extends info_entity implements i_elementBase{
 				}
 				if(nodeList.item(i).getNodeName().toLowerCase().equals("call")){
 					info_call iCall = new info_call();
-					iCall.init(nodeList.item(i));
+					iCall.init(nodeList.item(i), glob_redirects);
 					order_c++;
 					iCall.setOrder(Integer.valueOf(order_c).toString());
 					iCall.setOwner(this.getPath());
@@ -144,6 +152,8 @@ public class info_action extends info_entity implements i_elementBase{
 						iBean.setOrder(Integer.valueOf(glob_beans.size()).toString());
 						glob_beans.put(iBean.getName(),iBean);
 					}
+		    		if(iBean!=null && getName()==null || getName().equals("") && iBean.getName()!=null && !iBean.getName().equals(""))
+		    			setName(iBean.getName());
 				}
 
 			}
@@ -256,10 +266,13 @@ public class info_action extends info_entity implements i_elementBase{
 	}
 	public void setRedirect(String string) {
 		redirect = string;
+		if(redirect==null || redirect.equals(""))
+			return;
 		info_redirect iRedirect = new info_redirect();
 		iRedirect.setPath(redirect);
 		iRedirect.setSystem("true");
-		_redirects.put(iRedirect.getPath(),iRedirect);
+		if(_redirects.get(iRedirect.getPath())==null)
+			_redirects.put(iRedirect.getPath(),iRedirect);
 	}
 	public void setType(String string) {
 		type = string;
@@ -351,6 +364,18 @@ public class info_action extends info_entity implements i_elementBase{
 		result+=super.toXml();
 		result+=">";
 		boolean isEntity=false;
+		
+		if(v_info_beans!=null && v_info_beans.size()>0){
+
+			for(int i=0;i<v_info_beans.size();i++){
+				info_bean iBean = (info_bean)v_info_beans.get(i);
+				if(iBean!=null){
+					result+=iBean.toXml("      ");
+					isEntity=true;
+				}
+			}
+		}
+		
 		if(v_info_redirects!=null && v_info_redirects.size()>0){
 
 			for(int i=0;i<v_info_redirects.size();i++){
@@ -381,16 +406,7 @@ public class info_action extends info_entity implements i_elementBase{
 				}
 			}
 		}
-		if(v_info_beans!=null && v_info_beans.size()>0){
-
-			for(int i=0;i<v_info_beans.size();i++){
-				info_bean iBean = (info_bean)v_info_beans.get(i);
-				if(iBean!=null){
-					result+=iBean.toXml();
-					isEntity=true;
-				}
-			}
-		}		
+		
 		
 		if(isEntity)
 			result+=System.getProperty("line.separator")+"      </action>";

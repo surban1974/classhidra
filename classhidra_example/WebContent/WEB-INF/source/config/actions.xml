@@ -184,14 +184,33 @@
 
         	
 		<action path="sendMail"
-                	name="formMail"
+                	name_="formMail"
                 	redirect="/jsp/pages/sendmail.jsp"
                 	type="application.web.actions.actionSendMail"
                 	navigated="true"
                 	memoryInSession="false"
                 	reloadAfterAction="true">
-                	
+<!--                 	
                	 <form-bean name="formMail" type="application.web.forms.formMail"/>	
+-->
+				<form-bean name="formMail" >
+				     <item name="s_name" type="java.lang.String"></item>
+				     <item name="s_email" type="java.lang.String"></item>
+				     <item name="mess" type="java.lang.String"></item>
+				     
+				     <item name="m_message" type="application.util.mail.mail_message">
+					    <item name="BODY_CONTENT_TYPE" type="java.lang.String">html</item>
+					    <item name="SMTPHOST" type="java.lang.String">smtp.gmail.com</item>
+					    <item name="SMTPPORT" type="java.lang.String">465</item>
+						<item name="SMTPUSESOCKET" type="java.lang.String">true</item>
+						<item name="MAILADDRESS_FROM" type="java.lang.String">classhidra@gmail.com</item>
+						<item name="MAILADDRESS_TO" type="java.lang.String">classhidra@gmail.com</item>
+						<item name="MAILUSER" type="java.lang.String">classhidra@gmail.com</item>
+						<item name="MAILPSWD" type="java.lang.String">password_must_be_changed</item>		     
+				     </item>
+	
+				
+				</form-bean>
                  <call name="send" method="send_mail"/>
                  
         	</action>  

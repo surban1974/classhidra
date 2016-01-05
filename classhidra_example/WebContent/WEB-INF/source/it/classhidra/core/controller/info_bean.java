@@ -136,9 +136,13 @@ public class info_bean extends info_entity implements i_elementBase{
 	public String toString(){
 		return toXml();
 	}
-
+	
 	public String toXml(){
-		String result=System.getProperty("line.separator")+"      <form-bean";
+		return toXml("");
+	}
+
+	public String toXml(String space){
+		String result=System.getProperty("line.separator")+space+"      <form-bean";
 		if(type!=null && !type.trim().equals("")) result+=" type=\""+util_format.normaliseXMLText(type)+"\"";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(model!=null && !model.trim().equals("")) result+=" model=\""+util_format.normaliseXMLText(model)+"\"";
@@ -150,11 +154,11 @@ public class info_bean extends info_entity implements i_elementBase{
 			isEntity=true;
 			for(int i=0;i<v_info_items.size();i++){
 				info_item iItem = (info_item)v_info_items.get(i);
-				if(iItem!=null) result+=iItem.toXml();
+				if(iItem!=null) result+=iItem.toXml(space);
 			}
 		}
 		if(isEntity)
-			result+=System.getProperty("line.separator")+"      </form-bean>";
+			result+=System.getProperty("line.separator")+space+"      </form-bean>";
 		else result+="</form-bean>";
 
 		return result;

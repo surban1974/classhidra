@@ -25,6 +25,8 @@ public @interface Action {
 	String statistic() default "true";
 	String help() default "";
 	String listener() default "";
+	Bean Bean() default @Bean;
+	Redirect Redirect() default @Redirect;
 	Redirect[] redirects() default {};
 	Transformation[] transformations() default {};
 	ActionCall[] calls() default {};

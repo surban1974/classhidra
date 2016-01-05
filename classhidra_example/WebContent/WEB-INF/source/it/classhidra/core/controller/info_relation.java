@@ -123,6 +123,26 @@ public class info_relation extends info_entity implements i_elementBase{
 			new bsControllerException(e,iStub.log_DEBUG);
 		}
 		
+		parse();
+		
+	}	
+	
+	
+	
+	public boolean isEmpty(){
+		if(type==null || type.equals("")) 
+			return true;
+		if( (targets==null || targets.equals("")) &&
+			(groups==null || groups.equals("")) 
+		) return true;
+		if( (elements==null || elements.equals("")) &&
+			(middleactions==null || middleactions.equals("")) 
+		) return true;
+		return false;
+
+	}
+	
+	public void parse(){
 		if(targets!=null){
 			_targets=new HashMap();
 			StringTokenizer st=new StringTokenizer(targets,";");
@@ -156,7 +176,7 @@ public class info_relation extends info_entity implements i_elementBase{
 			}
 			refreshV_info_groups();
 		}
-		if(elements!=null){
+		if(elements!=null && !elements.trim().equals("")){
 
 			_elements=new HashMap();
 			StringTokenizer st=new StringTokenizer(elements,";");
@@ -191,7 +211,7 @@ public class info_relation extends info_entity implements i_elementBase{
 			}
 			refreshV_elements();
 		}
-		if(middleactions!=null){
+		if(middleactions!=null && !middleactions.trim().equals("")){
 
 			_middleactions=new HashMap();
 			StringTokenizer st=new StringTokenizer(middleactions,";");
@@ -216,8 +236,7 @@ public class info_relation extends info_entity implements i_elementBase{
 			}
 			refreshV_middleactions();
 		}
-		
-	}	
+	}
 	
 	public void addElement(String key){
 		StringTokenizer st_key = new StringTokenizer(key,".");
@@ -297,7 +316,6 @@ public class info_relation extends info_entity implements i_elementBase{
 		}
 
 	}	
-	
 	public void removeMiddleaction(String key){
 		StringTokenizer st_key = new StringTokenizer(key,".");
 		String key_action="*";
