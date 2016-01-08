@@ -155,7 +155,12 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 		try{
 			if(form.getL_actions()!=null){
 				bsController.getAction_config().initBuilder(form.getL_actions().toXml());
-				bsController.getAction_config().syncroWithBuilder();
+				load_actions fromBs = bsController.getAction_config();
+				fromBs.syncroWithBuilder();
+//				i_ProviderWrapper wrapperConfigAction = bsController.checkLoadActions(null);
+//				if(wrapperConfigAction!=null && wrapperConfigAction.getInstance()!=null){
+//					wrapperConfigAction.setInstance(fromBs);
+//				}
 			}
 		}catch(Exception e){
 			new bsControllerMessageException(new message("E", "", e.toString()), request, iStub.log_ERROR);

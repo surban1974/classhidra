@@ -18,6 +18,7 @@ public @interface ActionMapping {
 	String provider() default "";
 	String instance_navigated() default "";
 	String instance_local_container() default "";
+	String instance_scheduler_container() default "";
 	String instance_onlysession() default "";
 	Stream[] streams() default {};
 	Bean[] beans() default {};

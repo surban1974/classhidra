@@ -1,4 +1,4 @@
-package it.classhidra.plugin.provider.cdi.wrappers;
+package wrappers.cdi;
  
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -10,13 +10,13 @@ import it.classhidra.core.controller.info_navigation;
 
 @Named(bsConstants.CONST_BEAN_$NAVIGATION)
 @SessionScoped
-public class Wrapper_Navigation extends bsProvidedWrapper {
+public class Wrapper_CdiNavigation extends bsProvidedWrapper {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
 	private info_navigation instance;
 
-	Wrapper_Navigation(){
+	Wrapper_CdiNavigation(){
 		super();
 	}	
 	

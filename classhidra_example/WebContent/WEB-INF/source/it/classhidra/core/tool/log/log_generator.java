@@ -78,7 +78,7 @@ public static i_log_pattern_web patternFactory(String className){
 	if(className==null || className.equals("")) return new log_patternSimple();
 	if(element==null){
 		try{	
-			element = (i_log_pattern_web)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
+			element = (i_log_pattern_web)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, className);
 		}catch (Exception e) {
 			element = new log_patternSimple();
 		}
@@ -91,7 +91,7 @@ public static iStub stubFactory(String className){
 	if(className==null || className.equals("")) return null;
 	if(element==null){
 		try{	
-			element = (iStub)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
+			element = (iStub)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, className);
 		}catch (Exception e) {
 			element = null;
 		}
@@ -107,7 +107,7 @@ public static iStub stubFactory(log_init _init){
 	
 	if(element==null){
 		try{	
-			element = (iStub)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, className);
+			element = (iStub)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, className);
 		}catch (Exception e) {
 			element = null;
 		}

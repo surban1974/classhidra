@@ -81,6 +81,11 @@ public interface bsConstants {
 	
 //	TODO	@Deprecated
 	public final static String CONST_BEAN_$LOCAL_CONTAINER 				=	"$local_container";
+	public final static String CONST_BEAN_$ACTION_CONFIG 				=	"$action_config";
+	public final static String CONST_BEAN_$MESS_CONFIG 					=	"$mess_config";
+	public final static String CONST_BEAN_$AUTH_CONFIG 					=	"$auth_config";
+	public final static String CONST_BEAN_$ORGANIZATION_CONFIG 			=	"$organization_config";
+	public final static String CONST_BEAN_$USERS_CONFIG 				=	"$users_config";
 	
 	public final static String CONST_SERVICE_$PARENT_POINTOFLAUNCH 		=	"$parent_pointOfLaunch";
 	public final static String CONST_SERVICE_$CHILD_POINTOFRETURN 		=	"$child_pointOfReturn";

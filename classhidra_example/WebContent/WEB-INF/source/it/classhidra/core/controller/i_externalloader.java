@@ -18,6 +18,8 @@ public interface i_externalloader{
 	public static final String ACTIONS_provider="provider";
 	public static final String ACTIONS_instance_navigated="instance_navigated";
 	public static final String ACTIONS_instance_local_container="instance_local_container";
+	public static final String ACTIONS_instance_scheduler_container="instance_scheduler_container";
+	
 	public static final String ACTIONS_instance_onlysession="instance_onlysession"; 
 
 	

@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
-import javax.inject.Inject;
+//import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,50 +14,52 @@ import javax.servlet.http.HttpServletResponse;
 
 import application.util.mail.mail_manager_smtp;
 import application.util.mail.mail_message;
-import it.classhidra.annotation.elements.Action;
-import it.classhidra.annotation.elements.ActionCall;
+import examples.ejb.classhidra.framework.web.i_components.IComponentSendMail;
 import it.classhidra.annotation.elements.NavigatedDirective;
-import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
-import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.log.stubs.iStub;
 
-
-				@Action (
-						path="sendMail",
-						name="formMail",
-						redirect="/jsp/pages/sendmail.jsp",
-						reloadAfterAction="true"
-				)
+//*** Moved to IComponentSendMail interface ***
+//@Action (
+//		path="sendMail",
+//		name="formMail",
+//		redirect="/jsp/pages/sendmail.jsp",
+//		reloadAfterAction="true"
+//)
 
 //@Named("sendMail")
 //@SessionScoped
 @NavigatedDirective(memoryContent="true")
 @Stateful
-@Local(i_action.class)
-public class EjbComponentSendMail extends action implements i_action, Serializable{
+@Local(IComponentSendMail.class)
+
+// Can be used as Local i_action interface too, but for the correct search ActionCall's is correct to set the native interface
+//@Local(i_action.class)
+public class EjbComponentSendMail extends action implements IComponentSendMail, Serializable{
 
 	private static final long serialVersionUID = -1L;
 	private String s_name;
 	private String s_email;
 	private String mess;
 	
-	@Inject
+//	@Inject
 	private mail_message m_message;
 	
 public EjbComponentSendMail(){
 	super();
 }
-@ActionCall(name="send", 
-		Redirect=@Redirect(
-				path="/jsp/pages/sendmail.jsp",
-				descr="Send Messages",
-				mess_id="title_fw_SendMail"
-		)
-)
+
+//*** Moved to IComponentSendMail interface ***
+//@ActionCall(name="send", 
+//		Redirect=@Redirect(
+//				path="/jsp/pages/sendmail.jsp",
+//				descr="Send Messages",
+//				mess_id="title_fw_SendMail"
+//		)
+//)
 public redirects send_mail(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 
 
@@ -93,6 +95,8 @@ public void reimposta(){
 	s_email="";
 	mess="";
 	
+	if(m_message==null)
+		m_message = new mail_message();
 	m_message.setBODY_CONTENT_TYPE("html");
 	m_message.setSMTPHOST("smtp.gmail.com");
 	m_message.setSMTPPORT("465");

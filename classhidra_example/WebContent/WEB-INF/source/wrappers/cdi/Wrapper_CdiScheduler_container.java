@@ -1,4 +1,4 @@
-package it.classhidra.plugin.provider.cdi.wrappers;
+package wrappers.cdi;
 
 
 import javax.enterprise.context.ApplicationScoped;
@@ -13,7 +13,7 @@ import it.classhidra.scheduler.scheduling.BatchScheduling;
 @Named(bsConstants.CONST_BEAN_$SCHEDULER_CONTAINER)
 @ApplicationScoped
 
-public class Wrapper_Scheduler_container extends bsProvidedWrapper {
+public class Wrapper_CdiScheduler_container extends bsProvidedWrapper {
 	private static final long serialVersionUID = 1L; 
 
 	private static BatchScheduling instance;

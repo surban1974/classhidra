@@ -220,7 +220,7 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 
 		    i_module_integration imi = null;
 		    try{
-		    	imi = (i_module_integration)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, module_integration);
+		    	imi = (i_module_integration)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, module_integration);
 		    }catch(Exception e){
 		    }
 

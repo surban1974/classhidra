@@ -78,7 +78,7 @@ public class bean extends elementBeanBase implements i_bean  {
 
 	protected Object delegated;
 	
-	protected info_context info_context = new info_context();
+	protected info_context info_context = new info_context(this.getClass());
 
 
 

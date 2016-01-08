@@ -1,5 +1,6 @@
 package examples.ejb.classhidra.framework.web.components;
 
+import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Redirect;
 
@@ -60,8 +61,34 @@ import it.classhidra.annotation.elements.Redirect;
 						descr="Send Mail",
 						mess_id="title_fw_SendMail"
 				),
+			},
+			actions={
+					@Action (
+						path="about",
+						Redirect = @Redirect(
+								path="/jsp/pages/about.jsp",
+								descr="About",
+								mess_id="title_fw_About"
+						),
+						navigated="true",
+						memoryInSession="false",
+					    reloadAfterAction="true",
+						redirects={
+								@Redirect(
+									auth_id="log_id",
+									path="*"									
+								)
+						}
+					),
+					@Action (
+							path="operator",
+							redirect = "/actions/menuCreator"
+					)					
 			}
+		
 		)
+
+
 
 public class Mapper_redirects {
 

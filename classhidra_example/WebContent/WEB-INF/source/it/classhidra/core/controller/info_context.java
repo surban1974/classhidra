@@ -18,9 +18,27 @@ public class info_context implements Serializable{
 	private boolean proxedEjb=false;
 	private boolean proxedCdi=false;
 	
+	private boolean local=false;
+	private boolean remote=false;
+	private boolean localBean=false;
+	private boolean transactionManagementBean=false;
+	private boolean startup=false;
+	private String name;
+	private String description;
+	private String mappedName;
+	
+	private Class ownerClass;
+	private Class[] value;
+	
+	
 	public info_context() {
 		
 	}
+	
+	public info_context(Class _ownerClass) {
+		if(_ownerClass!=null) 
+			this.ownerClass=_ownerClass;
+	}	
 	
 	public void reInitEjb(info_context ic){
 		if(ic==null) return;
@@ -42,6 +60,55 @@ public class info_context implements Serializable{
 		return proxedEjb && (stateful || singleton);
 	}
 	
+
+	public String toString(){
+		String result = ""+System.getProperty("line.separator");
+		if(ownerClass!=null)
+			result+="owner: "+ownerClass+System.getProperty("line.separator");
+		if(proxedCdi)
+			result+="proxedCdi: "+proxedCdi+System.getProperty("line.separator");
+		if(named)
+			result+="	named: "+named+System.getProperty("line.separator");
+		if(requestScoped)
+			result+="	requestScoped: "+requestScoped+System.getProperty("line.separator");
+		if(sessionScoped)
+			result+="	sessionScoped: "+sessionScoped+System.getProperty("line.separator");
+		if(applicationScoped)
+			result+="	applicationScoped: "+applicationScoped+System.getProperty("line.separator");
+		if(proxedEjb)
+			result+="proxedEjb: "+proxedEjb+System.getProperty("line.separator");
+		if(stateless)
+			result+="	@Stateless: "+stateless+System.getProperty("line.separator");
+		if(stateful)
+			result+="	@Stateful: "+stateful+System.getProperty("line.separator");
+		if(messageDriven)
+			result+="	@MessageDriven: "+messageDriven+System.getProperty("line.separator");
+		if(singleton)
+			result+="	@Singleton: "+singleton+System.getProperty("line.separator");
+		if(startup)
+			result+="	@Startup: "+startup+System.getProperty("line.separator");
+		if(name!=null && !name.equals(""))
+			result+="	name: "+name+System.getProperty("line.separator");
+		if(description!=null && !description.equals(""))
+			result+="	description: "+description+System.getProperty("line.separator");
+		if(mappedName!=null && !mappedName.equals(""))
+			result+="	mappedName: "+mappedName+System.getProperty("line.separator");
+		if(local)
+			result+="	@Local: "+local+System.getProperty("line.separator");
+		if(remote)
+			result+="	@Remote: "+remote+System.getProperty("line.separator");
+		if(value!=null && value.length>0){
+			result+="	value: ";
+			for(Class clazz: value)
+				result+=clazz.getName()+";";			
+		}
+		if(localBean)
+			result+="	@LocalBean: "+localBean+System.getProperty("line.separator");
+		if(transactionManagementBean)
+			result+="	TransactionManagementType.BEAN: "+transactionManagementBean+System.getProperty("line.separator");
+		
+		return result;
+	}	
 	
 	public boolean isStateless() {
 		return stateless;
@@ -102,6 +169,82 @@ public class info_context implements Serializable{
 	}
 	public void setProxedCdi(boolean proxedCdi) {
 		this.proxedCdi = proxedCdi;
+	}
+
+	public Class getOwnerClass() {
+		return ownerClass;
+	}
+
+	public boolean isLocal() {
+		return local;
+	}
+
+	public void setLocal(boolean local) {
+		this.local = local;
+	}
+
+	public boolean isRemote() {
+		return remote;
+	}
+
+	public void setRemote(boolean remote) {
+		this.remote = remote;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getMappedName() {
+		return mappedName;
+	}
+
+	public void setMappedName(String mappedName) {
+		this.mappedName = mappedName;
+	}
+
+	public Class[] getValue() {
+		return value;
+	}
+
+	public void setValue(Class[] value) {
+		this.value = value;
+	}
+	
+	public boolean isLocalBean() {
+		return localBean;
+	}
+
+	public void setLocalBean(boolean localBean) {
+		this.localBean = localBean;
+	}
+
+	public boolean isTransactionManagementBean() {
+		return transactionManagementBean;
+	}
+
+	public void setTransactionManagementBean(boolean transactionManagementBean) {
+		this.transactionManagementBean = transactionManagementBean;
+	}
+
+	public boolean isStartup() {
+		return startup;
+	}
+
+	public void setStartup(boolean startup) {
+		this.startup = startup;
 	}
 
 }

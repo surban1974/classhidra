@@ -124,6 +124,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	private static boolean reInit=false;
+	private static boolean canBeProxed=true;
+	private static boolean isInitDefProfider=false;
 
 
 	class LoaderConfigThreadProcess extends Thread {
@@ -168,8 +170,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 		if(appInit==null){
-
 			appInit = new app_init();
+			appInit.init();
+		}
+			
 			
 			Properties initParameters = new Properties();
 			Enumeration paramNames = getInitParameterNames();
@@ -180,14 +184,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(initParameters.size()>0)
 				appInit.init(initParameters);
 			
-			
-			appInit.init();
-
-			if(cdiDefaultProvider==null && appInit.get_cdi_provider()!=null && !appInit.get_cdi_provider().equalsIgnoreCase("false"))
-				cdiDefaultProvider = util_provider.checkDeafaultCdiProvider(appInit.get_cdi_jndi_name(), getServletContext());
-			if(ejbDefaultProvider==null)
-				ejbDefaultProvider = util_provider.checkDeafaultEjbProvider(appInit.get_ejb_jndi_name(), getServletContext());
-
+			checkDefaultProvider(getServletContext());
 
 			try{
 				if(idApp==null) idApp = util_format.replace(getContextPathFor5(getServletContext()), "/", "");
@@ -204,7 +201,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				else
 					loadOnInit();
 
-		}
+		
 		if(stat!=null){
 			stat.setFt(new Date());
 			putToStatisticProvider(stat);
@@ -212,6 +209,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	}
 
+	public static void checkDefaultProvider(ServletContext servletContext){
+		if(!isInitDefProfider){
+			if(cdiDefaultProvider==null && appInit.get_cdi_provider()!=null && !appInit.get_cdi_provider().equalsIgnoreCase("false"))
+				cdiDefaultProvider = util_provider.checkDeafaultCdiProvider(appInit.get_cdi_jndi_name(), servletContext);
+			if(ejbDefaultProvider==null && appInit.get_ejb_provider()!=null && !appInit.get_ejb_provider().equalsIgnoreCase("false"))
+				ejbDefaultProvider = util_provider.checkDeafaultEjbProvider(appInit.get_ejb_jndi_name(), servletContext);
+			isInitDefProfider=true;
+		}
+	}
+	
 	public void loadOnInit(){
 
 		logInit = new log_init();
@@ -222,7 +229,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(getLogG().isReadError()) reloadLog_generator(getServletContext());
 
 
-		resourcesInit();
+		resourcesInit(getServletContext());
 
 
 		if(!getAction_config().isReadOk()) 	reloadAction_config(getServletContext());
@@ -231,25 +238,49 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(!getOrg_config().isReadOk()) 	reloadOrg_config(getServletContext());
 
 		if(!getMenu_config().isReadOk()) 	reloadMenu_config(getServletContext(),null);
+		
+
 
 
 	}
 
 	public static void resourcesInit(){
+		resourcesInit(null);
+	}
+	public static void resourcesInit(ServletContext servletContext){
 
 		if(getAppInit()!=null && getAppInit().get_init_loader()!=null && !getAppInit().get_init_loader().equals("")){
 			i_externalloader initloader = null;
-			if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+			if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
 				try{
-					initloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), null);
-					initloader.load();
+					initloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), servletContext);
+					if(initloader!=null)
+						initloader.load();
 				}catch(Exception e){
 				}
 			}
+			if(initloader==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+				try{
+					initloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), servletContext);
+					if(initloader!=null)
+						initloader.load();
+				}catch(Exception e){
+				}
+			}			
+			checkDefaultProvider(servletContext);
 			if(initloader==null && getCdiDefaultProvider()!=null){
 				try{
-					initloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), null);
-					initloader.load();
+					initloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), servletContext);
+					if(initloader!=null)
+						initloader.load();
+				}catch(Exception e){
+				}
+			}
+			if(initloader==null && getEjbDefaultProvider()!=null){
+				try{
+					initloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  app_init.id_init_loader, getAppInit().get_init_loader().trim(), servletContext);
+					if(initloader!=null)
+						initloader.load();
 				}catch(Exception e){
 				}
 			}
@@ -267,8 +298,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 
-		if(action_config==null)
-			action_config = new load_actions();
+		i_ProviderWrapper wrapperConfigAction = checkLoadActions(null);
+		if(wrapperConfigAction!=null && wrapperConfigAction.getInstance()!=null){
+			try{
+				((load_actions)wrapperConfigAction.getInstance()).load_from_resources();
+				((load_actions)wrapperConfigAction.getInstance()).init();
+				if(!((load_actions)wrapperConfigAction.getInstance()).isReadOk()){
+					((load_actions)wrapperConfigAction.getInstance()).initProperties(getAppInit().getApplication_path_config()+CONST_XML_ACTIONS);
+					if(((load_actions)wrapperConfigAction.getInstance()).isReadOk_File()) getAppInit().set_path_config(getAppInit().getApplication_path_config());
+					((load_actions)wrapperConfigAction.getInstance()).initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
+				}
+			}catch(bsControllerException je){}
+
+		}else{
+			if(action_config==null)
+				action_config = new load_actions();
 			try{
 				action_config.load_from_resources();
 				action_config.init();
@@ -278,9 +322,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 					action_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
 				}
 			}catch(bsControllerException je){}
-
-		if(mess_config==null)	
-			mess_config = new load_message();
+		}
+		
+		i_ProviderWrapper wrapperConfigMess = checkLoadMessage(null);
+		if(wrapperConfigMess!=null && wrapperConfigMess.getInstance()!=null){
+			try{
+				((load_message)wrapperConfigMess.getInstance()).load_from_resources();
+				((load_message)wrapperConfigMess.getInstance()).init();
+				if(!((load_message)wrapperConfigMess.getInstance()).isReadOk()){
+					((load_message)wrapperConfigMess.getInstance()).initProperties(getAppInit().get_path_config()+CONST_XML_MESSAGES);
+					((load_message)wrapperConfigMess.getInstance()).initWithFOLDER(getAppInit().get_path_config()+CONST_XML_MESSAGES_FOLDER+"/");
+				}
+			}catch(bsControllerException je){}
+		}else{
+			if(mess_config==null)	
+				mess_config = new load_message();
 			try{
 				mess_config.load_from_resources();
 				mess_config.init();
@@ -289,9 +345,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 					mess_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_MESSAGES_FOLDER+"/");
 				}
 			}catch(bsControllerException je){}
-
-		if(auth_config==null)	
-			auth_config = new load_authentication();
+		}
+			
+		i_ProviderWrapper wrapperConfigAuth = checkLoadAuthentication(null);
+		if(wrapperConfigAuth!=null && wrapperConfigAuth.getInstance()!=null){
+			try{
+				((load_authentication)wrapperConfigAuth.getInstance()).load_from_resources();
+				((load_authentication)wrapperConfigAuth.getInstance()).init();
+				if(!((load_authentication)wrapperConfigAuth.getInstance()).isReadOk()){
+					((load_authentication)wrapperConfigAuth.getInstance()).initProperties(getAppInit().get_path_config()+CONST_XML_MESSAGES);
+					((load_authentication)wrapperConfigAuth.getInstance()).initWithFOLDER(getAppInit().get_path_config()+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/");
+				}
+			}catch(bsControllerException je){}
+		}else{
+			if(auth_config==null)	
+				auth_config = new load_authentication();
 			try{
 				auth_config.load_from_resources();
 				auth_config.init();
@@ -301,9 +369,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				}
 			}catch(bsControllerException je){}
+		}
+		
+		i_ProviderWrapper wrapperConfigOrganization = checkLoadOrganization(null);
+		if(wrapperConfigOrganization!=null && wrapperConfigOrganization.getInstance()!=null){
+			try{
+				((load_organization)wrapperConfigOrganization.getInstance()).load_from_resources();
+				((load_organization)wrapperConfigOrganization.getInstance()).init();
+				if(!((load_organization)wrapperConfigOrganization.getInstance()).isReadOk()){
+					((load_organization)wrapperConfigOrganization.getInstance()).initProperties(getAppInit().get_path_config()+CONST_XML_ORGANIZATION);
 
-		if(org_config==null)	
-			org_config = new load_organization();
+				}
+			}catch(bsControllerException je){}
+		}else{
+			if(org_config==null)	
+				org_config = new load_organization();
 			try{
 				org_config.load_from_resources();
 				org_config.init();
@@ -312,6 +392,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				}
 			}catch(bsControllerException je){}
+		}
 
 		if(menu_config==null)	
 			menu_config = new load_menu(null);
@@ -326,17 +407,36 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		if(getAppInit()!=null && getAppInit().get_external_loader()!=null && !getAppInit().get_external_loader().equals("")){
 			i_externalloader externalloader = null;
-			if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+			if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
 				try{
 					externalloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_external_loader, getAppInit().get_external_loader().trim(), null);
-					externalloader.load();
+					if(externalloader!=null)
+						externalloader.load();
 				}catch(Exception e){
 				}
 			}
+			if(externalloader==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+				try{
+					externalloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_external_loader, getAppInit().get_external_loader().trim(), null);
+					if(externalloader!=null)
+						externalloader.load();
+				}catch(Exception e){
+				}
+			}		
+			checkDefaultProvider(servletContext);
 			if(externalloader==null && getCdiDefaultProvider()!=null){
 				try{
 					externalloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_external_loader, getAppInit().get_external_loader().trim(), null);
-					externalloader.load();
+					if(externalloader!=null)
+						externalloader.load();
+				}catch(Exception e){
+				}
+			}
+			if(externalloader==null && getEjbDefaultProvider()!=null){
+				try{
+					externalloader = (i_externalloader)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  app_init.id_external_loader, getAppInit().get_external_loader().trim(), null);
+					if(externalloader!=null)
+						externalloader.load();
 				}catch(Exception e){
 				}
 			}
@@ -353,6 +453,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 			}
 		}
+		
+		canBeProxed = checkCanBeProxed();
 
 	}
 
@@ -366,6 +468,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		reloadOrg_config(getServletContext());
 		reloadMenu_config(getServletContext(),null);
 		reloadMess_config(getServletContext());
+		
+		canBeProxed = checkCanBeProxed();
 
 
 	}
@@ -2229,15 +2333,28 @@ public class bsController extends HttpServlet implements bsConstants  {
 				logInit.get_LogStub()==null || logInit.get_LogStub().equals("")	){
 				try{
 					Object transf = null;
-					if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+					if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
 						try{
 							transf = util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  "it.classhidra.core.tool.exception.bsIntegrator", "it.classhidra.core.tool.exception.bsIntegrator", null);
 						}catch(Exception e){
 						}
 					}
+					if(transf==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+						try{
+							transf = util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  "it.classhidra.core.tool.exception.bsIntegrator", "it.classhidra.core.tool.exception.bsIntegrator", null);
+						}catch(Exception e){
+						}
+					}
+//					checkDefaultProvider(null);
 					if(transf==null && getCdiDefaultProvider()!=null){
 						try{
 							transf = util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  "it.classhidra.core.tool.exception.bsIntegrator", "it.classhidra.core.tool.exception.bsIntegrator", null);
+						}catch(Exception e){
+						}
+					}
+					if(transf==null && getEjbDefaultProvider()!=null){
+						try{
+							transf = util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  "it.classhidra.core.tool.exception.bsIntegrator", "it.classhidra.core.tool.exception.bsIntegrator", null);
 						}catch(Exception e){
 						}
 					}
@@ -2253,13 +2370,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		if(logInit.get_LogGenerator()!=null && !logInit.get_LogGenerator().equals("")){
 			try{
-				if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+				boolean ok = false;
+				if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
 					try{
 						logG = (i_log_generator)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  logInit.get_LogGenerator(), logInit.get_LogGenerator(), null);
+						ok = true;
 					}catch(Exception e){
-						logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+//						logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
 					}
-				}else
+				}
+				if(!ok && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+					try{
+						logG = (i_log_generator)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  logInit.get_LogGenerator(), logInit.get_LogGenerator(), null);
+						ok = true;
+					}catch(Exception e){
+//						logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+					}
+				}				
+				if(!ok)
 					logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
 
 				logG.setInit(logInit);
@@ -2460,18 +2588,34 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return logInit;
 	}
 	public static load_message getMess_config() {
-		if(mess_config==null || reInit){
-			mess_config = new load_message();
-			try{
-				mess_config.load_from_resources();
-				mess_config.init();
-				if(!mess_config.isReadOk()){
-					mess_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
-					mess_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
-				}
-			}catch(bsControllerException je){}
+		i_ProviderWrapper wrapperConfigMess = checkLoadMessage(null);
+		if(wrapperConfigMess!=null && wrapperConfigMess.getInstance()!=null){
+			if(reInit){
+				try{
+					((load_message)wrapperConfigMess.getInstance()).reimposta();
+					((load_message)wrapperConfigMess.getInstance()).load_from_resources();
+					((load_message)wrapperConfigMess.getInstance()).init();
+					if(!((load_message)wrapperConfigMess.getInstance()).isReadOk()){
+						((load_message)wrapperConfigMess.getInstance()).initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
+						((load_message)wrapperConfigMess.getInstance()).initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
+					}
+				}catch(bsControllerException je){}
+			}
+			return ((load_message)wrapperConfigMess.getInstance());			
+		}else{		
+			if(mess_config==null || reInit){
+				mess_config = new load_message();
+				try{
+					mess_config.load_from_resources();
+					mess_config.init();
+					if(!mess_config.isReadOk()){
+						mess_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
+						mess_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
+					}
+				}catch(bsControllerException je){}
+			}
+			return mess_config;
 		}
-		return mess_config;
 	}
 
 	public static load_menu getMenu_config() {
@@ -2488,46 +2632,93 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static load_actions getAction_config() {
-		if(action_config==null || reInit){
-			action_config = new load_actions();
-			try{
-				action_config.load_from_resources();
-				action_config.init();
-				action_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
-				action_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
-
-			}catch(bsControllerException je){}
+		i_ProviderWrapper wrapperConfigAction = checkLoadActions(null);
+		if(wrapperConfigAction!=null && wrapperConfigAction.getInstance()!=null){
+			if(reInit){
+				try{
+					((load_actions)wrapperConfigAction.getInstance()).reimposta();
+					((load_actions)wrapperConfigAction.getInstance()).load_from_resources();
+					((load_actions)wrapperConfigAction.getInstance()).init();
+					((load_actions)wrapperConfigAction.getInstance()).initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
+					((load_actions)wrapperConfigAction.getInstance()).initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
+	
+				}catch(bsControllerException je){}
+			}
+			return ((load_actions)wrapperConfigAction.getInstance());
+			
+		}else{
+			if(action_config==null || reInit){
+				action_config = new load_actions();
+				try{
+					action_config.load_from_resources();
+					action_config.init();
+					action_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
+					action_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
+	
+				}catch(bsControllerException je){}
+			}
+			return action_config;
 		}
-		return action_config;
 	}
 
 	public static load_authentication getAuth_config() {
-		if(auth_config==null || reInit){
-			auth_config = new load_authentication();
-			try{
-				auth_config.load_from_resources();
-				auth_config.init();
-				if(!auth_config.isReadOk()){
-					auth_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
-					auth_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
-				}
-			}catch(bsControllerException je){}
+		i_ProviderWrapper wrapperConfigAuth = checkLoadAuthentication(null);
+		if(wrapperConfigAuth!=null && wrapperConfigAuth.getInstance()!=null){
+			if(reInit){
+				try{
+					((load_authentication)wrapperConfigAuth.getInstance()).reimposta();
+					((load_authentication)wrapperConfigAuth.getInstance()).load_from_resources();
+					((load_authentication)wrapperConfigAuth.getInstance()).init();
+					if(!((load_authentication)wrapperConfigAuth.getInstance()).isReadOk()){
+						((load_authentication)wrapperConfigAuth.getInstance()).initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
+						((load_authentication)wrapperConfigAuth.getInstance()).initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
+					}
+				}catch(bsControllerException je){}
+			}
+			return ((load_authentication)wrapperConfigAuth.getInstance());
+		}else{		
+			if(auth_config==null || reInit){
+				auth_config = new load_authentication();
+				try{
+					auth_config.load_from_resources();
+					auth_config.init();
+					if(!auth_config.isReadOk()){
+						auth_config.initProperties(getAppInit().get_path_config()+CONST_XML_ACTIONS);
+						auth_config.initWithFOLDER(getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/");
+					}
+				}catch(bsControllerException je){}
+			}
+			return auth_config;
 		}
-		return auth_config;
 	}
 
 	public static load_organization getOrg_config() {
-		if(org_config==null || reInit){
-			org_config = new load_organization();
-			try{
-				org_config.load_from_resources();
-				org_config.init();
-				if(!org_config.isReadOk()){
-					org_config.initProperties(getAppInit().get_path_config()+CONST_XML_ORGANIZATION);
-				}
-			}catch(bsControllerException je){}
+		i_ProviderWrapper wrapperConfigOrganization = checkLoadOrganization(null);
+		if(wrapperConfigOrganization!=null && wrapperConfigOrganization.getInstance()!=null){
+			if(reInit){
+				((load_organization)wrapperConfigOrganization.getInstance()).reimposta();
+				try{
+					((load_organization)wrapperConfigOrganization.getInstance()).load_from_resources();
+					((load_organization)wrapperConfigOrganization.getInstance()).init();
+					if(!((load_organization)wrapperConfigOrganization.getInstance()).isReadOk()){
+						((load_organization)wrapperConfigOrganization.getInstance()).initProperties(getAppInit().get_path_config()+CONST_XML_ORGANIZATION);
+					}
+				}catch(bsControllerException je){}
+			}
+			return (load_organization)wrapperConfigOrganization.getInstance();
+		}else{
+			if(org_config==null || reInit){
+				org_config = new load_organization();
+				try{
+					org_config.load_from_resources();
+					org_config.init();
+					if(!org_config.isReadOk()){
+						org_config.initProperties(getAppInit().get_path_config()+CONST_XML_ORGANIZATION);
+					}
+				}catch(bsControllerException je){}
+			}
+			return org_config;
 		}
-		return org_config;
 	}
 
 	public static app_init getAppInit() {
@@ -2550,91 +2741,180 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static void reloadAction_config(ServletContext servletContext) {
-		if(reInit){
-			String path = getAppInit().get_path_config()+CONST_XML_ACTIONS;
-			String dir = getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/";
-			action_config = getAction_config();
-			try{
-				action_config.initProperties(path);
-				action_config.initWithFOLDER(dir);
-			}catch(bsControllerException je){}
-		}
-		if(action_config!=null && !action_config.isReadOk_File()){
-			if(!action_config.load_from_resources(servletContext)){
-				String path = getContextConfigPath(servletContext)+CONST_XML_ACTIONS;
-				String dir = getContextConfigPath(servletContext)+CONST_XML_ACTIONS_FOLDER+"/";
+		i_ProviderWrapper wrapperConfigAction = checkLoadActions(null);
+		if(wrapperConfigAction!=null && wrapperConfigAction.getInstance()!=null){
+			if(reInit){
+				String path = getAppInit().get_path_config()+CONST_XML_ACTIONS;
+				String dir = getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/";
+				try{
+					((load_actions)wrapperConfigAction.getInstance()).initProperties(path);
+					((load_actions)wrapperConfigAction.getInstance()).initWithFOLDER(dir);
+				}catch(bsControllerException je){}
+			}
+			if(!((load_actions)wrapperConfigAction.getInstance()).isReadOk_File()){
+				if(!((load_actions)wrapperConfigAction.getInstance()).load_from_resources(servletContext)){
+					String path = getContextConfigPath(servletContext)+CONST_XML_ACTIONS;
+					String dir = getContextConfigPath(servletContext)+CONST_XML_ACTIONS_FOLDER+"/";
+					try{
+						((load_actions)wrapperConfigAction.getInstance()).initProperties(path);
+						((load_actions)wrapperConfigAction.getInstance()).initWithFOLDER(dir);
+					}catch(bsControllerException je){}
+					if(((load_actions)wrapperConfigAction.getInstance()).isReadOk_File())
+						getAppInit().set_path_config(getContextConfigPath(servletContext));
+				}
+			}
+			
+		}else{
+			if(reInit){
+				String path = getAppInit().get_path_config()+CONST_XML_ACTIONS;
+				String dir = getAppInit().get_path_config()+CONST_XML_ACTIONS_FOLDER+"/";
+				action_config = getAction_config();
 				try{
 					action_config.initProperties(path);
 					action_config.initWithFOLDER(dir);
 				}catch(bsControllerException je){}
-				if(action_config.isReadOk_File())
-					getAppInit().set_path_config(getContextConfigPath(servletContext));
+			}
+			if(action_config!=null && !action_config.isReadOk_File()){
+				if(!action_config.load_from_resources(servletContext)){
+					String path = getContextConfigPath(servletContext)+CONST_XML_ACTIONS;
+					String dir = getContextConfigPath(servletContext)+CONST_XML_ACTIONS_FOLDER+"/";
+					try{
+						action_config.initProperties(path);
+						action_config.initWithFOLDER(dir);
+					}catch(bsControllerException je){}
+					if(action_config.isReadOk_File())
+						getAppInit().set_path_config(getContextConfigPath(servletContext));
+				}
 			}
 		}
 	}
 
 	public static void reloadMess_config(ServletContext servletContext) {
-
-		if(reInit){
-			String path = getAppInit().get_path_config()+CONST_XML_MESSAGES;
-			String dir = getAppInit().get_path_config()+CONST_XML_MESSAGES_FOLDER+"/";
-			mess_config = new load_message();
-			try{
-				mess_config.initProperties(path);
-				mess_config.initWithFOLDER(dir);
-			}catch(bsControllerException je){}
-		}
-
-		if(mess_config!=null && !mess_config.isReadOk_File()){
-			if(!mess_config.load_from_resources(servletContext)){
-				String path = getContextConfigPath(servletContext)+CONST_XML_MESSAGES;
-				String dir = getContextConfigPath(servletContext)+CONST_XML_MESSAGES_FOLDER+"/";
+		i_ProviderWrapper wrapperConfigMess = checkLoadMessage(null);
+		if(wrapperConfigMess!=null && wrapperConfigMess.getInstance()!=null){
+			if(reInit){
+				String path = getAppInit().get_path_config()+CONST_XML_MESSAGES;
+				String dir = getAppInit().get_path_config()+CONST_XML_MESSAGES_FOLDER+"/";
+				((load_message)wrapperConfigMess.getInstance()).reimposta();
+				try{
+					((load_message)wrapperConfigMess.getInstance()).initProperties(path);
+					((load_message)wrapperConfigMess.getInstance()).initWithFOLDER(dir);
+				}catch(bsControllerException je){}
+			}
+	
+			if(!((load_message)wrapperConfigMess.getInstance()).isReadOk_File()){
+				if(!((load_message)wrapperConfigMess.getInstance()).load_from_resources(servletContext)){
+					String path = getContextConfigPath(servletContext)+CONST_XML_MESSAGES;
+					String dir = getContextConfigPath(servletContext)+CONST_XML_MESSAGES_FOLDER+"/";
+					try{
+						((load_message)wrapperConfigMess.getInstance()).initProperties(path);
+						((load_message)wrapperConfigMess.getInstance()).initWithFOLDER(dir);
+					}catch(bsControllerException je){}
+				}
+			}
+		}else{
+			if(reInit){
+				String path = getAppInit().get_path_config()+CONST_XML_MESSAGES;
+				String dir = getAppInit().get_path_config()+CONST_XML_MESSAGES_FOLDER+"/";
+				mess_config = new load_message();
 				try{
 					mess_config.initProperties(path);
 					mess_config.initWithFOLDER(dir);
 				}catch(bsControllerException je){}
 			}
+	
+			if(mess_config!=null && !mess_config.isReadOk_File()){
+				if(!mess_config.load_from_resources(servletContext)){
+					String path = getContextConfigPath(servletContext)+CONST_XML_MESSAGES;
+					String dir = getContextConfigPath(servletContext)+CONST_XML_MESSAGES_FOLDER+"/";
+					try{
+						mess_config.initProperties(path);
+						mess_config.initWithFOLDER(dir);
+					}catch(bsControllerException je){}
+				}
+			}
 		}
 	}
 
 	public static void reloadAuth_config(ServletContext servletContext) {
+		i_ProviderWrapper wrapperConfigAuth = checkLoadAuthentication(null);
+		if(wrapperConfigAuth!=null && wrapperConfigAuth.getInstance()!=null){
+			if(reInit){
+				String path = getAppInit().get_path_config()+CONST_XML_AUTHENTIFICATIONS;
+				String dir = getAppInit().get_path_config()+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/";
+				try{
+					((load_authentication)wrapperConfigAuth.getInstance()).reimposta();
+					((load_authentication)wrapperConfigAuth.getInstance()).initProperties(path);
+					((load_authentication)wrapperConfigAuth.getInstance()).initWithFOLDER(dir);
+				}catch(bsControllerException je){}
+			}
+			if(!((load_authentication)wrapperConfigAuth.getInstance()).isReadOk()){
+				if(!((load_authentication)wrapperConfigAuth.getInstance()).load_from_resources(servletContext)){
+					String path = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS;
+					String dir = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/";
+					try{
+						((load_authentication)wrapperConfigAuth.getInstance()).initProperties(path);
+						((load_authentication)wrapperConfigAuth.getInstance()).initWithFOLDER(dir);
+					}catch(bsControllerException je){}
+				}
+			}
 
-		if(reInit){
-			String path = getAppInit().get_path_config()+CONST_XML_AUTHENTIFICATIONS;
-			String dir = getAppInit().get_path_config()+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/";
-			auth_config = new load_authentication();
-			try{
-				auth_config.initProperties(path);
-				auth_config.initWithFOLDER(dir);
-			}catch(bsControllerException je){}
-		}
-		if(auth_config!=null && !auth_config.isReadOk()){
-			if(!auth_config.load_from_resources(servletContext)){
-				String path = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS;
-				String dir = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/";
+		}else{
+			if(reInit){
+				String path = getAppInit().get_path_config()+CONST_XML_AUTHENTIFICATIONS;
+				String dir = getAppInit().get_path_config()+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/";
+				auth_config = new load_authentication();
 				try{
 					auth_config.initProperties(path);
 					auth_config.initWithFOLDER(dir);
 				}catch(bsControllerException je){}
 			}
+			if(auth_config!=null && !auth_config.isReadOk()){
+				if(!auth_config.load_from_resources(servletContext)){
+					String path = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS;
+					String dir = getContextConfigPath(servletContext)+CONST_XML_AUTHENTIFICATIONS_FOLDER+"/";
+					try{
+						auth_config.initProperties(path);
+						auth_config.initWithFOLDER(dir);
+					}catch(bsControllerException je){}
+				}
+			}
 		}
 	}
 
 	public static void reloadOrg_config(ServletContext servletContext) {
-
-		if(reInit){
-			String path = getAppInit().get_path_config()+CONST_XML_ORGANIZATION;
-			org_config = new load_organization();
-			try{
-				org_config.initProperties(path);
-			}catch(bsControllerException je){}
-		}
-		if(org_config!=null && !org_config.isReadOk()){
-			if(!org_config.load_from_resources(servletContext)){
-				String path = getContextConfigPath(servletContext)+CONST_XML_ORGANIZATION;
+		i_ProviderWrapper wrapperConfigOrganization = checkLoadOrganization(null);
+		if(wrapperConfigOrganization!=null && wrapperConfigOrganization.getInstance()!=null){
+			if(reInit){
+				String path = getAppInit().get_path_config()+CONST_XML_ORGANIZATION;
+				((load_organization)wrapperConfigOrganization.getInstance()).reimposta();
+				try{
+					((load_organization)wrapperConfigOrganization.getInstance()).initProperties(path);
+				}catch(bsControllerException je){}
+			}
+			if(!((load_organization)wrapperConfigOrganization.getInstance()).isReadOk()){
+				if(!((load_organization)wrapperConfigOrganization.getInstance()).load_from_resources(servletContext)){
+					String path = getContextConfigPath(servletContext)+CONST_XML_ORGANIZATION;
+					try{
+						((load_organization)wrapperConfigOrganization.getInstance()).initProperties(path);
+					}catch(bsControllerException je){}
+				}
+			}
+		}else{
+			if(reInit){
+				String path = getAppInit().get_path_config()+CONST_XML_ORGANIZATION;
+				org_config = new load_organization();
 				try{
 					org_config.initProperties(path);
 				}catch(bsControllerException je){}
+			}
+			if(org_config!=null && !org_config.isReadOk()){
+				if(!org_config.load_from_resources(servletContext)){
+					String path = getContextConfigPath(servletContext)+CONST_XML_ORGANIZATION;
+					try{
+						org_config.initProperties(path);
+					}catch(bsControllerException je){}
+				}
 			}
 		}
 	}
@@ -2698,7 +2978,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 //			auth = new auth_init();
 
 			try{
-				auth = (auth_init)util_provider.getInstanceFromProvider(new String[]{getAppInit().get_cdi_provider()}, auth_init.class.getName());
+				auth = (auth_init)util_provider.getInstanceFromProvider(new String[]{getAppInit().get_cdi_provider(),getAppInit().get_ejb_provider()}, auth_init.class.getName());
 				auth.init(request);
 			}catch(bsException je){
 			}catch(Exception e){
@@ -2833,17 +3113,38 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static I_StatisticProvider checkStatisticProvider(){
+		if(!canBeProxed){
+			if(statisticProvider==null)
+				statisticProvider = new StatisticProvider_Simple();
+			return statisticProvider;
+		}
+		
 		if(statisticProvider!=null)
 			return statisticProvider;
 		if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true")){
 			if(getAppInit().get_statistic_provider()==null || getAppInit().get_statistic_provider().equals("")){
-				try{
-					statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
-				}catch(Exception e){
+				if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+					try{
+						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
 				}
+				if(statisticProvider==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+					try{
+						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				checkDefaultProvider(null);
 				if(statisticProvider==null && getCdiDefaultProvider()!=null){
 					try{
 						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				if(statisticProvider==null && getEjbDefaultProvider()!=null){
+					try{
+						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
 					}catch(Exception e){
 					}
 				}
@@ -2851,15 +3152,28 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(statisticProvider==null)
 					statisticProvider = new StatisticProvider_Simple();
 			}else{
-				if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
+				if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
 					try{
 						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_statistic_provider,getAppInit().get_statistic_provider(), null);
 					}catch(Exception e){
 					}
 				}
+				if(statisticProvider==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+					try{
+						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_statistic_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				checkDefaultProvider(null);
 				if(statisticProvider==null && getCdiDefaultProvider()!=null){
 					try{
 						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(), app_init.id_statistic_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				if(statisticProvider==null && getEjbDefaultProvider()!=null){
+					try{
+						statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(), app_init.id_statistic_provider,getAppInit().get_statistic_provider(), null);
 					}catch(Exception e){
 					}
 				}
@@ -3010,31 +3324,58 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static Object getUser_config() {
-		return user_config;
+		i_ProviderWrapper wrapperConfigUsers = checkLoadUsers(null);
+		if(wrapperConfigUsers!=null && wrapperConfigUsers.getInstance()!=null){
+			return wrapperConfigUsers.getInstance();
+		}else
+			return user_config;
 	}
 
 	public static void setUser_config(Object new_load_users) {
-		user_config = new_load_users;
+		i_ProviderWrapper wrapperConfigUsers = checkLoadUsers(null);
+		if(wrapperConfigUsers!=null)
+			wrapperConfigUsers.setInstance(new_load_users);
+		else	
+			user_config = new_load_users;
 	}
 
 	public static load_users checkUser_config4load_users(){
-		if(user_config==null){
-			setUser_config(new load_users());
-				try{
-					((load_users)user_config).setReadError(false);
-					((load_users)user_config).init();
-					if(((load_users)user_config).isReadError()) ((load_users)user_config).load_from_resources();
-					if(((load_users)user_config).isReadError()) ((load_users)user_config).init(getAppInit().get_path_config()+CONST_XML_USERS);
-					if(((load_users)user_config).isReadError()){
-						((load_users)user_config).setReadError(false);
-						((load_users)user_config).load_from_resources();
-						if(((load_users)user_config).isReadError()) user_config = null;
-					}
-				}catch(bsControllerException je){
-					user_config = null;
+		i_ProviderWrapper wrapperConfigUsers = checkLoadUsers(null);
+		if(wrapperConfigUsers!=null && wrapperConfigUsers.getInstance()!=null){
+			try{
+				((load_users)wrapperConfigUsers.getInstance()).setReadError(false);
+				((load_users)wrapperConfigUsers.getInstance()).init();
+				if(((load_users)wrapperConfigUsers.getInstance()).isReadError()) ((load_users)wrapperConfigUsers.getInstance()).load_from_resources();
+				if(((load_users)wrapperConfigUsers.getInstance()).isReadError()) ((load_users)wrapperConfigUsers.getInstance()).init(getAppInit().get_path_config()+CONST_XML_USERS);
+				if(((load_users)wrapperConfigUsers.getInstance()).isReadError()){
+					((load_users)wrapperConfigUsers.getInstance()).setReadError(false);
+					((load_users)wrapperConfigUsers.getInstance()).load_from_resources();
+					if(((load_users)wrapperConfigUsers.getInstance()).isReadError()) 
+						wrapperConfigUsers.setInstance(null);
 				}
+			}catch(bsControllerException je){
+				wrapperConfigUsers.setInstance(null);
+			}
+			return (load_users)wrapperConfigUsers.getInstance();
+		}else{
+			if(user_config==null){
+				setUser_config(new load_users());
+					try{
+						((load_users)user_config).setReadError(false);
+						((load_users)user_config).init();
+						if(((load_users)user_config).isReadError()) ((load_users)user_config).load_from_resources();
+						if(((load_users)user_config).isReadError()) ((load_users)user_config).init(getAppInit().get_path_config()+CONST_XML_USERS);
+						if(((load_users)user_config).isReadError()){
+							((load_users)user_config).setReadError(false);
+							((load_users)user_config).load_from_resources();
+							if(((load_users)user_config).isReadError()) user_config = null;
+						}
+					}catch(bsControllerException je){
+						user_config = null;
+					}
+			}
+			return (load_users)user_config;
 		}
-		return (load_users)user_config;
 	}
 
 	public static void setCache(HttpServletResponse response, String cacheInSec){
@@ -3078,36 +3419,234 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return "???";
 	}
 
+	public static i_ProviderWrapper checkLoadUsers(ServletContext servletContext){
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return wrapper;
+		
+		String bean_id = bsConstants.CONST_BEAN_$USERS_CONFIG;
+
+			if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, load_users.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, load_users.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(servletContext);
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, load_users.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getEjbDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), load_users.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+		return wrapper;	
+
+	}	
+	
+	public static i_ProviderWrapper checkLoadActions(ServletContext servletContext){
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return wrapper;
+		
+		String bean_id = bsConstants.CONST_BEAN_$ACTION_CONFIG;
+
+			if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, load_actions.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, load_actions.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(servletContext);
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, load_actions.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getEjbDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), load_actions.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+		return wrapper;	
+	}
+	
+	public static i_ProviderWrapper checkLoadMessage(ServletContext servletContext){
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return wrapper;
+		
+		String bean_id = bsConstants.CONST_BEAN_$MESS_CONFIG;
+
+			if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, load_message.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, load_message.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(servletContext);
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, load_message.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getEjbDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), load_message.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+		return wrapper;
+	}
+	
+	public static i_ProviderWrapper checkLoadAuthentication(ServletContext servletContext){
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return wrapper;
+		
+		String bean_id = bsConstants.CONST_BEAN_$AUTH_CONFIG;
+
+			if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, load_authentication.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, load_authentication.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(servletContext);
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, load_authentication.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getEjbDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), load_authentication.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+		return null;	
+		
+	}	
+	
+	public static i_ProviderWrapper checkLoadOrganization(ServletContext servletContext){
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return wrapper;
+		
+		String bean_id = bsConstants.CONST_BEAN_$ORGANIZATION_CONFIG;
+
+			if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, load_organization.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, load_organization.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(servletContext);
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, load_organization.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getEjbDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), load_organization.class.getName(), (servletContext==null)?null:servletContext);
+				}catch(Exception e){
+				}
+			}
+		return null;	
+		
+	}	
 
 	public static Map checkOnlySession(HttpServletRequest request){
-		bsProvidedWrapper wrapper = null;
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return null;
+		
 		String bean_id = bsConstants.CONST_BEAN_$ONLYINSSESSION;
 		if(!getAction_config().getInstance_onlysession().equals("") && !getAction_config().getInstance_onlysession().equalsIgnoreCase("false"))
 			bean_id = getAction_config().getInstance_onlysession();
 
 			if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
 				try{
-					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
-					if(wrapper!=null)
-						return (Map)wrapper.getInstance();
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
 				}catch(Exception e){
 				}
-			}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+			} 
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
 				try{
-					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
-					if(wrapper!=null)
-						return (Map)wrapper.getInstance();
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
 				}catch(Exception e){
 				}
 			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider((request==null)?null:request.getSession().getServletContext());
 			if(wrapper==null && getCdiDefaultProvider()!=null){
 				try{
-					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
-					if(wrapper!=null)
-						return (Map)wrapper.getInstance();
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
 				}catch(Exception e){
 				}
 			}
+			if(wrapper==null && getEjbDefaultProvider()!=null){
+				try{
+				
+					wrapper = (i_ProviderWrapper)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
+					if(wrapper==null){
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
+						if(wrapper!=null && request!=null && wrapper.getInfo_context()!=null && wrapper.getInfo_context().isStateful())
+							request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper", wrapper);
+					}
+				}catch(Exception e){
+				}
+			}
+		
+			if(wrapper!=null)
+				return (Map)wrapper.getInstance();
+
 		return null;
 	}
 
@@ -3211,37 +3750,58 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 
-	public static bsProvidedWrapper checkInfoNavigationWrapper(HttpServletRequest request){
-
-		bsProvidedWrapper wrapper = null;
+	public static i_ProviderWrapper checkInfoNavigationWrapper(HttpServletRequest request){
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return wrapper;
+		
 		String bean_id = bsConstants.CONST_BEAN_$NAVIGATION;
 		if(!getAction_config().getInstance_navigated().equals("") && !getAction_config().getInstance_navigated().equalsIgnoreCase("false"))
 			bean_id = getAction_config().getInstance_navigated();
 
 			if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
 				try{
-					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
-				}catch(Exception e){
-				}
-			}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
-				try{
-					wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
 				}catch(Exception e){
 				}
 			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider((request==null)?null:request.getSession().getServletContext());
 			if(wrapper==null && getCdiDefaultProvider()!=null){
 				try{
-					return (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
 				}catch(Exception e){
 				}
 			}
-
+			if(wrapper==null && getEjbDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION+"$wrapper");
+					if(wrapper==null){
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
+						if(wrapper!=null && request!=null && wrapper.getInfo_context()!=null && wrapper.getInfo_context().isStateful())
+							request.getSession().setAttribute(bsConstants.CONST_BEAN_$NAVIGATION+"$wrapper", wrapper);
+					}
+				}catch(Exception e){
+				}
+			}
+			
 		return wrapper;
 	}
 
 	public static info_navigation getFromInfoNavigation(String id,HttpServletRequest request){
 		info_navigation nav = null;
-		bsProvidedWrapper inw = checkInfoNavigationWrapper(request);
+		i_ProviderWrapper inw = checkInfoNavigationWrapper(request);
 		if(inw!=null)
 			nav = (info_navigation)inw.getInstance();
 
@@ -3257,7 +3817,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static boolean setToInfoNavigation(info_navigation nav,HttpServletRequest request){
 		try{
 
-			bsProvidedWrapper inw = checkInfoNavigationWrapper(request);
+			i_ProviderWrapper inw = checkInfoNavigationWrapper(request);
 
 			if(inw!=null){
 				inw.setInstance(nav);
@@ -3272,18 +3832,29 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 
+
+	
 	public static Map checkLocalContainer(){
-		if(action_config==null || !action_config.isReadOk()){
+		if(!canBeProxed)
+			return local_container;
+		
+		i_ProviderWrapper wrapperConfigAction = checkLoadActions(null);
+		load_actions current_action_config = null;
+		if(wrapperConfigAction!=null && wrapperConfigAction.getInstance()!=null)
+			current_action_config = (load_actions)wrapperConfigAction.getInstance();
+		else
+			current_action_config = action_config;
+		if(current_action_config==null || !current_action_config.isReadOk()){
 			return local_container;
 		}else{
-			bsProvidedWrapper wrapper = null;
+			i_ProviderWrapper wrapper = null;
 			String bean_id = bsConstants.CONST_BEAN_$LOCAL_CONTAINER;
 			if(!getAction_config().getInstance_local_container().equals("") && !getAction_config().getInstance_local_container().equalsIgnoreCase("false"))
 				bean_id = getAction_config().getInstance_local_container();
 
 				if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
 					try{
-						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(), bean_id, getAction_config().getInstance_local_container(), null);
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(), bean_id, getAction_config().getInstance_local_container(), null);
 						if(wrapper!=null && local_container!=null && local_container.size()>0){
 							wrapper.setInstance(local_container);
 							local_container.clear();
@@ -3292,9 +3863,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 						return (Map)wrapper.getInstance();
 					}catch(Exception e){
 					}
-				}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				} 
+				if(wrapper==null && getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
 					try{
-						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_local_container(), null);
 						if(wrapper!=null && local_container!=null && local_container.size()>0){
 							wrapper.setInstance(local_container);
 							local_container.clear();
@@ -3304,19 +3876,47 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}catch(Exception e){
 					}
 				}
+				if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+					try{
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						if(wrapper!=null && local_container!=null && local_container.size()>0){
+							wrapper.setInstance(local_container);
+							local_container.clear();
+							local_container=null;
+						}
+						return (Map)wrapper.getInstance();
+					}catch(Exception e){
+					}
+				}
+				checkDefaultProvider(null);
 				if(wrapper==null && getCdiDefaultProvider()!=null){
 					try{
-						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_local_container(), null);
 						if(wrapper!=null && local_container!=null && local_container.size()>0){
 							wrapper.setInstance(local_container);
 							local_container.clear();
 							local_container=null;
 						}
-						return (Map)wrapper.getInstance();
+						if(wrapper!=null)
+							return (Map)wrapper.getInstance();
 					}catch(Exception e){
 					}
-
 				}
+
+				if(wrapper==null && getEjbDefaultProvider()!=null){
+					try{
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_local_container(), null);
+						if(wrapper!=null && local_container!=null && local_container.size()>0){
+							wrapper.setInstance(local_container);
+							local_container.clear();
+							local_container=null;
+						}
+						if(wrapper!=null)
+							return (Map)wrapper.getInstance();
+					}catch(Exception e){
+					}
+				}
+
 //			}
 		}
 		return local_container;
@@ -3324,38 +3924,66 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 	
 	public static IBatchScheduling checkSchedulerContainer(){
-		if(action_config==null || !action_config.isReadOk()){
+		if(!canBeProxed)
+			return null;
+		
+		i_ProviderWrapper wrapperConfigAction = checkLoadActions(null);
+		load_actions current_action_config = null;
+		if(wrapperConfigAction!=null && wrapperConfigAction.getInstance()!=null)
+			current_action_config = (load_actions)wrapperConfigAction.getInstance();
+		else
+			current_action_config = action_config;
+		if(current_action_config==null || !current_action_config.isReadOk()){
 			return null;
 		}else{
-			bsProvidedWrapper wrapper = null;
+			i_ProviderWrapper wrapper = null;
 			String bean_id = bsConstants.CONST_BEAN_$SCHEDULER_CONTAINER;
-			if(!getAction_config().getInstance_local_container().equals("") && !getAction_config().getInstance_local_container().equalsIgnoreCase("false"))
-				bean_id = getAction_config().getInstance_local_container();
+			if(!getAction_config().getInstance_scheduler_container().equals("") && !getAction_config().getInstance_scheduler_container().equalsIgnoreCase("false"))
+				bean_id = getAction_config().getInstance_scheduler_container();
 
 				if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
 					try{
-						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(), bean_id, getAction_config().getInstance_local_container(), null);
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(), bean_id, getAction_config().getInstance_scheduler_container(), null);
 						if(wrapper!=null)
 							return (IBatchScheduling)wrapper.getInstance();
 					}catch(Exception e){
 					}
-				}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				} 
+				if(wrapper==null && getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
 					try{
-						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_scheduler_container(), null);
 						if(wrapper!=null)
 							return (IBatchScheduling)wrapper.getInstance();
 					}catch(Exception e){
 					}
 				}
+				if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+					try{
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, getAction_config().getInstance_scheduler_container(), null);
+						if(wrapper!=null)
+							return (IBatchScheduling)wrapper.getInstance();
+					}catch(Exception e){
+					}
+				}
+				checkDefaultProvider(null);
 				if(wrapper==null && getCdiDefaultProvider()!=null){
 					try{
-						wrapper = (bsProvidedWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_local_container(), null);
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_scheduler_container(), null);
 						if(wrapper!=null)
 							return (IBatchScheduling)wrapper.getInstance();
 					}catch(Exception e){
 					}
-
 				}
+				if(wrapper==null && getEjbDefaultProvider()!=null){
+					try{
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_scheduler_container(), null);
+						if(wrapper!=null)
+							return (IBatchScheduling)wrapper.getInstance();
+					}catch(Exception e){
+					}
+				}
+				
+				
 //			}
 		}
 		return null;
@@ -3444,33 +4072,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		return false;
 	}
-
-/*	
-	public static info_context checkBeanContext(i_bean bean){
-		if(bean==null)
-			return new info_context();
-		if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
-			info_context info = util_provider.checkInfoContext(getAction_config().getProvider(), bean);
-			if(info!=null)
-				return info;
-		}else if(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
-			info_context info = util_provider.checkInfoContext(getAppInit().get_cdi_provider(), bean);
-			if(info!=null)
-				return info;
-			else 
-				return new info_context();
-		}
-		if(getCdiDefaultProvider()!=null){
-			info_context info = util_provider.checkInfoContext(getCdiDefaultProvider(), bean);
-			if(info!=null)
-				return info;
-			else 
-				return new info_context();
-		}
-		return new info_context();
-
+	
+	public static boolean checkCanBeProxed(){
+		checkDefaultProvider(null);
+		if( (getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")) ||
+			(getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")) ||
+			(getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")) ||
+			 getCdiDefaultProvider()!=null ||
+			 getEjbDefaultProvider()!=null)
+			return true;
+		
+		return false;
 	}
-*/	
+
 
 	public static void setReInit(boolean reInit) {
 		bsController.reInit = reInit;
@@ -3482,5 +4096,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static i_provider getEjbDefaultProvider() {
 		return ejbDefaultProvider;
+	}
+
+	public static boolean isCanBeProxed() {
+		return canBeProxed;
 	}
 }

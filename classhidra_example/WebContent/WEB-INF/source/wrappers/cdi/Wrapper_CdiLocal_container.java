@@ -1,4 +1,4 @@
-package it.classhidra.plugin.provider.cdi.wrappers;
+package wrappers.cdi;
 
 import java.util.Map; 
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +12,7 @@ import it.classhidra.core.controller.bsProvidedWrapper;
 @Named(bsConstants.CONST_BEAN_$LOCAL_CONTAINER)
 @ApplicationScoped
 
-public class Wrapper_Local_container extends bsProvidedWrapper {
+public class Wrapper_CdiLocal_container extends bsProvidedWrapper {
 	private static final long serialVersionUID = 1L;
 
 	private static ConcurrentHashMap instance = new ConcurrentHashMap();

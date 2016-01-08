@@ -43,6 +43,8 @@ public interface i_annotation_scanner {
 
 	public String getInstance_local_container();
 	
+	public String getInstance_scheduler_container();
+	
 	public String getInstance_onlysession();
 	
 

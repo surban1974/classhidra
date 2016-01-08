@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 import javax.ejb.Local;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
-import javax.inject.Inject;
+//import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +46,7 @@ public class EjbComponentMenuCreator extends action implements i_action, Seriali
 	private String menu_action;
 	private String menu_lang;
 	
-	@Inject
+//	@Inject
 	private i_menu_element element;
 	
 	@Resource

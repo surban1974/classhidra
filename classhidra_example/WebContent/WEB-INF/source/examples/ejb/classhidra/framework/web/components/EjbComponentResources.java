@@ -105,7 +105,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 				}
 			}
 		}
-		this.setMiddleAction("");
+//		this.setMiddleAction("");
 	}
 
 	if(this.getMiddleAction().equals("users_config")){

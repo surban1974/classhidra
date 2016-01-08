@@ -2,19 +2,6 @@ package it.classhidra.plugin.provider;
 
 
 
-import it.classhidra.core.controller.bsConstants;
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.controller.i_action;
-import it.classhidra.core.controller.i_bean;
-import it.classhidra.core.controller.i_provider;
-import it.classhidra.core.controller.info_context;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_provider;
-import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Local_container;
-import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Navigation;
-import it.classhidra.plugin.provider.cdi.wrappers.Wrapper_Onlyinssession;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
@@ -25,6 +12,17 @@ import javax.inject.Named;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
+
+
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_ProviderWrapper;
+import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_provider;
+import it.classhidra.core.controller.info_context;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_provider;
 
 public class DependencyInjectionProvider implements i_provider {
 
@@ -62,20 +60,64 @@ public class DependencyInjectionProvider implements i_provider {
 	
 	
 //------ Static Implementation	
-	
+/*	
 	public static Class getWrapper(String name){
 		if(name.equals(bsConstants.CONST_BEAN_$ONLYINSSESSION))
-			return Wrapper_Onlyinssession.class;
+			return Wrapper_CdiOnlyinssession.class;
 		if(name.equals(bsConstants.CONST_BEAN_$NAVIGATION))
-			return Wrapper_Navigation.class;
+			return Wrapper_CdiNavigation.class;
 		if(name.equals(bsConstants.CONST_BEAN_$LOCAL_CONTAINER))
-			return Wrapper_Local_container.class;
+			return Wrapper_CdiLocal_container.class;
 		return null;
 	}
+*/	
+	
+	private static Object elaborateWrapperInfo_context(Object instance){
+		
+		if(instance!=null){
+
+			info_context iContext = null;
+			if(instance instanceof i_ProviderWrapper){
+				if(((i_ProviderWrapper)instance).getInfo_context()!=null){
+					((i_ProviderWrapper)instance).getInfo_context().setProxedCdi(true);
+					iContext = ((i_ProviderWrapper)instance).getInfo_context();
+				}
+			}else if(instance instanceof i_bean){
+				if(((i_bean)instance).getInfo_context()!=null){
+					((i_bean)instance).getInfo_context().setProxedCdi(true);
+					iContext = ((i_bean)instance).getInfo_context();
+				}				
+			}else if(instance instanceof i_action){
+				if(((i_action)instance).getInfo_context()!=null){
+					((i_action)instance).getInfo_context().setProxedCdi(true);
+					iContext = ((i_action)instance).getInfo_context();
+				}				
+			}		
+			if(iContext!=null && iContext.getOwnerClass()!=null){
+				if(iContext.getOwnerClass().getAnnotation(RequestScoped.class)!=null){
+					iContext.setRequestScoped(true);
+				}
+				if(iContext.getOwnerClass().getAnnotation(SessionScoped.class)!=null){
+					iContext.setSessionScoped(true);
+				}
+				if(iContext.getOwnerClass().getAnnotation(ApplicationScoped.class)!=null){
+					iContext.setApplicationScoped(true);
+				}
+				if(iContext.getOwnerClass().getAnnotation(Named.class)!=null){
+					iContext.setNamed(true);
+					Named annotation = (Named)iContext.getOwnerClass().getAnnotation(Named.class);
+					iContext.setName(annotation.value());
+				}
+			}
+
+			return instance;
+		}else 
+			return instance;
+	}	
 	
 	public static Object getInstance(String id_bean, String class_bean, ServletContext _context) {
 		Object instance=null;
-		if(id_bean==null && class_bean==null) return instance;
+		if((id_bean==null || class_bean.equals("")) && (class_bean==null || class_bean.equals(""))) return instance;
 		if(id_bean!=null && class_bean!=null && id_bean.equals(class_bean))
 			id_bean=null;
 		if(id_bean!=null){
@@ -85,7 +127,7 @@ public class DependencyInjectionProvider implements i_provider {
 				new bsControllerException(e, iStub.log_ERROR);
 			}
 		}
-		if(instance==null && class_bean!=null){
+		if(instance==null && class_bean!=null && !class_bean.equals("")){
 			try{
 				instance = resolveReference(Class.forName(class_bean));
 			}catch(Exception e){
@@ -193,6 +235,8 @@ public class DependencyInjectionProvider implements i_provider {
 		
 		if(bsController.getEjbDefaultProvider()!=null && instance==null){
 			Object ejb_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean, class_bean, _context);
+			if(ejb_instance==null && id_bean!=null)
+				ejb_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean.replace("$", "ejb_"), class_bean, _context);
 			if(ejb_instance!=null){
 				try{
 			    	Class clazz=ejb_instance.getClass();
@@ -275,10 +319,10 @@ public class DependencyInjectionProvider implements i_provider {
 					
 				}catch(Exception e){
 				}
-				return ejb_instance;
+				return elaborateWrapperInfo_context(ejb_instance);
 			}
 		}
-		return instance;
+		return elaborateWrapperInfo_context(instance);
 	}	
 	
 	public static Object destroyInstance(String id_bean, String class_bean, ServletContext _context) {
@@ -437,6 +481,12 @@ public class DependencyInjectionProvider implements i_provider {
         	 new bsControllerException("Impossible retrive CDI BeanManager", iStub.log_WARN);
         	 return false;
          }else{
+        	 
+//        	 Set<Bean<?>> beans = beanManager.getBeans(Object.class,new AnnotationLiteral<Any>() {});
+//             for (Bean<?> bean : beans) {
+//                 System.out.println(bean.getBeanClass().getName());
+//             }
+        	 
         	 new bsControllerException("CDI BeanManager retrived SUCCEESFULLY from: "+correct_jndi_jndi_name, iStub.log_INFO);
         	 return true;
          }

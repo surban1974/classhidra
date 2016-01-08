@@ -16,6 +16,9 @@ import it.classhidra.annotation.elements.Stream;
 import it.classhidra.annotation.elements.Transformation;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
+import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_stream;
+import it.classhidra.core.controller.i_transformation;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_apply_to_action;
 import it.classhidra.core.controller.info_bean;
@@ -69,6 +72,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	protected String provider;
 	protected String instance_navigated;
 	protected String instance_local_container;
+	protected String instance_scheduler_container;
 	protected String instance_onlysession;
 
 	
@@ -292,11 +296,16 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 	
 
-
 	public void checkClassAnnotation(String class_path) {
+		checkClassAnnotation(null, class_path, null);
+	}
+	
+	public void checkClassAnnotation(Class classType, String class_path, Class checkClassType) {
 		v_permissions = new ArrayList();
 		try{
-			Class classType = Class.forName(class_path);
+			if(classType==null)
+				classType = Class.forName(class_path);
+			
 			if(classType==null)
 				return;
 			
@@ -334,6 +343,8 @@ public class annotation_scanner implements i_annotation_scanner {
 					instance_navigated=annotationActionMapping.instance_navigated();
 				if(!annotationActionMapping.instance_local_container().equals(""))
 					instance_local_container=annotationActionMapping.instance_local_container();
+				if(!annotationActionMapping.instance_scheduler_container().equals(""))
+					instance_scheduler_container=annotationActionMapping.instance_scheduler_container();
 				if(!annotationActionMapping.instance_onlysession().equals(""))
 					instance_onlysession=annotationActionMapping.instance_onlysession();
 				
@@ -386,11 +397,17 @@ public class annotation_scanner implements i_annotation_scanner {
 			
 
 				
-				
-			Annotation annotation = classType.getAnnotation(Bean.class);
-				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
-			annotation = classType.getAnnotation(Action.class);
-				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
+			Annotation annotation = null;
+			if(checkClassType==null || (checkClassType!=null && checkClassType.equals(i_bean.class))){
+				annotation = classType.getAnnotation(Bean.class);
+					if(annotation!=null) 
+						checkClassAnnotation(classType, class_path, annotation, subAnnotations);
+				}
+			if(checkClassType==null || (checkClassType!=null && checkClassType.equals(i_action.class))){
+				annotation = classType.getAnnotation(Action.class);
+					if(annotation!=null) 
+						checkClassAnnotation(classType, class_path, annotation, subAnnotations);
+			}
 /*				
 				else if(i_action.class.isAssignableFrom(classType)){
 					
@@ -413,10 +430,14 @@ public class annotation_scanner implements i_annotation_scanner {
 				
 				}
 */				
-			annotation = classType.getAnnotation(Stream.class);
-				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
-			annotation = classType.getAnnotation(Transformation.class);
-				if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
+			if(checkClassType==null || (checkClassType!=null && checkClassType.equals(i_stream.class))){
+				annotation = classType.getAnnotation(Stream.class);
+					if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
+			}
+			if(checkClassType==null || (checkClassType!=null && checkClassType.equals(i_transformation.class))){
+				annotation = classType.getAnnotation(Transformation.class);
+					if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
+			}
 		    
 		    
 
@@ -451,9 +472,32 @@ public class annotation_scanner implements i_annotation_scanner {
 					
 				}
 			}
+			
+			
+			if(	i_action.class.isAssignableFrom(classType) ||
+				i_bean.class.isAssignableFrom(classType) ||
+				i_stream.class.isAssignableFrom(classType)){
+				
+	    		Class[] interfaces = classType.getInterfaces();
+	    		for(int k=0;k<interfaces.length;k++){
+	    			if(i_action.class.isAssignableFrom(interfaces[k]) && !interfaces[k].equals(i_action.class))
+	    				checkClassAnnotation(interfaces[k], class_path, i_action.class);
+	    			if(i_bean.class.isAssignableFrom(interfaces[k]) && !interfaces[k].equals(i_bean.class) && !interfaces[k].equals(i_action.class))
+	    				checkClassAnnotation(interfaces[k], class_path, i_bean.class);
+	    			if(i_stream.class.isAssignableFrom(interfaces[k]) && !interfaces[k].equals(i_stream.class))
+	    				checkClassAnnotation(interfaces[k], class_path, i_stream.class);
+	    			if(i_transformation.class.isAssignableFrom(interfaces[k]) && !interfaces[k].equals(i_transformation.class))
+	    				checkClassAnnotation(interfaces[k], class_path, i_transformation.class);
+	    		}
+
+				
+			}
+			
 		}catch(Exception e){	
 			new bsException("Load_actions Loader Error Annotation scaner for class: "+class_path+" : "+e.toString(), iStub.log_ERROR);
 		}
+		
+		
 	    
 	}
 	
@@ -478,7 +522,8 @@ public class annotation_scanner implements i_annotation_scanner {
 		    if (annotationBean != null) {
 		    	info_bean iBean = new info_bean();
 		    	iBean.setName(annotationBean.name());
-		    	iBean.setType(class_path);
+		    	if(classType!=null && i_bean.class.isAssignableFrom(classType))
+		    		iBean.setType(class_path);
 		    	iBean.setListener(annotationBean.listener());
 		    	setEntity(iBean,annotationBean.entity());
 		    	iBean.setAnnotationLoaded(true);
@@ -553,7 +598,8 @@ public class annotation_scanner implements i_annotation_scanner {
 		    if (annotationTransformation != null) {
 				info_transformation iTransformationoutput = new info_transformation();
 				iTransformationoutput.setName(annotationTransformation.name());
-				iTransformationoutput.setType(class_path);
+				if(classType!=null && i_transformation.class.isAssignableFrom(classType))
+					iTransformationoutput.setType(class_path);
 				iTransformationoutput.setPath(annotationTransformation.path());
 				iTransformationoutput.setEvent(annotationTransformation.event());
 				iTransformationoutput.setInputformat(annotationTransformation.inputformat());
@@ -567,7 +613,8 @@ public class annotation_scanner implements i_annotation_scanner {
 		    if (annotationStream != null) {
 		    	info_stream iStream = new info_stream();
 		    	iStream.setName(annotationStream.name());
-		    	iStream.setType(class_path);
+		    	if(classType!=null && i_stream.class.isAssignableFrom(classType))
+		    		iStream.setType(class_path);
 		    	iStream.setListener(annotationStream.listener());
 		    	setEntity(iStream,annotationStream.entity());
 		    	iStream.setAnnotationLoaded(true);
@@ -602,7 +649,8 @@ public class annotation_scanner implements i_annotation_scanner {
 			return null;
     	info_action iAction = new info_action();
     	iAction.setPath(annotationAction.path());
-    	iAction.setType(class_path);
+    	if(classType!=null && i_action.class.isAssignableFrom(classType))
+    		iAction.setType(class_path);
     	iAction.setName(annotationAction.name());
     	if(method==null)
     		iAction.setMethod(annotationAction.method());
@@ -659,7 +707,7 @@ public class annotation_scanner implements i_annotation_scanner {
     	
     	Bean bean = annotationAction.Bean();
     	if(bean!=null){
-    		info_bean iBean = checkBeanAnnotation(iAction, bean, class_path, -1);
+    		info_bean iBean = checkBeanAnnotation(classType, iAction, bean, class_path, -1);
     		if(iBean!=null && (iAction.getName()==null || iAction.getName().equals("")) && iBean.getName()!=null && !iBean.getName().equals(""))
     			iAction.setName(iBean.getName());
     		
@@ -751,7 +799,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		Bean[] beans = annotationAction.beans();
 		if(beans!=null && beans.length>0){
 			for(int i=0;i<beans.length;i++){
-				info_bean iBean = checkBeanAnnotation(iAction, beans[i], class_path, i);
+				info_bean iBean = checkBeanAnnotation(classType, iAction, beans[i], class_path, i);
 	    		if(iBean!=null && iAction.getName()==null || iAction.getName().equals("") && iBean.getName()!=null && !iBean.getName().equals(""))
 	    			iAction.setName(iBean.getName());
 			}
@@ -788,15 +836,40 @@ public class annotation_scanner implements i_annotation_scanner {
 		
     	_actions.put(iAction.getPath(),iAction);
     	
+    	if(classType!=null && i_action.class.isAssignableFrom(classType)){
+    		Class[] interfaces = classType.getInterfaces();
+    		for(int k=0;k<interfaces.length;k++){
+    			if(i_action.class.isAssignableFrom(interfaces[k]) && !interfaces[k].equals(i_action.class)){
+					List callMethods = new ArrayList();
+					List actionMethods = new ArrayList();
+					Method[] mtds = interfaces[k].getMethods();
+					for(int i=0;i<mtds.length;i++){
+						Method current = mtds[i];
+						if(current.getAnnotation(Action.class)!=null)
+							actionMethods.add( mtds[i]);
+						if(current.getAnnotation(ActionCall.class)!=null)
+							callMethods.add( mtds[i]);
+					}
+					for(int i=0;i<actionMethods.size();i++)
+						checkActionAnnotations(interfaces[k], class_path, ((Method)actionMethods.get(i)).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
+					
+					for(int i=0;i<callMethods.size();i++)
+						checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), iAction, (Method)callMethods.get(i), i);
+
+    			}
+    		}
+    	}
+    	
     	return iAction;
 	}
 	
-	private info_bean checkBeanAnnotation(info_action iAction, Bean annotationBean, String class_path, int i){
+	private info_bean checkBeanAnnotation(Class classType, info_action iAction, Bean annotationBean, String class_path, int i){
 		if(annotationBean==null || annotationBean.name()==null || annotationBean.name().equals(""))
 			return null;
 		info_bean iBean = new info_bean();
 		iBean.setName(annotationBean.name());
-    	iBean.setType(class_path);
+		if(classType!=null && i_bean.class.isAssignableFrom(classType))
+			iBean.setType(class_path);
     	iBean.setListener(annotationBean.listener());
     	setEntity(iBean,annotationBean.entity());
     	if(iBean.getOrder().equals("")) iBean.setOrder(Integer.valueOf(i+1).toString()); 
@@ -805,7 +878,7 @@ public class annotation_scanner implements i_annotation_scanner {
 			iAction.get_beans().put(iBean.getName(),iBean);
 		if(_beans.get(iBean.getName())==null)
 			_beans.put(bodyURI(iBean.getName()),iBean);
-
+		
 		return iBean;
 	}
 	
@@ -903,8 +976,17 @@ public class annotation_scanner implements i_annotation_scanner {
     		info_redirect iRedirect = checkRedirectAnnotation(iAction, redirect, -1);
     		if(iRedirect!=null && !iRedirect.isEmpty()){
 	    		iCall.setIRedirect(iRedirect);
-	    		if(iRedirect!=null && iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
-					_redirects.put(iRedirect.getPath(),iRedirect);
+	    		if(iRedirect!=null && iRedirect.getPath()!=null && !iRedirect.getPath().equals("")){
+	    			info_redirect stored = (info_redirect)_redirects.get(iRedirect.getPath());
+	    			if(stored!=null){
+	    				try{
+	    					stored.init(iRedirect);
+	    				}catch(Exception e){
+	    					_redirects.put(iRedirect.getPath(),iRedirect);
+	    				}
+	    			}else
+	    				_redirects.put(iRedirect.getPath(),iRedirect);
+	    		}
     		}
     	}
     	
@@ -1092,6 +1174,11 @@ public class annotation_scanner implements i_annotation_scanner {
 
 	public String getInstance_onlysession() {
 		return instance_onlysession;
+	}
+
+
+	public String getInstance_scheduler_container() {
+		return instance_scheduler_container;
 	}
 
 

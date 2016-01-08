@@ -53,6 +53,7 @@ public class app_init implements Serializable{
 	public final static String id_init_loader				= 	"application.init_loader.class";
 	public final static String id_cdi_provider				= 	"application.cdi.provider.class";
 	public final static String id_cdi_jndi_name				= 	"application.cdi.jndi.name";
+	public final static String id_ejb_provider 				=	"application.ejb.provider.class";
 	public final static String id_ejb_jndi_name				= 	"application.ejb.jndi.name";
 	public final static String id_ejb_jndi_name_prefix 		= 	"application.ejb.jndi.resolvename.prefix";
 	public final static String id_pin						=	"application.pin";
@@ -85,6 +86,7 @@ public class app_init implements Serializable{
 	private String _init_loader;
 	private String _cdi_provider;
 	private String _cdi_jndi_name;
+	private String _ejb_provider;
 	private String _ejb_jndi_name;
 	private String _ejb_jndi_name_prefix;
 	private String _pin;
@@ -184,6 +186,7 @@ public class app_init implements Serializable{
 			_external_loader=(_external_loader==null)?System.getProperty(id_external_loader):_external_loader;
 			_init_loader=(_init_loader==null)?System.getProperty(id_init_loader):_init_loader;
 			_cdi_provider=(_cdi_provider==null)?System.getProperty(id_cdi_provider):_cdi_provider;
+			_ejb_provider=(_ejb_provider==null)?System.getProperty(id_ejb_provider):_ejb_provider;
 			_cdi_jndi_name=(_cdi_jndi_name==null)?System.getProperty(id_cdi_jndi_name):_cdi_jndi_name;
 			_ejb_jndi_name=(_ejb_jndi_name==null)?System.getProperty(id_ejb_jndi_name):_ejb_jndi_name;
 			_ejb_jndi_name_prefix=(_ejb_jndi_name_prefix==null)?System.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
@@ -262,6 +265,7 @@ public class app_init implements Serializable{
 		_external_loader=(_external_loader==null)?property.getProperty(id_external_loader):_external_loader;
 		_init_loader=(_init_loader==null)?property.getProperty(id_init_loader):_init_loader;
 		_cdi_provider=(_cdi_provider==null)?property.getProperty(id_cdi_provider):_cdi_provider;
+		_ejb_provider=(_ejb_provider==null)?property.getProperty(id_ejb_provider):_ejb_provider;
 		_cdi_jndi_name=(_cdi_jndi_name==null)?property.getProperty(id_cdi_jndi_name):_cdi_jndi_name;
 		_ejb_jndi_name=(_ejb_jndi_name==null)?property.getProperty(id_ejb_jndi_name):_ejb_jndi_name;
 		_ejb_jndi_name_prefix=(_ejb_jndi_name_prefix==null)?property.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
@@ -581,5 +585,9 @@ public class app_init implements Serializable{
 
 	public void set_permit_redirect_resource(String _permit_redirect_resource) {
 		this._permit_redirect_resource = _permit_redirect_resource;
+	}
+
+	public String get_ejb_provider() {
+		return _ejb_provider;
 	}
 }

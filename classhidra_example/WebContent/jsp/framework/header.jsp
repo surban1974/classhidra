@@ -28,7 +28,10 @@
 
 	
 %>
-
+<!-- action info context <%=((formAction==null)?" null ":formAction.getInfo_context()) %> -->
+<%if(formAction!=null && formBean!=null && !formAction.equals(formBean)){%>
+<!-- bean info context <%=((formBean==null)?" null ":formBean.getInfo_context()) %> -->
+<%} %>
 
 <head>    
     <title><bs:message code="title_application" defaultValue="Application "/></title>

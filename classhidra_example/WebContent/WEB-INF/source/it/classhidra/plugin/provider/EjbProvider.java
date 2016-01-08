@@ -6,8 +6,11 @@ package it.classhidra.plugin.provider;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
 import javax.ejb.EJBContext;
+import javax.ejb.Local;
 import javax.ejb.MessageDriven;
+import javax.ejb.Remote;
 import javax.ejb.Singleton;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
@@ -22,6 +25,7 @@ import it.classhidra.annotation.elements.LOOKUP;
 import it.classhidra.annotation.elements.Stream;
 import it.classhidra.annotation.elements.Transformation;
 import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_ProviderWrapper;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_provider;
@@ -30,10 +34,11 @@ import it.classhidra.core.controller.i_transformation;
 import it.classhidra.core.controller.info_context;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.plugin.provider.ejb.wrappers.Wrapper_EjbContextLocal;
+//import it.classhidra.plugin.provider.ejb.wrappers.Wrapper_EjbContextLocal;
 
-
-public class EjbProvider implements i_provider {
+@Stateless(name="WrapperEjbContext")
+@Local(i_ProviderWrapper.class)
+public class EjbProvider implements i_provider, i_ProviderWrapper {
 
 	private static final String LOOKUP_EJBCONTEXT = 		"java:comp/EJBContext";
 	private static final String LOOKUP_ENV_EJBCONTEXT = 	"java:comp/env/EJBContext";
@@ -48,7 +53,22 @@ public class EjbProvider implements i_provider {
 	private static ConcurrentHashMap namingMap;
 	
 
+	@Resource
+	private EJBContext ejbLookupContext;
 	
+
+	public Object getInstance() {
+		return ejbLookupContext;
+	}
+
+	public boolean setInstance(Object instance) {
+		return false;
+	}
+	
+	@Override
+	public info_context getInfo_context() {
+		return null;
+	}
 	
 
 	public void set_context(ServletContext context) {
@@ -77,7 +97,92 @@ public class EjbProvider implements i_provider {
 	
 //------ Static Implementation	
 	
-	public static Object getInstance(Object obj, String id_bean, String class_bean, ServletContext _context) {
+	private static Object elaborateWrapperInfo_context(Object instance){
+		
+		if(instance!=null){
+
+			info_context iContext = null;
+			if(instance instanceof i_ProviderWrapper){
+				if(((i_ProviderWrapper)instance).getInfo_context()!=null){
+					((i_ProviderWrapper)instance).getInfo_context().setProxedEjb(true);
+					iContext = ((i_ProviderWrapper)instance).getInfo_context();
+				}
+			}else if(instance instanceof i_bean){
+				if(((i_bean)instance).getInfo_context()!=null){
+					((i_bean)instance).getInfo_context().setProxedEjb(true);
+					iContext = ((i_bean)instance).getInfo_context();
+				}				
+			}else if(instance instanceof i_action){
+				if(((i_action)instance).getInfo_context()!=null){
+					((i_action)instance).getInfo_context().setProxedEjb(true);
+					iContext = ((i_action)instance).getInfo_context();
+				}				
+			}		
+			if(iContext!=null && iContext.getOwnerClass()!=null){
+				if(iContext.getOwnerClass().getAnnotation(Stateful.class)!=null){
+					iContext.setStateful(true);
+					Stateful annotation = (Stateful)iContext.getOwnerClass().getAnnotation(Stateful.class);
+					if(annotation.name()!=null && !annotation.name().equals(""))
+						iContext.setName(annotation.name());
+					if(annotation.description()!=null && !annotation.description().equals(""))
+						iContext.setDescription(annotation.description());
+					if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
+						iContext.setMappedName(annotation.mappedName());
+				}
+				if(iContext.getOwnerClass().getAnnotation(Stateless.class)!=null){
+					iContext.setStateless(true);
+					Stateless annotation = (Stateless)iContext.getOwnerClass().getAnnotation(Stateless.class);
+					if(annotation.name()!=null && !annotation.name().equals(""))
+						iContext.setName(annotation.name());
+					if(annotation.description()!=null && !annotation.description().equals(""))
+						iContext.setDescription(annotation.description());
+					if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
+						iContext.setMappedName(annotation.mappedName());
+				}
+				if(iContext.getOwnerClass().getAnnotation(MessageDriven.class)!=null){
+					iContext.setMessageDriven(true);
+					MessageDriven annotation = (MessageDriven)iContext.getOwnerClass().getAnnotation(MessageDriven.class);
+					if(annotation.name()!=null && !annotation.name().equals(""))
+						iContext.setName(annotation.name());
+					if(annotation.description()!=null && !annotation.description().equals(""))
+						iContext.setDescription(annotation.description());
+					if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
+						iContext.setMappedName(annotation.mappedName());
+				}
+				if(iContext.getOwnerClass().getAnnotation(Singleton.class)!=null){
+					iContext.setSingleton(true);
+					Singleton annotation = (Singleton)iContext.getOwnerClass().getAnnotation(Singleton.class);
+					if(annotation.name()!=null && !annotation.name().equals(""))
+						iContext.setName(annotation.name());
+					if(annotation.description()!=null && !annotation.description().equals(""))
+						iContext.setDescription(annotation.description());
+					if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
+						iContext.setMappedName(annotation.mappedName());
+				}
+				if(iContext.getOwnerClass().getAnnotation(Local.class)!=null){
+					iContext.setLocal(true);
+					Local annotation = (Local)iContext.getOwnerClass().getAnnotation(Local.class);
+					iContext.setValue(annotation.value());
+				}
+				if(iContext.getOwnerClass().getAnnotation(Remote.class)!=null){
+					iContext.setRemote(true);
+					Remote annotation = (Remote)iContext.getOwnerClass().getAnnotation(Remote.class);
+					iContext.setValue(annotation.value());
+				}
+			}
+
+			return instance;
+		}else 
+			return instance;
+	}
+	
+	public static Object getInstance(String id_bean, String class_bean, ServletContext _context) {
+		
+		return getInstance(null, id_bean, class_bean, _context);
+
+	}
+	
+	public static Object getInstance(Object obj, String id_bean, String class_bean, ServletContext _context) { 
 		Object instance=null;
 		String retrivedClassName = null;
 		if(retrivedClassName==null && class_bean!=null) retrivedClassName = (String)getNamingMap().get(class_bean);
@@ -89,7 +194,7 @@ public class EjbProvider implements i_provider {
 				String lookup = parts.nextToken();
 				instance = resolveReference(type,lookup);
 				if(instance!=null)
-					return instance;
+					return elaborateWrapperInfo_context(instance);
 				
 			}catch(Exception e){
 			}
@@ -98,18 +203,20 @@ public class EjbProvider implements i_provider {
 			instance = getInstanceFromContext(obj, id_bean, class_bean, _context, 1);
 			if(instance!=null){
 				correct_context = 1;
-				return instance;
+				return elaborateWrapperInfo_context(instance);
 			}
 			if(instance==null){
 				instance = getInstanceFromContext(obj, id_bean, class_bean, _context, 2);
 				if(instance!=null){
 					correct_context = 2;
-					return instance;
+					return elaborateWrapperInfo_context(instance);
 				}
 			}
 		}else{
 			return
-					getInstanceFromContext(obj, id_bean, class_bean, _context, correct_context);
+					elaborateWrapperInfo_context(
+							getInstanceFromContext(obj, id_bean, class_bean, _context, correct_context)
+					);
 			
 		}
 		return null;
@@ -158,7 +265,7 @@ public class EjbProvider implements i_provider {
     	Class clazz=null;
     	if(obj!=null){
     		clazz=obj.getClass();
-    	}else if(class_bean!=null){
+    	}else if(class_bean!=null && !class_bean.equals("")){
     		try{
     			clazz=Class.forName(class_bean);
     		}catch(Exception e){
@@ -440,11 +547,19 @@ public class EjbProvider implements i_provider {
 	        	Object result = null;
 	        	try{
 	        		result = ejbc.lookup(elName);
-	        		if(result instanceof i_bean)
-	        			setInfoContext(((i_bean) result).asBean());
-	        		if(result instanceof i_action)
-	        			setInfoContext(((i_action) result).asBean());
+	        		if(result!=null){
+		        		if(result instanceof i_bean)
+		        			setInfoContext(((i_bean) result).asBean());
+		        		if(result instanceof i_action)
+		        			setInfoContext(((i_action) result).asBean());
+	        		}
+	        		return result;
 	        	}catch(Exception e){
+	        		if(result==null){
+	        			result = resolveReference(2, elName);
+	        			if(result!=null)
+	        				getNamingMap().put(elName, "2|"+elName);
+	        		}	
 	        		return result;
 	        	}
 	        }catch(Exception e){
@@ -456,10 +571,13 @@ public class EjbProvider implements i_provider {
 	        	Object result = null;
 	        	try{
 	        		result = getStaticInitialContext().lookup(elName);
-	        		if(result instanceof i_bean)
-	        			setInfoContext(((i_bean) result).asBean());
-	        		if(result instanceof i_action)
-	        			setInfoContext(((i_action) result).asBean());
+	        		if(result!=null){
+		        		if(result instanceof i_bean)
+		        			setInfoContext(((i_bean) result).asBean());
+		        		if(result instanceof i_action)
+		        			setInfoContext(((i_action) result).asBean());
+	        		}
+	        		return result;
 	        	}catch(Exception e){
 	        		return result;
 	        	}
@@ -539,8 +657,10 @@ public class EjbProvider implements i_provider {
 	        			return result;
 	        		}
 	        	}catch(Exception e){        		
-	        	}        	
-	        	return null;
+	        	}
+        		if(result==null)
+        			result = resolveReference(2, clazz);
+        		return result;
 	        }catch(Exception e){
 	        	return null;
 	        }    
@@ -636,8 +756,10 @@ public class EjbProvider implements i_provider {
  	         	try{
  	         		
  	         		Object fromLookup = initialContext.lookup(correct_ejb_jndi_name);
- 	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
- 	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
+ 	         		if(fromLookup instanceof i_ProviderWrapper){
+ 	         			ejbContext = (EJBContext)((i_ProviderWrapper)fromLookup).getInstance();
+// 	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
+// 	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
  	         		}else
  	         			ejbContext = (EJBContext)fromLookup;
  	         	}catch(Exception e){
@@ -654,8 +776,10 @@ public class EjbProvider implements i_provider {
 	 	         	try{
 	 	         		
 	 	         		Object fromLookup = initialContext.lookup(ejbJndiName);
-	 	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
-	 	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
+	 	         		if(fromLookup instanceof i_ProviderWrapper){
+	 	         			ejbContext = (EJBContext)((i_ProviderWrapper)fromLookup).getInstance();	 	         		
+//	 	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
+//	 	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
 	 	         		}else
 	 	         			ejbContext = (EJBContext)fromLookup;
 	 	         		if(ejbContext!=null)
@@ -693,8 +817,10 @@ public class EjbProvider implements i_provider {
         	if(ejbContext==null){ 
          		try{        			
 	         		Object fromLookup = initialContext.lookup(LOOKUP_MAPPED_EJBCONTEXT);
-	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
-	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
+	         		if(fromLookup instanceof i_ProviderWrapper){
+	         			ejbContext = (EJBContext)((i_ProviderWrapper)fromLookup).getInstance();
+//	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
+//	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
 	         		}else
 	         			ejbContext = (EJBContext)fromLookup;
 	         		if(ejbContext!=null)
@@ -755,8 +881,10 @@ public class EjbProvider implements i_provider {
 	         	try{
 	         		
 	         		Object fromLookup = initialContext.lookup(correct_ejb_jndi_name);
-	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
-	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
+	         		if(fromLookup instanceof i_ProviderWrapper){
+	         			ejbContext = (EJBContext)((i_ProviderWrapper)fromLookup).getInstance();	         		
+//	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
+//	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
 	         		}else
 	         			ejbContext = (EJBContext)fromLookup;
 	         	}catch(Exception e){
@@ -771,8 +899,10 @@ public class EjbProvider implements i_provider {
 		         	try{
 		         		
 		         		Object fromLookup = initialContext.lookup(ejbJndiName);
-		         		if(fromLookup instanceof Wrapper_EjbContextLocal){
-		         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
+		         		if(fromLookup instanceof i_ProviderWrapper){
+		         			ejbContext = (EJBContext)((i_ProviderWrapper)fromLookup).getInstance();		         		
+//		         		if(fromLookup instanceof Wrapper_EjbContextLocal){
+//		         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
 		         		}else
 		         			ejbContext = (EJBContext)fromLookup;
 		         		if(ejbContext!=null)
@@ -809,8 +939,10 @@ public class EjbProvider implements i_provider {
          	if(ejbContext==null){ 
          		try{        			
 	         		Object fromLookup = initialContext.lookup(LOOKUP_MAPPED_EJBCONTEXT);
-	         		if(fromLookup instanceof Wrapper_EjbContextLocal){
-	         			ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();
+	         		if(fromLookup instanceof i_ProviderWrapper){
+	         			ejbContext = (EJBContext)((i_ProviderWrapper)fromLookup).getInstance();
+//		         	if(fromLookup instanceof Wrapper_EjbContextLocal){
+//		         		ejbContext = (EJBContext)((Wrapper_EjbContextLocal)fromLookup).getInstance();	         			
 	         		}else
 	         			ejbContext = (EJBContext)fromLookup;
 	         		if(ejbContext!=null)
@@ -879,6 +1011,8 @@ public class EjbProvider implements i_provider {
     		 }
     	 }
      }
+
+
 
 
 }
