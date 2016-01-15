@@ -104,14 +104,14 @@ public class info_navigation extends elementBase implements i_elementBase{
 //			info_context info = bsController.checkBeanContext(content.asBean());
 			if(iAction!=null && iAction.getNavigatedMemoryContent()!=null && !iAction.getNavigatedMemoryContent().equals("")){
 				if(iAction.getNavigatedMemoryContent().equalsIgnoreCase("true")){
-					if(content.asBean().getInfo_context().isOnlyProxed()){
+					if(content.asBean().getInfo_context().isOnlyProxied()){
 						if(this._content==null)
 							this._content = content;
 					}else
 						this._content = content;
 				}else if(!iAction.getNavigatedMemoryContent().equalsIgnoreCase("false")){
 					if(!content.asBean().getInfo_context().isScoped()){
-						if(content.asBean().getInfo_context().isOnlyProxed()){
+						if(content.asBean().getInfo_context().isOnlyProxied()){
 							if(this._content==null)
 								this._content = content;
 						}else
@@ -120,7 +120,7 @@ public class info_navigation extends elementBase implements i_elementBase{
 				}
 			}
 			else if(!content.getInfo_context().isScoped()){
-				if(content.asBean().getInfo_context().isOnlyProxed()){
+				if(content.asBean().getInfo_context().isOnlyProxied()){
 					if(this._content==null)
 						this._content = content;
 				}else
@@ -146,7 +146,7 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.id = second.getId();
 		if(second.get_realcontent()!=null && !second.get_realcontent().getInfo_context().isScoped()){
 //			info_context info = bsController.checkBeanContext(second.get_realcontent().asBean());
-			if(second.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
+			if(second.get_realcontent().asBean().getInfo_context().isOnlyProxied()){
 				if(this._content==null)
 					this._content = second.get_realcontent();
 			}else
@@ -165,7 +165,7 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.id = second.getId();
 		if(second.get_realcontent()!=null && !second.get_realcontent().getInfo_context().isScoped()){
 //			info_context info = bsController.checkBeanContext(second.get_realcontent().asBean());
-			if(second.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
+			if(second.get_realcontent().asBean().getInfo_context().isOnlyProxied()){
 				if(this._content==null)
 					this._content = second.get_realcontent();
 			}else
@@ -307,14 +307,14 @@ public class info_navigation extends elementBase implements i_elementBase{
 //					info_context info = bsController.checkBeanContext(iNavigation.get_realcontent().asBean());
 					if(iAction!=null && iAction.getNavigatedMemoryContent()!=null && !iAction.getNavigatedMemoryContent().equals("")){
 						if(iAction.getNavigatedMemoryContent().equalsIgnoreCase("true")){
-							if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
+							if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxied()){
 								if(_content==null)
 									_content = iNavigation.get_realcontent();
 							}else
 								_content = iNavigation.get_realcontent();
 						}else if(!iAction.getNavigatedMemoryContent().equalsIgnoreCase("false")){
 							if(!iNavigation.get_realcontent().getInfo_context().isScoped()){
-								if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
+								if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxied()){
 									if(_content==null)
 										_content = iNavigation.get_realcontent();
 								}else
@@ -323,7 +323,7 @@ public class info_navigation extends elementBase implements i_elementBase{
 						}
 					}
 					else if(!iNavigation.get_realcontent().getInfo_context().isScoped()){
-						if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxed()){
+						if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxied()){
 							if(_content==null)
 								_content = iNavigation.get_realcontent();
 						}else

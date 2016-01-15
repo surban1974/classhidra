@@ -1,3 +1,4 @@
+<!-- 
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,9 +12,22 @@
     <bean  class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 
 
-    <bean id="login" scope="prototype" class="it.classhidra.framework.web.formactions.actionLogin">
-    </bean>
+    <bean id="login" scope="prototype" class="it.classhidra.framework.web.formactions.actionLogin"/>
     <bean id="formLogin" scope="prototype" class="it.classhidra.framework.web.formbeans.formLogin"/>
 
 
+</beans>
+ -->
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+<!-- Scan it.classhidra.plugin.provider retrive load SpringBeansProvider (examples.spring.classhidra.framework.web.components, wrappers.spring is not important ) -->
+	<context:component-scan base-package="it.classhidra.plugin.provider, examples.spring.classhidra.framework.web.components, wrappers.spring" />
 </beans>

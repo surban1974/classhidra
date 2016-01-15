@@ -34,7 +34,9 @@ import it.classhidra.core.tool.util.util_format;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Vector;
+
+
+
 
 import javax.servlet.http.*;
 import javax.servlet.*;
@@ -45,33 +47,83 @@ public class action extends bean implements i_action, Serializable{
 	protected redirects current_redirect;
 	protected boolean included = false;
 	protected listener_action listener_a;
+	protected boolean beanEqualAction=false;
 
 	public action(){
 		super();
 	}
 
 	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
-		if(getRealBean()!=null){
-			try{
-				getRealBean().onPreInit(request);
-			}catch(Exception e){
+		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
+			if(getRealBean()!=null){
+				try{
+					getRealBean().onPreInit(request);
+				}catch(Exception e){
+				}
+				try{
+					getRealBean().init(request);
+				}catch(Exception e){
+					util_supportbean.init(getRealBean(), request);
+				}
+				try{
+					getRealBean().onPostInit(request);
+				}catch(Exception e){
+				}
 			}
-			try{
-				getRealBean().init(request);
-			}catch(Exception e){
-				util_supportbean.init(getRealBean(), request);
-			}
-			try{
-				getRealBean().onPostInit(request);
-			}catch(Exception e){
+		}else{
+			if(!beanEqualAction){
+				if(getRealBean()!=null){
+					try{
+						getRealBean().onPreInit(request);
+					}catch(Exception e){
+					}
+					try{
+						getRealBean().init(request);
+					}catch(Exception e){
+						util_supportbean.init(getRealBean(), request);
+					}
+					try{
+						getRealBean().onPostInit(request);
+					}catch(Exception e){
+					}
+				}
+			}else{
+				try{
+					this.onPreInit(request);
+				}catch(Exception e){
+				}
+				try{
+					this.init(request);
+				}catch(Exception e){
+					util_supportbean.init(this, request);
+				}
+				try{
+					this.onPostInit(request);
+				}catch(Exception e){
+				}
+	
 			}
 		}
 	}
 	public void init(HashMap wsParameters) throws bsControllerException{
-		if(getRealBean()!=null){
-			getRealBean().onPreInit(wsParameters);
-			getRealBean().init(wsParameters);
-			getRealBean().onPostInit(wsParameters);
+		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
+			if(getRealBean()!=null){
+				getRealBean().onPreInit(wsParameters);
+				getRealBean().init(wsParameters);
+				getRealBean().onPostInit(wsParameters);
+			}
+		}else{
+			if(!beanEqualAction){
+				if(getRealBean()!=null){
+					getRealBean().onPreInit(wsParameters);
+					getRealBean().init(wsParameters);
+					getRealBean().onPostInit(wsParameters);
+				}
+			}else{
+				this.onPreInit(wsParameters);
+				this.init(wsParameters);
+				this.onPostInit(wsParameters);
+			}
 		}
 	}
 	public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException{
@@ -120,14 +172,43 @@ public class action extends bean implements i_action, Serializable{
 	}
 
 	public i_bean get_bean() {
+		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
+			if(getRealBean()!=null && getRealBean().getClass().getName().equals(this.asBean().getClass().getName())) return this;
+			if(getRealBean()==null) return this;
+			return getRealBean();
+		}else{
 		if(getRealBean()!=null && getRealBean().getClass().getName().equals(this.asBean().getClass().getName())) return this;
-		if(getRealBean()==null) return this;
-		return getRealBean();
+			if(getRealBean()==null){
+				if(!beanEqualAction)
+					return this;
+				else
+					return this.asBean();
+			}else{
+				if(!beanEqualAction)
+					return getRealBean();
+				else
+					return this.asBean();				
+			}
+		}
 	}
 
 	public void set_bean(i_bean form) {
+		set_bean(form,null);
+	}
+	public void set_bean(i_bean form, info_context iContext) {
+		if(	iContext!=null &&
+			form!=null &&
+			iContext.isProxiedEjb() &&
+			this.getInfo_context()!=null &&
+			iContext.getProxiedId()==this.getInfo_context().getProxiedId() &&
+			this.get_infoaction()!=null)
+			
+			beanEqualAction=true;
+
 		_bean = form;
-		if(_bean!=null) _bean.set_infoaction(_infoaction);
+		
+		if(_bean!=null)
+			get_bean().set_infoaction(_infoaction);
 	}
 	public redirects getCurrent_redirect() {
 		return current_redirect;
@@ -365,6 +446,12 @@ public class action extends bean implements i_action, Serializable{
 	public i_bean getRealBean(){
 		return _bean;
 	}
+
+	public boolean isBeanEqualAction() {
+		return beanEqualAction;
+	}
+
+
 
 
 

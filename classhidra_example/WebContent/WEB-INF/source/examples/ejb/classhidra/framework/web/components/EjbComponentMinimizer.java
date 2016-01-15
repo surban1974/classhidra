@@ -171,7 +171,7 @@ private info_navigation prepareDump(HttpServletRequest request){
 				if(fromSessionGlobal.get(source) instanceof i_bean){
 					i_bean second = (i_bean)fromSessionGlobal.get(source);
 		    		if(second.asBean().getInfo_context()!=null && !second.asBean().getInfo_context().isScoped()){
-		    			if(second.asBean().getInfo_context().isOnlyProxed())
+		    			if(second.asBean().getInfo_context().isOnlyProxied())
 		    				lastInstance_clone = second;
 		    		}else if(second.asBean().getInfo_context()!=null && second.asBean().getInfo_context().isScoped()){
 		    			lastInstance_clone = second;
@@ -194,7 +194,7 @@ private info_navigation prepareDump(HttpServletRequest request){
 					    	if(pair.getValue() instanceof i_bean){
 					    		i_bean second = (i_bean)pair.getValue();
 					    		if(second.asBean().getInfo_context()!=null && !second.asBean().getInfo_context().isScoped()){
-					    			if(second.asBean().getInfo_context().isOnlyProxed())
+					    			if(second.asBean().getInfo_context().isOnlyProxied())
 					    				fromSession_clone.put(pair.getKey(), pair.getValue());
 					    		}else if(second.asBean().getInfo_context()!=null && second.asBean().getInfo_context().isScoped()){
 					    			fromSession_clone.put(pair.getKey(), pair.getValue());

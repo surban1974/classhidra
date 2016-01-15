@@ -3,6 +3,10 @@ package it.classhidra.plugin.provider;
 
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,7 +18,10 @@ import javax.ejb.Remote;
 import javax.ejb.Singleton;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
+import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 
@@ -44,13 +51,17 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	private static final String LOOKUP_ENV_EJBCONTEXT = 	"java:comp/env/EJBContext";
 	private static final String LOOKUP_MAPPED_EJBCONTEXT = 	"java:module/WrapperEjbContext";
 	private static final String LOOKUP_MAPPED_EJB_PREFIX = 	"java:module/";
+	private static final String LOOKUP_GLOBAL_NAMES =		"java:global";
+	
+	private static final String CONST_NULL =				"NULL";
 	
 	private static int correct_context=0; 
 	
 	private static String correct_ejb_jndi_name;
 	private static EJBContext ejbContext;
 //	private static InitialContext initialContext;
-	private static ConcurrentHashMap namingMap;
+	private static ConcurrentHashMap cacheNamingMap;
+	private static LinkedHashSet cacheJavaGlobalNames;
 	
 
 	@Resource
@@ -104,79 +115,139 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 			info_context iContext = null;
 			if(instance instanceof i_ProviderWrapper){
 				if(((i_ProviderWrapper)instance).getInfo_context()!=null){
-					((i_ProviderWrapper)instance).getInfo_context().setProxedEjb(true);
+					((i_ProviderWrapper)instance).getInfo_context().setProxiedEjb(true);
 					iContext = ((i_ProviderWrapper)instance).getInfo_context();
 				}
 			}else if(instance instanceof i_bean){
 				if(((i_bean)instance).getInfo_context()!=null){
-					((i_bean)instance).getInfo_context().setProxedEjb(true);
+					((i_bean)instance).getInfo_context().setProxiedEjb(true);
 					iContext = ((i_bean)instance).getInfo_context();
 				}				
 			}else if(instance instanceof i_action){
 				if(((i_action)instance).getInfo_context()!=null){
-					((i_action)instance).getInfo_context().setProxedEjb(true);
+					((i_action)instance).getInfo_context().setProxiedEjb(true);
 					iContext = ((i_action)instance).getInfo_context();
 				}				
 			}		
-			if(iContext!=null && iContext.getOwnerClass()!=null){
-				if(iContext.getOwnerClass().getAnnotation(Stateful.class)!=null){
-					iContext.setStateful(true);
-					Stateful annotation = (Stateful)iContext.getOwnerClass().getAnnotation(Stateful.class);
-					if(annotation.name()!=null && !annotation.name().equals(""))
-						iContext.setName(annotation.name());
-					if(annotation.description()!=null && !annotation.description().equals(""))
-						iContext.setDescription(annotation.description());
-					if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
-						iContext.setMappedName(annotation.mappedName());
-				}
-				if(iContext.getOwnerClass().getAnnotation(Stateless.class)!=null){
-					iContext.setStateless(true);
-					Stateless annotation = (Stateless)iContext.getOwnerClass().getAnnotation(Stateless.class);
-					if(annotation.name()!=null && !annotation.name().equals(""))
-						iContext.setName(annotation.name());
-					if(annotation.description()!=null && !annotation.description().equals(""))
-						iContext.setDescription(annotation.description());
-					if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
-						iContext.setMappedName(annotation.mappedName());
-				}
-				if(iContext.getOwnerClass().getAnnotation(MessageDriven.class)!=null){
-					iContext.setMessageDriven(true);
-					MessageDriven annotation = (MessageDriven)iContext.getOwnerClass().getAnnotation(MessageDriven.class);
-					if(annotation.name()!=null && !annotation.name().equals(""))
-						iContext.setName(annotation.name());
-					if(annotation.description()!=null && !annotation.description().equals(""))
-						iContext.setDescription(annotation.description());
-					if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
-						iContext.setMappedName(annotation.mappedName());
-				}
-				if(iContext.getOwnerClass().getAnnotation(Singleton.class)!=null){
-					iContext.setSingleton(true);
-					Singleton annotation = (Singleton)iContext.getOwnerClass().getAnnotation(Singleton.class);
-					if(annotation.name()!=null && !annotation.name().equals(""))
-						iContext.setName(annotation.name());
-					if(annotation.description()!=null && !annotation.description().equals(""))
-						iContext.setDescription(annotation.description());
-					if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
-						iContext.setMappedName(annotation.mappedName());
-				}
-				if(iContext.getOwnerClass().getAnnotation(Local.class)!=null){
-					iContext.setLocal(true);
-					Local annotation = (Local)iContext.getOwnerClass().getAnnotation(Local.class);
-					iContext.setValue(annotation.value());
-				}
-				if(iContext.getOwnerClass().getAnnotation(Remote.class)!=null){
-					iContext.setRemote(true);
-					Remote annotation = (Remote)iContext.getOwnerClass().getAnnotation(Remote.class);
-					iContext.setValue(annotation.value());
+			if(iContext!=null){
+				iContext.setProxiedClass(instance.getClass());
+				iContext.setProxiedId(System.identityHashCode(instance));
+				iContext.setProxy(instance);
+				if(iContext.getOwnerClass()!=null){
+					if(iContext.getOwnerClass().getAnnotation(Stateful.class)!=null){
+						iContext.setStateful(true);
+						Stateful annotation = (Stateful)iContext.getOwnerClass().getAnnotation(Stateful.class);
+						if(annotation.name()!=null && !annotation.name().equals(""))
+							iContext.setName(annotation.name());
+						if(annotation.description()!=null && !annotation.description().equals(""))
+							iContext.setDescription(annotation.description());
+						if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
+							iContext.setMappedName(annotation.mappedName());
+					}
+					if(iContext.getOwnerClass().getAnnotation(Stateless.class)!=null){
+						iContext.setStateless(true);
+						Stateless annotation = (Stateless)iContext.getOwnerClass().getAnnotation(Stateless.class);
+						if(annotation.name()!=null && !annotation.name().equals(""))
+							iContext.setName(annotation.name());
+						if(annotation.description()!=null && !annotation.description().equals(""))
+							iContext.setDescription(annotation.description());
+						if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
+							iContext.setMappedName(annotation.mappedName());
+					}
+					if(iContext.getOwnerClass().getAnnotation(MessageDriven.class)!=null){
+						iContext.setMessageDriven(true);
+						MessageDriven annotation = (MessageDriven)iContext.getOwnerClass().getAnnotation(MessageDriven.class);
+						if(annotation.name()!=null && !annotation.name().equals(""))
+							iContext.setName(annotation.name());
+						if(annotation.description()!=null && !annotation.description().equals(""))
+							iContext.setDescription(annotation.description());
+						if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
+							iContext.setMappedName(annotation.mappedName());
+					}
+					if(iContext.getOwnerClass().getAnnotation(Singleton.class)!=null){
+						iContext.setSingleton(true);
+						Singleton annotation = (Singleton)iContext.getOwnerClass().getAnnotation(Singleton.class);
+						if(annotation.name()!=null && !annotation.name().equals(""))
+							iContext.setName(annotation.name());
+						if(annotation.description()!=null && !annotation.description().equals(""))
+							iContext.setDescription(annotation.description());
+						if(annotation.mappedName()!=null && !annotation.mappedName().equals(""))
+							iContext.setMappedName(annotation.mappedName());
+					}
+					if(iContext.getOwnerClass().getAnnotation(Local.class)!=null){
+						iContext.setLocal(true);
+						Local annotation = (Local)iContext.getOwnerClass().getAnnotation(Local.class);
+						iContext.setValue(annotation.value());
+					}
+					if(iContext.getOwnerClass().getAnnotation(Remote.class)!=null){
+						iContext.setRemote(true);
+						Remote annotation = (Remote)iContext.getOwnerClass().getAnnotation(Remote.class);
+						iContext.setValue(annotation.value());
+					}
 				}
 			}
-
+			if(iContext!=null && instance instanceof i_action && iContext.isStateless() && iContext.getProxy()!=null)
+				return iContext;
+			
 			return instance;
 		}else 
 			return instance;
 	}
 	
 	public static Object getInstance(String id_bean, String class_bean, ServletContext _context) {
+		
+		String retrivedClassName = null;
+		if(id_bean!=null) retrivedClassName = (String)getNamingMap().get(id_bean);
+		if(retrivedClassName==null && class_bean!=null) retrivedClassName = (String)getNamingMap().get(class_bean);
+		if(retrivedClassName!=null){
+			if(!retrivedClassName.equals(CONST_NULL)){
+				try{
+					StringTokenizer parts = new StringTokenizer(retrivedClassName,"|");
+					int type = Integer.valueOf(parts.nextToken());
+					String lookup = parts.nextToken();
+					Object instance = resolveReference(type,lookup);
+					if(instance!=null)
+						return elaborateWrapperInfo_context(instance);
+					
+				}catch(Exception e){
+				}
+			}else
+				return null;
+		}
+
+		if(cacheJavaGlobalNames==null)
+			retriveGlobalNames(null,false);
+		
+		if(cacheJavaGlobalNames!=null && !cacheJavaGlobalNames.isEmpty() && (id_bean!=null || (class_bean!=null && !class_bean.equals("")))){
+			String id_class_bean = null;
+	   		if(class_bean!=null && !class_bean.equals("")){
+	   			if(class_bean.lastIndexOf(".")>-1)
+	   				id_class_bean = class_bean.substring(class_bean.lastIndexOf("."),class_bean.length()).replace(".", "");
+	   		}
+	   		Iterator it = cacheJavaGlobalNames.iterator();
+	   		while(it.hasNext()){
+				String key = (String)it.next();
+				if(id_bean!=null){
+					if(key.indexOf("/"+id_bean+"!")>-1){
+						Object instance = resolveReference(1,key);						
+						if(instance!=null){
+							getNamingMap().put(id_bean, "1|"+key);
+							return elaborateWrapperInfo_context(instance);
+						}
+					}
+				}
+				if(id_class_bean!=null){
+					if(key.indexOf("/"+id_class_bean+"!")>-1){
+						Object instance = resolveReference(1,key);
+						if(instance!=null){
+							getNamingMap().put(id_class_bean, "1|"+key);
+							return elaborateWrapperInfo_context(instance);
+						}
+					}
+				}
+				
+			}
+		}
 		
 		return getInstance(null, id_bean, class_bean, _context);
 
@@ -188,16 +259,19 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 		if(retrivedClassName==null && class_bean!=null) retrivedClassName = (String)getNamingMap().get(class_bean);
 		if(retrivedClassName==null && id_bean!=null) retrivedClassName = (String)getNamingMap().get(id_bean);
 		if(retrivedClassName!=null){
-			try{
-				StringTokenizer parts = new StringTokenizer(retrivedClassName,"|");
-				int type = Integer.valueOf(parts.nextToken());
-				String lookup = parts.nextToken();
-				instance = resolveReference(type,lookup);
-				if(instance!=null)
-					return elaborateWrapperInfo_context(instance);
-				
-			}catch(Exception e){
-			}
+			if(!retrivedClassName.equals(CONST_NULL)){
+				try{
+					StringTokenizer parts = new StringTokenizer(retrivedClassName,"|");
+					int type = Integer.valueOf(parts.nextToken());
+					String lookup = parts.nextToken();
+					instance = resolveReference(type,lookup);
+					if(instance!=null)
+						return elaborateWrapperInfo_context(instance);
+					
+				}catch(Exception e){
+				}
+			}else
+				return null;
 		}
 		if(correct_context==0){
 			instance = getInstanceFromContext(obj, id_bean, class_bean, _context, 1);
@@ -219,6 +293,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 					);
 			
 		}
+		if(id_bean!=null)
+			getNamingMap().put(id_bean, CONST_NULL);
 		return null;
 
 	}
@@ -533,7 +609,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
     		} 
      	}    	
 
- 		
+		if(id_bean!=null)
+			getNamingMap().put(id_bean, CONST_NULL);		
 		return instance;
 	}	
 	
@@ -857,14 +934,14 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
  	}
 
 	public static ConcurrentHashMap getNamingMap() {
-		if(namingMap==null)
-			namingMap = new ConcurrentHashMap();
-		return namingMap;
+		if(cacheNamingMap==null)
+			cacheNamingMap = new ConcurrentHashMap();
+		return cacheNamingMap;
 	}	
 
 	public boolean clearNamingMap() {
-		if(namingMap!=null)
-			namingMap.clear();
+		if(cacheNamingMap!=null)
+			cacheNamingMap.clear();
 		return true;
 	}	
 	
@@ -953,7 +1030,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
          		}
          	}         	
 
-          	
+         	if(ejbContext!=null)
+         		retriveGlobalNames(initialContext, true);
 
          } catch (NamingException e) {
         	 new bsControllerException(e, iStub.log_ERROR);
@@ -969,6 +1047,83 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
          }
      }
 
+     
+     public synchronized static void retriveGlobalNames(InitialContext initialContext, boolean reInit){
+    	 if(initialContext==null)
+    		 initialContext = getStaticInitialContext();
+    	 if(reInit){
+    		 cacheJavaGlobalNames = null;
+    		 cacheNamingMap = null;
+    	 }
+    	 try{
+    		 List firstPart_ear = new ArrayList();
+    		 NamingEnumeration root = null;
+    		 try{
+    			 Context rootCtx = (Context)initialContext.lookup("java:global");
+    			 if(rootCtx!=null)
+    				 root = (NamingEnumeration)rootCtx.list("");
+    		 }catch(Exception e){    			 
+    		 }
+    		 if(root==null){
+        		 try{
+        			 root = initialContext.list(LOOKUP_GLOBAL_NAMES);
+        		 }catch(Exception e){    			 
+        		 }
+    		 }
+    		 if(root!=null){
+	    		 while(root.hasMore())
+	    			 firstPart_ear.add(
+	    				((NameClassPair)root.next()).getName()
+	    			);
+	    		 if(firstPart_ear!=null && firstPart_ear.size()>0){
+	    			 for(int i=0;i<firstPart_ear.size();i++){
+	    				 NamingEnumeration ne = initialContext.list(LOOKUP_GLOBAL_NAMES+"/"+firstPart_ear.get(i));
+		        		 while(ne.hasMore()){
+		        			 String secondPart_war = ((NameClassPair)ne.next()).getName();	    			 
+			           		 String key = LOOKUP_GLOBAL_NAMES + ((firstPart_ear.get(i)==null)?"":"/"+firstPart_ear.get(i))+((secondPart_war==null)?"":"/"+secondPart_war);
+			           		 NamingEnumeration ne2 = initialContext.list(key);
+			           		 if(cacheJavaGlobalNames==null)
+			           			cacheJavaGlobalNames = new LinkedHashSet();
+			           		 try{
+				        		 while(ne2.hasMore())
+				        			 cacheJavaGlobalNames.add(key+"/"+((NameClassPair)ne2.next()).getName());
+			           		 }catch(Exception e){
+			           			cacheJavaGlobalNames.add(key);
+			           		 }
+		        		 }
+	        		 }
+	    		 }
+    		 }
+    		 
+    	 }catch(Exception e){
+    	 }
+     }
+     
+ /*    
+     private static List retriveNames(InitialContext initialContext,String prefix){
+    	 List result = new ArrayList();
+    	 try{
+    		 String ear = null;
+    		 String war = null;
+    		 NamingEnumeration ne = initialContext.list(prefix);
+    		 if(ne.hasMore())
+    			 ear = ((NameClassPair)ne.next()).getName();
+    		 if(ear!=null){
+    			 ne = initialContext.list(prefix+"/"+ear);
+        		 if(ne.hasMore())
+        			 war = ((NameClassPair)ne.next()).getName();
+    		 }
+    		 String key = prefix + ((ear==null)?"":"/"+ear)+((war==null)?"":"/"+war);
+    		 ne = initialContext.list(key);
+    		 while(ne.hasMore())
+    			 result.add(key+"/"+((NameClassPair)ne.next()).getName());
+    		 
+    	 }catch(Exception e){
+    		 
+    	 }
+    	 return result;
+     }
+*/
      public static info_context checkInfoEjb(info_context info, i_bean bean) {
     	if(info==null)
     		info = new info_context();
@@ -997,7 +1152,7 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
     	if(bean!=null){
     		try{
     			Class clazz = bean.getClass();
-    			bean.getInfo_context().setProxedEjb(true);
+    			bean.getInfo_context().setProxiedEjb(true);
          		if(clazz.getAnnotation(Stateless.class)!=null)
          			bean.getInfo_context().setStateless(true);
          		if(clazz.getAnnotation(Stateful.class)!=null)

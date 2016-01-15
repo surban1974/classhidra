@@ -29,15 +29,33 @@ public class loadScheduler implements i_externalloader{
 						public i_batch getInstance(String cd_btch, String cls_batch) {
 							try{
 								i_batch instance = null;
-								if(bsController.getAppInit()!=null && bsController.getAppInit().get_cdi_provider()!=null && !bsController.getAppInit().get_cdi_provider().equals("")){
+								if(bsController.getAppInit()!=null && bsController.getAppInit().get_context_provider()!=null && !bsController.getAppInit().get_context_provider().equals("")){
+									try{
+										instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getAppInit().get_context_provider(),  cd_btch, cls_batch, null);
+									}catch(Exception e){
+									}
+								}
+								if(instance==null && bsController.getAppInit()!=null && bsController.getAppInit().get_cdi_provider()!=null && !bsController.getAppInit().get_cdi_provider().equals("")){
 									try{
 										instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getAppInit().get_cdi_provider(),  cd_btch, cls_batch, null);
+									}catch(Exception e){
+									}
+								}
+								if(instance==null && bsController.getAppInit()!=null && bsController.getAppInit().get_ejb_provider()!=null && !bsController.getAppInit().get_ejb_provider().equals("")){
+									try{
+										instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getAppInit().get_ejb_provider(),  cd_btch, cls_batch, null);
 									}catch(Exception e){
 									}
 								}
 								if(instance==null && bsController.getCdiDefaultProvider()!=null){
 									try{
 										instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getCdiDefaultProvider(),   cd_btch, cls_batch, null);
+									}catch(Exception e){
+									}
+								}
+								if(instance==null && bsController.getEjbDefaultProvider()!=null){
+									try{
+										instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getEjbDefaultProvider(),   cd_btch, cls_batch, null);
 									}catch(Exception e){
 									}
 								}

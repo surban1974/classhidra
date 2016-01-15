@@ -2,7 +2,7 @@ package it.classhidra.core.controller;
 
 import java.io.Serializable;
 
-public class info_context implements Serializable{
+public class info_context implements Serializable, i_info_context{
 	private static final long serialVersionUID = 1L;
 	private boolean stateless=false;
 	private boolean stateful=false;
@@ -15,8 +15,10 @@ public class info_context implements Serializable{
 	
 	private boolean named=false;
 	
-	private boolean proxedEjb=false;
-	private boolean proxedCdi=false;
+	private boolean proxiedEjb=false;
+	private boolean proxiedCdi=false;
+	private boolean proxiedContext=false;
+	private int proxiedId=-1;
 	
 	private boolean local=false;
 	private boolean remote=false;
@@ -27,8 +29,10 @@ public class info_context implements Serializable{
 	private String description;
 	private String mappedName;
 	
+	private Class proxiedClass;
 	private Class ownerClass;
 	private Class[] value;
+	private Object proxy;
 	
 	
 	public info_context() {
@@ -42,8 +46,8 @@ public class info_context implements Serializable{
 	
 	public void reInitEjb(info_context ic){
 		if(ic==null) return;
-		if(ic.isProxedEjb())
-			this.proxedEjb=true;
+		if(ic.isProxiedEjb())
+			this.proxiedEjb=true;
 		if(ic.isStateless())
 			this.stateless=true;
 		if(ic.isStateful())
@@ -53,20 +57,32 @@ public class info_context implements Serializable{
 	}
 	
 	public boolean isScoped(){
-		return proxedCdi && (sessionScoped || applicationScoped || requestScoped);
+		return proxiedCdi && (sessionScoped || applicationScoped || requestScoped);
 	}
 	
-	public boolean isOnlyProxed(){
-		return proxedEjb && (stateful || singleton);
+	public boolean isOnlyProxied(){
+		if(proxiedEjb && (stateful || singleton))
+			return true;
+		if(proxiedContext && (stateful || singleton))
+			return true;
+		return false;
 	}
 	
 
 	public String toString(){
 		String result = ""+System.getProperty("line.separator");
+		if(proxiedId>-1)
+			result+="proxiedId: "+proxiedId+System.getProperty("line.separator");
+		if(proxiedClass!=null)
+			result+="proxied: "+proxiedClass+System.getProperty("line.separator");		
+		if(proxy!=null)
+			result+="proxy: present"+System.getProperty("line.separator");			
 		if(ownerClass!=null)
 			result+="owner: "+ownerClass+System.getProperty("line.separator");
-		if(proxedCdi)
-			result+="proxedCdi: "+proxedCdi+System.getProperty("line.separator");
+		if(proxiedContext)
+			result+="proxiedContext: "+proxiedContext+System.getProperty("line.separator");
+		if(proxiedCdi)
+			result+="proxiedCdi: "+proxiedCdi+System.getProperty("line.separator");
 		if(named)
 			result+="	named: "+named+System.getProperty("line.separator");
 		if(requestScoped)
@@ -75,8 +91,8 @@ public class info_context implements Serializable{
 			result+="	sessionScoped: "+sessionScoped+System.getProperty("line.separator");
 		if(applicationScoped)
 			result+="	applicationScoped: "+applicationScoped+System.getProperty("line.separator");
-		if(proxedEjb)
-			result+="proxedEjb: "+proxedEjb+System.getProperty("line.separator");
+		if(proxiedEjb)
+			result+="proxiedEjb: "+proxiedEjb+System.getProperty("line.separator");
 		if(stateless)
 			result+="	@Stateless: "+stateless+System.getProperty("line.separator");
 		if(stateful)
@@ -158,17 +174,17 @@ public class info_context implements Serializable{
 	public void setNamed(boolean named) {
 		this.named = named;
 	}
-	public boolean isProxedEjb() {
-		return proxedEjb;
+	public boolean isProxiedEjb() {
+		return proxiedEjb;
 	}
-	public void setProxedEjb(boolean proxedEjb) {
-		this.proxedEjb = proxedEjb;
+	public void setProxiedEjb(boolean proxiedEjb) {
+		this.proxiedEjb = proxiedEjb;
 	}
-	public boolean isProxedCdi() {
-		return proxedCdi;
+	public boolean isProxiedCdi() {
+		return proxiedCdi;
 	}
-	public void setProxedCdi(boolean proxedCdi) {
-		this.proxedCdi = proxedCdi;
+	public void setProxiedCdi(boolean proxiedCdi) {
+		this.proxiedCdi = proxiedCdi;
 	}
 
 	public Class getOwnerClass() {
@@ -245,6 +261,38 @@ public class info_context implements Serializable{
 
 	public void setStartup(boolean startup) {
 		this.startup = startup;
+	}
+
+	public Class getProxiedClass() {
+		return proxiedClass;
+	}
+
+	public void setProxiedClass(Class proxiedClass) {
+		this.proxiedClass = proxiedClass;
+	}
+
+	public int getProxiedId() {
+		return proxiedId;
+	}
+
+	public void setProxiedId(int proxiedId) {
+		this.proxiedId = proxiedId;
+	}
+
+	public Object getProxy() {
+		return proxy;
+	}
+
+	public void setProxy(Object proxy) {
+		this.proxy = proxy;
+	}
+
+	public boolean isProxiedContext() {
+		return proxiedContext;
+	}
+
+	public void setProxiedContext(boolean proxiedContext) {
+		this.proxiedContext = proxiedContext;
 	}
 
 }

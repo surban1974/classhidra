@@ -14,6 +14,7 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 
 
+
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_ProviderWrapper;
 import it.classhidra.core.controller.i_action;
@@ -30,7 +31,7 @@ public class DependencyInjectionProvider implements i_provider {
 	private static final String LOOKUP_ENV_BEANMANAGER = 	"java:comp/env/BeanManager";
 
 	
-	private static String correct_jndi_jndi_name;
+	private static String correct_jndi_name;
 	private static BeanManager beanManager;
 
 	
@@ -79,37 +80,42 @@ public class DependencyInjectionProvider implements i_provider {
 			info_context iContext = null;
 			if(instance instanceof i_ProviderWrapper){
 				if(((i_ProviderWrapper)instance).getInfo_context()!=null){
-					((i_ProviderWrapper)instance).getInfo_context().setProxedCdi(true);
+					((i_ProviderWrapper)instance).getInfo_context().setProxiedCdi(true);
 					iContext = ((i_ProviderWrapper)instance).getInfo_context();
 				}
 			}else if(instance instanceof i_bean){
 				if(((i_bean)instance).getInfo_context()!=null){
-					((i_bean)instance).getInfo_context().setProxedCdi(true);
+					((i_bean)instance).getInfo_context().setProxiedCdi(true);
 					iContext = ((i_bean)instance).getInfo_context();
 				}				
 			}else if(instance instanceof i_action){
 				if(((i_action)instance).getInfo_context()!=null){
-					((i_action)instance).getInfo_context().setProxedCdi(true);
+					((i_action)instance).getInfo_context().setProxiedCdi(true);
 					iContext = ((i_action)instance).getInfo_context();
 				}				
 			}		
-			if(iContext!=null && iContext.getOwnerClass()!=null){
-				if(iContext.getOwnerClass().getAnnotation(RequestScoped.class)!=null){
-					iContext.setRequestScoped(true);
-				}
-				if(iContext.getOwnerClass().getAnnotation(SessionScoped.class)!=null){
-					iContext.setSessionScoped(true);
-				}
-				if(iContext.getOwnerClass().getAnnotation(ApplicationScoped.class)!=null){
-					iContext.setApplicationScoped(true);
-				}
-				if(iContext.getOwnerClass().getAnnotation(Named.class)!=null){
-					iContext.setNamed(true);
-					Named annotation = (Named)iContext.getOwnerClass().getAnnotation(Named.class);
-					iContext.setName(annotation.value());
+			if(iContext!=null){
+				iContext.setProxiedId(System.identityHashCode(instance));
+				iContext.setProxiedClass(instance.getClass());
+				iContext.setProxy(instance);
+				if(iContext.getOwnerClass()!=null){
+					if(iContext.getOwnerClass().getAnnotation(RequestScoped.class)!=null){
+						iContext.setRequestScoped(true);
+					}
+					if(iContext.getOwnerClass().getAnnotation(SessionScoped.class)!=null){
+						iContext.setSessionScoped(true);
+					}
+					if(iContext.getOwnerClass().getAnnotation(ApplicationScoped.class)!=null){
+						iContext.setApplicationScoped(true);
+					}
+					if(iContext.getOwnerClass().getAnnotation(Named.class)!=null){
+						iContext.setNamed(true);
+						Named annotation = (Named)iContext.getOwnerClass().getAnnotation(Named.class);
+						iContext.setName(annotation.value());
+					}
 				}
 			}
-
+				
 			return instance;
 		}else 
 			return instance;
@@ -143,8 +149,8 @@ public class DependencyInjectionProvider implements i_provider {
 				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 					clazz.getAnnotation(ApplicationScoped.class)!=null ||
 					clazz.getAnnotation(RequestScoped.class)!=null){
-						((i_bean)instance).getInfo_context().setProxedCdi(true);
-						((i_bean)instance).getInfo_context().setProxedEjb(false);
+						((i_bean)instance).getInfo_context().setProxiedCdi(true);
+						((i_bean)instance).getInfo_context().setProxiedEjb(false);
 						if(clazz.getAnnotation(SessionScoped.class)!=null)
 							((i_bean)instance).getInfo_context().setSessionScoped(true);
 						if(clazz.getAnnotation(ApplicationScoped.class)!=null)
@@ -160,8 +166,8 @@ public class DependencyInjectionProvider implements i_provider {
 						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 							clazzi.getAnnotation(RequestScoped.class)!=null){
-							ibean.getInfo_context().setProxedCdi(true);
-							ibean.getInfo_context().setProxedEjb(false);
+							ibean.getInfo_context().setProxiedCdi(true);
+							ibean.getInfo_context().setProxiedEjb(false);
 							if(clazz.getAnnotation(SessionScoped.class)!=null)
 								ibean.getInfo_context().setSessionScoped(true);
 							if(clazz.getAnnotation(ApplicationScoped.class)!=null)
@@ -179,8 +185,8 @@ public class DependencyInjectionProvider implements i_provider {
 				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 					clazz.getAnnotation(ApplicationScoped.class)!=null ||
 					clazz.getAnnotation(RequestScoped.class)!=null){
-						((i_action)instance).getInfo_context().setProxedCdi(true);
-						((i_action)instance).getInfo_context().setProxedEjb(false);
+						((i_action)instance).getInfo_context().setProxiedCdi(true);
+						((i_action)instance).getInfo_context().setProxiedEjb(false);
 						if(clazz.getAnnotation(SessionScoped.class)!=null)
 							((i_action)instance).getInfo_context().setSessionScoped(true);
 						if(clazz.getAnnotation(ApplicationScoped.class)!=null)
@@ -196,8 +202,8 @@ public class DependencyInjectionProvider implements i_provider {
 						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 							clazzi.getAnnotation(RequestScoped.class)!=null){
-							iaction.getInfo_context().setProxedCdi(true);
-							iaction.getInfo_context().setProxedEjb(false);
+							iaction.getInfo_context().setProxiedCdi(true);
+							iaction.getInfo_context().setProxiedEjb(false);
 							if(clazz.getAnnotation(SessionScoped.class)!=null)
 								iaction.getInfo_context().setSessionScoped(true);
 							if(clazz.getAnnotation(ApplicationScoped.class)!=null)
@@ -219,10 +225,10 @@ public class DependencyInjectionProvider implements i_provider {
 			if(ejb_instance!=null){
 				try{
 					if(instance instanceof i_bean){
-						((i_bean)instance).getInfo_context().setProxedEjb(true);
+						((i_bean)instance).getInfo_context().setProxiedEjb(true);
 						((i_bean)instance).getInfo_context().reInitEjb(((i_bean)ejb_instance).getInfo_context());
 					}else if(ejb_instance instanceof i_action){
-						((i_bean)instance).getInfo_context().setProxedEjb(true);
+						((i_bean)instance).getInfo_context().setProxiedEjb(true);
 						((i_bean)instance).getInfo_context().reInitEjb(((i_action)ejb_instance).getInfo_context());
 					}
 				}catch(Exception e){
@@ -243,12 +249,12 @@ public class DependencyInjectionProvider implements i_provider {
 
 
 			    	if(ejb_instance instanceof i_bean){
-			    		((i_bean)ejb_instance).getInfo_context().setProxedEjb(true);
+			    		((i_bean)ejb_instance).getInfo_context().setProxiedEjb(true);
 						if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 							clazz.getAnnotation(ApplicationScoped.class)!=null ||
 							clazz.getAnnotation(RequestScoped.class)!=null){
-								((i_bean)ejb_instance).getInfo_context().setProxedCdi(true);
-								((i_bean)ejb_instance).getInfo_context().setProxedEjb(false);
+								((i_bean)ejb_instance).getInfo_context().setProxiedCdi(true);
+								((i_bean)ejb_instance).getInfo_context().setProxiedEjb(false);
 								if(clazz.getAnnotation(SessionScoped.class)!=null)
 									((i_bean)ejb_instance).getInfo_context().setSessionScoped(true);
 								if(clazz.getAnnotation(ApplicationScoped.class)!=null)
@@ -264,8 +270,8 @@ public class DependencyInjectionProvider implements i_provider {
 								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 									clazzi.getAnnotation(RequestScoped.class)!=null){
-									ibean.getInfo_context().setProxedCdi(true);
-									ibean.getInfo_context().setProxedEjb(false);
+									ibean.getInfo_context().setProxiedCdi(true);
+									ibean.getInfo_context().setProxiedEjb(false);
 									if(clazz.getAnnotation(SessionScoped.class)!=null)
 										ibean.getInfo_context().setSessionScoped(true);
 									if(clazz.getAnnotation(ApplicationScoped.class)!=null)
@@ -279,12 +285,12 @@ public class DependencyInjectionProvider implements i_provider {
 							}					
 						}
 					}else if(ejb_instance instanceof i_action){
-			    		((i_action)ejb_instance).getInfo_context().setProxedEjb(true);
+			    		((i_action)ejb_instance).getInfo_context().setProxiedEjb(true);
 						if(	clazz.getAnnotation(SessionScoped.class)!=null ||
 							clazz.getAnnotation(ApplicationScoped.class)!=null ||
 							clazz.getAnnotation(RequestScoped.class)!=null){
-								((i_action)ejb_instance).getInfo_context().setProxedCdi(true);
-								((i_action)ejb_instance).getInfo_context().setProxedEjb(false);
+								((i_action)ejb_instance).getInfo_context().setProxiedCdi(true);
+								((i_action)ejb_instance).getInfo_context().setProxiedEjb(false);
 								if(clazz.getAnnotation(SessionScoped.class)!=null)
 									((i_action)ejb_instance).getInfo_context().setSessionScoped(true);
 								if(clazz.getAnnotation(ApplicationScoped.class)!=null)
@@ -300,8 +306,8 @@ public class DependencyInjectionProvider implements i_provider {
 								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 									clazzi.getAnnotation(RequestScoped.class)!=null){
-									iaction.getInfo_context().setProxedCdi(true);
-									iaction.getInfo_context().setProxedEjb(false);
+									iaction.getInfo_context().setProxiedCdi(true);
+									iaction.getInfo_context().setProxiedEjb(false);
 									if(clazz.getAnnotation(SessionScoped.class)!=null)
 										iaction.getInfo_context().setSessionScoped(true);
 									if(clazz.getAnnotation(ApplicationScoped.class)!=null)
@@ -387,20 +393,20 @@ public class DependencyInjectionProvider implements i_provider {
          try {
        		 InitialContext initialContext = new InitialContext();
         	 
-         	if(correct_jndi_jndi_name!=null){
+         	if(correct_jndi_name!=null){
 	         	try{
-	         		beanManager = (BeanManager)initialContext.lookup(correct_jndi_jndi_name);
+	         		beanManager = (BeanManager)initialContext.lookup(correct_jndi_name);
 	         	}catch(Exception e){
 	         		new bsControllerException(e, iStub.log_ERROR);
 //	         		le.printStackTrace();
 	         	}        		
         	}        	
          	if(beanManager==null){ 
-         		correct_jndi_jndi_name=null;
+         		correct_jndi_name=null;
 		        try{
 		        	beanManager = (BeanManager)initialContext.lookup(LOOKUP_BEANMANAGER);
 		         	if(beanManager!=null)
-		         		correct_jndi_jndi_name = LOOKUP_BEANMANAGER;
+		         		correct_jndi_name = LOOKUP_BEANMANAGER;
 		         }catch(Exception e){
 		         }catch (Throwable e) {
 		         }
@@ -410,7 +416,7 @@ public class DependencyInjectionProvider implements i_provider {
          	if(beanManager==null){ 
          		beanManager = (BeanManager)initialContext.lookup(LOOKUP_ENV_BEANMANAGER);
          		if(beanManager!=null)
-         			correct_jndi_jndi_name = LOOKUP_ENV_BEANMANAGER;
+         			correct_jndi_name = LOOKUP_ENV_BEANMANAGER;
          	}
 
          } catch (NamingException e) {
@@ -426,9 +432,9 @@ public class DependencyInjectionProvider implements i_provider {
          try {
         	InitialContext initialContext = new InitialContext();
         	
-        	if(correct_jndi_jndi_name!=null){
+        	if(correct_jndi_name!=null){
 	         	try{
-	         		beanManager = (BeanManager)initialContext.lookup(correct_jndi_jndi_name);
+	         		beanManager = (BeanManager)initialContext.lookup(correct_jndi_name);
 	         	}catch(Exception e){
 	         		new bsControllerException(e, iStub.log_ERROR);
 //	         		le.printStackTrace();
@@ -436,12 +442,12 @@ public class DependencyInjectionProvider implements i_provider {
         	}  
         	
         	if(beanManager==null){
-        		correct_jndi_jndi_name=null;
+        		correct_jndi_name=null;
 	        	if(cdiJndiName!=null && !cdiJndiName.equals("")){
 		         	try{
 		         		beanManager = (BeanManager)initialContext.lookup(cdiJndiName);
 		         		if(beanManager!=null)
-		         			correct_jndi_jndi_name = cdiJndiName;
+		         			correct_jndi_name = cdiJndiName;
 		         	}catch(Exception e){
 		         		new bsControllerException(e, iStub.log_ERROR);
 //		         		le.printStackTrace();
@@ -453,7 +459,7 @@ public class DependencyInjectionProvider implements i_provider {
 	         	try{
 	         		beanManager = (BeanManager)initialContext.lookup(LOOKUP_BEANMANAGER);
 	         		if(beanManager!=null)
-	         			correct_jndi_jndi_name = LOOKUP_BEANMANAGER;
+	         			correct_jndi_name = LOOKUP_BEANMANAGER;
 	         	}catch(Exception e){
 	         		new bsControllerException(e, iStub.log_ERROR);
 //	         		le.printStackTrace();
@@ -464,7 +470,7 @@ public class DependencyInjectionProvider implements i_provider {
 	         	try{
 	         		beanManager = (BeanManager)initialContext.lookup(LOOKUP_ENV_BEANMANAGER);
 	         		if(beanManager!=null)
-	         			correct_jndi_jndi_name = LOOKUP_ENV_BEANMANAGER;
+	         			correct_jndi_name = LOOKUP_ENV_BEANMANAGER;
 	         	}catch(Exception e){
          			new bsControllerException(e, iStub.log_ERROR);
  //        			le.printStackTrace();
@@ -487,7 +493,7 @@ public class DependencyInjectionProvider implements i_provider {
 //                 System.out.println(bean.getBeanClass().getName());
 //             }
         	 
-        	 new bsControllerException("CDI BeanManager retrived SUCCEESFULLY from: "+correct_jndi_jndi_name, iStub.log_INFO);
+        	 new bsControllerException("CDI BeanManager retrived SUCCEESFULLY from: "+correct_jndi_name, iStub.log_INFO);
         	 return true;
          }
      }

@@ -46,6 +46,7 @@ public interface i_action extends listener_action, i_bean, Serializable{
 	redirects syncroservice(HashMap wsParameters) throws  bsControllerException;
 	i_bean get_bean();
 	void set_bean(i_bean form);
+	void set_bean(i_bean form, info_context iContext);
 	info_action get_infoaction();
 	void set_infoaction(info_action action);
 	redirects getCurrent_redirect();
@@ -59,4 +60,5 @@ public interface i_action extends listener_action, i_bean, Serializable{
 	i_bean asBean();
 	i_bean getRealBean();
 	i_action asAction();
+	boolean isBeanEqualAction();
 }

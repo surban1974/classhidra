@@ -51,11 +51,13 @@ public class app_init implements Serializable{
 	public final static String id_load_res_mode				= 	"application.load.resource.mode";
 	public final static String id_external_loader			= 	"application.external_loader.class";
 	public final static String id_init_loader				= 	"application.init_loader.class";
+	public final static String id_context_provider			= 	"application.context.provider.class";
 	public final static String id_cdi_provider				= 	"application.cdi.provider.class";
 	public final static String id_cdi_jndi_name				= 	"application.cdi.jndi.name";
 	public final static String id_ejb_provider 				=	"application.ejb.provider.class";
 	public final static String id_ejb_jndi_name				= 	"application.ejb.jndi.name";
 	public final static String id_ejb_jndi_name_prefix 		= 	"application.ejb.jndi.resolvename.prefix";
+	public final static String id_ejb_avoid_loop_reentrant	= 	"application.ejb.avoid.loop.reentrant";
 	public final static String id_pin						=	"application.pin";
 	public final static String id_db_name 					=	"application.config.db";
 	public final static String id_extention_do 				=	"application.extention.do";
@@ -84,11 +86,13 @@ public class app_init implements Serializable{
 	private String _load_res_mode;
 	private String _external_loader;
 	private String _init_loader;
+	private String _context_provider;
 	private String _cdi_provider;
 	private String _cdi_jndi_name;
 	private String _ejb_provider;
 	private String _ejb_jndi_name;
 	private String _ejb_jndi_name_prefix;
+	private String _ejb_avoid_loop_reentrant;
 	private String _pin;
 	private String _db_name;
 	private boolean db_name_valid=true;
@@ -185,11 +189,13 @@ public class app_init implements Serializable{
 			_nav_excluded=(_nav_excluded==null)?System.getProperty(id_nav_excluded):_nav_excluded;
 			_external_loader=(_external_loader==null)?System.getProperty(id_external_loader):_external_loader;
 			_init_loader=(_init_loader==null)?System.getProperty(id_init_loader):_init_loader;
+			_context_provider=(_context_provider==null)?System.getProperty(id_context_provider):_context_provider;
 			_cdi_provider=(_cdi_provider==null)?System.getProperty(id_cdi_provider):_cdi_provider;
 			_ejb_provider=(_ejb_provider==null)?System.getProperty(id_ejb_provider):_ejb_provider;
 			_cdi_jndi_name=(_cdi_jndi_name==null)?System.getProperty(id_cdi_jndi_name):_cdi_jndi_name;
 			_ejb_jndi_name=(_ejb_jndi_name==null)?System.getProperty(id_ejb_jndi_name):_ejb_jndi_name;
 			_ejb_jndi_name_prefix=(_ejb_jndi_name_prefix==null)?System.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
+			_ejb_avoid_loop_reentrant=(_ejb_avoid_loop_reentrant==null)?System.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
@@ -264,12 +270,13 @@ public class app_init implements Serializable{
 		_nav_excluded=(_nav_excluded==null)?property.getProperty(id_nav_excluded):_nav_excluded;
 		_external_loader=(_external_loader==null)?property.getProperty(id_external_loader):_external_loader;
 		_init_loader=(_init_loader==null)?property.getProperty(id_init_loader):_init_loader;
+		_context_provider=(_context_provider==null)?property.getProperty(id_context_provider):_context_provider;
 		_cdi_provider=(_cdi_provider==null)?property.getProperty(id_cdi_provider):_cdi_provider;
 		_ejb_provider=(_ejb_provider==null)?property.getProperty(id_ejb_provider):_ejb_provider;
 		_cdi_jndi_name=(_cdi_jndi_name==null)?property.getProperty(id_cdi_jndi_name):_cdi_jndi_name;
 		_ejb_jndi_name=(_ejb_jndi_name==null)?property.getProperty(id_ejb_jndi_name):_ejb_jndi_name;
 		_ejb_jndi_name_prefix=(_ejb_jndi_name_prefix==null)?property.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
-
+		_ejb_avoid_loop_reentrant=(_ejb_avoid_loop_reentrant==null)?property.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
 		
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
@@ -589,5 +596,13 @@ public class app_init implements Serializable{
 
 	public String get_ejb_provider() {
 		return _ejb_provider;
+	}
+
+	public String get_ejb_avoid_loop_reentrant() {
+		return _ejb_avoid_loop_reentrant;
+	}
+
+	public String get_context_provider() {
+		return _context_provider;
 	}
 }

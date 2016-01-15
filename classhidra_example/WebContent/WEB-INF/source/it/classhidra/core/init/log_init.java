@@ -74,6 +74,8 @@ public class log_init implements Serializable{
 	private String _Write2Concole;
 
 	private String loadedFrom="";
+	
+	private boolean changed=false;
 
 
 public  log_init() {
@@ -203,6 +205,7 @@ public void init(Properties ex_property) {
 		if(_LogMaskName==null) _LogMaskName = "application";
 		_LogName = _LogMaskName + util_format.dataToString(Calendar.getInstance().getTime(),_LogMaskFormat);
 	}
+	setChanged(true);
 }
 
 
@@ -248,6 +251,7 @@ public Properties initDB(app_init ainit) throws bsControllerException, Exception
 		property=null;
 		throw e;
 	}
+	setChanged(true);
 	return property;
 	
 
@@ -269,6 +273,7 @@ public int get_LogFlashSize() {
 		return 1024;
 	}
 }
+
 public String get_LogMaskFormat() {
 	return _LogMaskFormat;
 }
@@ -293,27 +298,35 @@ public String get_LogPattern() {
 }
 public void set_LogFlashRate(String string) {
 	_LogFlashRate = string;
+	setChanged(true);
 }
 public void set_LogFlashSize(String string) {
 	_LogFlashSize = string;
+	setChanged(true);
 }
 public void set_LogMaskFormat(String string) {
 	_LogMaskFormat = string;
+	setChanged(true);
 }
 public void set_LogMaskName(String string) {
 	_LogMaskName = string;
+	setChanged(true);
 }
 public void set_LogMaxLength(String string) {
 	_LogMaxLength = string;
+	setChanged(true);
 }
 public void set_LogName(String string) {
 	_LogName = string;
+	setChanged(true);
 }
 public void set_LogPath(String string) {
 	_LogPath = string;
+	setChanged(true);
 }
 public void set_LogPattern(String string) {
 	_LogPattern = string;
+	setChanged(true);
 }
 public int get_LogMaxFiles() {
 	try{
@@ -325,6 +338,7 @@ public int get_LogMaxFiles() {
 }
 public void set_LogMaxFiles(String string) {
 	_LogMaxFiles = string;
+	setChanged(true);
 }
 
 	public static String getId_LogFlashRate() {
@@ -425,15 +439,18 @@ public void set_LogMaxFiles(String string) {
 
 	public void set_LogLevel(String string) {
 		_LogLevel = string;
+		setChanged(true);
 	}
 
 	public void set_LogStub(String string) {
 		_LogStub = string;
+		setChanged(true);
 	}
 	public String toString(){
 		String result="";
 		result+="application.log.stub="+_LogStub+System.getProperty("line.separator");
 		result+="application.log.level="+_LogLevel+System.getProperty("line.separator");
+		result+="application.log.generator="+_LogGenerator+System.getProperty("line.separator");
 		result+="application.log.pattern="+_LogPattern+System.getProperty("line.separator");
 		result+="application.log.path="+_LogPath+System.getProperty("line.separator");
 		result+="application.log.name="+_LogName+System.getProperty("line.separator");
@@ -452,6 +469,7 @@ public void set_LogMaxFiles(String string) {
 
 	public void set_Write2Concole(String write2Concole) {
 		_Write2Concole = write2Concole;
+		setChanged(true);
 	}
 
 	public String get_LogGenerator() {
@@ -460,6 +478,7 @@ public void set_LogMaxFiles(String string) {
 
 	public void set_LogGenerator(String logGenerator) {
 		_LogGenerator = logGenerator;
+		setChanged(true);
 	}
 
 	public String getLoadedFrom() {
@@ -477,6 +496,14 @@ public void set_LogMaxFiles(String string) {
 
 		return false;
 		
+	}
+
+	public boolean isChanged() {
+		return changed;
+	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
 	}
 
 	

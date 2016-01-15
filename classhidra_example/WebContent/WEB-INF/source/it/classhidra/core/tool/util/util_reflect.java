@@ -113,6 +113,23 @@ private static synchronized Object[] forPrepareClassInfo(String javaName, String
 	return null;
 }
 
+public static synchronized int countPresentClassInfo(String javaName, String methodName){
+	int count = 0;
+	try{
+				for (int i=0;i<new Exception().getStackTrace().length;i++){
+					if(	new Exception().getStackTrace()[i].getFileName() != null &&
+						new Exception().getStackTrace()[i].getFileName().equals(javaName) &&
+						new Exception().getStackTrace()[i].getMethodName().equals(methodName)){
+						count++;
+					}
+				}
+	}catch(Exception e){
+	}
+
+	return count;
+}
+
+
 public static Method getMethod(String name, Object obj) throws Exception {
 	Method mtd[] = getMethods(obj);
 	int i = findMethod(name,mtd);
@@ -644,7 +661,17 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 	
 	StringTokenizer st = new StringTokenizer(field_name,".");
 	Object current_requested = requested;
+	
+
+	
 	while(st.hasMoreTokens()){
+		
+		try{
+			if(	current_requested!=null && current_requested instanceof i_bean)
+				current_requested = ((i_bean)current_requested).asBean();
+		}catch(Exception e){
+		}
+		
 		String current_field_name = st.nextToken();
 		
 		if(syn!=null && syn.get(current_field_name)!=null)

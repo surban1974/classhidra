@@ -119,7 +119,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	boolean getGzipoutput();
 	void setGzipoutput(boolean gzipoutput);
 	info_context getInfo_context();
-	void setInfo_context(info_context info_context);
+	void setInfo_context(i_info_context info_context);
 	
 	
 	listener_bean getListener_b();

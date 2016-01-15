@@ -147,7 +147,13 @@ public class load_organization extends elementBase{
 		
 		if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
 			try{ 
-				i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, ainit.get_external_loader());
+				i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(
+								new String[]{
+										bsController.getAppInit().get_context_provider(),
+										bsController.getAppInit().get_cdi_provider(),
+										bsController.getAppInit().get_ejb_provider()
+								},
+								ainit.get_external_loader());
 				reInit(extl);
 			}catch(Exception e){
 				bsController.writeLog("Load_organization from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
@@ -159,7 +165,13 @@ public class load_organization extends elementBase{
 
 		if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
 			try{ 
-				i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, this.getExternalloader());
+				i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(
+								new String[]{
+										bsController.getAppInit().get_context_provider(),
+										bsController.getAppInit().get_cdi_provider(),
+										bsController.getAppInit().get_ejb_provider()
+								},
+								this.getExternalloader());
 				extl.load();
 				reInit(extl);
 			}catch(Exception e){

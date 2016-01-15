@@ -172,7 +172,7 @@ public class wsController   {
 
 
 						action_instance.onPreSet_bean();
-						action_instance.set_bean(bean_instance);
+						action_instance.set_bean(bean_instance, (bean_instance!=null)?bean_instance.getInfo_context():null);
 						action_instance.onPostSet_bean();
 
 						action_instance.onPreInit(wsParameters);

@@ -195,7 +195,9 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 						((i_action)util_provider.getInstanceFromProvider(
 								new String[]{
 										bsController.getAction_config().getProvider(),
-										bsController.getAppInit().get_cdi_provider()
+										bsController.getAppInit().get_context_provider(),
+										bsController.getAppInit().get_cdi_provider(),
+										bsController.getAppInit().get_ejb_provider()
 								},
 								"menuCreator",
 								EjbComponentMenuCreator.class.getName(),
@@ -231,7 +233,18 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 
 		    i_module_integration imi = null;
 		    try{
-		    	imi = (i_module_integration)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, module_integration);
+//		    	imi = (i_module_integration)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider()}, module_integration);
+		    	imi = (i_module_integration)util_provider.getInstanceFromProvider(
+						new String[]{
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+						},
+						"null",
+						module_integration,
+						request.getSession().getServletContext()
+						
+						);
 		    }catch(Exception e){
 		    }
 
@@ -343,8 +356,9 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 
 
 	private void  loadUser_config() {
-		if(bsController.getUser_config()==null){
+		if(bsController.getUser_config()==null)
 			bsController.setUser_config(new  load_users());
+		if(((load_users)bsController.getUser_config()).get_users().size()==0){
 				try{
 					((load_users)bsController.getUser_config()).setReadError(false);
 					((load_users)bsController.getUser_config()).init();

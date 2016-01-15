@@ -98,7 +98,13 @@ public void init() throws bsControllerException{
 	
 	if(ainit.get_external_loader()!=null && !ainit.get_external_loader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, ainit.get_external_loader());
+			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(
+							new String[]{
+									bsController.getAppInit().get_context_provider(),
+									bsController.getAppInit().get_cdi_provider(),
+									bsController.getAppInit().get_ejb_provider()
+							},
+							ainit.get_external_loader());
 			reInit(extl);
 		}catch(Exception e){
 			bsController.writeLog("Load_messages from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
@@ -110,7 +116,13 @@ public void init() throws bsControllerException{
 
 	if(this.getExternalloader()!=null && !this.getExternalloader().equals("")){
 		try{ 
-			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, this.getExternalloader());
+			i_externalloader extl= (i_externalloader)util_provider.getInstanceFromProvider(
+							new String[]{
+									bsController.getAppInit().get_context_provider(),
+									bsController.getAppInit().get_cdi_provider(),
+									bsController.getAppInit().get_ejb_provider()
+							},
+							this.getExternalloader());
 			reInit(extl);
 		}catch(Exception e){
 			bsController.writeLog("Load_messages from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);

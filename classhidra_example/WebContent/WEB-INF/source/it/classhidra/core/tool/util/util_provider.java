@@ -116,10 +116,11 @@ public class util_provider {
 					instance = getBeanFromProvider(providers[i], id_bean, class_bean, servletContext);
 					if(instance==null)
 						instance = getBeanFromProvider(bsConstants.CONST_PROVIDER_PATH+providers[i], id_bean, class_bean, servletContext);
-				}else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
-					isBreak=true;
-					break;			
 				}
+//				else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
+//					isBreak=true;
+//					break;			
+//				}
 				i++;
 			}		
 		}
@@ -198,10 +199,10 @@ public class util_provider {
 			while(instance==null && i<providers.length){
 				if(providers[i]!=null && !providers[i].equals("") && !providers[i].equalsIgnoreCase("false"))
 					instance = getBeanFromObjectFactory(providers[i], id_bean, class_name, servletContext);
-				else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
-					isBreak=true;
-					break;			
-				}
+//				else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
+//					isBreak=true;
+//					break;			
+//				}
 				i++;
 			}
 		}
@@ -226,10 +227,10 @@ public class util_provider {
 			while(instance==null && i<providers.length){
 				if(providers[i]!=null && !providers[i].equals("") && !providers[i].equalsIgnoreCase("false"))
 					instance = getBeanFromObjectFactory(providers[i], class_name, class_name, null);
-				else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
-					isBreak=true;
-					break;			
-				}
+//				else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
+//					isBreak=true;
+//					break;			
+//				}
 				i++;
 			}
 		}
@@ -254,10 +255,10 @@ public class util_provider {
 			while(instance==null && i<providers.length){			
 				if(providers[i]!=null && !providers[i].equals("") && !providers[i].equalsIgnoreCase("false"))
 					instance = getBeanFromObjectFactory(providers[i], class_name, class_name, null);
-				else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
-					isBreak=true;
-					break;			
-				}
+//				else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
+//					isBreak=true;
+//					break;			
+//				}
 				i++;
 			}
 		}
@@ -277,16 +278,48 @@ public class util_provider {
 		if(class_name==null) 
 			return null;
 		if(i_action==null)
-			return getInstanceFromProvider(new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, class_name);
-		return getInstanceFromProvider(new String[]{i_action.getProvider(),bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, class_name);
+			return getInstanceFromProvider(
+					new String[]{
+							bsController.getAction_config().getProvider(),
+							bsController.getAppInit().get_context_provider(),
+							bsController.getAppInit().get_cdi_provider(),
+							bsController.getAppInit().get_ejb_provider()
+					},
+					class_name);
+		return getInstanceFromProvider(
+				new String[]{
+						i_action.getProvider(),
+						bsController.getAction_config().getProvider(),
+						bsController.getAppInit().get_context_provider(),
+						bsController.getAppInit().get_cdi_provider(),
+						bsController.getAppInit().get_ejb_provider()
+				},
+				class_name);
 	}
 
 	public static Object getInstanceFromProvider(info_action i_action, String class_name, Class[] arg, Object[] par) throws Exception{
 		if(class_name==null) 
 			return null;
 		if(i_action==null)
-			return getInstanceFromProvider(new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, class_name, arg, par);
-		return getInstanceFromProvider(new String[]{i_action.getProvider(),bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()}, class_name, arg, par);
+			return getInstanceFromProvider(
+					new String[]{
+							bsController.getAction_config().getProvider(),
+							bsController.getAppInit().get_context_provider(),
+							bsController.getAppInit().get_cdi_provider(),
+							bsController.getAppInit().get_ejb_provider()
+					},
+					class_name, arg, par);
+		return getInstanceFromProvider(
+				new String[]{
+						i_action.getProvider(),
+						bsController.getAction_config().getProvider(),
+						bsController.getAppInit().get_context_provider(),
+						bsController.getAppInit().get_cdi_provider(),
+						bsController.getAppInit().get_ejb_provider()
+				},
+				class_name,
+				arg,
+				par);
 	}
 
 
@@ -297,41 +330,89 @@ public class util_provider {
 		if(obj instanceof i_action){
 			i_action iaction = (i_action)obj;
 			if(iaction.get_infoaction()!=null){
-				providers = new String[]{iaction.get_infoaction().getProvider(),bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+				providers = new String[]{
+								iaction.get_infoaction().getProvider(),
+								bsController.getAction_config().getProvider(),
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+							};
 				result = destroyInstanceFromObjectFactory(providers, iaction.get_infoaction().getPath(), obj.getClass().getName(), servletContext);
 			}else{
-				providers = new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+				providers = new String[]{
+								bsController.getAction_config().getProvider(),
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+							};
 				result = destroyInstanceFromObjectFactory(providers, obj.getClass().getName(), obj.getClass().getName(), servletContext);
 			}
 		}else if(obj instanceof i_bean){
 			i_bean ibean = (i_bean)obj;
 			if(ibean.get_infobean()!=null){
-				providers = new String[]{ibean.get_infobean().getProvider(),bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+				providers = new String[]{
+								ibean.get_infobean().getProvider(),
+								bsController.getAction_config().getProvider(),
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+							};
 				result = destroyInstanceFromObjectFactory(providers, ibean.get_infobean().getName(), obj.getClass().getName(), servletContext);
 			}else{
-				providers = new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+				providers = new String[]{
+								bsController.getAction_config().getProvider(),
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+							};
 				result = destroyInstanceFromObjectFactory(providers, obj.getClass().getName(), obj.getClass().getName(), servletContext);
 			}
 		}else if(obj instanceof i_stream){
 			i_stream istream = (i_stream)obj;
 			if(istream.get_infostream()!=null){
-				providers = new String[]{istream.get_infostream().getProvider(),bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+				providers = new String[]{
+								istream.get_infostream().getProvider(),
+								bsController.getAction_config().getProvider(),
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+							};
 				result = destroyInstanceFromObjectFactory(providers, istream.get_infostream().getName(), obj.getClass().getName(), servletContext);
 			}else{
-				providers = new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+				providers = new String[]{
+								bsController.getAction_config().getProvider(),
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+							};
 				result = destroyInstanceFromObjectFactory(providers, obj.getClass().getName(), obj.getClass().getName(), servletContext);
 			}			
 		}else if(obj instanceof i_transformation){
 			i_transformation itrans = (i_transformation)obj;
 			if(itrans.get_infotransformation()!=null){
-				providers = new String[]{itrans.get_infotransformation().getProvider(),bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+				providers = new String[]{
+								itrans.get_infotransformation().getProvider(),
+								bsController.getAction_config().getProvider(),
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+							};
 				result = destroyInstanceFromObjectFactory(providers, itrans.get_infotransformation().getName(), obj.getClass().getName(), servletContext);
 			}else{
-				providers = new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+				providers = new String[]{
+								bsController.getAction_config().getProvider(),
+								bsController.getAppInit().get_context_provider(),
+								bsController.getAppInit().get_cdi_provider(),
+								bsController.getAppInit().get_ejb_provider()
+							};
 				result = destroyInstanceFromObjectFactory(providers, obj.getClass().getName(), obj.getClass().getName(), servletContext);
 			}			
 		}else{
-			providers = new String[]{bsController.getAppInit().get_cdi_provider(), bsController.getAppInit().get_ejb_provider()};
+			providers = new String[]{
+							bsController.getAppInit().get_context_provider(),
+							bsController.getAppInit().get_cdi_provider(),
+							bsController.getAppInit().get_ejb_provider()
+						};
 			result = destroyInstanceFromObjectFactory(providers, obj.getClass().getName(), obj.getClass().getName(), servletContext);
 		}
 		
@@ -348,10 +429,11 @@ public class util_provider {
 					result = destroyInstanceFromProvider(providers[i], id_bean, class_bean, servletContext);
 					if(!result)
 						result = destroyInstanceFromProvider(bsConstants.CONST_PROVIDER_PATH+providers[i], id_bean, class_bean, servletContext);
-				}else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
-					isBreak=true;
-					break;			
 				}
+//				else if(providers[i]!=null && providers[i].equalsIgnoreCase("false")){
+//					isBreak=true;
+//					break;			
+//				}
 				i++;
 			}
 			if(!isBreak && bsController.getCdiDefaultProvider()!=null)

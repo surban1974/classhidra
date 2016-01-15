@@ -35,7 +35,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 		<bs:input type="hidden" name="lang"/>
 	
 	
-<table border="0" width="100%" height="450" >
+<table border="0" width="100%" height="430" >
 <tr>
 <td align="center" style="border-bottom-style: solid 1px;" valign="middle">
 <br></br>	
@@ -55,7 +55,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						align="center" 
 						width="150"
 						
-						style="border-right-style: solid;border-right-width: 1px ; border-right-color: #D5E5F7; width: 150px; height: 150px;">
+						style="border-right-style: solid;border-right-width: 1px ; border-right-color: #D5E5F7; width: 150px; height: 140px;">
 						<img src="images/decor/128_logo.gif" border="0" >
 						
 					</td>

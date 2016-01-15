@@ -1352,8 +1352,8 @@ public info_context getInfo_context() {
 	return info_context;
 }
 
-public void setInfo_context(info_context info_context) {
-	this.info_context = info_context;
+public void setInfo_context(i_info_context info_context) {
+	this.info_context = (info_context)info_context;
 }
 
 

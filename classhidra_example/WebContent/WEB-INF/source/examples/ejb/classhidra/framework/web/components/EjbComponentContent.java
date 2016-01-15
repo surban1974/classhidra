@@ -4,8 +4,10 @@ package examples.ejb.classhidra.framework.web.components;
 
 import java.io.Serializable;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
-import javax.ejb.Stateful;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,28 +21,24 @@ import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 
 
-@Action (
-	path="content",
-	name="formContent",
-	redirect="/jsp/framework/content.jsp",
-	reloadAfterAction="true"
-)
 
 
-@NavigatedDirective(memoryContent="true")
-@Stateful
+
+
+@Stateless
 @Local(i_action.class)
+@Action (
+		path="content",
+		name="beanContent",
+		redirect="/jsp/framework/content.jsp",
+		reloadAfterAction="true"
+	)
+@NavigatedDirective(memoryContent="true")
 public class EjbComponentContent extends action implements i_action, Serializable{
-
-	private static final long serialVersionUID = -1830493478965489235L;
+	private static final long serialVersionUID = -1L;
 	
-	private String menuSource;
-	
-
-	
-	private boolean firstEnter=false;
-	
-	
+	@Resource
+	SessionContext sessionContext;	
 
 public EjbComponentContent(){
 	super();
@@ -72,27 +70,6 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 
 	return new redirects(get_infoaction().getRedirect());
-}
-
-public void reimposta(){
-	menuSource="";
-}
-
-public String getMenuSource() {
-	return menuSource;
-}
-
-public void setMenuSource(String menuSource) {
-	this.menuSource = menuSource;
-}
-
-
-public boolean getFirstEnter() {
-	return firstEnter;
-}
-
-public void setFirstEnter(boolean firstEnter) {
-	this.firstEnter = firstEnter;
 }
 
 
