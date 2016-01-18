@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.github.surban1974.classhidra</groupId>
+  <artifactId>classhidra-jboss7-vfs</artifactId>
+  <versioning>
+    <release>1.5.3</release>
+    <versions>
+      <version>1.5.3</version>
+    </versions>
+    <lastUpdated>20160118192850</lastUpdated>
+  </versioning>
+</metadata>
