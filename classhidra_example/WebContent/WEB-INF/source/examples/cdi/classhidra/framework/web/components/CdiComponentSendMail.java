@@ -4,7 +4,7 @@ package examples.cdi.classhidra.framework.web.components;
 
 import java.io.Serializable;
 
-
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import application.util.mail.mail_manager_smtp;
 import application.util.mail.mail_message;
-
+import examples.cdi.classhidra.framework.web.i_components.IComponentSendMail;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.redirects;

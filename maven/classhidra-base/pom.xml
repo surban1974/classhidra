@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
 	<artifactId>classhidra-base</artifactId>
-	<version>1.5.2</version>
+	<version>1.5.3</version>
 	<name>ClassHidra Base Module</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Java 1.6 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
@@ -26,12 +26,17 @@
         	<name>Temporary Staging Repository</name>
         	<url>file://${project.build.directory}/mvn-repo</url>
     	</repository>
-	</distributionManagement>   
+	</distributionManagement>    
   
   <build>
+  
+ <!--  
      <resources>
+     
  		<resource>
+ 		
  			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+
  			<includes>
  				<include>config/messages/classhidra_messages.xml</include>
  				<include>it/classhidra/version.properties</include>
@@ -43,7 +48,7 @@
  			</includes>
  		</resource>
     </resources>  
-  
+   -->
 
 	<plugins>
 	
@@ -70,6 +75,33 @@
 		                </sources>
 		            </configuration>
 		        </execution>
+		         <execution>
+		            <id>add-resource</id>
+		            <phase>generate-resources</phase>
+		            <goals>
+		              <goal>add-resource</goal>
+		            </goals>
+		            <configuration>
+		              <resources>
+		                <resource>
+		                  <directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+<!-- 
+		                  <targetPath>my-resources</targetPath>
+ -->
+				 			<includes>
+				 				<include>config/messages/classhidra_messages.xml</include>
+				 				<include>it/classhidra/version.properties</include>
+				 				<include>it/classhidra/core/controller/resources/*.*</include>
+				 				<include>it/classhidra/framework/resources/**/*.*</include>
+				 				<include>it/classhidra/scheduler/*.properties</include>
+				 				<include>it/classhidra/scheduler/**/*.properties</include>
+				 				<include>it/classhidra/scheduler/**/*.sql</include>
+				 			</includes>
+		                </resource>
+		              </resources>
+		            </configuration>
+		          </execution>
+		        
 		    </executions>
 		</plugin>
 	
@@ -90,6 +122,8 @@
 					<include>it/**/*.java</include>
 		            <include>external_loaders/**/*.java</include>
 		            <include>pool/**/*.java</include> 
+
+
 	     
 				</includes>        
 				<source>1.6</source>
@@ -121,6 +155,8 @@
 					<include>it/**/*.java</include>
 		            <include>external_loaders/**/*.java</include>
 		            <include>pool/**/*.java</include> 
+		            
+	            
 	     
 				</includes>        
 			</configuration>		  	
@@ -167,6 +203,7 @@
               </execution>
             </executions>
         </plugin>	  
+
 		
 	</plugins>
 
@@ -175,43 +212,7 @@
   
  	<dependencies>
  
- <!-- 
-		<dependency>
-			<groupId>com.github.surban1974.neohort</groupId>
-			<artifactId>neoHort5</artifactId>
-			<version>5.2.5.2</version>
-		</dependency>
-	
-		<dependency>
-			<groupId>net.htmlparser.jericho</groupId>
-			<artifactId>jericho-html</artifactId>
-			<version>2.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jboss</groupId>
-			<artifactId>jboss-vfs</artifactId>
-			<version>3.1.0.Final</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.jboss.weld.servlet</groupId>
-			<artifactId>weld-servlet</artifactId>
-			<version>1.1.31.Final</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>ejb3-persistence</artifactId>
-			<version>3.3.2.Beta1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.6</version>
-		</dependency>
- -->		
+ 
  		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>

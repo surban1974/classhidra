@@ -42,7 +42,7 @@ public class CdiComponentMenuCreator extends action implements i_action, Seriali
 	private String menu_action;
 	private String menu_lang;
 	
-	@Inject
+//	@Inject
 	private i_menu_element element;
 	
 	

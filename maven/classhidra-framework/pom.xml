@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
 	<artifactId>classhidra-framework</artifactId>
-	<version>1.5.2</version>
+	<version>1.5.3</version>
 	<name>ClassHidra Embedded Framework</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development.</description>
 	<url>https://github.com/surban1974/classhidra</url>
@@ -32,7 +32,7 @@
 
   	<resources>
  		<resource>
- 			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+ 			<directory>file:///C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
  			<includes>
  				<include>classhidra_app.properties</include>
  				<include>classhidra_auth.properties</include>
@@ -143,7 +143,7 @@
  		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-base</artifactId>
-			<version>1.5.2</version>
+			<version>1.5.3</version>
 		</dependency>
 		
 		<dependency>

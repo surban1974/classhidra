@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.surban1974.classhidra</groupId>
   <artifactId>classhidra-ejb-example</artifactId>
-  <version>1.5.2</version>
+  <version>1.5.3</version>
   <packaging>war</packaging>
 	<name>ClassHidra Framework Example EJB Implementation</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. EJB Implementation. Distributed Apache-TomEE-plume-1.7.2.</description>
@@ -119,6 +119,8 @@
 							<include>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</include>
 							<include>application/**/*.java</include>
 							<include>examples/ejb/classhidra/framework/**/*.java</include>
+							<include>wrappers/ejb/LogGenerator_EjbOnlySession.java</include>
+							
 						</includes>                        
                         <targetPath>WEB-INF/classes</targetPath>
                     </resource>                               	
@@ -178,7 +180,7 @@
  		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-ejb</artifactId>
-			<version>1.5.2</version>
+			<version>1.5.3</version>
 		</dependency>			
 
 		<dependency>

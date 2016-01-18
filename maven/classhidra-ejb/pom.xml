@@ -2,8 +2,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
 	<artifactId>classhidra-ejb</artifactId>
-	<version>1.5.2</version>
-	<name>ClassHidra EJB Implementation</name>
+	<version>1.5.3</version>
+	<name>ClassHidra EJB Support</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. EJB Implementation. Java 1.6 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
@@ -67,9 +67,12 @@
 	        <configuration>
                   
 				<includes>
-					<include>it/classhidra/plugin/provider/ejb/**/*.java</include>
-					<include>it/classhidra/plugin/provider/EjbProvider.java</include>					
+					<include>it/classhidra/plugin/provider/EjbProvider.java</include>	
+					<include>wrappers/ejb/**/*.java</include>				
 				</includes>        
+				<excludes>
+					<exclude>wrappers/ejb/LogGenerator_EjbOnlySession.java</exclude>
+				</excludes>
 				<source>1.6</source>
 				<target>1.6</target>
 			</configuration>
@@ -87,9 +90,9 @@
 		    	</execution>
 		  	</executions>
  			<configuration>
-				<includes>
-					<include>it/classhidra/plugin/provider/ejb/**/*.java</include>
-					<include>it/classhidra/plugin/provider/EjbProvider.java</include>					
+				<includes>					
+					<include>it/classhidra/plugin/provider/EjbProvider.java</include>	
+					<include>wrappers/ejb/**/*.java</include>				
 				</includes>        
 			</configuration>		  	
 		</plugin>				
@@ -145,8 +148,8 @@
  
  		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
-			<artifactId>classhidra-cdi</artifactId>
-			<version>1.5.2</version>
+			<artifactId>classhidra-base</artifactId>
+			<version>1.5.3</version>
 		</dependency>
 
 		<dependency>

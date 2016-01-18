@@ -2,8 +2,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
 	<artifactId>classhidra-cdi</artifactId>
-	<version>1.5.2</version>
-	<name>ClassHidra CDI Implementation</name>
+	<version>1.5.3</version>
+	<name>ClassHidra CDI Support</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation. Java 1.6 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
@@ -30,27 +30,7 @@
   
   <build>
 
-     <resources>
- 		<resource>
- 			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
- 			<includes>
- 				<include>config/messages/classhidra_messages.xml</include>
- 				<include>it/classhidra/version.properties</include>
- 				<include>it/classhidra/core/controller/resources/*.*</include>
- 				<include>it/classhidra/framework/resources/**/*.*</include>
- 				<include>it/classhidra/scheduler/*.properties</include>
- 				<include>it/classhidra/scheduler/**/*.properties</include>
- 				<include>it/classhidra/scheduler/**/*.sql</include>
- 			</includes>
- 		</resource>
- 		<resource>
- 			<directory>src/main/</directory>
- 			<includes>
- 				<include>META-INF/**</include>
- 			</includes>
- 		</resource>
- 		
-    </resources>   
+  
 
 	<plugins>
 	
@@ -85,30 +65,19 @@
 			<artifactId>maven-compiler-plugin</artifactId>
 	        <version>3.3</version>
 	        <configuration>
- 		 		<excludes>
-					<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
-		            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
-		            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
-		            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/vfs/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/was/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/provider/ejb/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/provider/EjbProvider.java</exclude>
-		            <exclude>it/classhidra/plugin/provider/spring.java</exclude>
-				</excludes>
-				                 
+                  
 				<includes>
-					<include>it/**/*.java</include>
-		            <include>external_loaders/**/*.java</include>
-		            <include>pool/**/*.java</include>				
-					<include>it/classhidra/plugin/provider/cdi/**/*.java</include>
-					<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>
+					<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>	
+					<include>wrappers/cdi/**/*.java</include>				
 				</includes>        
+				<excludes>
+					<exclude>wrappers/cdi/LogGenerator_CdiOnlySession.java</exclude>
+				</excludes>
 				<source>1.6</source>
 				<target>1.6</target>
 			</configuration>
 		</plugin>
-
+		
 		<plugin>
 		  	<groupId>org.apache.maven.plugins</groupId>
 		  	<artifactId>maven-source-plugin</artifactId>
@@ -121,27 +90,12 @@
 		    	</execution>
 		  	</executions>
  			<configuration>
-		 		<excludes>
-					<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
-		            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
-		            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
-		            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/vfs/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/was/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/provider/ejb/**/*.java</exclude>
-		            <exclude>it/classhidra/plugin/provider/EjbProvider.java</exclude>
-		            <exclude>it/classhidra/plugin/provider/spring.java</exclude>
-				</excludes>
-				                 
-				<includes>
-					<include>it/**/*.java</include>
-		            <include>external_loaders/**/*.java</include>
-		            <include>pool/**/*.java</include>				
-					<include>it/classhidra/plugin/provider/cdi/**/*.java</include>
-					<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>
+				<includes>					
+					<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>	
+					<include>wrappers/cdi/**/*.java</include>				
 				</includes>        
 			</configuration>		  	
-		</plugin>		
+		</plugin>				
 
 	  	<plugin>
 	    	<groupId>org.apache.maven.plugins</groupId>
@@ -193,78 +147,19 @@
  	<dependencies>
  
  		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
+			<groupId>com.github.surban1974.classhidra</groupId>
+			<artifactId>classhidra-base</artifactId>
+			<version>1.5.3</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
-		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
 			<artifactId>weld-servlet</artifactId>
 			<version>1.1.31.Final</version>
 		</dependency>		
- <!--		
- 
-  		<dependency>
-			<groupId>com.github.surban1974.classhidra</groupId>
-			<artifactId>classhidra-base</artifactId>
-			<version>1.5.2</version>
-		</dependency>
 		
-		<dependency>
-			<groupId>com.github.surban1974.neohort</groupId>
-			<artifactId>neoHort5</artifactId>
-			<version>5.2.5.2</version>
-		</dependency>
-	
-		<dependency>
-			<groupId>net.htmlparser.jericho</groupId>
-			<artifactId>jericho-html</artifactId>
-			<version>2.3</version>
-		</dependency>
 
-		<dependency>
-			<groupId>org.jboss</groupId>
-			<artifactId>jboss-vfs</artifactId>
-			<version>3.1.0.Final</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.jboss.weld.servlet</groupId>
-			<artifactId>weld-servlet</artifactId>
-			<version>1.1.31.Final</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>ejb3-persistence</artifactId>
-			<version>3.3.2.Beta1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.6</version>
-		</dependency>
-		
- 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
-		</dependency>
- -->
-	</dependencies>
+	</dependencies>  
 
    	<organization>
    		<name>Svyatoslav Urbanovych</name>

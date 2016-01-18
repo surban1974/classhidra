@@ -2,10 +2,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.surban1974.classhidra</groupId>
   <artifactId>classhidra-cdi-example</artifactId>
-  <version>1.5.2</version>
+  <version>1.5.3</version>
   <packaging>war</packaging>
 	<name>ClassHidra Framework Example CDI Implementation</name>
-	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation. Distributed Apache Tomcat v7.0.62.</description>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation. Distributed Tomcat 7.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
 	<issueManagement>
@@ -84,9 +84,7 @@
 				<includes>
 					<include>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</include>
 					<include>application/**/*.java</include>
-					<include>it/classhidra/framework/web/components/**/*.java</include>
-					<include>it/classhidra/framework/web/formactions/**/*.java</include>
-					<include>it/classhidra/framework/web/formbeans/**/*.java</include>
+					<include>examples/cdi/classhidra/framework/**/*.java</include>
 				</includes>        
 				<source>1.7</source>
 				<target>1.7</target>
@@ -120,9 +118,9 @@
 						<includes>
 							<include>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</include>
 							<include>application/**/*.java</include>
-							<include>it/classhidra/framework/web/components/**/*.java</include>
-							<include>it/classhidra/framework/web/formactions/**/*.java</include>
-							<include>it/classhidra/framework/web/formbeans/**/*.java</include>
+							<include>examples/cdi/classhidra/framework/**/*.java</include>
+							<include>wrappers/cdi/LogGenerator_CdiOnlySession.java</include>
+							
 						</includes>                        
                         <targetPath>WEB-INF/classes</targetPath>
                     </resource>                               	
@@ -182,8 +180,9 @@
  		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-cdi</artifactId>
-			<version>1.5.2</version>
-		</dependency>	
+			<version>1.5.3</version>
+		</dependency>			
+
 		
 		<dependency>
 			<groupId>com.github.surban1974.neohort</groupId>
@@ -196,6 +195,8 @@
 			<artifactId>jericho-html</artifactId>
 			<version>2.3</version>
 		</dependency>
+		
+		
 
 
   </dependencies>

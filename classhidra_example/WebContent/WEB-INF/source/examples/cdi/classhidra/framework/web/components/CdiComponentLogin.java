@@ -71,8 +71,6 @@ public class CdiComponentLogin extends action implements i_action, Serializable{
 	private Vector groups;
 	
 
-	@Inject
-	db_connection dBconnection;
 
 	public CdiComponentLogin(){
 		super();

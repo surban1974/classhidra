@@ -1,4 +1,4 @@
-package examples.cdi.classhidra.framework.web.components
+package examples.cdi.classhidra.framework.web.components;
 import it.classhidra.annotation.elements.Action;
 
 import it.classhidra.core.controller.action;
