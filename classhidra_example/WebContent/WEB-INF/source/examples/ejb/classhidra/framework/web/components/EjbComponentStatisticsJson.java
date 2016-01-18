@@ -17,7 +17,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -34,7 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 public class EjbComponentStatisticsJson extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6534122783978835682L;
 
-
+	@Resource
+	SessionContext sessionContext;	
 
 public EjbComponentStatisticsJson(){
 	super();

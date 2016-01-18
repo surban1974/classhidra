@@ -10,6 +10,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -67,7 +69,7 @@ import it.classhidra.framework.web.beans.option_element;
 
 @NavigatedDirective(memoryContent="true")
 @Component
-@Scope("session")
+@Scope("prototype")
 public class SpringComponentBuilder extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6641876370416839602L;
 
@@ -105,6 +107,9 @@ public class SpringComponentBuilder extends action implements i_action, Serializ
 	private boolean display_actions=true;
 	private boolean display_beans=false;
 	private boolean display_redirects=false;
+	
+	@Autowired
+	private ApplicationContext applicationContext;	
 
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {

@@ -12,6 +12,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -44,9 +46,12 @@ import it.classhidra.core.tool.util.util_sort;
 
 @NavigatedDirective(memoryContent="true")
 @Component
-@Scope("session")
+@Scope("prototype")
 public class SpringComponentLogapp extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6534122783978835682L;
+	
+	@Autowired
+	private ApplicationContext applicationContext;
 
 		public class log_element{
 			private String Path;

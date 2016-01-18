@@ -5,7 +5,9 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -101,7 +103,8 @@ public class EjbComponentAmanager extends action implements i_action, Serializab
 
 	private String xmlContent;
 
-
+	@Resource
+	SessionContext sessionContext;	
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 

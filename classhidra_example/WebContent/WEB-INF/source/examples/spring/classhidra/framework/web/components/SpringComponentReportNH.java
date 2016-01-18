@@ -8,6 +8,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +43,9 @@ public class SpringComponentReportNH extends action implements i_action, Seriali
 
 	private String source;
 	private String lib;
+	
+	@Autowired
+	private ApplicationContext applicationContext;	
 
 public SpringComponentReportNH(){
 	super();

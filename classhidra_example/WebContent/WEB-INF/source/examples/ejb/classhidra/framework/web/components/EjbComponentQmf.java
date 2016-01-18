@@ -3,7 +3,9 @@ package examples.ejb.classhidra.framework.web.components;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -36,7 +38,8 @@ import it.classhidra.core.tool.exception.bsControllerException;
 public class EjbComponentQmf extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 1L;
 
-
+	@Resource
+	SessionContext sessionContext;	
 
 public EjbComponentQmf(){
 	super();

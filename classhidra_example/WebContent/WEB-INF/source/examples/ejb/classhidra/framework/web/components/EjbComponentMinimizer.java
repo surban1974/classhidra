@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -55,7 +57,8 @@ public class EjbComponentMinimizer extends action implements i_action, Serializa
 	private Vector keys;
 	private String source;
 
-
+	@Resource
+	SessionContext sessionContext;	
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 

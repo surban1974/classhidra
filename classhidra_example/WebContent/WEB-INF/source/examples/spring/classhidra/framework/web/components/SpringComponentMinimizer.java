@@ -11,6 +11,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -55,7 +57,8 @@ public class SpringComponentMinimizer extends action implements i_action, Serial
 	private Vector keys;
 	private String source;
 
-
+	@Autowired
+	private ApplicationContext applicationContext;
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 

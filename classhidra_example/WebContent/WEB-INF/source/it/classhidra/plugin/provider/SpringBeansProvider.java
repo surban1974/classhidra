@@ -194,7 +194,11 @@ public class SpringBeansProvider implements i_provider {
 						if(annotation.value()!=null && annotation.value().equals("singleton"))
 							iContext.setSingleton(true);
 						if(annotation.scopeName()!=null && annotation.scopeName().equals("singleton"))
-							iContext.setSingleton(true);							
+							iContext.setSingleton(true);	
+						if(annotation.value()!=null && annotation.value().equals("prototype"))
+							iContext.setSingleton(false);
+						if(annotation.scopeName()!=null && annotation.scopeName().equals("prototype"))
+							iContext.setSingleton(false);						
 					}
 					Component component = (Component)iContext.getOwnerClass().getAnnotation(Component.class);
 					if(component!=null)

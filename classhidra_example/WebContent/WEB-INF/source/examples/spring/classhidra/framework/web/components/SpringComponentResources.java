@@ -11,6 +11,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +61,9 @@ import it.classhidra.core.tool.util.util_container;
 @Scope("prototype")
 public class SpringComponentResources extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6641876370416839602L;
+	
+	@Autowired
+	private ApplicationContext applicationContext;	
 
 public SpringComponentResources(){
 	super();

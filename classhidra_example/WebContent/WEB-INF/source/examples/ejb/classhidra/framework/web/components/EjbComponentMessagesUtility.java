@@ -18,7 +18,9 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -64,7 +66,8 @@ public class EjbComponentMessagesUtility extends action implements i_action, Ser
 	private String pathOutput;
 	private String langs;
 
-
+	@Resource
+	SessionContext sessionContext;	
 
 public EjbComponentMessagesUtility(){
 	super();

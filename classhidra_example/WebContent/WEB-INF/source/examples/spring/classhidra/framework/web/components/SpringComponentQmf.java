@@ -8,6 +8,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +39,8 @@ import it.classhidra.core.tool.exception.bsControllerException;
 public class SpringComponentQmf extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 1L;
 
-
+	@Autowired
+	private ApplicationContext applicationContext;
 
 public SpringComponentQmf(){
 	super();

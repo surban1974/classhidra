@@ -8,7 +8,8 @@ import it.classhidra.core.controller.i_bean;
 
 import java.io.Serializable;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,8 @@ import org.springframework.stereotype.Component;
 
 
 @Bean(name="beanContent")
-@Component("beanContent")
+//@Component("beanContent")
+@Component
 @Scope("session")
 public class SpringBeanContent extends bean implements i_bean, Serializable{
 
@@ -26,7 +28,8 @@ public class SpringBeanContent extends bean implements i_bean, Serializable{
 	private String menuSource;
 	private boolean firstEnter=false;
 	
-	
+	@Autowired
+	private ApplicationContext applicationContext;	
 
 public SpringBeanContent(){
 	super();

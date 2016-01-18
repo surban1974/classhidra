@@ -927,12 +927,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else{
 					try{
 						iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
-						if(iCallMethod==null){
+					}catch(Exception em){
+						new bsControllerException(em, iStub.log_ERROR);
+					}
+					if(iCallMethod==null){
+						try{
 							iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
 							if(iCallMethod!=null)
 								useAsAction=true;
-						}
-					}catch(Exception em){
+						}catch(Exception em){
+							new bsControllerException(em, iStub.log_ERROR);
+						}	
 					}
 				}
 			}catch(Exception ex){
@@ -955,15 +960,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
 				try{
 					iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
-					if(iActionMethod==null)
-						iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
-					if(iActionMethod!=null)
-						useAsAction=true;
 				}catch(Exception e){
 					new bsControllerException(e, iStub.log_ERROR);
-				}catch(Throwable t){
-					new bsControllerException(t, iStub.log_ERROR);
 				}
+				if(iActionMethod==null){
+					try{
+						iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+						if(iActionMethod!=null)
+							useAsAction=true;
+					}catch(Exception e){
+						new bsControllerException(e, iStub.log_ERROR);
+					}
+				}
+
+				
 			}
 			
 
@@ -2385,6 +2395,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(key==null) return null;
 		else if(key.equals(bsConstants.CONST_BEAN_$NAVIGATION))
 			return getFromInfoNavigation(null, request);
+		else if(key.equals(bsConstants.CONST_BEAN_$ONLYINSSESSION))
+			return getFromOnlySession(null, request);
 		else
 			return getFromLocalContainer(key);
 	}

@@ -3,6 +3,7 @@ package it.classhidra.core.tool.util;
 
 
 import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_ProviderWrapper;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.exception.bsException;
@@ -671,6 +672,14 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 				current_requested = ((i_bean)current_requested).asBean();
 		}catch(Exception e){
 		}
+		
+		try{
+			if(	current_requested!=null && current_requested instanceof i_ProviderWrapper)
+				current_requested = ((i_ProviderWrapper)current_requested).getInstance();
+		}catch(Exception e){
+		}
+		
+		
 		
 		String current_field_name = st.nextToken();
 		

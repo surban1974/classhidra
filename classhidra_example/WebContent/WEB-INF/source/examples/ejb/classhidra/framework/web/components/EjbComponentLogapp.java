@@ -6,7 +6,9 @@ import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.Vector;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -47,6 +49,9 @@ import it.classhidra.core.tool.util.util_sort;
 public class EjbComponentLogapp extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6534122783978835682L;
 
+	@Resource
+	SessionContext sessionContext;	
+	
 		public class log_element{
 			private String Path;
 			private String Mod;

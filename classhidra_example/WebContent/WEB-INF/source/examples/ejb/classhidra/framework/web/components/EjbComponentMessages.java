@@ -3,7 +3,9 @@ package examples.ejb.classhidra.framework.web.components;
 import java.io.Serializable;
 import java.util.Vector;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -32,7 +34,8 @@ public class EjbComponentMessages extends action implements i_action, Serializab
 
 	private Vector view_list;
 
-
+	@Resource
+	SessionContext sessionContext;	
 
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {

@@ -2,7 +2,9 @@ package examples.ejb.classhidra.framework.web.components;
 
 import java.io.Serializable;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -40,6 +42,9 @@ public class EjbComponentReportNH extends action implements i_action, Serializab
 	private String source;
 	private String lib;
 
+	@Resource
+	SessionContext sessionContext;		
+	
 public EjbComponentReportNH(){
 	super();
 

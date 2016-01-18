@@ -5,7 +5,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -107,6 +109,8 @@ public class EjbComponentBuilder extends action implements i_action, Serializabl
 	private boolean display_beans=false;
 	private boolean display_redirects=false;
 
+	@Resource
+	SessionContext sessionContext;		
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 

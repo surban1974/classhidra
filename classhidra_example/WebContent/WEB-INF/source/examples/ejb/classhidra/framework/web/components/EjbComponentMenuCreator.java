@@ -54,6 +54,7 @@ public class EjbComponentMenuCreator extends action implements i_action, Seriali
 	
 	i_menu_element element_menu_html;
 
+	
 
 public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
 	

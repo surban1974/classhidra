@@ -23,6 +23,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +55,7 @@ import it.classhidra.core.tool.util.util_format;
 
 @NavigatedDirective(memoryContent="true")
 @Component
-@Scope("session")
+@Scope("prototype")
 public class SpringComponentMessagesUtility extends action implements i_action, Serializable{
 	private static final long serialVersionUID = -3476492198668495035L;
 	private String integrity_log;
@@ -64,7 +66,8 @@ public class SpringComponentMessagesUtility extends action implements i_action, 
 	private String pathOutput;
 	private String langs;
 
-
+	@Autowired
+	private ApplicationContext applicationContext;
 
 public SpringComponentMessagesUtility(){
 	super();

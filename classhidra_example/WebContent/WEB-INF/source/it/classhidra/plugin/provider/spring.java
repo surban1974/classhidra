@@ -8,6 +8,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import it.classhidra.core.controller.i_provider;
 import it.classhidra.core.tool.util.util_format;
 
+@Deprecated
 public class spring implements i_provider {
 	private ServletContext servletContext=null;
 	public Object get_bean(String id_bean) {

@@ -8,7 +8,9 @@ import it.classhidra.core.controller.i_bean;
 
 import java.io.Serializable;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 
 
@@ -25,7 +27,8 @@ public class EjbBeanContent extends bean implements i_bean, Serializable{
 	private String menuSource;
 	private boolean firstEnter=false;
 	
-	
+	@Resource
+	SessionContext sessionContext;		
 
 public EjbBeanContent(){
 	super();

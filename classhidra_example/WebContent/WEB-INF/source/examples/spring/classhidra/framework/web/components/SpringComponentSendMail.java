@@ -10,6 +10,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -23,17 +25,11 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.log.stubs.iStub;
 
-//*** Moved to IComponentSendMail interface ***
-//@Action (
-//		path="sendMail",
-//		name="formMail",
-//		redirect="/jsp/pages/sendmail.jsp",
-//		reloadAfterAction="true"
-//)
+
 
 @NavigatedDirective(memoryContent="true")
 @Component
-@Scope("session")
+@Scope("prototype")
 public class SpringComponentSendMail extends action implements IComponentSendMail, Serializable{
 
 	private static final long serialVersionUID = -1L;
@@ -43,6 +39,9 @@ public class SpringComponentSendMail extends action implements IComponentSendMai
 	
 //	@Inject
 	private mail_message m_message;
+	
+	@Autowired
+	private ApplicationContext applicationContext;	
 	
 public SpringComponentSendMail(){
 	super();

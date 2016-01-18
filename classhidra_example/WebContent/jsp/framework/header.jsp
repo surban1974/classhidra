@@ -16,7 +16,7 @@
 		if(formInfoNavigation==null)
 			formInfoNavigation = new info_navigation();
 	formInfoNavigation.decodeMessage(request);
-	request.getSession().setAttribute(bsController.CONST_BEAN_$NAVIGATION, formInfoNavigation);
+//	request.getSession().setAttribute(bsController.CONST_BEAN_$NAVIGATION, formInfoNavigation);
 	auth_init 		userInfo			= (auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
 	int shw=0;
 	if(formInfoAction!=null) shw++;

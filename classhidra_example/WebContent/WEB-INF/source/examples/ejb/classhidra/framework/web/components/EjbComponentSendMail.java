@@ -4,7 +4,9 @@ package examples.ejb.classhidra.framework.web.components;
 
 import java.io.Serializable;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 //import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -47,6 +49,9 @@ public class EjbComponentSendMail extends action implements IComponentSendMail, 
 	
 //	@Inject
 	private mail_message m_message;
+	
+	@Resource
+	SessionContext sessionContext;		
 	
 public EjbComponentSendMail(){
 	super();

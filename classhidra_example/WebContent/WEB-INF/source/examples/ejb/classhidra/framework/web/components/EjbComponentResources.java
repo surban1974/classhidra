@@ -5,7 +5,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.StringTokenizer;
 
+import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -58,6 +60,9 @@ import it.classhidra.core.tool.util.util_container;
 public class EjbComponentResources extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 6641876370416839602L;
 
+	@Resource
+	SessionContext sessionContext;		
+	
 public EjbComponentResources(){
 	super();
 }
