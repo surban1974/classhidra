@@ -32,7 +32,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Singleton;
-import javax.ejb.Startup;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,20 +46,27 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_provider;
 
-@Startup
+
 @Singleton(name="ejb_defaultLogGenerator")
 @Local(i_log_generator.class)
 public class LogGenerator_EjbOnlySession implements i_log_generator {
 	private log_init init;
 	private iStub logStub;
+	private List instance = new ArrayList();
+	private i_log_pattern_web pattern;
+	
 	private boolean readError=false;
 	
-	private List instance = new ArrayList();
-	
+
+
 	
 public LogGenerator_EjbOnlySession(){
 	super();
-	bsController.writeLog("Instanced Ejb LogGenerator (only in session) -> "+this.getClass().getName(), iStub.log_INFO);
+	try{
+		writeLog("Instanced Ejb LogGenerator (only in session) -> "+this.getClass().getName(),iStub.log_INFO);
+	}catch(Exception e){
+		System.out.println("Instanced Ejb LogGenerator (only in session) -> "+this.getClass().getName());
+	}
 }
 	
 
@@ -94,11 +101,11 @@ public void setInit(log_init _init) {
 }
 
 private  i_log_pattern_web patternFactory(String className){
-	i_log_pattern_web element = null;
+
 	if(className==null || className.equals("")) return new log_patternSimple();
-	if(element==null){
+	if(pattern==null){
 		try{	
-			element = (i_log_pattern_web)util_provider.getInstanceFromProvider(
+			pattern = (i_log_pattern_web)util_provider.getInstanceFromProvider(
 						new String[]{
 								bsController.getAppInit().get_context_provider(),
 								bsController.getAppInit().get_cdi_provider(),
@@ -106,18 +113,18 @@ private  i_log_pattern_web patternFactory(String className){
 						},
 						className);
 		}catch (Exception e) {
-			element = new log_patternSimple();
+			pattern = new log_patternSimple();
 		}
 	}
-	return element;
+	return pattern;
 }
 
 private  iStub stubFactory(String className){
-	iStub element = null;
+	
 	if(className==null || className.equals("")) return null;
-	if(element==null){
+	if(logStub==null){
 		try{	
-			element = (iStub)util_provider.getInstanceFromProvider(
+			logStub = (iStub)util_provider.getInstanceFromProvider(
 							new String[]{
 									bsController.getAppInit().get_context_provider(),
 									bsController.getAppInit().get_cdi_provider(),
@@ -125,21 +132,21 @@ private  iStub stubFactory(String className){
 							},
 							className);
 		}catch (Exception e) {
-			element = null;
+			logStub = null;
 		}
 	}
-	return element;
+	return logStub;
 }
 
 private  iStub stubFactory(log_init _init){
-	if(_init==null) return null;
+	
 	String className = _init.get_LogStub();
 	if(className==null || className.equals("")) return null;
-	iStub element = null;
+
 	
-	if(element==null){
+	if(logStub==null){
 		try{	
-			element = (iStub)util_provider.getInstanceFromProvider(
+			logStub = (iStub)util_provider.getInstanceFromProvider(
 							new String[]{
 									bsController.getAppInit().get_context_provider(),
 									bsController.getAppInit().get_cdi_provider(),
@@ -147,10 +154,10 @@ private  iStub stubFactory(log_init _init){
 							},
 							className);
 		}catch (Exception e) {
-			element = null;
+			logStub = null;
 		}
 	}
-	return element;
+	return logStub;
 }
 
 public  HashMap prepare4stub(

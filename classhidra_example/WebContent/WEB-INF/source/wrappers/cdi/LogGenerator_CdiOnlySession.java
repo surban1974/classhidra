@@ -50,210 +50,217 @@ import it.classhidra.core.tool.util.util_provider;
 public class LogGenerator_CdiOnlySession implements i_log_generator {
 	private log_init init;
 	private iStub logStub;
+	private List instance = new ArrayList();
+	private i_log_pattern_web pattern;
+	
 	private boolean readError=false;
 	
-	private static List instance = new ArrayList();
-	
-public LogGenerator_CdiOnlySession(){
-	super();
-	bsController.writeLog("Instanced Cdi LogGenerator (only in session) -> "+this.getClass().getName(), iStub.log_INFO);
-}
-
-
-
-public LogGenerator_CdiOnlySession(log_init _init) {
-	super();
-	this.init = _init;
-	logStub = stubFactory(init.get_LogStub());
-	try{
-		if(init==null) throw new Exception("Log INIT is NULL");
-		if(init.get_LogPath()==null) throw new Exception("Log INIT->LogPath is NULL");
-
-	}catch(Exception e){	
-		readError = true;
-//	   	bsController.writeLog("Load_log ERROR:"+e.toString(),iStub.log_ERROR);
-		util_format.writeToConsole(_init,"Load_log ERROR: "+e.toString());
-		return;
-	}
-
-}
-public void setInit(log_init _init) {
-	this.init = _init;
-	logStub = stubFactory(init.get_LogStub());
-	try{
-		readError = true;
-	}catch(Exception e){	
-		readError = true;
-//	   	bsController.writeLog("Load_log ERROR:"+e.toString(),iStub.log_ERROR);
-		util_format.writeToConsole(_init,"Load_log ERROR: "+e.toString());
-		return;
-	}
-}
-
-private  i_log_pattern_web patternFactory(String className){
-	i_log_pattern_web element = null;
-	if(className==null || className.equals("")) return new log_patternSimple();
-	if(element==null){
-		try{	
-			element = (i_log_pattern_web)util_provider.getInstanceFromProvider(
-						new String[]{
-								bsController.getAppInit().get_context_provider(),
-								bsController.getAppInit().get_cdi_provider(),
-								bsController.getAppInit().get_ejb_provider()
-						},
-						className);
-		}catch (Exception e) {
-			element = new log_patternSimple();
+	public LogGenerator_CdiOnlySession(){
+		super();
+		try{
+			writeLog("Instanced Cdi LogGenerator (only in session) -> "+this.getClass().getName(),iStub.log_INFO);
+		}catch(Exception e){
+			System.out.println("Instanced Cdi LogGenerator (only in session) -> "+this.getClass().getName());
 		}
 	}
-	return element;
-}
+		
 
-private  iStub stubFactory(String className){
-	iStub element = null;
-	if(className==null || className.equals("")) return null;
-	if(element==null){
-		try{	
-			element = (iStub)util_provider.getInstanceFromProvider(
+
+	public LogGenerator_CdiOnlySession(log_init _init) {
+		super();
+		this.init = _init;
+		logStub = stubFactory(init.get_LogStub());
+		try{
+			if(init==null) throw new Exception("Log INIT is NULL");
+			if(init.get_LogPath()==null) throw new Exception("Log INIT->LogPath is NULL");
+
+		}catch(Exception e){	
+			readError = true;
+//		   	bsController.writeLog("Load_log ERROR:"+e.toString(),iStub.log_ERROR);
+			util_format.writeToConsole(_init,"Load_log ERROR: "+e.toString());
+			return;
+		}
+
+	}
+	public void setInit(log_init _init) {
+		this.init = _init;
+		logStub = stubFactory(init.get_LogStub());
+		try{
+			readError = true;
+		}catch(Exception e){	
+			readError = true;
+//		   	bsController.writeLog("Load_log ERROR:"+e.toString(),iStub.log_ERROR);
+			util_format.writeToConsole(_init,"Load_log ERROR: "+e.toString());
+			return;
+		}
+	}
+
+	private  i_log_pattern_web patternFactory(String className){
+
+		if(className==null || className.equals("")) return new log_patternSimple();
+		if(pattern==null){
+			try{	
+				pattern = (i_log_pattern_web)util_provider.getInstanceFromProvider(
 							new String[]{
 									bsController.getAppInit().get_context_provider(),
 									bsController.getAppInit().get_cdi_provider(),
 									bsController.getAppInit().get_ejb_provider()
 							},
 							className);
-		}catch (Exception e) {
-			element = null;
+			}catch (Exception e) {
+				pattern = new log_patternSimple();
+			}
 		}
+		return pattern;
 	}
-	return element;
-}
 
-private  iStub stubFactory(log_init _init){
-	if(_init==null) return null;
-	String className = _init.get_LogStub();
-	if(className==null || className.equals("")) return null;
-	iStub element = null;
-	
-	if(element==null){
-		try{	
-			element = (iStub)util_provider.getInstanceFromProvider(
-							new String[]{
-									bsController.getAppInit().get_context_provider(),
-									bsController.getAppInit().get_cdi_provider(),
-									bsController.getAppInit().get_ejb_provider()
-							},
-							className);
-		}catch (Exception e) {
-			element = null;
+	private  iStub stubFactory(String className){
+		
+		if(className==null || className.equals("")) return null;
+		if(logStub==null){
+			try{	
+				logStub = (iStub)util_provider.getInstanceFromProvider(
+								new String[]{
+										bsController.getAppInit().get_context_provider(),
+										bsController.getAppInit().get_cdi_provider(),
+										bsController.getAppInit().get_ejb_provider()
+								},
+								className);
+			}catch (Exception e) {
+				logStub = null;
+			}
 		}
+		return logStub;
 	}
-	return element;
-}
 
-public  HashMap prepare4stub(
-		String mess,
-		Exception exception,
-		Throwable throwable,
-		HttpServletRequest request,
-		ServletContext context,
-		String level,
-		String user){
-	
-	HashMap result = new HashMap();
-		result.put(iStub.log_stub_mess,mess);
-		result.put(iStub.log_stub_exception,exception);
-		result.put(iStub.log_stub_throwable,throwable);
-		result.put(iStub.log_stub_request,request);
-		result.put(iStub.log_stub_servletcontext,context);
-		result.put(iStub.log_stub_level,level);
-		result.put(iStub.log_stub_user,user);
-	
-	return result;
-}
+	private  iStub stubFactory(log_init _init){
+		
+		String className = _init.get_LogStub();
+		if(className==null || className.equals("")) return null;
 
-public i_log_pattern get_log_Pattern(){ 
-	return patternFactory( init.get_LogPattern());
-}	
+		
+		if(logStub==null){
+			try{	
+				logStub = (iStub)util_provider.getInstanceFromProvider(
+								new String[]{
+										bsController.getAppInit().get_context_provider(),
+										bsController.getAppInit().get_cdi_provider(),
+										bsController.getAppInit().get_ejb_provider()
+								},
+								className);
+			}catch (Exception e) {
+				logStub = null;
+			}
+		}
+		return logStub;
+	}
 
-public iStub get_log_Stub(){ 
-	return stubFactory( init.get_LogStub());
-}	
+	public  HashMap prepare4stub(
+			String mess,
+			Exception exception,
+			Throwable throwable,
+			HttpServletRequest request,
+			ServletContext context,
+			String level,
+			String user){
+		
+		HashMap result = new HashMap();
+			result.put(iStub.log_stub_mess,mess);
+			result.put(iStub.log_stub_exception,exception);
+			result.put(iStub.log_stub_throwable,throwable);
+			result.put(iStub.log_stub_request,request);
+			result.put(iStub.log_stub_servletcontext,context);
+			result.put(iStub.log_stub_level,level);
+			result.put(iStub.log_stub_user,user);
+		
+		return result;
+	}
+
+	public i_log_pattern get_log_Pattern(){ 
+		return patternFactory( init.get_LogPattern());
+	}	
+
+	public iStub get_log_Stub(){ 
+		return stubFactory( init.get_LogStub());
+	}	
 
 
-public void writeLog(String msg,String level) throws IOException {
-		i_log_pattern logPattern = patternFactory( init.get_LogPattern());
+
+	public void writeLog(String msg,String level) throws IOException {
+			i_log_pattern logPattern = patternFactory( init.get_LogPattern());
+			if(logPattern==null) logPattern = new log_patternSimple();
+			String log_mess = logPattern.prepare(msg,level);
+
+			util_format.writeToConsole(init,log_mess);
+			
+			if(logStub==null) logStub = stubFactory(init);
+			if(logStub!=null){
+				logStub.write(prepare4stub(log_mess, null, null, null,null, level,null));
+			}else{
+				instance.add(log_mess);
+			}
+	}
+
+
+	public void writeLog(Object obj_request, String msg,String userIP, String userMatricola,String classFrom, String level) throws IOException {
+		if(obj_request==null || !(obj_request instanceof HttpServletRequest)) return;
+		HttpServletRequest request = (HttpServletRequest)obj_request;
+		i_log_pattern_web logPattern = patternFactory( init.get_LogPattern());
 		if(logPattern==null) logPattern = new log_patternSimple();
-		String log_mess = logPattern.prepare(msg,level);
+		String log_mess = logPattern.prepare(request,msg,userIP,userMatricola,classFrom,level);
 
 		util_format.writeToConsole(init,log_mess);
 		
 		if(logStub==null) logStub = stubFactory(init);
 		if(logStub!=null){
-			logStub.write(prepare4stub(log_mess, null, null, null,null, level,null));
+			logStub.write(prepare4stub(log_mess, null, null, request,null, level,userMatricola));
 		}else{
-			instance.add(log_mess);
-		}
-}
-
-
-
-public void writeLog(Object obj_request, String msg,String userIP, String userMatricola,String classFrom, String level) throws IOException {
-	if(obj_request==null || !(obj_request instanceof HttpServletRequest)) return;
-	HttpServletRequest request = (HttpServletRequest)obj_request;
-	i_log_pattern_web logPattern = patternFactory( init.get_LogPattern());
-	if(logPattern==null) logPattern = new log_patternSimple();
-	String log_mess = logPattern.prepare(request,msg,userIP,userMatricola,classFrom,level);
-
-	util_format.writeToConsole(init,log_mess);
-	
-	if(logStub==null) logStub = stubFactory(init);
-	if(logStub!=null){
-		logStub.write(prepare4stub(log_mess, null, null, request,null, level,userMatricola));
-	}else{
-		if(init.isStackLevel(level)){
-			instance.add(log_mess);
-		}
-	}
-}
-
-public void writeLog(String msg,String userIP, String userMatricola,String classFrom,String level) throws IOException {
-		i_log_pattern logPattern = patternFactory( init.get_LogPattern());
-		if(logPattern==null) logPattern = new log_patternSimple();
-		String log_mess = logPattern.prepare(msg,userIP,userMatricola,classFrom,level);
-
-		util_format.writeToConsole(init,log_mess);
-
-		if(logStub==null) logStub = stubFactory(init);
-		if(logStub!=null){
-			logStub.write(prepare4stub(log_mess, null, null, null,null, level,userMatricola));
-		}else{	
 			if(init.isStackLevel(level)){
 				instance.add(log_mess);
 			}
 		}
-}
-
-public String get_log_Filename() throws IOException {
-	if(instance!=null)
-		return instance.getClass().getName();
-	return "undefined";
-}
-
-public String get_log_Content(String lineSep) throws IOException {
-
-	String content="";
-	for(int i=0;i<instance.size();i++)
-		content+=(String)instance.get(i)+System.getProperty("line.separator");
-	return content;
-}
-	public boolean isReadError() {
-		return readError;
 	}
 
-	public void setReadError(boolean b) {
-		readError = b;
+	public void writeLog(String msg,String userIP, String userMatricola,String classFrom,String level) throws IOException {
+			i_log_pattern logPattern = patternFactory( init.get_LogPattern());
+			if(logPattern==null) logPattern = new log_patternSimple();
+			String log_mess = logPattern.prepare(msg,userIP,userMatricola,classFrom,level);
+
+			util_format.writeToConsole(init,log_mess);
+
+			if(logStub==null) logStub = stubFactory(init);
+			if(logStub!=null){
+				logStub.write(prepare4stub(log_mess, null, null, null,null, level,userMatricola));
+			}else{	
+				if(init.isStackLevel(level)){
+					instance.add(log_mess);
+				}
+			}
 	}
 
-}
+
+
+	public String get_log_Filename() throws IOException {
+		if(instance!=null)
+			return instance.getClass().getName();
+		return "undefined";
+	}
+
+	public String get_log_Content(String lineSep) throws IOException {
+
+		String content="";
+		for(int i=0;i<instance.size();i++)
+			content+=(String)instance.get(i)+System.getProperty("line.separator");
+		return content;
+	}
+		public boolean isReadError() {
+			return readError;
+		}
+
+		public void setReadError(boolean b) {
+			readError = b;
+		}
+
+	}
 
 

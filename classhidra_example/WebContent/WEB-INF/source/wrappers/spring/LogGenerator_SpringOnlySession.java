@@ -53,15 +53,22 @@ import it.classhidra.core.tool.util.util_provider;
 public class LogGenerator_SpringOnlySession implements i_log_generator {
 	private log_init init;
 	private iStub logStub;
+	private List instance = new ArrayList();
+	private i_log_pattern_web pattern;
+	
 	private boolean readError=false;
 	
-	private static List instance = new ArrayList();
+
+
 	
 public LogGenerator_SpringOnlySession(){
 	super();
-	bsController.writeLog("Instanced Spring LogGenerator (only in session) -> "+this.getClass().getName(), iStub.log_INFO);
-}
-
+	try{
+		writeLog("Instanced Spring LogGenerator (only in session) -> "+this.getClass().getName(),iStub.log_INFO);
+	}catch(Exception e){
+		System.out.println("Instanced Spring LogGenerator (only in session) -> "+this.getClass().getName());
+	}}
+	
 
 
 public LogGenerator_SpringOnlySession(log_init _init) {
@@ -94,11 +101,11 @@ public void setInit(log_init _init) {
 }
 
 private  i_log_pattern_web patternFactory(String className){
-	i_log_pattern_web element = null;
+
 	if(className==null || className.equals("")) return new log_patternSimple();
-	if(element==null){
+	if(pattern==null){
 		try{	
-			element = (i_log_pattern_web)util_provider.getInstanceFromProvider(
+			pattern = (i_log_pattern_web)util_provider.getInstanceFromProvider(
 						new String[]{
 								bsController.getAppInit().get_context_provider(),
 								bsController.getAppInit().get_cdi_provider(),
@@ -106,18 +113,18 @@ private  i_log_pattern_web patternFactory(String className){
 						},
 						className);
 		}catch (Exception e) {
-			element = new log_patternSimple();
+			pattern = new log_patternSimple();
 		}
 	}
-	return element;
+	return pattern;
 }
 
 private  iStub stubFactory(String className){
-	iStub element = null;
+	
 	if(className==null || className.equals("")) return null;
-	if(element==null){
+	if(logStub==null){
 		try{	
-			element = (iStub)util_provider.getInstanceFromProvider(
+			logStub = (iStub)util_provider.getInstanceFromProvider(
 							new String[]{
 									bsController.getAppInit().get_context_provider(),
 									bsController.getAppInit().get_cdi_provider(),
@@ -125,21 +132,21 @@ private  iStub stubFactory(String className){
 							},
 							className);
 		}catch (Exception e) {
-			element = null;
+			logStub = null;
 		}
 	}
-	return element;
+	return logStub;
 }
 
 private  iStub stubFactory(log_init _init){
-	if(_init==null) return null;
+	
 	String className = _init.get_LogStub();
 	if(className==null || className.equals("")) return null;
-	iStub element = null;
+
 	
-	if(element==null){
+	if(logStub==null){
 		try{	
-			element = (iStub)util_provider.getInstanceFromProvider(
+			logStub = (iStub)util_provider.getInstanceFromProvider(
 							new String[]{
 									bsController.getAppInit().get_context_provider(),
 									bsController.getAppInit().get_cdi_provider(),
@@ -147,10 +154,10 @@ private  iStub stubFactory(log_init _init){
 							},
 							className);
 		}catch (Exception e) {
-			element = null;
+			logStub = null;
 		}
 	}
-	return element;
+	return logStub;
 }
 
 public  HashMap prepare4stub(
@@ -183,6 +190,7 @@ public iStub get_log_Stub(){
 }	
 
 
+
 public void writeLog(String msg,String level) throws IOException {
 		i_log_pattern logPattern = patternFactory( init.get_LogPattern());
 		if(logPattern==null) logPattern = new log_patternSimple();
@@ -197,7 +205,6 @@ public void writeLog(String msg,String level) throws IOException {
 			instance.add(log_mess);
 		}
 }
-
 
 
 public void writeLog(Object obj_request, String msg,String userIP, String userMatricola,String classFrom, String level) throws IOException {
@@ -235,6 +242,8 @@ public void writeLog(String msg,String userIP, String userMatricola,String class
 			}
 		}
 }
+
+
 
 public String get_log_Filename() throws IOException {
 	if(instance!=null)
