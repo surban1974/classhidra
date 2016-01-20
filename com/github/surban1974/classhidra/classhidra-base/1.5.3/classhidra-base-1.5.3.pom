@@ -189,7 +189,7 @@
                 <includes><include>**/*</include></includes>
                 <repositoryName>classhidra</repositoryName>      <!-- github repo name -->
                 <repositoryOwner>surban1974</repositoryOwner>    <!-- github username  -->
-<!-- <merge>true</merge>	 --><!-- AVOID REWRITING !!!  -->
+ <merge>true</merge>	 <!-- AVOID REWRITING !!!  -->
                  
                  
             </configuration>
