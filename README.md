@@ -11,18 +11,18 @@ Implementation:
 Compatible:
 Google AppEngine - http://classhidra4ape.appspot.com 
 <br>
-<b>Maven</b>:<br>
+Maven:<br>
 
 Maven repository:<br>
-&lt;repositories&gt;
-&lt;id&gt;classhidra-mvn-repo&lt;/id&gt;
-&lt;url&gt;https://github.com/surban1974/classhidra/tree/mvn-repo/&lt;/url&gt;
-&lt;snapshots&gt;
-&lt;enabled&gt;true&lt;/enabled&gt;
-&lt;updatePolicy&gt;always&lt;/updatePolicy&gt;
-&lt;/snapshots&gt;
-&lt;/repository&gt;
-&lt;/repositories&gt;
+&lt;repositories&gt;<br>
+&lt;id&gt;classhidra-mvn-repo&lt;/id&gt;<br>
+&lt;url&gt;https://github.com/surban1974/classhidra/tree/mvn-repo/ &lt;/url&gt;<br>
+&lt;snapshots&gt;<br>
+&lt;enabled&gt;true&lt;/enabled&gt;<br>
+&lt;updatePolicy&gt;always&lt;/updatePolicy&gt;<br>
+&lt;/snapshots&gt;<br>
+&lt;/repository&gt;<br>
+&lt;/repositories&gt;<br>
 
 Maven dependencies (jar):<br>
 &lt;dependency&gt;<br>
