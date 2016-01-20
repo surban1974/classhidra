@@ -6,11 +6,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/apache-tomee-plume-1.7.2">
-		<attributes>
-			<attribute name="owner.project.facets" value="jst.web"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry including="it/classhidra/core/tool/log/stubs/stub_neoHort_log.java|application/**/*.java|examples/ejb/classhidra/framework/**/*.java" kind="src" output="target/classes" path="svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source">
 		<attributes>
 			<attribute name="optional" value="true"/>
