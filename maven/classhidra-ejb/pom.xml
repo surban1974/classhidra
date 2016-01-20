@@ -143,6 +143,17 @@
 
 
 	</build>
+	
+  <repositories>
+    <repository>
+        <id>classhidra-mvn-repo</id>
+        <url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+        </snapshots>
+    </repository>
+  </repositories>	
   
  	<dependencies>
  
