@@ -7,9 +7,22 @@ Web Application Development.
 Implementation:
 - CDI ( context dependency injection ) - @SessionScoped, @ApplicationScoped - classhidra2cdi.jar plugin;
 - EJB (enterprise java bean) map action/form as @Stateless, @Stateful, @Singleton;
-- Spring from v.1.2.0; 
+- Spring(4.*) map action/form as @Component;  
 Compatible:
 Google AppEngine - http://classhidra4ape.appspot.com 
+<br>
+<b>Maven</b>:<br>
+
+Maven repository:<br>
+&lt;repositories&gt;
+&lt;id&gt;classhidra-mvn-repo&lt;/id&gt;
+&lt;url&gt;https://github.com/surban1974/classhidra/tree/mvn-repo/&lt;/url&gt;
+&lt;snapshots&gt;
+&lt;enabled&gt;true&lt;/enabled&gt;
+&lt;updatePolicy&gt;always&lt;/updatePolicy&gt;
+&lt;/snapshots&gt;
+&lt;/repository&gt;
+&lt;/repositories&gt;
 
 Maven dependencies (jar):<br>
 &lt;dependency&gt;<br>
