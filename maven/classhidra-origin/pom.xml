@@ -1,0 +1,166 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.surban1974.classhidra</groupId>
+	<artifactId>classhidra-origin</artifactId>
+	<version>1.5.3</version>
+	<name>ClassHidra Sources and Resources</name>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Sources and Resources.</description>
+	<url>https://github.com/surban1974/classhidra</url>
+	<packaging>rar</packaging>
+  
+	<issueManagement>
+		<url>https://github.com/surban1974/classhidra/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>  
+	
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2.0 (GPLv2)</name>
+			<url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+		
+ 	<distributionManagement>
+    	<repository>
+        	<id>internal.repo</id>
+        	<name>Temporary Staging Repository</name>
+        	<url>file://${project.build.directory}/mvn-repo</url>
+    	</repository>
+	</distributionManagement>    
+  
+  	<build>
+
+		<plugins>
+		
+		   	<plugin>
+		    	<artifactId>maven-deploy-plugin</artifactId>
+		        <version>2.8.1</version>
+		        <configuration>
+		            <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+		        </configuration>
+		    </plugin> 
+		    
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+			    <version>3.0.0</version>
+			    <configuration>
+			    	<filesets>
+			        	<fileset>
+			          		<directory>src/main/rar</directory>		          
+			          		<followSymlinks>false</followSymlinks>
+			        	</fileset>
+			      	</filesets>
+				</configuration>
+			</plugin>      
+		    
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+		        <version>2.7</version>
+		        <executions>
+					<execution>
+		            	<id>copy-resources</id>  
+		            	<phase>install</phase>
+		            	<goals>
+		              		<goal>copy-resources</goal>
+		            	</goals>
+		            	<configuration>
+		              		<outputDirectory>src/main/rar</outputDirectory>
+		              		<resources>          
+		                		<resource>
+		                  			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source</directory>
+		                  			<filtering>false</filtering>
+		                  			<targetPath>java</targetPath>
+		                		</resource>
+		               			<resource>
+		                  			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent</directory>
+		                  			<filtering>false</filtering>
+		                  			<excludes>
+		                  				<exclude>**/*.jar</exclude>
+		                  				<exclude>**/*.java</exclude>
+		                  				<exclude>**/*.old</exclude>
+		                  				<exclude>WEB-INF/lib/**</exclude>
+		                  				<exclude>WEB-INF/neohort.lib/**</exclude>
+		                  				<exclude>WEB-INF/source/**</exclude>
+		                  				<exclude>WEB-INF/tlds/**</exclude>		                  				
+		                  			</excludes>
+		                  			<targetPath>webapp</targetPath>                 
+		                		</resource>
+		                		<resource>
+		                  			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source/it/classhidra/core/controller/resources</directory>
+		                  			<filtering>false</filtering>
+		                  			<includes>
+		                  				<include>bsController.tld</include>
+		                  			</includes>
+		                  			<targetPath>webapp/WEB-INF/tlds</targetPath>
+		                		</resource>
+		              		</resources>              
+		            	</configuration>            
+					</execution>
+				</executions>
+			</plugin>	  
+	           	
+	      	<plugin>
+	        	<groupId>org.apache.maven.plugins</groupId>
+	        	<artifactId>maven-rar-plugin</artifactId>
+	        	<version>2.4</version>
+	        	
+	        	<configuration>
+					<includeJar>false</includeJar>	
+	 			    <archive>
+		            	<addMavenDescriptor>false</addMavenDescriptor>
+		            	<manifest>
+	          				<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+	        			</manifest>
+		          	</archive>				
+	        	</configuration>
+	       	</plugin>
+	       	
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+	        	<version>3.3</version>
+	        	<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>	       		
+	 
+	 	  	<plugin>
+		    	<groupId>org.apache.maven.plugins</groupId>
+		    	<artifactId>maven-install-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>install</goal>
+			            </goals>
+			            <configuration>
+						<filters>
+		                    <filter>
+		                        <artifact>*:*</artifact>
+		                        <excludes>
+		                            <exclude>META-INF/**</exclude>
+		                        </excludes>
+		                    </filter>
+		                </filters>		            
+				            <archive>
+		            			<addMavenDescriptor>false</addMavenDescriptor>
+		          			</archive>	
+			                <createChecksum>true</createChecksum>
+			            </configuration>
+			        </execution>
+			    </executions>
+		  	</plugin>
+		</plugins>
+
+	</build>
+  
+ 
+
+   	<organization>
+   		<name>Svyatoslav Urbanovych</name>
+   		<url>https://it.linkedin.com/pub/svyatoslav-urbanovych/2/241/754</url>
+   	</organization>
+   	<properties>
+   		<github.global.server>github</github.global.server>
+   	</properties>   
+</project>
