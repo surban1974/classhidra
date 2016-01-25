@@ -94,6 +94,11 @@
 		                  			</includes>
 		                  			<targetPath>webapp/WEB-INF/tlds</targetPath>
 		                		</resource>
+		                		<resource>
+		                  			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/examples</directory>
+		                  			<filtering>false</filtering>
+		                  			<targetPath>examples</targetPath>
+		                		</resource>		                		
 		              		</resources>              
 		            	</configuration>            
 					</execution>

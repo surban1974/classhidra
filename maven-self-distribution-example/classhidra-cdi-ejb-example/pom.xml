@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.surban1974.classhidra</groupId>
-  <artifactId>classhidra-base-example</artifactId>
+  <artifactId>classhidra-cdi-ejb-example</artifactId>
   <version>1.5.3</version>
   <packaging>war</packaging>
-	<name>ClassHidra Framework Example</name>
-	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Distributed Apache Tomcat v7.0.62.</description>
+	<name>ClassHidra Framework Example CDI and EJB Implementation</name>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI and EJB Implementation. Distributed Apache-TomEE-plume-1.7.2.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
 	<issueManagement>
@@ -21,47 +21,14 @@
 		</license>
 	</licenses>
 
-<!-- 		
- 	<distributionManagement>
-    	<repository>
-        	<id>internal.repo</id>
-        	<name>Temporary Staging Repository</name>
-        	<url>file://${project.build.directory}/mvn-repo</url>
-    	</repository>
-	</distributionManagement> 
- -->	  
-  	
-  	<build>
-  
-<!-- 
-	  	<resources>
-	 		<resource>
-	 			<directory>src/main/java</directory>
-	 			<includes>
-	 				<include>classhidra_app.properties</include>
-	 				<include>classhidra_auth.properties</include>
-	 				<include>classhidra_db.properties</include>
-	 				<include>classhidra_log.properties</include>
-	 				<include>classhidra_scheduler.properties</include>
-	 				<include>config/**</include>
-	 			</includes> 
-	 		</resource>
-	    </resources>  
- -->
+	  
+  <build>
+
+
   
    
-		<plugins>
- 
-<!--     
-	   	<plugin>
-	    	<artifactId>maven-deploy-plugin</artifactId>
-	        <version>2.8.1</version>
-	        <configuration>
-	            <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
-	        </configuration>
-	    </plugin>     
- -->
- 
+    <plugins>
+    
  			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 			    <version>3.0.0</version>
@@ -73,8 +40,28 @@
 			        	</fileset>
 			      	</filesets>
 				</configuration>
-			</plugin>	
+			</plugin>
+				
 			<plugin>
+     			<groupId>org.apache.maven.plugins</groupId>
+     			<artifactId>maven-antrun-plugin</artifactId>
+     			<version>1.7</version>
+         		<executions>
+             		<execution>
+	                	<phase>generate-resources</phase>
+		                <configuration>
+		                    <tasks>
+		                        <mkdir dir="src/main/java" />
+	                        </tasks>
+	                    </configuration>
+	                    <goals>
+	                        <goal>run</goal>
+	                    </goals>
+                	</execution>
+            	</executions>
+        	</plugin>	
+        				
+   			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.10</version>
@@ -82,9 +69,6 @@
 					<execution>
 						<id>unpack</id>
 						<phase>generate-resources</phase>
-	<!--              
-	             		<phase>package</phase>
-	-->
 	             		<goals>
 	               			<goal>unpack</goal>
 	             		</goals>
@@ -99,14 +83,21 @@
 		                   			<outputDirectory>src/main/origin</outputDirectory>
 		                 		</artifactItem>
 		               		</artifactItems>
-		               		<includes>**/*.*</includes>
+		  					<includes>
+			               		examples/**/*.*,
+			               		webapp/**/*.*,
+			               		java/application/**/*.*,
+			               		java/it/classhidra/core/tool/log/stubs/stub_neoHort_log.java,
+			               		java/examples/ejb/classhidra/framework/**/*.java,
+			               		java/wrappers/ejb/LogGenerator_EjbOnlySession.java
+		               		</includes>
 		              		<overWriteReleases>true</overWriteReleases>
 		               		<overWriteSnapshots>true</overWriteSnapshots>
 	             		</configuration>
 	           		</execution>
 	         	</executions>
 			</plugin>
- 
+			
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 			    <artifactId>build-helper-maven-plugin</artifactId>
@@ -118,7 +109,7 @@
 			            </goals>
 			            <configuration>
 			                <sources>
-			                    <source>src/main/java</source>
+			                    <source>src/main/origin/examples/cdi-ejb/src/main/java</source>
 			                    <source>src/main/origin/java</source>
 			                </sources>
 			            </configuration>
@@ -132,19 +123,7 @@
 			            <configuration>
 							<resources>
 								<resource>
-									<directory>src/main/origin/java</directory>
-					 				<includes>
-					 					<include>config/messages/classhidra_messages.xml</include>
-					 					<include>it/classhidra/version.properties</include>
-					 					<include>it/classhidra/core/controller/resources/*.*</include>
-					 					<include>it/classhidra/framework/resources/**/*.*</include>
-					 					<include>it/classhidra/scheduler/*.properties</include>
-					 					<include>it/classhidra/scheduler/**/*.properties</include>
-					 					<include>it/classhidra/scheduler/**/*.sql</include>
-					 				</includes>
-			                	</resource>
-								<resource>
-									<directory>src/main/java</directory>
+									<directory>src/main/origin/examples/cdi-ejb/src/main/java</directory>
 					 				<includes>
 						 				<include>classhidra_app.properties</include>
 						 				<include>classhidra_auth.properties</include>
@@ -159,29 +138,29 @@
 					</execution>
 			    </executions>
 			</plugin>
-			    	
+			
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 		        <version>3.3</version>
 		        <configuration>
-					<includes>
-						<include>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</include>
-						<include>application/**/*.java</include>
-						<include>it/classhidra/framework/web/components/**/*.java</include>
-						<include>it/classhidra/framework/web/formactions/**/*.java</include>
-						<include>it/classhidra/framework/web/formbeans/**/*.java</include>
-					</includes>        
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-		
+
 	 		<plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-war-plugin</artifactId>
 		        <version>2.6</version>
+		        
 		        <configuration>
+		        	<failOnMissingWebXml>false</failOnMissingWebXml>
+		        	<packagingExcludes>WEB-INF/lib/servlet-api-2.4.jar, WEB-INF/lib/jsp-api-2.2.jar</packagingExcludes>
 		        	<webResources>
+						<resource>
+		              		<directory>src/main/origin/examples/cdi-ejb/src/main/webapp</directory>
+		            	</resource>		        	
 		            	<resource>
 		              		<directory>src/main/origin/webapp</directory>
 		              		<includes>
@@ -203,16 +182,15 @@
 							<includes>
 								<include>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</include>
 								<include>application/**/*.java</include>
-								<include>it/classhidra/framework/web/components/**/*.java</include>
-								<include>it/classhidra/framework/web/formactions/**/*.java</include>
-								<include>it/classhidra/framework/web/formbeans/**/*.java</include>
+								<include>examples/ejb/classhidra/framework/**/*.java</include>
+								<include>wrappers/ejb/LogGenerator_EjbOnlySession.java</include>
 							</includes>                        
 	                        <targetPath>WEB-INF/classes</targetPath>
 	                    </resource>                               	
 		          	</webResources>
 		        </configuration>
 	      	</plugin>		
-
+			    	
 		  	<plugin>
 		    	<groupId>org.apache.maven.plugins</groupId>
 		    	<artifactId>maven-install-plugin</artifactId>
@@ -250,29 +228,47 @@
 			<version>1.5.3</version>
 			<type>rar</type>
 		</dependency>
-		<dependency>
+
+ 		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
-			<artifactId>classhidra-base</artifactId>
+			<artifactId>classhidra-cdi</artifactId>
 			<version>1.5.3</version>
+		</dependency>	
+ 		<dependency>
+			<groupId>com.github.surban1974.classhidra</groupId>
+			<artifactId>classhidra-ejb</artifactId>
+			<version>1.5.3</version>
+		</dependency>					
+
+		<dependency>
+		    <groupId>javax</groupId>
+		    <artifactId>javaee-api</artifactId>
+		    <version>6.0</version>
+		    <scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.github.surban1974.neohort</groupId>
 			<artifactId>neoHort5</artifactId>
 			<version>5.2.5.2</version>
 		</dependency>			
+
 		<dependency>
 			<groupId>net.htmlparser.jericho</groupId>
 			<artifactId>jericho-html</artifactId>
 			<version>2.3</version>
 		</dependency>
-  	</dependencies>
+		
+		
+
+
+  </dependencies>
   
-    <organization>
+     <organization>
    		<name>Svyatoslav Urbanovych</name>
    		<url>https://it.linkedin.com/pub/svyatoslav-urbanovych/2/241/754</url>
    	</organization>
    	<properties>
    		<github.global.server>github</github.global.server>
-   	</properties> 
-   	 
+   	</properties>  
 </project>
