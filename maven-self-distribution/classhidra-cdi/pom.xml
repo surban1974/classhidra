@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
-	<artifactId>classhidra-base</artifactId>
+	<artifactId>classhidra-cdi</artifactId>
 	<version>1.5.3</version>
-	<name>ClassHidra Base Module</name>
-	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Java 1.6 compilation.</description>
+	<name>ClassHidra CDI Support</name>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation. Java 1.6 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
 	<issueManagement>
@@ -19,14 +19,14 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
- 
-
-	<build>
-
-		<plugins>
 		
-		  
+  
+  <build>
+
+  
+
+	<plugins>
+	
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 			    <version>3.0.0</version>
@@ -39,7 +39,7 @@
 			      	</filesets>
 				</configuration>
 			</plugin>
-				
+	    	
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -65,15 +65,17 @@
 		                   			<outputDirectory>src/main/origin</outputDirectory>
 		                 		</artifactItem>
 		               		</artifactItems>
-		               		<includes>**/*.*</includes>
+		               		<includes>
+		               			java/it/classhidra/plugin/provider/DependencyInjectionProvider.java,
+		               			java/wrappers/cdi/**/*.java
+		               		</includes>
 		              		<overWriteReleases>true</overWriteReleases>
 		               		<overWriteSnapshots>true</overWriteSnapshots>
 	             		</configuration>
 	           		</execution>
 	         	</executions>
-			</plugin>
-	  
-	
+			</plugin>	    	
+	    	
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 			    <artifactId>build-helper-maven-plugin</artifactId>
@@ -85,59 +87,25 @@
 			            </goals>
 			            <configuration>
 			                <sources>
-			                    <source>src/main/java</source>
 			                    <source>src/main/origin/java</source>
 			                </sources>
 			            </configuration>
 			        </execution>
-			        <execution>
-			            <id>add-resource</id>
-			            <phase>generate-resources</phase>
-			            <goals>
-			              	<goal>add-resource</goal>
-			            </goals>
-			            <configuration>
-							<resources>
-								<resource>
-									<directory>src/main/origin/java</directory>
-					 				<includes>
-					 					<include>config/messages/classhidra_messages.xml</include>
-					 					<include>it/classhidra/version.properties</include>
-					 					<include>it/classhidra/core/controller/resources/*.*</include>
-					 					<include>it/classhidra/framework/resources/**/*.*</include>
-					 					<include>it/classhidra/scheduler/*.properties</include>
-					 					<include>it/classhidra/scheduler/**/*.properties</include>
-					 					<include>it/classhidra/scheduler/**/*.sql</include>
-					 				</includes>
-			                	</resource>
-			              	</resources>
-						</configuration>
-					</execution>
 				</executions>
-			</plugin>
+			</plugin>	
 		
-			
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 		        <version>3.3</version>
 		        <configuration>
-			 		<excludes>
-						<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
-			            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
-			            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
-			            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
-			            <exclude>it/classhidra/plugin/**/*.java</exclude>
+					<excludes>
+						<exclude>wrappers/cdi/LogGenerator_CdiOnlySession.java</exclude>
 					</excludes>
-					<includes>
-						<include>it/**/*.java</include>
-			            <include>external_loaders/**/*.java</include>
-			            <include>pool/**/*.java</include> 
-					</includes>        
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			
+		
 			<plugin>
 			  	<groupId>org.apache.maven.plugins</groupId>
 			  	<artifactId>maven-source-plugin</artifactId>
@@ -150,22 +118,13 @@
 			    	</execution>
 			  	</executions>
 	 			<configuration>
-	 		 		<excludes>
-						<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
-			            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
-			            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
-			            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
-			            <exclude>it/classhidra/plugin/**/*.java</exclude>
-					</excludes>
-			                  
-					<includes>
-						<include>it/**/*.java</include>
-			            <include>external_loaders/**/*.java</include>
-			            <include>pool/**/*.java</include> 
+					<includes>					
+						<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>	
+						<include>wrappers/cdi/**/*.java</include>				
 					</includes>        
 				</configuration>		  	
-			</plugin>		
-			
+			</plugin>				
+
 		  	<plugin>
 		    	<groupId>org.apache.maven.plugins</groupId>
 		    	<artifactId>maven-install-plugin</artifactId>
@@ -180,42 +139,45 @@
 			        </execution>
 			    </executions>
 		  	</plugin>
-		  			
-	 
-			
-		</plugins>
-	</build>
+	  			
+ 
+		
+	</plugins>
 
-	<repositories>
-    		<repository>
-        		<id>classhidra-mvn-repo</id>
-        		<url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
-        		<snapshots>
-            			<enabled>true</enabled>
-            			<updatePolicy>always</updatePolicy>
-        		</snapshots>
-    		</repository>
-  	</repositories>
+
+	</build>
+	
+  <repositories>
+    <repository>
+        <id>classhidra-mvn-repo</id>
+        <url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+        </snapshots>
+    </repository>
+  </repositories>	
   
  	<dependencies>
- 		<dependency>
+   		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-origin</artifactId>
 			<version>1.5.3</version>
 			<type>rar</type>
 		</dependency>
 		
-  		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
+ 		<dependency>
+			<groupId>com.github.surban1974.classhidra</groupId>
+			<artifactId>classhidra-base</artifactId>
+			<version>1.5.3</version>
 		</dependency>
-		
+
 		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
-		</dependency>
+			<groupId>org.jboss.weld.servlet</groupId>
+			<artifactId>weld-servlet</artifactId>
+			<version>1.1.31.Final</version>
+		</dependency>		
+		
 
 	</dependencies>  
 
