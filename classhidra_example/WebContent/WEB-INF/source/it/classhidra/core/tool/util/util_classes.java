@@ -14,8 +14,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -152,17 +151,21 @@ public class util_classes {
 //						    Set result = new HashSet();
 						    while(entries.hasMoreElements()) {
 						    	try{
-						    	String name = ((JarEntry)entries.nextElement()).getName();
-						        if (name.startsWith(path)) { //filter according to the path
-						        	String entry = name.substring(path.length());
-						            int checkSubdir = entry.indexOf("/");
-						            if (checkSubdir >= 0) {
-						              // if it is a subdirectory, we just return the directory name
-						              entry = entry.substring(0, checkSubdir);
-						            }
-						            if(!entry.trim().equals(""))
-						            	res.add(entry);
-						        }
+							    	String name = ((JarEntry)entries.nextElement()).getName();
+							    	String foundName = null;
+							    	if (name.startsWith(path))
+							    		foundName = name;
+							    	else if (("/"+name).startsWith(path))
+							    		foundName = "/"+name;
+							        if (foundName!=null) {
+							        	String entry = foundName.substring(path.length());
+							            int checkSubdir = entry.indexOf("/");
+							            if (checkSubdir >= 0) {
+							              entry = entry.substring(0, checkSubdir);
+							            }
+							            if(!entry.trim().equals(""))
+							            	res.add(entry);
+							        }
 						    	}catch(Exception ex){
 						    		
 						    	}
