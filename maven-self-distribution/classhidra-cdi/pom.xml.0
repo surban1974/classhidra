@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
-	<artifactId>classhidra-spring</artifactId>
+	<artifactId>classhidra-cdi</artifactId>
 	<version>1.5.3</version>
-	<name>ClassHidra Spring Support</name>
-	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Spring Implementation. Java 1.6 compilation.</description>
+	<name>ClassHidra CDI Support</name>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation. Java 1.6 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
 	<issueManagement>
@@ -21,12 +21,11 @@
 	</licenses>
 		
   
-  
-	<build>
+  <build>
 
   
 
-		<plugins>
+	<plugins>
 	
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
@@ -34,7 +33,7 @@
 			    <configuration>
 					<filesets>
 			        	<fileset>
-			          		<directory>src/main</directory>		          
+			          		<directory>src/main/origin</directory>		          
 			          		<followSymlinks>false</followSymlinks>
 			        	</fileset>
 			      	</filesets>
@@ -63,12 +62,12 @@
 		                   			<version>1.5.3</version>
 		                   			<type>rar</type>
 		                   			<overWrite>false</overWrite>
-		                   			<outputDirectory>src/main</outputDirectory>
+		                   			<outputDirectory>src/main/origin</outputDirectory>
 		                 		</artifactItem>
 		               		</artifactItems>
 		               		<includes>
-		               			java/it/classhidra/plugin/provider/SpringBeansProvider.java,
-		               			java/wrappers/spring/**/*.java
+		               			java/it/classhidra/plugin/provider/DependencyInjectionProvider.java,
+		               			java/wrappers/cdi/**/*.java
 		               		</includes>
 		              		<overWriteReleases>true</overWriteReleases>
 		               		<overWriteSnapshots>true</overWriteSnapshots>
@@ -88,26 +87,25 @@
 			            </goals>
 			            <configuration>
 			                <sources>
-			                    <source>src/main/java</source>
+			                    <source>src/main/origin/java</source>
 			                </sources>
 			            </configuration>
 			        </execution>
 				</executions>
-			</plugin>
-	
+			</plugin>	
 		
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 		        <version>3.3</version>
 		        <configuration>
 					<excludes>
-						<exclude>wrappers/spring/LogGenerator_SpringOnlySession.java</exclude>
+						<exclude>wrappers/cdi/LogGenerator_CdiOnlySession.java</exclude>
 					</excludes>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			
+		
 			<plugin>
 			  	<groupId>org.apache.maven.plugins</groupId>
 			  	<artifactId>maven-source-plugin</artifactId>
@@ -121,12 +119,12 @@
 			  	</executions>
 	 			<configuration>
 					<includes>					
-						<include>it/classhidra/plugin/provider/SpringBeansProvider.java</include>	
-						<include>wrappers/spring/**/*.java</include>				
+						<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>	
+						<include>wrappers/cdi/**/*.java</include>				
 					</includes>        
 				</configuration>		  	
 			</plugin>				
-	
+
 		  	<plugin>
 		    	<groupId>org.apache.maven.plugins</groupId>
 		    	<artifactId>maven-install-plugin</artifactId>
@@ -142,9 +140,9 @@
 			    </executions>
 		  	</plugin>
 	  			
-
+ 
 		
-		</plugins>
+	</plugins>
 
 
 	</build>
@@ -161,7 +159,7 @@
   </repositories>	
   
  	<dependencies>
-  		<dependency>
+   		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-origin</artifactId>
 			<version>1.5.3</version>
@@ -174,29 +172,11 @@
 			<version>1.5.3</version>
 		</dependency>
 
-	    <dependency>
-	        <groupId>org.springframework</groupId>
-	        <artifactId>spring-core</artifactId>
-	        <version>4.2.4.RELEASE</version>
-	    </dependency>
-	
-	    <dependency>
-	        <groupId>org.springframework</groupId>
-	        <artifactId>spring-web</artifactId>
-	        <version>4.2.4.RELEASE</version>
-	    </dependency>
-	
-	    <dependency>
-	        <groupId>org.springframework</groupId>
-	        <artifactId>spring-webmvc</artifactId>
-	        <version>4.2.4.RELEASE</version>
-	    </dependency>
-	 	<dependency>
-	        <groupId>cglib</groupId>
-	        <artifactId>cglib</artifactId>
-	        <version>3.1</version>
-	    </dependency>	
-		
+		<dependency>
+			<groupId>org.jboss.weld.servlet</groupId>
+			<artifactId>weld-servlet</artifactId>
+			<version>1.1.31.Final</version>
+		</dependency>		
 		
 
 	</dependencies>  

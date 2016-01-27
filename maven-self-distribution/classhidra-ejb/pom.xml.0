@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
-	<artifactId>classhidra-spring</artifactId>
+	<artifactId>classhidra-ejb</artifactId>
 	<version>1.5.3</version>
-	<name>ClassHidra Spring Support</name>
-	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Spring Implementation. Java 1.6 compilation.</description>
+	<name>ClassHidra EJB Support</name>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. EJB Implementation. Java 1.6 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
   
 	<issueManagement>
@@ -19,22 +19,21 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-		
   
   
-	<build>
+  	<build>
 
   
 
 		<plugins>
-	
+
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 			    <version>3.0.0</version>
 			    <configuration>
 					<filesets>
 			        	<fileset>
-			          		<directory>src/main</directory>		          
+			          		<directory>src/main/origin</directory>		          
 			          		<followSymlinks>false</followSymlinks>
 			        	</fileset>
 			      	</filesets>
@@ -63,12 +62,12 @@
 		                   			<version>1.5.3</version>
 		                   			<type>rar</type>
 		                   			<overWrite>false</overWrite>
-		                   			<outputDirectory>src/main</outputDirectory>
+		                   			<outputDirectory>src/main/origin</outputDirectory>
 		                 		</artifactItem>
 		               		</artifactItems>
 		               		<includes>
-		               			java/it/classhidra/plugin/provider/SpringBeansProvider.java,
-		               			java/wrappers/spring/**/*.java
+		               			java/it/classhidra/plugin/provider/EjbProvider.java,
+		               			java/wrappers/ejb/**/*.java
 		               		</includes>
 		              		<overWriteReleases>true</overWriteReleases>
 		               		<overWriteSnapshots>true</overWriteSnapshots>
@@ -88,20 +87,20 @@
 			            </goals>
 			            <configuration>
 			                <sources>
-			                    <source>src/main/java</source>
+			                    <source>src/main/origin/java</source>
 			                </sources>
 			            </configuration>
 			        </execution>
 				</executions>
-			</plugin>
-	
+			</plugin>	
 		
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 		        <version>3.3</version>
 		        <configuration>
+	       
 					<excludes>
-						<exclude>wrappers/spring/LogGenerator_SpringOnlySession.java</exclude>
+						<exclude>wrappers/ejb/LogGenerator_EjbOnlySession.java</exclude>
 					</excludes>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -121,8 +120,8 @@
 			  	</executions>
 	 			<configuration>
 					<includes>					
-						<include>it/classhidra/plugin/provider/SpringBeansProvider.java</include>	
-						<include>wrappers/spring/**/*.java</include>				
+						<include>it/classhidra/plugin/provider/EjbProvider.java</include>	
+						<include>wrappers/ejb/**/*.java</include>				
 					</includes>        
 				</configuration>		  	
 			</plugin>				
@@ -143,25 +142,24 @@
 		  	</plugin>
 	  			
 
-		
 		</plugins>
 
 
 	</build>
 	
-  <repositories>
-    <repository>
-        <id>classhidra-mvn-repo</id>
-        <url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
-        <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-        </snapshots>
-    </repository>
-  </repositories>	
+	<repositories>
+	    <repository>
+	        <id>classhidra-mvn-repo</id>
+	        <url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	            <updatePolicy>always</updatePolicy>
+	        </snapshots>
+	    </repository>
+	</repositories>	
   
  	<dependencies>
-  		<dependency>
+    	<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-origin</artifactId>
 			<version>1.5.3</version>
@@ -174,31 +172,77 @@
 			<version>1.5.3</version>
 		</dependency>
 
-	    <dependency>
-	        <groupId>org.springframework</groupId>
-	        <artifactId>spring-core</artifactId>
-	        <version>4.2.4.RELEASE</version>
-	    </dependency>
-	
-	    <dependency>
-	        <groupId>org.springframework</groupId>
-	        <artifactId>spring-web</artifactId>
-	        <version>4.2.4.RELEASE</version>
-	    </dependency>
-	
-	    <dependency>
-	        <groupId>org.springframework</groupId>
-	        <artifactId>spring-webmvc</artifactId>
-	        <version>4.2.4.RELEASE</version>
-	    </dependency>
-	 	<dependency>
-	        <groupId>cglib</groupId>
-	        <artifactId>cglib</artifactId>
-	        <version>3.1</version>
-	    </dependency>	
+		<dependency>
+		    <groupId>javax</groupId>
+		    <artifactId>javaee-api</artifactId>
+		    <version>6.0</version>
+		    <scope>provided</scope>
+		</dependency>
 		
 		
 
+<!--
+
+		<dependency>
+			<groupId>org.apache.openejb</groupId>
+			<artifactId>apache-tomee</artifactId>
+			<version>1.7.2</version>
+		</dependency>		
+		
+ 		
+		<dependency>
+			<groupId>com.github.surban1974.neohort</groupId>
+			<artifactId>neoHort5</artifactId>
+			<version>5.2.5.2</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>net.htmlparser.jericho</groupId>
+			<artifactId>jericho-html</artifactId>
+			<version>2.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss</groupId>
+			<artifactId>jboss-vfs</artifactId>
+			<version>3.1.0.Final</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.weld.servlet</groupId>
+			<artifactId>weld-servlet</artifactId>
+			<version>1.1.31.Final</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>ejb3-persistence</artifactId>
+			<version>3.3.2.Beta1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>2.5.6</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.weld.servlet</groupId>
+			<artifactId>weld-servlet</artifactId>
+			<version>1.1.31.Final</version>
+		</dependency>		
+		
+ 		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.2</version>
+		</dependency>
+ -->
 	</dependencies>  
 
    	<organization>

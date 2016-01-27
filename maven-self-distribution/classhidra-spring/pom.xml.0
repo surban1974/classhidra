@@ -34,7 +34,7 @@
 			    <configuration>
 					<filesets>
 			        	<fileset>
-			          		<directory>src/main</directory>		          
+			          		<directory>src/main/origin</directory>		          
 			          		<followSymlinks>false</followSymlinks>
 			        	</fileset>
 			      	</filesets>
@@ -63,7 +63,7 @@
 		                   			<version>1.5.3</version>
 		                   			<type>rar</type>
 		                   			<overWrite>false</overWrite>
-		                   			<outputDirectory>src/main</outputDirectory>
+		                   			<outputDirectory>src/main/origin</outputDirectory>
 		                 		</artifactItem>
 		               		</artifactItems>
 		               		<includes>
@@ -88,7 +88,7 @@
 			            </goals>
 			            <configuration>
 			                <sources>
-			                    <source>src/main/java</source>
+			                    <source>src/main/origin/java</source>
 			                </sources>
 			            </configuration>
 			        </execution>

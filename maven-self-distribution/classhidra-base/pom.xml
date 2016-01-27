@@ -33,7 +33,7 @@
 			    <configuration>
 					<filesets>
 			        	<fileset>
-			          		<directory>src/main/origin</directory>		          
+			          		<directory>src/main</directory>		          
 			          		<followSymlinks>false</followSymlinks>
 			        	</fileset>
 			      	</filesets>
@@ -62,10 +62,15 @@
 		                   			<version>1.5.3</version>
 		                   			<type>rar</type>
 		                   			<overWrite>false</overWrite>
-		                   			<outputDirectory>src/main/origin</outputDirectory>
+		                   			<outputDirectory>src/main</outputDirectory>
 		                 		</artifactItem>
 		               		</artifactItems>
-		               		<includes>**/*.*</includes>
+		               		<includes>
+		               			java/it/**/*.*,
+		               			java/config/**/*.*,
+		               			java/external_loaders/**/*.*,
+			            		java/pool/**/*.*
+		               		</includes>
 		              		<overWriteReleases>true</overWriteReleases>
 		               		<overWriteSnapshots>true</overWriteSnapshots>
 	             		</configuration>
@@ -86,7 +91,6 @@
 			            <configuration>
 			                <sources>
 			                    <source>src/main/java</source>
-			                    <source>src/main/origin/java</source>
 			                </sources>
 			            </configuration>
 			        </execution>
@@ -99,7 +103,7 @@
 			            <configuration>
 							<resources>
 								<resource>
-									<directory>src/main/origin/java</directory>
+									<directory>src/main/java</directory>
 					 				<includes>
 					 					<include>config/messages/classhidra_messages.xml</include>
 					 					<include>it/classhidra/version.properties</include>
