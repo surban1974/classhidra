@@ -31,31 +31,14 @@
 			    <configuration>
 					<filesets>
 			        	<fileset>
-			          		<directory>src/main/origin</directory>		          
+			          		<directory>src/main</directory>		          
 			          		<followSymlinks>false</followSymlinks>
 			        	</fileset>
 			      	</filesets>
 				</configuration>
 			</plugin>
 				
-			<plugin>
-     			<groupId>org.apache.maven.plugins</groupId>
-     			<artifactId>maven-antrun-plugin</artifactId>
-     			<version>1.7</version>
-         		<executions>
-             		<execution>
-	                	<phase>generate-resources</phase>
-		                <configuration>
-		                    <tasks>
-		                        <mkdir dir="src/main/java" />
-	                        </tasks>
-	                    </configuration>
-	                    <goals>
-	                        <goal>run</goal>
-	                    </goals>
-                	</execution>
-            	</executions>
-        	</plugin>	
+
         				
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -76,11 +59,11 @@
 		                   			<version>1.5.3</version>
 		                   			<type>rar</type>
 		                   			<overWrite>false</overWrite>
-		                   			<outputDirectory>src/main/origin</outputDirectory>
+		                   			<outputDirectory>src/main</outputDirectory>
 		                 		</artifactItem>
 		               		</artifactItems>
 		               		<includes>
-			               		examples/**/*.*,
+			               		examples/base/**/*.*,
 			               		webapp/**/*.*,
 			               		java/application/**/*.*,
 			               		java/it/classhidra/core/tool/log/stubs/stub_neoHort_log.java,
@@ -94,6 +77,53 @@
 	           		</execution>
 	         	</executions>
 			</plugin>
+			
+      		<plugin>
+        		<artifactId>maven-resources-plugin</artifactId>
+        		<version>2.7</version>
+        		<executions>
+          			<execution>
+            			<id>copy-resources</id>
+           	 			<phase>generate-resources</phase>
+            			<goals>
+              				<goal>copy-resources</goal>
+            			</goals>
+            			<configuration>
+              				<outputDirectory>src/main</outputDirectory>
+              				<overwrite>true</overwrite>
+              				<resources>          
+                				<resource>
+                  					<directory>src/main/examples/base/src/main</directory>
+                  					<filtering>false</filtering>
+                				</resource>
+              				</resources>              
+            			</configuration>            
+          			</execution>
+        		</executions>
+      		</plugin>	
+      		
+			<plugin>
+     			<groupId>org.apache.maven.plugins</groupId>
+     			<artifactId>maven-antrun-plugin</artifactId>
+     			<version>1.8</version>
+         		<executions>
+             		<execution>
+	                	<phase>generate-resources</phase>
+		                <configuration>
+		                    <tasks>
+		                    	<delete dir="src/main/examples" includeemptydirs="true"/>
+		                        <delete file="src/main/webapp/WEB-INF/applicationContext.xml"/>
+		                        <delete file="src/main/webapp/WEB-INF/beans.xml"/>
+	                        </tasks>
+	                    </configuration>
+	                    <goals>
+	                        <goal>run</goal>
+	                    </goals>
+                	</execution>
+            	</executions>
+        	</plugin>	      		
+      		
+		
  
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -106,8 +136,7 @@
 			            </goals>
 			            <configuration>
 			                <sources>			
- 			                    <source>src/main/origin/java</source>
-			                    <source>src/main/origin/examples/base/src/main/java</source>
+ 			                    <source>src/main/java</source>
 			                </sources>
 			            </configuration>
 			        </execution>
@@ -120,7 +149,7 @@
 			            <configuration>
 							<resources>
 								<resource>
-									<directory>src/main/origin/examples/base/src/main/java</directory>
+									<directory>src/main/java</directory>
 					 				<includes>
 						 				<include>classhidra_app.properties</include>
 						 				<include>classhidra_auth.properties</include>
@@ -159,11 +188,9 @@
 		        	<packagingExcludes>WEB-INF/lib/servlet-api-2.4.jar, WEB-INF/lib/jsp-api-2.2.jar</packagingExcludes>
 		        	
 		        	<webResources>
-						<resource>
-		              		<directory>src/main/origin/examples/base/src/main/webapp</directory>
-		            	</resource>		        	
+       	
 		            	<resource>
-		              		<directory>src/main/origin/webapp</directory>
+		              		<directory>src/main/webapp</directory>
 		              		<includes>
 		              			<include>index.html</include>
 		              			<include>error.jsp</include>
@@ -173,10 +200,14 @@
 		              			<include>jsp/**</include>
 		              			<include>WEB-INF/tlds/**</include>
 		              		</includes>
+		              		<excludes>
+		              			<exclude>WEB-INF/applicationContext.xml</exclude>
+		              			<exclude>WEB-INF/beans.xml</exclude>
+		              		</excludes>
 		            	</resource>
  		            	
 	                    <resource>
-	                        <directory>src/main/origin/java</directory>
+	                        <directory>src/main/java</directory>
 							<includes>
 								<include>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</include>
 								<include>application/**/*.java</include>
