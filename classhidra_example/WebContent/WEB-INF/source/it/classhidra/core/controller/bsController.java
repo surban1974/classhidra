@@ -2911,9 +2911,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 		String path=servletContext.getRealPath("/");
 		if(appInit!=null && appInit.getApplication_path_config()!=null)
 			path+=appInit.getApplication_path_config();
-		path=path.replace('\\', '/');
-//		while (path.indexOf("//")>-1) path=path.replace("//", "/");
-		while (path.indexOf("//")>-1) path=util_format.replace(path,"//", "/");
+		if(path!=null){
+			path=path.replace('\\', '/');
+	//		while (path.indexOf("//")>-1) path=path.replace("//", "/");
+			while (path.indexOf("//")>-1) path=util_format.replace(path,"//", "/");
+		}
 		return path;
 	}
 
