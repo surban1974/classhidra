@@ -608,7 +608,9 @@ public class tagInput extends BodyTagSupport{
 		if(value!=null)
 			try{
 				results.append(" value=\"");
-				if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
+//				if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
+				if(replaceOnBlank != null && value!=null && replaceOnBlank.equals(value)) 
+					value=util_format.replace(value,replaceOnBlank,"");				
 				if ( clear != null && clear.equalsIgnoreCase("true") && value.equalsIgnoreCase("0")) value="";
 
 				results.append(util_xml.normalHTML((value==null)?"":value.toString(),null));

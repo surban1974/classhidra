@@ -56,7 +56,8 @@ public class tagAsciielement extends tagFormelement{
 			}
 			try{
 				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
-				if(replaceOnBlank != null) writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
+				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
+					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
 			}catch(Exception e){}	
 			
 			results.append(util_xml.normalASCII((writeValue==null)?"":writeValue.toString()));	

@@ -115,20 +115,29 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 			info_context iContext = null;
 			if(instance instanceof i_ProviderWrapper){
 				if(((i_ProviderWrapper)instance).getInfo_context()!=null){
-					((i_ProviderWrapper)instance).getInfo_context().setProxiedEjb(true);
+//					((i_ProviderWrapper)instance).getInfo_context().setProxiedEjb(true);
 					iContext = ((i_ProviderWrapper)instance).getInfo_context();
+					iContext.setProxiedEjb(true);
 				}
 			}else if(instance instanceof i_bean){
 				if(((i_bean)instance).getInfo_context()!=null){
-					((i_bean)instance).getInfo_context().setProxiedEjb(true);
+//					((i_bean)instance).getInfo_context().setProxiedEjb(true);
 					iContext = ((i_bean)instance).getInfo_context();
+					iContext.setProxiedEjb(true);
 				}				
 			}else if(instance instanceof i_action){
 				if(((i_action)instance).getInfo_context()!=null){
-					((i_action)instance).getInfo_context().setProxiedEjb(true);
+//					((i_action)instance).getInfo_context().setProxiedEjb(true);
 					iContext = ((i_action)instance).getInfo_context();
+					iContext.setProxiedEjb(true);
 				}				
-			}		
+			}else if(instance instanceof i_stream){
+				if(((i_stream)instance).getInfo_context()!=null){
+//					((i_stream)instance).getInfo_context().setProxiedEjb(true);
+					iContext = ((i_stream)instance).getInfo_context();
+					iContext.setProxiedEjb(true);
+				}				
+			}			
 			if(iContext!=null){
 				iContext.setProxiedClass(instance.getClass());
 				iContext.setProxiedId(System.identityHashCode(instance));
@@ -189,6 +198,14 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 			if(iContext!=null && instance instanceof i_action && iContext.isStateless() && iContext.getProxy()!=null)
 				return iContext;
 			
+			if(iContext!=null && iContext.isRemote()){
+				if(instance instanceof i_bean)
+					((i_bean)instance).setInfo_context(iContext);
+				else if(instance instanceof i_action)
+					((i_action)instance).setInfo_context(iContext);
+				else if(instance instanceof i_stream)
+					((i_stream)instance).setInfo_context(iContext);
+			}
 			return instance;
 		}else 
 			return instance;
@@ -629,6 +646,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 		        			setInfoContext(((i_bean) result).asBean());
 		        		if(result instanceof i_action)
 		        			setInfoContext(((i_action) result).asBean());
+		        		if(result instanceof i_stream)
+		        			setInfoContext(((i_stream) result).asStream());
 	        		}
 	        		return result;
 	        	}catch(Exception e){
@@ -653,6 +672,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 		        			setInfoContext(((i_bean) result).asBean());
 		        		if(result instanceof i_action)
 		        			setInfoContext(((i_action) result).asBean());
+		        		if(result instanceof i_stream)
+		        			setInfoContext(((i_stream) result).asStream());		        		
 	        		}
 	        		return result;
 	        	}catch(Exception e){
@@ -684,6 +705,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
 	    	        			setInfoContext(((i_action) result).asBean());
+			        		if(result instanceof i_stream)
+			        			setInfoContext(((i_stream) result).asStream());	    	        		
        					}catch(Exception e){
        					}
 	        			return result;
@@ -699,6 +722,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
 	    	        			setInfoContext(((i_action) result).asBean());
+			        		if(result instanceof i_stream)
+			        			setInfoContext(((i_stream) result).asStream());	    	        		
        					}catch(Exception e){
        					}
 	        			return result;
@@ -714,6 +739,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
 	    	        			setInfoContext(((i_action) result).asBean());
+			        		if(result instanceof i_stream)
+			        			setInfoContext(((i_stream) result).asStream());	    	        		
        					}catch(Exception e){
        					}
 	        			return result;
@@ -729,6 +756,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
 	    	        			setInfoContext(((i_action) result).asBean());
+			        		if(result instanceof i_stream)
+			        			setInfoContext(((i_stream) result).asStream());	    	        		
        					}catch(Exception e){
        					}
 	        			return result;
@@ -759,6 +788,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
 	    	        			setInfoContext(((i_action) result).asBean());
+			        		if(result instanceof i_stream)
+			        			setInfoContext(((i_stream) result).asStream());	    	        		
        					}catch(Exception e){
        					}
 	        			return result;
@@ -774,6 +805,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
 	    	        			setInfoContext(((i_action) result).asBean());
+			        		if(result instanceof i_stream)
+			        			setInfoContext(((i_stream) result).asStream());	    	        		
        					}catch(Exception e){
        					}
 	        			return result;
@@ -789,6 +822,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
 	    	        			setInfoContext(((i_action) result).asBean());
+			        		if(result instanceof i_stream)
+			        			setInfoContext(((i_stream) result).asStream());	    	        		
        					}catch(Exception e){
        					}
 	        			return result;
@@ -804,6 +839,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    	        			setInfoContext(((i_bean) result).asBean());
 	    	        		if(result instanceof i_action)
 	    	        			setInfoContext(((i_action) result).asBean());
+			        		if(result instanceof i_stream)
+			        			setInfoContext(((i_stream) result).asStream());	    	        		
        					}catch(Exception e){
        					}
 	        			return result;
@@ -1166,7 +1203,24 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
     		 }
     	 }
      }
-
+     public static void setInfoContext(i_stream stream) {
+    	if(stream!=null){
+    		try{
+    			Class clazz = stream.getClass();
+    			stream.getInfo_context().setProxiedEjb(true);
+         		if(clazz.getAnnotation(Stateless.class)!=null)
+         			stream.getInfo_context().setStateless(true);
+         		if(clazz.getAnnotation(Stateful.class)!=null)
+         			stream.getInfo_context().setStateful(true);
+         		if(clazz.getAnnotation(Singleton.class)!=null)
+         			stream.getInfo_context().setSingleton(true);
+         		if(clazz.getAnnotation(MessageDriven.class)!=null)
+         			stream.getInfo_context().setMessageDriven(true);
+    		 }catch(Exception e){
+    			 
+    		 }
+    	 }
+     }
 
 
 

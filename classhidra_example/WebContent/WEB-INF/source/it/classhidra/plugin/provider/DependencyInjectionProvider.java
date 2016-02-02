@@ -20,6 +20,7 @@ import it.classhidra.core.controller.i_ProviderWrapper;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_provider;
+import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.info_context;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
@@ -92,6 +93,11 @@ public class DependencyInjectionProvider implements i_provider {
 				if(((i_action)instance).getInfo_context()!=null){
 					((i_action)instance).getInfo_context().setProxiedCdi(true);
 					iContext = ((i_action)instance).getInfo_context();
+				}				
+			}else if(instance instanceof i_stream){
+				if(((i_stream)instance).getInfo_context()!=null){
+					((i_stream)instance).getInfo_context().setProxiedCdi(true);
+					iContext = ((i_stream)instance).getInfo_context();
 				}				
 			}		
 			if(iContext!=null){
@@ -217,7 +223,43 @@ public class DependencyInjectionProvider implements i_provider {
 					}catch(Exception e){						
 					}					
 				}
-			}
+			}else if(instance instanceof i_stream){
+				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
+						clazz.getAnnotation(ApplicationScoped.class)!=null ||
+						clazz.getAnnotation(RequestScoped.class)!=null){
+							((i_stream)instance).getInfo_context().setProxiedCdi(true);
+							((i_stream)instance).getInfo_context().setProxiedEjb(false);
+							if(clazz.getAnnotation(SessionScoped.class)!=null)
+								((i_stream)instance).getInfo_context().setSessionScoped(true);
+							if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+								((i_stream)instance).getInfo_context().setApplicationScoped(true);
+							if(clazz.getAnnotation(RequestScoped.class)!=null)
+								((i_stream)instance).getInfo_context().setRequestScoped(true);
+							if(clazz.getAnnotation(Named.class)!=null)
+								((i_stream)instance).getInfo_context().setNamed(true);
+					}else{
+						try{
+							i_stream istream = ((i_stream)instance).asStream();
+							Class clazzi=istream.getClass();
+							if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+								clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+								clazzi.getAnnotation(RequestScoped.class)!=null){
+								istream.getInfo_context().setProxiedCdi(true);
+								istream.getInfo_context().setProxiedEjb(false);
+								if(clazz.getAnnotation(SessionScoped.class)!=null)
+									istream.getInfo_context().setSessionScoped(true);
+								if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+									istream.getInfo_context().setApplicationScoped(true);
+								if(clazz.getAnnotation(RequestScoped.class)!=null)
+									istream.getInfo_context().setRequestScoped(true);
+								if(clazz.getAnnotation(Named.class)!=null)
+									istream.getInfo_context().setNamed(true);
+							}else if(!clazzi.getName().equals(clazz.getName()))
+								anotherCheck4ejb=true;
+						}catch(Exception e){						
+						}					
+					}
+				}
 		}
 		
 		if(bsController.getEjbDefaultProvider()!=null && instance!=null && anotherCheck4ejb){
@@ -230,6 +272,9 @@ public class DependencyInjectionProvider implements i_provider {
 					}else if(ejb_instance instanceof i_action){
 						((i_bean)instance).getInfo_context().setProxiedEjb(true);
 						((i_bean)instance).getInfo_context().reInitEjb(((i_action)ejb_instance).getInfo_context());
+					}else if(ejb_instance instanceof i_stream){
+						((i_stream)instance).getInfo_context().setProxiedEjb(true);
+						((i_stream)instance).getInfo_context().reInitEjb(((i_stream)ejb_instance).getInfo_context());
 					}
 				}catch(Exception e){
 				}
@@ -316,6 +361,42 @@ public class DependencyInjectionProvider implements i_provider {
 										iaction.getInfo_context().setRequestScoped(true);
 									if(clazz.getAnnotation(Named.class)!=null)
 										iaction.getInfo_context().setNamed(true);
+								}
+							}catch(Exception e){						
+							}					
+						}
+					}else if(ejb_instance instanceof i_stream){
+			    		((i_stream)ejb_instance).getInfo_context().setProxiedEjb(true);
+						if(	clazz.getAnnotation(SessionScoped.class)!=null ||
+							clazz.getAnnotation(ApplicationScoped.class)!=null ||
+							clazz.getAnnotation(RequestScoped.class)!=null){
+								((i_stream)ejb_instance).getInfo_context().setProxiedCdi(true);
+								((i_stream)ejb_instance).getInfo_context().setProxiedEjb(false);
+								if(clazz.getAnnotation(SessionScoped.class)!=null)
+									((i_stream)ejb_instance).getInfo_context().setSessionScoped(true);
+								if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+									((i_stream)ejb_instance).getInfo_context().setApplicationScoped(true);
+								if(clazz.getAnnotation(RequestScoped.class)!=null)
+									((i_stream)ejb_instance).getInfo_context().setRequestScoped(true);
+								if(clazz.getAnnotation(Named.class)!=null)
+									((i_stream)ejb_instance).getInfo_context().setNamed(true);
+						}else{
+							try{
+								i_stream istream = ((i_stream)ejb_instance).asStream();
+								Class clazzi=istream.getClass();
+								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
+									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
+									clazzi.getAnnotation(RequestScoped.class)!=null){
+									istream.getInfo_context().setProxiedCdi(true);
+									istream.getInfo_context().setProxiedEjb(false);
+									if(clazz.getAnnotation(SessionScoped.class)!=null)
+										istream.getInfo_context().setSessionScoped(true);
+									if(clazz.getAnnotation(ApplicationScoped.class)!=null)
+										istream.getInfo_context().setApplicationScoped(true);
+									if(clazz.getAnnotation(RequestScoped.class)!=null)
+										istream.getInfo_context().setRequestScoped(true);
+									if(clazz.getAnnotation(Named.class)!=null)
+										istream.getInfo_context().setNamed(true);
 								}
 							}catch(Exception e){						
 							}					

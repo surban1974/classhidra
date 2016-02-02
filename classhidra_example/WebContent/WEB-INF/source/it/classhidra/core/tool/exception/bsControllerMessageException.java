@@ -52,6 +52,31 @@ public bsControllerMessageException(Exception exc) {
 	}
 }
 
+public bsControllerMessageException(message mess, HttpServletRequest request) {
+	
+	super(
+			(mess!=null) ? mess.getDESC_MESS() : "",
+			request,
+			(mess!=null) 
+				? 
+				(mess.getTYPE().equals("E")) ? iStub.log_ERROR : (mess.getTYPE().equals("W")) ? iStub.log_WARN : ""
+				:
+				""	
+	);
+	
+
+	if(request!=null && mess!=null){
+		try{
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
+			Vector list = null;
+			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			if(list!=null) list.add(mess);
+		}catch(Exception e){
+			new bsControllerException(e.toString(), request,iStub.log_ERROR);
+		}
+	}
+}
+
 public bsControllerMessageException(message mess, HttpServletRequest request,String level) {
 	super((mess!=null)?mess.getDESC_MESS(null):"",request,level);
 	if(request!=null && mess!=null){

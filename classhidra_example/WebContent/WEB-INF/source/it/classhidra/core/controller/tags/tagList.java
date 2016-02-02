@@ -902,7 +902,7 @@ results.append("</a>"+System.getProperty("line.separator"));
 		try{
 			if(!v_formatsOutput_current.toString().equals(""))
 				writeValue=util_format.makeFormatedString(v_formatsOutput_current.toString(),formatLanguage,formatCountry,writeValue);
-			if(!v_replaceOnBlank_current.toString().equals(""))
+			if(!v_replaceOnBlank_current.toString().equals("") && v_replaceOnBlank_current.toString().equals(writeValue.toString()))
 				writeValue=util_format.replace(writeValue.toString(),v_replaceOnBlank_current.toString(),"");
 
 		}catch(Exception e){}

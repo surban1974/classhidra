@@ -45,6 +45,8 @@ public class stream implements i_stream, Serializable{
 	private i_stream _stream;
 	private info_stream _infostream;
 	private listener_stream listener_s;
+	
+	protected info_context info_context = new info_context(this.getClass());
 
 
 	public stream(){
@@ -214,9 +216,17 @@ public class stream implements i_stream, Serializable{
 	public void setOwner(i_stream owner) {
 	}
 
+	public info_context getInfo_context() {
+		return info_context;
+	}
 
+	public void setInfo_context(i_info_context info_context) {
+		this.info_context = (info_context)info_context;
+	}
 
-
+	public i_stream asStream(){
+		return (stream)this;
+	}
 
 
 }

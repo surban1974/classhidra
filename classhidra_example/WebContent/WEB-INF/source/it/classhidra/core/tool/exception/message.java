@@ -55,6 +55,21 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 		DESC_MESS=_DESC_MESS;
 	}	
 	
+	public message(String _TYPE, String _CD_MESS, String _DESC_MESS, Object[] o_parameters) {
+		super();
+		reimposta();
+		TYPE=_TYPE;
+		CD_MESS=_CD_MESS;
+		DESC_MESS=_DESC_MESS;
+		if(o_parameters!=null && o_parameters.length>0){
+			if(parameters==null)
+				parameters = new HashMap();
+			parameters.putAll(
+					bsControllerMessageException.prepare_hm_parameters(o_parameters)
+			);
+		}
+	}		
+	
 	public message() {
 		super();
 		reimposta();
@@ -225,5 +240,9 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 	}
 	public void setMESS_ID(String mess_id) {
 		MESS_ID = mess_id;
+	}
+
+	public HashMap getParameters() {
+		return parameters;
 	}
 }

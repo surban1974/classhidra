@@ -72,7 +72,9 @@
 			               		java/application/**/*.*,
 			               		java/it/classhidra/core/tool/log/stubs/stub_neoHort_log.java,
 			               		java/examples/cdi/classhidra/framework/**/*.java,
-			               		java/wrappers/cdi/LogGenerator_CdiOnlySession.java
+			               		java/wrappers/cdi/LogGenerator_CdiOnlySession.java,
+			               		java/it/classhidra/plugin/provider/DependencyInjectionProvider.java,
+		               			java/wrappers/cdi/**/*.java
 		               		</includes>
 		              		<overWriteReleases>true</overWriteReleases>
 		               		<overWriteSnapshots>true</overWriteSnapshots>
@@ -204,6 +206,8 @@
 								<include>application/**/*.java</include>
 								<include>examples/cdi/classhidra/framework/**/*.java</include>
 								<include>wrappers/cdi/LogGenerator_CdiOnlySession.java</include>
+								<include>it/classhidra/plugin/provider/DependencyInjectionProvider.java</include>	
+								<include>wrappers/cdi/**/*.java</include>
 							</includes>                        
 	                        <targetPath>WEB-INF/classes</targetPath>
 	                    </resource>  

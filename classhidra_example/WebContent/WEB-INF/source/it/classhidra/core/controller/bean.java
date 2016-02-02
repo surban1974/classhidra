@@ -480,8 +480,11 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 	}
 
-
 public void init(HashMap _content) throws bsControllerException{
+	init_(_content);
+}
+
+public void init_(HashMap _content) throws bsControllerException{
 	if(_content==null) return;
 
 	xmloutput=false;

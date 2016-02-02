@@ -246,7 +246,8 @@ public class tagTranscode extends TagSupport{
 			}
 			try{
 				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
-				if(replaceOnBlank != null) writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
+				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
+					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
 			}catch(Exception e){}
 			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
 				results.append(util_xml.normalXML(writeValue.toString(),null));

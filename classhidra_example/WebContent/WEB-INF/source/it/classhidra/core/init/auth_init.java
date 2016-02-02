@@ -232,6 +232,52 @@ public class auth_init implements Serializable{
 		util_auth.init(this, user, password, obj_request);
 	}
 
+	public void reInit(auth_init another){
+		if(another==null)
+			return;
+		jaas_managername = another.getJaas_managername();
+		jaas_systemname = another.getJaas_systemname();
+		jaas_defaultfilename = another.getJaas_defaultfilename();
+		jaas_policyname = another.getJaas_policyname();
+
+		name_authentication_filter = another.getName_authentication_filter();
+
+		infouser = another.getInfouser();
+		infotarget = another.getInfotarget();
+		infogroup = another.getInfogroup();
+		_user = another.get_user();
+		_userDesc = another.get_userDesc();
+		_ruolo = another.get_ruolo();
+		_ruoloDesc = another.get_ruoloDesc();
+		_ruoli = another.get_ruoli();
+		_language = another.get_language();
+		_matricola = another.get_matricola();
+		_mail = another.get_mail();
+		_target = another.get_target();
+		_user_ip = another.get_user_ip();
+		
+		_ticker = another.get_ticker();
+
+		_wac_fascia = another.get_wac_fascia();
+		_risoluzione = another.get_risoluzione();
+
+		_cd_ist = another.get_cd_ist();
+
+		requestHeader = another.getRequestHeader();
+		_actions_allowed = another.get_actions_allowed();
+		_actions_forbidden = another.get_actions_forbidden();
+		
+
+		_target_property = another.get_target_property();
+		_user_property = another.get_user_property();
+
+		_manager = another.get_manager();
+		_authentication_filter = another.get_authentication_filter();
+
+		_logged = another.is_logged();
+
+		loadedFrom = another.getLoadedFrom();
+	}
 
 	public void reimposta(){
 		infouser=new info_user();

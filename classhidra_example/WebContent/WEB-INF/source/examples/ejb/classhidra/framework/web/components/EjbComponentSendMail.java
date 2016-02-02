@@ -3,12 +3,16 @@ package examples.ejb.classhidra.framework.web.components;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.ejb.Local;
+//import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
-//import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,24 +26,16 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
+import it.classhidra.core.tool.exception.message;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_supportbean;
 
-//*** Moved to IComponentSendMail interface ***
-//@Action (
-//		path="sendMail",
-//		name="formMail",
-//		redirect="/jsp/pages/sendmail.jsp",
-//		reloadAfterAction="true"
-//)
-
-//@Named("sendMail")
-//@SessionScoped
 @NavigatedDirective(memoryContent="true")
 @Stateful
 @Local(IComponentSendMail.class)
+//@Remote(IComponentSendMail.class)
 
-// Can be used as Local i_action interface too, but for the correct search ActionCall's is correct to set the native interface
-//@Local(i_action.class)
+
 public class EjbComponentSendMail extends action implements IComponentSendMail, Serializable{
 
 	private static final long serialVersionUID = -1L;
@@ -47,8 +43,9 @@ public class EjbComponentSendMail extends action implements IComponentSendMail, 
 	private String s_email;
 	private String mess;
 	
-//	@Inject
 	private mail_message m_message;
+	
+	private static HashMap map2request = new HashMap();
 	
 	@Resource
 	SessionContext sessionContext;		
@@ -57,28 +54,12 @@ public EjbComponentSendMail(){
 	super();
 }
 
-//*** Moved to IComponentSendMail interface ***
-//@ActionCall(name="send", 
-//		Redirect=@Redirect(
-//				path="/jsp/pages/sendmail.jsp",
-//				descr="Send Messages",
-//				mess_id="title_fw_SendMail"
-//		)
-//)
 public redirects send_mail(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-
-
-
 		if(get_bean().get("s_mess").equals("")){
 			new bsControllerMessageException("error_1",request,null,iStub.log_ERROR);
 			return new redirects(get_infoaction().getRedirect());
 		}
-
-
         String msgBody = (String)get_bean().get("s_mess");
-
-
-
 		mail_message mm = (mail_message)get_bean().get("m_message");
 
 		mm.setBODY(msgBody);
@@ -89,11 +70,57 @@ public redirects send_mail(HttpServletRequest request, HttpServletResponse respo
 		}catch(Exception e){
 			new bsControllerMessageException(e.toString(),request,null,iStub.log_ERROR);
 		}
-
-
-
 	return new redirects(get_infoaction().getRedirect());
 }
+
+//@Remote implementation
+public redirects send_mail(HashMap _content) throws ServletException, UnavailableException, bsControllerException{
+	if(get_bean().get("s_mess").equals("")){
+		addMessage(new message("E", "error_1", ""));
+		return new redirects(get_infoaction().getRedirect());
+	}
+    String msgBody = (String)get_bean().get("s_mess");
+	mail_message mm = (mail_message)get_bean().get("m_message");
+
+	mm.setBODY(msgBody);
+	mm.setSUBJECT("Message from:"+get_bean().get("s_name")+" email:"+get_bean().get("s_email"));
+	try{
+		new mail_manager_smtp().service_send(mm);
+		addMessage(new message("I", "message_2", ""));
+	}catch(Exception e){
+		addMessage(new message("E", "?", e.toString()));
+	}
+	return new redirects(get_infoaction().getRedirect());	
+}
+private void addMessage(message mess){
+	ArrayList<message> errors = (ArrayList)map2request.get("errors");
+	if(errors==null){
+		errors = new ArrayList<message>();
+		map2request.put("errors",errors);
+	}
+	errors.add(mess);
+}
+
+public static Map convertRequest2Map(HttpServletRequest request){
+	return util_supportbean.request2map(request);
+}
+
+public static void convertMap2Request(HttpServletRequest request, HttpServletResponse response){
+	try{
+		ArrayList<message> errors = (ArrayList<message>)map2request.get("errors");
+		if(errors!=null){
+			for(message error:errors)
+				new bsControllerMessageException(error, request);
+			
+			errors.clear();
+		}
+
+	}catch(Exception e){
+		
+	}
+}	
+
+//***
 
 public void reimposta(){
 	s_name="";

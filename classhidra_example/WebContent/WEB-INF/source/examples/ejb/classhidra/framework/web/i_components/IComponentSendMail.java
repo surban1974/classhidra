@@ -1,5 +1,7 @@
 package examples.ejb.classhidra.framework.web.i_components;
 
+import java.util.HashMap;
+
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,5 +33,8 @@ public interface IComponentSendMail extends i_action{
 	)	
 	redirects send_mail(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, UnavailableException, bsControllerException;
+
+	redirects send_mail(HashMap _content)
+			throws ServletException, UnavailableException, bsControllerException;	
 
 }

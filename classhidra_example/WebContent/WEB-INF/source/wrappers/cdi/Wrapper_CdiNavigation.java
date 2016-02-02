@@ -22,9 +22,9 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 *********************************************************************************/
 package wrappers.cdi;
- 
+
 import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
+//import javax.inject.Inject;
 import javax.inject.Named;
 
 import it.classhidra.core.controller.bsConstants;
@@ -38,14 +38,14 @@ import it.classhidra.core.tool.log.stubs.iStub;
 public class Wrapper_CdiNavigation extends bsProvidedWrapper {
 	private static final long serialVersionUID = 1L;
 
-	@Inject
+//	@Inject
 	private info_navigation instance;
 
 	public Wrapper_CdiNavigation(){
 		super();
 		bsController.writeLog("Instanced Cdi Wrapper for [info_navigation] -> "+this.getClass().getName(), iStub.log_INFO);
-	}	
-	
+	}
+
 	@Override
 	public Object getInstance() {
 		if(instance!=null && (instance.getId()==null || instance.getId().equals("")))
@@ -60,18 +60,18 @@ public class Wrapper_CdiNavigation extends bsProvidedWrapper {
 			try{
 				instance.reInit((info_navigation)_instance);
 			}catch(Exception e){
-				
+
 			}
 		}
 		}
 		return true;
-/*		
+/*
 		if(_instance instanceof info_navigation){
 			instance = (info_navigation)_instance;
 			return true;
 		}else
 			return false;
-*/			
+*/
 	}
 
 }

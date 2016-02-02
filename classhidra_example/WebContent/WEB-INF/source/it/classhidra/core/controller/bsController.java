@@ -888,26 +888,46 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 
 		HashMap request2map = null;
+		boolean isRemoteEjb=false;
+		
+		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
+			isRemoteEjb=true;
+			try{
+				request2map = (HashMap)action_instance.asAction().getClass()
+									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+									.invoke(null, new Object[]{request});
+			}catch (Exception e) {
+				new bsControllerException(e, iStub.log_ERROR);
+			}catch (Throwable e) {
+				new bsControllerException(e, iStub.log_ERROR);
+			}
+			if(request2map==null)
+				request2map = util_supportbean.request2map(request);
+		}
+		
 		try{
-			action_instance.onPreInit(request, response);
+			if(!isRemoteEjb)
+				action_instance.onPreInit(request, response);
+			else
+				action_instance.onPreInit(request2map);
 		}catch(Exception e){ 
-			if(request2map==null)
-				request2map = util_supportbean.request2map(request);
-			action_instance.onPreInit(request2map);
+			action_instance.onPreInit(null, null);
 		}
 		try{
-			action_instance.init(request,response);
+			if(!isRemoteEjb)
+				action_instance.init(request,response);
+			else 
+				action_instance.init(request2map);
 		}catch(Exception e){
-			if(request2map==null)
-				request2map = util_supportbean.request2map(request);
-			action_instance.init(request2map);
+			action_instance.init(null,null);
 		}
 		try{
-			action_instance.onPostInit(request, response);
+			if(!isRemoteEjb)
+				action_instance.onPostInit(request, response);
+			else
+				action_instance.onPostInit(request2map);
 		}catch(Exception e){
-			if(request2map==null)
-				request2map = util_supportbean.request2map(request);
-			action_instance.onPostInit(request2map);
+			action_instance.onPostInit(null,null);
 		}
 
 		info_call iCall = null;
@@ -926,13 +946,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 				}else{
 					try{
-						iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
-					}catch(Exception em){
+						if(!isRemoteEjb)
+//							iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
+							iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+
+						else
+							iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{HashMap.class});
+					}catch(Exception em){						
 						new bsControllerException(em, iStub.log_ERROR);
 					}
 					if(iCallMethod==null){
 						try{
-							iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
+							if(!isRemoteEjb)
+//								iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
+								iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+							else
+								iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{HashMap.class});
 							if(iCallMethod!=null)
 								useAsAction=true;
 						}catch(Exception em){
@@ -959,13 +988,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 			Method iActionMethod = null;
 			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
 				try{
-					iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+					if(!isRemoteEjb)
+						iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+					else
+						iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HashMap.class});
+						
 				}catch(Exception e){
 					new bsControllerException(e, iStub.log_ERROR);
 				}
 				if(iActionMethod==null){
 					try{
-						iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+						if(!isRemoteEjb)
+							iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+						else
+							iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HashMap.class});
+							
 						if(iActionMethod!=null)
 							useAsAction=true;
 					}catch(Exception e){
@@ -979,38 +1016,54 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			if(action_instance.get_infoaction().getSyncro().equalsIgnoreCase("true")){
 				try{
-					action_instance.onPreSyncroservice(request,response);
+					if(!isRemoteEjb)
+						action_instance.onPreSyncroservice(request,response);
+					else
+						action_instance.onPreSyncroservice(request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					action_instance.onPreSyncroservice(request2map);
+					action_instance.onPreSyncroservice(null,null);
 				}
 				if(action_instance.get_bean().getCurrent_auth()==null)
 					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
 				
 				if(iActionMethod==null){
 					try{
-						current_redirect = action_instance.syncroservice(request,response);
+						if(!isRemoteEjb)
+							current_redirect = action_instance.syncroservice(request,response);
+						else
+							current_redirect = action_instance.syncroservice(request2map);
 					}catch(Exception e){
-						if(request2map==null)
-							request2map = util_supportbean.request2map(request);
-						current_redirect = action_instance.syncroservice(request2map);
+						current_redirect = action_instance.syncroservice(null,null);
 					}
 					
 				}else{
 					
 					try{
 //						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
-						if(useAsAction)
-							current_redirect = prepareActionResponse(
-									util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
-									iActionMethod, action_instance.get_infoaction(),
-									response);
-						else
-							current_redirect = prepareActionResponse(
-									util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
-									iActionMethod, action_instance.get_infoaction(),
-									response);
+						if(!isRemoteEjb){
+							if(useAsAction)
+								current_redirect = prepareActionResponse(
+										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
+										iActionMethod, action_instance.get_infoaction(),
+										response);
+							else
+								current_redirect = prepareActionResponse(
+										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+										iActionMethod, action_instance.get_infoaction(),
+										response);
+						}else{
+							if(useAsAction)
+								current_redirect = prepareActionResponse(
+										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map}),
+										iActionMethod, action_instance.get_infoaction(),
+										response);
+							else
+								current_redirect = prepareActionResponse(
+										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map}),
+										iActionMethod, action_instance.get_infoaction(),
+										response);
+							
+						}
 
 					}catch(Exception e){
 						new bsControllerException(e, iStub.log_ERROR);
@@ -1021,50 +1074,64 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 				
 				try{
-					action_instance.onPostSyncroservice(current_redirect,request,response);
+					if(!isRemoteEjb)
+						action_instance.onPostSyncroservice(current_redirect,request,response);
+					else
+						action_instance.onPostSyncroservice(current_redirect,request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					action_instance.onPostSyncroservice(current_redirect,request2map);
+					action_instance.onPostSyncroservice(current_redirect,null,null);
 				}
 			}
 			else{
 				try{
-					action_instance.onPreActionservice(request,response);
+					if(!isRemoteEjb)
+						action_instance.onPreActionservice(request,response);
+					else
+						action_instance.onPreActionservice(request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					action_instance.onPreActionservice(request2map);
+					action_instance.onPreActionservice(null,null);
 				}
 				if(action_instance.get_bean().getCurrent_auth()==null)
 					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
 				
 
 				
-				if(iActionMethod==null){
-				
+				if(iActionMethod==null){				
 					try{
-						current_redirect = action_instance.actionservice(request,response);
+						if(!isRemoteEjb)
+							current_redirect = action_instance.actionservice(request,response);
+						else
+							current_redirect = action_instance.actionservice(request2map);
 					}catch(Exception e){
-						if(request2map==null)
-							request2map = util_supportbean.request2map(request);
-						current_redirect = action_instance.actionservice(request2map);
-					}
-					
+						current_redirect = action_instance.actionservice(null,null);
+					}					
 				}else{
 					
 					try{
 //						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
-						if(useAsAction)
-							current_redirect = prepareActionResponse(
-									util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
-									iActionMethod, action_instance.get_infoaction(),
-									response);
-						else
-							current_redirect = prepareActionResponse(
-									util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
-									iActionMethod, action_instance.get_infoaction(),
-									response);
+						if(!isRemoteEjb){
+							if(useAsAction)
+								current_redirect = prepareActionResponse(
+										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
+										iActionMethod, action_instance.get_infoaction(),
+										response);
+							else
+								current_redirect = prepareActionResponse(
+										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+										iActionMethod, action_instance.get_infoaction(),
+										response);
+						}else{
+							if(useAsAction)
+								current_redirect = prepareActionResponse(
+										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map}),
+										iActionMethod, action_instance.get_infoaction(),
+										response);
+							else
+								current_redirect = prepareActionResponse(
+										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map}),
+										iActionMethod, action_instance.get_infoaction(),
+										response);
+						}
 					}catch(Exception e){
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch(Throwable t){
@@ -1074,42 +1141,61 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 				
 				try{
-					action_instance.onPostActionservice(current_redirect,request,response);
+					if(!isRemoteEjb)
+						action_instance.onPostActionservice(current_redirect,request,response);
+					else
+						action_instance.onPostActionservice(current_redirect,request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					action_instance.onPostActionservice(current_redirect,request2map);
+					action_instance.onPostActionservice(current_redirect,null,null);
 				}
 			}
 		}else{
 			try{
 				
 					try{
-						action_instance.onPreActionCall(id_call, request, response);
+						if(!isRemoteEjb)
+							action_instance.onPreActionCall(id_call, request, response);
+						else
+							action_instance.onPreActionCall(id_call, request2map);	
 					}catch(Exception e){
-						if(request2map==null)
-							request2map = util_supportbean.request2map(request);
-						action_instance.onPreActionCall(id_call, request2map);						
+						action_instance.onPreActionCall(id_call, null,null);						
 					}
 					if(action_instance.get_bean().getCurrent_auth()==null)
 						action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(request));
 
 					try{
 						if(iCallMethod!=null){
-							if(useAsAction)
-								current_redirect = prepareActionCallResponse(
-										util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request,response}),
-										iCallMethod,
-										action_instance.get_infoaction(),
-										iCall,
-										response);
-							else
-								current_redirect = prepareActionCallResponse(
-										util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response}),
-										iCallMethod,
-										action_instance.get_infoaction(),
-										iCall,
-										response);
+							if(!isRemoteEjb){
+								if(useAsAction)
+									current_redirect = prepareActionCallResponse(
+											util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request,response}),
+											iCallMethod,
+											action_instance.get_infoaction(),
+											iCall,
+											response);
+								else
+									current_redirect = prepareActionCallResponse(
+											util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response}),
+											iCallMethod,
+											action_instance.get_infoaction(),
+											iCall,
+											response);
+							}else{
+								if(useAsAction)
+									current_redirect = prepareActionCallResponse(
+											util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request2map}),
+											iCallMethod,
+											action_instance.get_infoaction(),
+											iCall,
+											response);
+								else
+									current_redirect = prepareActionCallResponse(
+											util_reflect.getValue(action_instance, iCallMethod, new Object[]{request2map}),
+											iCallMethod,
+											action_instance.get_infoaction(),
+											iCall,
+											response);
+							}
 
 						}else{
 							current_redirect = prepareActionCallResponse(
@@ -1125,12 +1211,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 						new bsControllerException(t, iStub.log_ERROR);
 					}
 					try{
-						action_instance.onPostActionCall(current_redirect,id_call, request, response);
+						if(!isRemoteEjb)
+							action_instance.onPostActionCall(current_redirect,id_call, request, response);
+						else
+							action_instance.onPostActionCall(current_redirect,id_call, request2map);
 					}catch(Exception e){
-						if(request2map==null)
-							request2map = util_supportbean.request2map(request);
-						action_instance.onPostActionCall(current_redirect,id_call, request2map);
-
+						action_instance.onPostActionCall(current_redirect,id_call, null,null);
 					}
 				
 			}catch(Exception ex){
@@ -1147,6 +1233,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(action_instance.getCurrent_redirect()!=null)
 			action_instance.getCurrent_redirect().decodeMessage(request);
 		action_instance.onPostSetCurrent_redirect();
+		
+		if(isRemoteEjb){
+			bsController.checkAuth_init(request).reInit(action_instance.getCurrent_auth());
+			try{
+				action_instance.asAction().getClass()
+					.getDeclaredMethod("convertMap2Request", new Class[]{HttpServletRequest.class,HttpServletResponse.class})
+					.invoke(null, new Object[]{request,response});
+			}catch (Exception e) {
+				new bsControllerException(e, iStub.log_ERROR);
+			}catch (Throwable e) {
+				new bsControllerException(e, iStub.log_ERROR);
+			}
+		}
+			
 
 		if(iCall!=null && iCall.getNavigated().equalsIgnoreCase("false")){
 			try{
@@ -1197,12 +1297,30 @@ public class bsController extends HttpServlet implements bsConstants  {
 			!id_action.equals(id_current)){
 			if(bean_instance!=null){
 				HashMap request2map=null;
-				try{
-					bean_instance.onPreInit(request);
-				}catch(Exception e){
+				boolean isRemoteEjb=false;
+				
+				if(bean_instance!=null && bean_instance.getInfo_context()!=null && bean_instance.getInfo_context().isRemote()){
+					isRemoteEjb=true;
+					try{
+						request2map = (HashMap)bean_instance.asAction().getClass()
+								.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+								.invoke(null, new Object[]{request});
+					}catch (Exception e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch (Throwable e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}
 					if(request2map==null)
 						request2map = util_supportbean.request2map(request);
-					bean_instance.onPreInit(request2map);
+				}
+
+				try{
+					if(!isRemoteEjb)
+						bean_instance.onPreInit(request);
+					else
+						bean_instance.onPreInit(request2map);
+				}catch(Exception e){
+
 				}
 				try{
 					bean_instance.init(request);
@@ -1210,33 +1328,34 @@ public class bsController extends HttpServlet implements bsConstants  {
 					util_supportbean.init(bean_instance, request);
 				}
 				try{
-					bean_instance.onPostInit(request);
-				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					bean_instance.onPostInit(request2map);
+					if(!isRemoteEjb)
+						bean_instance.onPostInit(request);
+					else
+						bean_instance.onPostInit(request2map);
+				}catch(Exception e){					
 				}
 				try{
-					bean_instance.onPreValidate(request);
-				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					bean_instance.onPreValidate(request2map);
+					if(!isRemoteEjb)
+						bean_instance.onPreValidate(request);
+					else
+						bean_instance.onPreValidate(request2map);
+				}catch(Exception e){					
 				}
 				redirects validate_redirect = null;
 				try{
-					validate_redirect = bean_instance.validate(request);
-				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					validate_redirect = bean_instance.validate(request2map);
+					if(!isRemoteEjb)
+						validate_redirect = bean_instance.validate(request);
+					else
+						validate_redirect = bean_instance.validate(request2map);
+				}catch(Exception e){					
 				}
 				try{
-					bean_instance.onPostValidate(validate_redirect,request);
+					if(!isRemoteEjb)
+						bean_instance.onPostValidate(validate_redirect,request);
+					else
+						bean_instance.onPostValidate(validate_redirect, request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					bean_instance.onPostValidate(validate_redirect, request2map);
+					
 
 				}
 				prev_action_instance.onPreSetCurrent_redirect();
@@ -1291,13 +1410,31 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 
 			if(bean_instance_clone!=null){
-				HashMap request2map=null;
+				HashMap request2map = null;
+				boolean isRemoteEjb=false;
+				
+				if(prev_action_instance!=null && prev_action_instance.getInfo_context()!=null && prev_action_instance.getInfo_context().isRemote()){
+					isRemoteEjb=true;
+					try{
+						request2map = (HashMap)prev_action_instance.asAction().getClass()
+											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+											.invoke(null, new Object[]{request});
+					}catch (Exception e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch (Throwable e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}
+					if(request2map==null)
+						request2map = util_supportbean.request2map(request);
+				}
+
 				if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true")){
 					try{
-						bean_instance_clone.onPreInit(request);
+						if(!isRemoteEjb)
+							bean_instance_clone.onPreInit(request);
+						else
+							bean_instance.onPreInit(request2map);
 					}catch(Exception e){
-						if(request2map==null)
-							request2map = util_supportbean.request2map(request);
 						bean_instance.onPreInit(request2map);
 					}
 					try{
@@ -1306,10 +1443,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 						util_supportbean.init(bean_instance_clone, request);
 					}
 					try{
-						bean_instance_clone.onPostInit(request);
+						if(!isRemoteEjb)
+							bean_instance_clone.onPostInit(request);
+						else
+							bean_instance.onPostInit(request2map);
 					}catch(Exception e){
-						if(request2map==null)
-							request2map = util_supportbean.request2map(request);
 						bean_instance.onPostInit(request2map);
 					}						
 				}
@@ -1317,26 +1455,30 @@ public class bsController extends HttpServlet implements bsConstants  {
 					bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
 				if(bean_instance_clone.getCurrent_auth()==null || prev_action_instance.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true"))
 					bean_instance_clone.setCurrent_auth( bsController.checkAuth_init(request));
+				
 				try{
-					bean_instance_clone.onPreValidate(request);
+					if(!isRemoteEjb)
+						bean_instance_clone.onPreValidate(request);
+					else
+						bean_instance.onPreValidate(request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
 					bean_instance.onPreValidate(request2map);					
 				}
 				redirects validate_redirect = null;
 				try{
-					validate_redirect = bean_instance_clone.validate(request);
+					if(!isRemoteEjb)
+						validate_redirect = bean_instance_clone.validate(request);
+					else
+						validate_redirect = bean_instance_clone.validate(request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
 					validate_redirect = bean_instance_clone.validate(request2map);
 				}
 				try{
-					bean_instance_clone.onPostValidate(validate_redirect,request);
+					if(!isRemoteEjb)
+						bean_instance_clone.onPostValidate(validate_redirect,request);
+					else
+						bean_instance.onPostValidate(validate_redirect, request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
 					bean_instance.onPostValidate(validate_redirect, request2map);						
 				}
 				if(	prev_action_instance instanceof i_bean &&
@@ -1406,10 +1548,34 @@ public class bsController extends HttpServlet implements bsConstants  {
 			){
 
 					try{
+						
+						HashMap request2map = null;
+						boolean isRemoteEjb=false;
+						
+						if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
+							isRemoteEjb=true;
+							try{
+								request2map = (HashMap)action_instance.asAction().getClass()
+													.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+													.invoke(null, new Object[]{request});
+							}catch (Exception e) {
+								new bsControllerException(e, iStub.log_ERROR);
+							}catch (Throwable e) {
+								new bsControllerException(e, iStub.log_ERROR);
+							}
+							if(request2map==null)
+								request2map = util_supportbean.request2map(request);
+						}
+						
+						
+						
 						try{
-							action_instance.actionBeforeRedirect(request,response);
+							if(!isRemoteEjb)
+								action_instance.actionBeforeRedirect(request,response);
+							else
+								action_instance.actionBeforeRedirect(request2map);
 						}catch(Exception e){
-							action_instance.actionBeforeRedirect(util_supportbean.request2map(request));
+							action_instance.actionBeforeRedirect(null,null);
 						}
 	
 					}catch(Exception e){
@@ -1726,10 +1892,32 @@ public class bsController extends HttpServlet implements bsConstants  {
 		else{
 			try{
 				try{
+					HashMap request2map = null;
+					boolean isRemoteEjb=false;
+					
+					if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
+						isRemoteEjb=true;
+						try{
+							request2map = (HashMap)action_instance.asAction().getClass()
+												.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+												.invoke(null, new Object[]{request});
+						}catch (Exception e) {
+							new bsControllerException(e, iStub.log_ERROR);
+						}catch (Throwable e) {
+							new bsControllerException(e, iStub.log_ERROR);
+						}
+						if(request2map==null)
+							request2map = util_supportbean.request2map(request);
+					}
+
+					
 					try{
-						action_instance.actionBeforeRedirect(request,response);
+						if(!isRemoteEjb)
+							action_instance.actionBeforeRedirect(request,response);
+						else
+							action_instance.actionBeforeRedirect(request2map);
 					}catch(Exception e){
-						action_instance.actionBeforeRedirect(util_supportbean.request2map(request));
+						action_instance.actionBeforeRedirect(null,null);
 					}
 				}catch(Exception e){
 					throw new bsControllerException("Controller generic actionBeforeRedirect error. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
@@ -2167,32 +2355,53 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static info_stream performStream_EnterRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
-		HashMap request2map = null;
+
 		for(int i=0;i<_streams.size();i++){
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = getAction_config().streamFactory(iStream.getName(),request.getSession(), servletContext);
 			if(currentStream!=null){	
-				try{
-					currentStream.onPreEnter(request, response);
-				}catch(Exception e){
+				HashMap request2map = null;
+				boolean isRemoteEjb=false;
+				
+				if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
+					isRemoteEjb=true;
+					try{
+						request2map = (HashMap)currentStream.asStream().getClass()
+											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+											.invoke(null, new Object[]{request});
+					}catch (Exception e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch (Throwable e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}
 					if(request2map==null)
 						request2map = util_supportbean.request2map(request);
-					currentStream.onPreEnter(request2map);
+				}
+
+				try{
+					if(!isRemoteEjb)
+						currentStream.onPreEnter(request, response);
+					else
+						currentStream.onPreEnter(request2map);
+				}catch(Exception e){
+					currentStream.onPreEnter(null,null);
 				}
 				redirects currentStreamRedirect = null;
 				try{
-					currentStreamRedirect = currentStream.streamservice_enter(request, response);
+					if(!isRemoteEjb)
+						currentStreamRedirect = currentStream.streamservice_enter(request, response);
+					else
+						currentStream.streamservice_enter(request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					currentStream.streamservice_enter(request2map);
+					currentStream.streamservice_enter(null,null);
 				}
 				try{
-					currentStream.onPostEnter(currentStreamRedirect, request, response);
+					if(!isRemoteEjb)
+						currentStream.onPostEnter(currentStreamRedirect, request, response);
+					else
+						currentStream.onPostEnter(currentStreamRedirect, request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					currentStream.onPostEnter(currentStreamRedirect, request2map);
+					currentStream.onPostEnter(currentStreamRedirect, null,null);
 				}
 				if(currentStreamRedirect!=null){
 					isException(action_instance, request);
@@ -2210,32 +2419,53 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static info_stream performStream_ExitRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
-		HashMap request2map = null;
+
 		for(int i=_streams.size()-1;i>-1;i--){
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = getAction_config().streamFactory(iStream.getName(), request.getSession(), servletContext);
 			if(currentStream!=null){
-				try{
-					currentStream.onPreExit(request, response);
-				}catch(Exception e){
+				HashMap request2map = null;
+				boolean isRemoteEjb=false;
+				
+				if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
+					isRemoteEjb=true;
+					try{
+						request2map = (HashMap)currentStream.asStream().getClass()
+											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+											.invoke(null, new Object[]{request});
+					}catch (Exception e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch (Throwable e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}
 					if(request2map==null)
 						request2map = util_supportbean.request2map(request);
-					currentStream.onPreExit(request2map);
+				}
+				
+				try{
+					if(!isRemoteEjb)
+						currentStream.onPreExit(request, response);
+					else
+						currentStream.onPreExit(request2map);
+				}catch(Exception e){
+					currentStream.onPreExit(null,null);
 				}
 				redirects currentStreamRedirect = null;
 				try{
-					currentStreamRedirect =currentStream.streamservice_exit(request, response);
+					if(!isRemoteEjb)
+						currentStreamRedirect =currentStream.streamservice_exit(request, response);
+					else
+						currentStream.streamservice_exit(request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					currentStream.streamservice_exit(request2map);
+					currentStream.streamservice_exit(null,null);
 				}
-				try{	
-					currentStream.onPostExit(currentStreamRedirect,request, response);
+				try{
+					if(!isRemoteEjb)
+						currentStream.onPostExit(currentStreamRedirect,request, response);
+					else
+						currentStream.onPostExit(currentStreamRedirect, request2map);
 				}catch(Exception e){
-					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
-					currentStream.onPostExit(currentStreamRedirect, request2map);
+					currentStream.onPostExit(currentStreamRedirect, null,null);
 				}
 				if(currentStreamRedirect!=null){
 					isException(action_instance, request);

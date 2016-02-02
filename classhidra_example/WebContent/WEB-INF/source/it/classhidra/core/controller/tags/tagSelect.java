@@ -314,7 +314,9 @@ public class tagSelect extends tagInput{
 		}
 		if(value!=null)
 			if(formatOutput!=null) value=util_format.prepareContentString(formatOutput,value);
-			if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
+//			if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
+			if(replaceOnBlank != null && value!=null && replaceOnBlank.equals(value)) 
+				value=util_format.replace(value,replaceOnBlank,"");
 
 			try{
 				results.append(" value=\"");

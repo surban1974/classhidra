@@ -2,6 +2,7 @@ package examples.ejb.classhidra.framework.web.components;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Vector;
 
 import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.servlet.ServletException;
@@ -37,6 +39,7 @@ import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_provider;
+import it.classhidra.core.tool.util.util_supportbean;
 import it.classhidra.core.tool.util.util_usersInSession;
 import it.classhidra.framework.web.beans.option_element;
 import it.classhidra.framework.web.integration.i_module_integration;
@@ -57,6 +60,7 @@ import it.classhidra.framework.web.integration.i_module_integration;
 @NavigatedDirective(memoryContent="true")
 @Stateful
 @Local(i_action.class)
+//@Remote(i_action.class)
 public class EjbComponentLogin extends action implements i_action, Serializable{
 	private static final long serialVersionUID = 1L;
 
@@ -69,6 +73,8 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 	private String module_integration;
 
 	private Vector groups;
+	
+	private static HashMap map2request = new HashMap();
 	
 
 	@Resource
@@ -88,30 +94,153 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 	}
 
 
-
+//for @Remote EJB implementation
 	public redirects actionservice(HashMap wsParameters) throws bsControllerException {
-		// TODO Auto-generated method stub
+		if(	middleAction!=null && (middleAction.equals("undefined") || middleAction.equals("reload")))
+			middleAction="";
+		if(	user.equals("") &&
+			password.equals("") &&
+			group.equals("")){
+		}
+		try{
+			if(!prev_user.equals(user+"."+password)){
+				group="";
+				prev_user=user+"."+password;
+			}
+		}catch(Exception e){
+		}
+
+		if(	middleAction!=null && middleAction.equals("")){
+			if(	!user.equals("") &&
+				!password.equals("") &&
+				groups.size()==0)
+				middleAction="groups";
+		}
+		if(	middleAction!=null && middleAction.equals("groups")){
+			if(user.equals("") && password.equals("")) user="anonimouse";
+					login_Non_JAAS(getCurrent_auth(), user, password, null);
+			if(getCurrent_auth()==null || !getCurrent_auth().is_logged()){
+				new bsControllerMessageException("error_2",null,null,iStub.log_INFO,new String[]{user});
+				
+				addMessage(new message("E", "error_2", "", new String[]{user}));
+				
+				group="";
+				groups=new Vector();
+			}else{
+				groups.clear();
+				StringTokenizer st = new StringTokenizer(getCurrent_auth().get_ruolo(),";");
+				while(st.hasMoreTokens()){
+					String current = st.nextToken();
+					groups.add(new option_element(current,current));
+				}
+				lang=getCurrent_auth().get_language();
+			}
+
+			return new redirects(get_infoaction().getRedirect());
+		}
+		if(	middleAction!=null && middleAction.equals("clear")){
+			user="";
+			password="";
+			group="";
+			groups=new Vector();
+			getCurrent_auth().set_logged(false);
+			Map fromSession = bsController.checkOnlySession(null);
+			if(fromSession!=null) fromSession.remove("formMinimizer");
+				return new redirects(get_infoaction().getRedirect());
+		}
+		if(	middleAction!=null &&
+			middleAction.equals("lang")){
+			try{
+				getCurrent_auth().set_language(lang);
+			}catch(Exception e){
+			}
+			return new redirects(get_infoaction().getRedirect());
+		}
+		if(	middleAction!=null &&
+			!middleAction.equals("") &&
+			!middleAction.equals("change_rule") &&
+			!group.equals("")){
+			try{
+				lang=getCurrent_auth().get_language();
+				getCurrent_auth().set_ruolo(group);
+				getCurrent_auth().get_authentication_filter().validate_actionPermittedForbidden(getCurrent_auth());
+			}catch(Exception e){
+			}
+			middleAction="";
+			Map instance = bsController.checkOnlySession(null);
+			if(instance!=null)
+				instance.clear();
+				
+			try{
+				((EjbComponentMenuCreator)
+					((i_action)util_provider.getInstanceFromProvider(
+								new String[]{
+										bsController.getAction_config().getProvider(),
+										bsController.getAppInit().get_context_provider(),
+										bsController.getAppInit().get_cdi_provider(),
+										bsController.getAppInit().get_ejb_provider()
+								},
+								"menuCreator",
+								EjbComponentMenuCreator.class.getName(),
+								null
+							)
+					).asBean()
+				).getElement().setInfo_menu(null);
+			}catch(Exception e){
+			}
+			return new redirects("actions/content");
+		}
+		if(	middleAction!=null && middleAction.equals("change_rule")){
+			try{
+				lang=getCurrent_auth().get_language();
+				getCurrent_auth().set_ruolo(group);
+				getCurrent_auth().saveTicker(null);
+				getCurrent_auth().get_authentication_filter().validate_actionPermittedForbidden(getCurrent_auth());
+			}catch(Exception e){
+			}
+		}
 		return new redirects(get_infoaction().getRedirect());
 	}
 	
+	private void addMessage(message mess){
+		ArrayList<message> errors = (ArrayList)map2request.get("errors");
+		if(errors==null){
+			errors = new ArrayList<message>();
+			map2request.put("errors",errors);
+		}
+		errors.add(mess);
+	}
+	
+	public static Map convertRequest2Map(HttpServletRequest request){
+		return util_supportbean.request2map(request);
+	}
+	
+	public static void convertMap2Request(HttpServletRequest request, HttpServletResponse response){
+		try{
+			ArrayList<message> errors = (ArrayList<message>)map2request.get("errors");
+			if(errors!=null){
+				for(message error:errors)
+					new bsControllerMessageException(error.getCD_MESS(), request,  null, iStub.log_ERROR, error.getParameters());
+				
+				errors.clear();
+			}
+
+		}catch(Exception e){
+			
+		}
+	}	
+	
+// Standard & @Local EJB implementation	
 	public redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
-
-
-		if(	middleAction!=null &&
-			(middleAction.equals("undefined") || middleAction.equals("reload"))
-			)
+		if(	middleAction!=null && (middleAction.equals("undefined") || middleAction.equals("reload")))
 				middleAction="";
-
-
 
 		if(	user.equals("") &&
 			password.equals("") &&
 			group.equals("")){
-
-
 		}
+		
 			try{
-
 				if(!prev_user.equals(user+"."+password)){
 					group="";
 					prev_user=user+"."+password;
@@ -207,7 +336,7 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 						).getElement().setInfo_menu(null);
 			}catch(Exception e){
 			}
-			return new redirects("actions/content?t=1");
+			return new redirects("actions/content");
 
 		}
 		if(	middleAction!=null &&
@@ -341,18 +470,6 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 
 	}
 
-//	private void  loadUser_config() {
-//		if(bsController.getUser_config()==null){
-//			bsController.setUser_config(new load_users());
-//			try{
-//				((load_users)bsController.getUser_config()).setReadError(false);
-//					((load_users)bsController.getUser_config()).load_from_resources();
-//					if(((load_users)bsController.getUser_config()).isReadError()) bsController.setUser_config(null);
-//			}catch(Exception je){
-//				bsController.setUser_config(null);
-//			}
-//		}
-//	}
 
 
 	private void  loadUser_config() {

@@ -49,4 +49,7 @@ public interface i_stream extends listener_stream, Serializable{
 	info_action redirect(HashMap wsParameters, redirects _redirect, String id_action) throws ServletException, UnavailableException;
 	listener_stream getListener_s();
 	void setListener_s(listener_stream listenerS);
+	info_context getInfo_context();
+	void setInfo_context(i_info_context info_context);
+	i_stream asStream();
 }

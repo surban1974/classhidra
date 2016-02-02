@@ -34,9 +34,7 @@ import it.classhidra.core.tool.util.util_format;
 
 import java.io.Serializable;
 import java.util.HashMap;
-
-
-
+import java.util.Map;
 
 import javax.servlet.http.*;
 import javax.servlet.*;
@@ -109,14 +107,14 @@ public class action extends bean implements i_action, Serializable{
 		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
 			if(getRealBean()!=null){
 				getRealBean().onPreInit(wsParameters);
-				getRealBean().init(wsParameters);
+				getRealBean().init_(wsParameters);
 				getRealBean().onPostInit(wsParameters);
 			}
 		}else{
 			if(!beanEqualAction){
 				if(getRealBean()!=null){
 					getRealBean().onPreInit(wsParameters);
-					getRealBean().init(wsParameters);
+					getRealBean().init_(wsParameters);
 					getRealBean().onPostInit(wsParameters);
 				}
 			}else{
@@ -177,7 +175,7 @@ public class action extends bean implements i_action, Serializable{
 			if(getRealBean()==null) return this;
 			return getRealBean();
 		}else{
-		if(getRealBean()!=null && getRealBean().getClass().getName().equals(this.asBean().getClass().getName())) return this;
+			if(getRealBean()!=null && getRealBean().getClass().getName().equals(this.asBean().getClass().getName())) return this;
 			if(getRealBean()==null){
 				if(!beanEqualAction)
 					return this;
@@ -452,8 +450,13 @@ public class action extends bean implements i_action, Serializable{
 	}
 
 
+	public static Map convertRequest2Map(HttpServletRequest request){
+		return util_supportbean.request2map(request);
+	}
 
-
+	public static void convertMap2Request(HttpServletRequest request, HttpServletResponse response){
+		
+	}	
 
 
 
