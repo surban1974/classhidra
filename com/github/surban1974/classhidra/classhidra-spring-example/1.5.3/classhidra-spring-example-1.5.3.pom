@@ -73,7 +73,9 @@
 			               		java/application/**/*.*,
 			               		java/it/classhidra/core/tool/log/stubs/stub_neoHort_log.java,
 			               		java/examples/spring/classhidra/framework/**/*.java,
-			               		java/wrappers/spring/LogGenerator_SpringOnlySession.java
+			               		java/wrappers/spring/LogGenerator_SpringOnlySession.java,
+			               		java/it/classhidra/plugin/provider/SpringBeansProvider.java,
+		               			java/wrappers/spring/**/*.java
 		               		</includes>
 		              		<overWriteReleases>true</overWriteReleases>
 		               		<overWriteSnapshots>true</overWriteSnapshots>
@@ -206,6 +208,7 @@
 								<include>application/**/*.java</include>
 								<include>examples/spring/classhidra/framework/**/*.java</include>
 								<include>wrappers/spring/LogGenerator_SpringOnlySession.java</include>
+								<include>wrappers/spring/**/*.java</include>
 							</includes>                        
 	                        <targetPath>WEB-INF/classes</targetPath>
 	                    </resource>  
