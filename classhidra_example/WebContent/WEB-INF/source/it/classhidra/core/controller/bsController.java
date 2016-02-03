@@ -44,7 +44,7 @@ import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_supportbean;
+
 import it.classhidra.scheduler.scheduling.IBatchScheduling;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
@@ -53,14 +53,7 @@ import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_sort;
-
-
-
-
-
-
-
-
+import it.classhidra.core.tool.util.util_supportbean;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -902,7 +895,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				new bsControllerException(e, iStub.log_ERROR);
 			}
 			if(request2map==null)
-				request2map = util_supportbean.request2map(request);
+				request2map = new HashMap();
+//				request2map = util_supportbean.request2map(request);
 		}
 		
 		try{
@@ -1299,10 +1293,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 				HashMap request2map=null;
 				boolean isRemoteEjb=false;
 				
-				if(bean_instance!=null && bean_instance.getInfo_context()!=null && bean_instance.getInfo_context().isRemote()){
+				if(bean_instance.getInfo_context()!=null && bean_instance.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)bean_instance.asAction().getClass()
+						request2map = (HashMap)bean_instance.asBean().getClass()
 								.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
 								.invoke(null, new Object[]{request});
 					}catch (Exception e) {
@@ -1311,7 +1305,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
+						request2map = new HashMap();
+//					request2map = util_supportbean.request2map(request);
+
 				}
 
 				try{
@@ -1413,10 +1409,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 				HashMap request2map = null;
 				boolean isRemoteEjb=false;
 				
-				if(prev_action_instance!=null && prev_action_instance.getInfo_context()!=null && prev_action_instance.getInfo_context().isRemote()){
+				if(bean_instance_clone.getInfo_context()!=null && bean_instance_clone.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)prev_action_instance.asAction().getClass()
+						request2map = (HashMap)bean_instance_clone.asBean().getClass()
 											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
 											.invoke(null, new Object[]{request});
 					}catch (Exception e) {
@@ -1425,7 +1421,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
+						request2map = new HashMap();
+//					request2map = util_supportbean.request2map(request);
+
 				}
 
 				if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true")){
@@ -1564,7 +1562,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								new bsControllerException(e, iStub.log_ERROR);
 							}
 							if(request2map==null)
-								request2map = util_supportbean.request2map(request);
+								request2map = new HashMap();
+//							request2map = util_supportbean.request2map(request);
+
 						}
 						
 						
@@ -1907,7 +1907,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 							new bsControllerException(e, iStub.log_ERROR);
 						}
 						if(request2map==null)
-							request2map = util_supportbean.request2map(request);
+							request2map = new HashMap();
+//						request2map = util_supportbean.request2map(request);
+
 					}
 
 					
@@ -1977,12 +1979,40 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(currentStream==null || currentStreamRedirect==null) return;
 		currentStream.onPreRedirect(currentStreamRedirect, id_action);
 		RequestDispatcher rd =  null;
+		
+
+		HashMap request2map = null;
+		boolean isRemoteEjb=false;
+			
+		if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
+			isRemoteEjb=true;
+			try{
+				request2map = (HashMap)currentStream.asStream().getClass()
+									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+									.invoke(null, new Object[]{request});
+			}catch (Exception e) {
+				new bsControllerException(e, iStub.log_ERROR);
+			}catch (Throwable e) {
+				new bsControllerException(e, iStub.log_ERROR);
+			}
+			if(request2map==null)
+				request2map = new HashMap();
+//			request2map = util_supportbean.request2map(request);
+
+		}
+
+		
 		try{
-			rd = currentStream.redirect(servletContext, currentStreamRedirect, id_action);
+			if(!isRemoteEjb)
+				rd = currentStream.redirect(servletContext, currentStreamRedirect, id_action);
+			else{
+				info_action iaction = currentStream.redirect(request2map, currentStreamRedirect, id_action);
+				if(iaction!=null)
+					rd = currentStreamRedirect.redirect(servletContext, iaction);				
+			}
+				
 		}catch(Exception e){
-			info_action iaction = currentStream.redirect(util_supportbean.request2map(request), currentStreamRedirect, id_action);
-			if(iaction!=null)
-				rd = currentStreamRedirect.redirect(servletContext, iaction);
+
 		}
 		try{
 			currentStream.onPostRedirect(rd);
@@ -2375,7 +2405,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
+						request2map = new HashMap();
+//					request2map = util_supportbean.request2map(request);
+
 				}
 
 				try{
@@ -2439,7 +2471,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = util_supportbean.request2map(request);
+						request2map = new HashMap();
+//					request2map = util_supportbean.request2map(request);
+
 				}
 				
 				try{

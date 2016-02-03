@@ -281,7 +281,7 @@
 		<dependency>
 			<groupId>com.github.surban1974.neohort</groupId>
 			<artifactId>neoHort5</artifactId>
-			<version>5.2.5.2</version>
+			<version>5.2.5.3</version>
 		</dependency>			
 		<dependency>
 			<groupId>net.htmlparser.jericho</groupId>

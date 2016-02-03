@@ -212,7 +212,8 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 	}
 	
 	public static Map convertRequest2Map(HttpServletRequest request){
-		return util_supportbean.request2map(request);
+		return new HashMap();
+//		return util_supportbean.request2map(request);
 	}
 	
 	public static void convertMap2Request(HttpServletRequest request, HttpServletResponse response){

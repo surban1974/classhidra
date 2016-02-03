@@ -7,11 +7,15 @@ import it.classhidra.core.controller.bean;
 import it.classhidra.core.controller.i_bean;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
+import javax.servlet.http.HttpServletRequest;
 
 
 
@@ -19,6 +23,7 @@ import javax.ejb.Stateful;
 
 @Stateful
 @Local(i_bean.class)
+//@Remote(i_bean.class)
 @Bean(name="beanContent")
 public class EjbBeanContent extends bean implements i_bean, Serializable{
 
@@ -55,6 +60,10 @@ public boolean getFirstEnter() {
 
 public void setFirstEnter(boolean firstEnter) {
 	this.firstEnter = firstEnter;
+}
+
+public static Map convertRequest2Map(HttpServletRequest request){
+	return new HashMap();
 }
 
 

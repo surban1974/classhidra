@@ -9,7 +9,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.ejb.Local;
-//import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
@@ -41,6 +40,16 @@ public class EjbComponentSendMail extends action implements IComponentSendMail, 
 	private static final long serialVersionUID = -1L;
 	private String s_name;
 	private String s_email;
+	private String s_mess;
+	public String getS_mess() {
+		return s_mess;
+	}
+
+	public void setS_mess(String s_mess) {
+		this.s_mess = s_mess;
+	}
+
+
 	private String mess;
 	
 	private mail_message m_message;
@@ -102,7 +111,8 @@ private void addMessage(message mess){
 }
 
 public static Map convertRequest2Map(HttpServletRequest request){
-	return util_supportbean.request2map(request);
+//	return util_supportbean.request2map(request);
+	return new HashMap();
 }
 
 public static void convertMap2Request(HttpServletRequest request, HttpServletResponse response){
@@ -125,6 +135,7 @@ public static void convertMap2Request(HttpServletRequest request, HttpServletRes
 public void reimposta(){
 	s_name="";
 	s_email="";
+	s_mess="";
 	mess="";
 	
 	if(m_message==null)
