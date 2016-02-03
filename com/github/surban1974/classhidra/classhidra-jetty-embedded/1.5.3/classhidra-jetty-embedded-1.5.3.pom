@@ -281,8 +281,13 @@
 		<dependency>
 			<groupId>com.github.surban1974.neohort</groupId>
 			<artifactId>neoHort5</artifactId>
-			<version>5.2.5.2</version>
-		</dependency>			
+			<version>5.2.5.3</version>
+		</dependency>	
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itextpdf</artifactId>
+			<version>5.5.8</version>
+		</dependency>				
 		<dependency>
 			<groupId>net.htmlparser.jericho</groupId>
 			<artifactId>jericho-html</artifactId>
