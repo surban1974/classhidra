@@ -39,7 +39,6 @@ import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_provider;
-import it.classhidra.core.tool.util.util_supportbean;
 import it.classhidra.core.tool.util.util_usersInSession;
 import it.classhidra.framework.web.beans.option_element;
 import it.classhidra.framework.web.integration.i_module_integration;
@@ -188,7 +187,7 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 				).getElement().setInfo_menu(null);
 			}catch(Exception e){
 			}
-			return new redirects("actions/content");
+			return new redirects("content");
 		}
 		if(	middleAction!=null && middleAction.equals("change_rule")){
 			try{
@@ -337,7 +336,7 @@ public class EjbComponentLogin extends action implements i_action, Serializable{
 						).getElement().setInfo_menu(null);
 			}catch(Exception e){
 			}
-			return new redirects("actions/content");
+			return new redirects("content");
 
 		}
 		if(	middleAction!=null &&

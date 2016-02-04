@@ -27,12 +27,12 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.exception.message;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_supportbean;
+
 
 @NavigatedDirective(memoryContent="true")
 @Stateful
-@Local(IComponentSendMail.class)
-//@Remote(IComponentSendMail.class)
+//@Local(IComponentSendMail.class)
+@Remote(IComponentSendMail.class)
 
 
 public class EjbComponentSendMail extends action implements IComponentSendMail, Serializable{

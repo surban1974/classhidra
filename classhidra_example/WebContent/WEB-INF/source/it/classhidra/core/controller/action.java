@@ -52,56 +52,65 @@ public class action extends bean implements i_action, Serializable{
 	}
 
 	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
+		i_bean bean4init = null;
 		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
-			if(getRealBean()!=null){
-				try{
-					getRealBean().onPreInit(request);
-				}catch(Exception e){
-				}
-				try{
-					getRealBean().init(request);
-				}catch(Exception e){
-					util_supportbean.init(getRealBean(), request);
-				}
-				try{
-					getRealBean().onPostInit(request);
-				}catch(Exception e){
-				}
-			}
+			if(getRealBean()!=null)
+				bean4init = getRealBean();
+			
 		}else{
 			if(!beanEqualAction){
-				if(getRealBean()!=null){
-					try{
-						getRealBean().onPreInit(request);
-					}catch(Exception e){
-					}
-					try{
-						getRealBean().init(request);
-					}catch(Exception e){
-						util_supportbean.init(getRealBean(), request);
-					}
-					try{
-						getRealBean().onPostInit(request);
-					}catch(Exception e){
-					}
-				}
-			}else{
+				if(getRealBean()!=null)
+					bean4init = getRealBean();
+				
+			}else
+				bean4init = this;
+			
+		}
+		if(bean4init!=null){
+			boolean isRemoteEjb=false;
+			HashMap request2map = null;
+			if(bean4init.getInfo_context()!=null && bean4init.getInfo_context().isRemote()){
+				isRemoteEjb=true;
 				try{
-					this.onPreInit(request);
-				}catch(Exception e){
+					request2map = (HashMap)bean4init.asBean().getClass()
+							.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+							.invoke(null, new Object[]{request});
+				}catch (Exception e) {
+					new bsControllerException(e, iStub.log_ERROR);
+				}catch (Throwable e) {
+					new bsControllerException(e, iStub.log_ERROR);
 				}
-				try{
-					this.init(request);
-				}catch(Exception e){
-					util_supportbean.init(this, request);
-				}
-				try{
-					this.onPostInit(request);
-				}catch(Exception e){
-				}
+				if(request2map==null)
+					request2map = new HashMap();
+	//			request2map = util_supportbean.request2map(request);
 	
 			}
+			try{
+				if(!isRemoteEjb)
+					bean4init.onPreInit(request);
+				else
+					bean4init.onPreInit(request2map);
+			}catch(Exception e){
+			}
+			try{
+				if(!isRemoteEjb)
+					bean4init.init(request);
+				else
+					util_supportbean.init(bean4init, request);
+			}catch(Exception e){
+				util_supportbean.init(bean4init, request);
+			}
+			try{
+				if(!isRemoteEjb)
+					bean4init.onPostInit(request);
+				else
+					bean4init.onPostInit(request2map);
+			}catch(Exception e){
+			}			
+			
 		}
+
+		
 	}
 	public void init(HashMap wsParameters) throws bsControllerException{
 		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
@@ -119,7 +128,7 @@ public class action extends bean implements i_action, Serializable{
 				}
 			}else{
 				this.onPreInit(wsParameters);
-				this.init(wsParameters);
+				this.init_(wsParameters);
 				this.onPostInit(wsParameters);
 			}
 		}

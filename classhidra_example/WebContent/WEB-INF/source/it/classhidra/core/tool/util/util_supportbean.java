@@ -27,6 +27,7 @@ package it.classhidra.core.tool.util;
 
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
+import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -68,6 +69,31 @@ public static HashMap request2map(HttpServletRequest request){
 	return result;
 }
 
+
+public static void init(i_action action_instance, HashMap request2map, HttpServletRequest request) throws bsControllerException{
+	if(request==null) return;
+
+	if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
+		if(action_instance.getRealBean()!=null){
+			action_instance.getRealBean().onPreInit(request2map);
+			util_supportbean.init(action_instance.getRealBean(), request);
+			action_instance.getRealBean().onPostInit(request2map);
+		}
+	}else{
+		if(!action_instance.isBeanEqualAction()){
+			if(action_instance.getRealBean()!=null){
+				action_instance.getRealBean().onPreInit(request2map);
+				util_supportbean.init(action_instance.getRealBean(), request);
+				action_instance.getRealBean().onPostInit(request2map);
+			}
+		}else{
+			action_instance.onPreInit(request2map);
+			util_supportbean.init(action_instance, request);
+			action_instance.onPostInit(request2map);
+		}
+	}
+
+}
 
 public static void init(i_bean bean, HttpServletRequest request) throws bsControllerException{
 	if(request==null) return;

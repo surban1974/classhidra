@@ -44,7 +44,6 @@ import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
-
 import it.classhidra.scheduler.scheduling.IBatchScheduling;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
@@ -82,6 +81,7 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 
 
@@ -910,8 +910,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 		try{
 			if(!isRemoteEjb)
 				action_instance.init(request,response);
-			else 
-				action_instance.init(request2map);
+			else{ 
+//				action_instance.init(request2map);
+				util_supportbean.init(action_instance, request2map, request);
+			}
 		}catch(Exception e){
 			action_instance.init(null,null);
 		}
@@ -1319,7 +1321,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				}
 				try{
-					bean_instance.init(request);
+					if(!isRemoteEjb)
+						bean_instance.init(request);
+					else
+						util_supportbean.init(bean_instance, request);
 				}catch(Exception e){
 					util_supportbean.init(bean_instance, request);
 				}
@@ -1436,7 +1441,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 						bean_instance.onPreInit(request2map);
 					}
 					try{
-						bean_instance_clone.init(request);
+						if(!isRemoteEjb)
+							bean_instance_clone.init(request);
+						else
+							util_supportbean.init(bean_instance_clone, request);
 					}catch(Exception e){
 						util_supportbean.init(bean_instance_clone, request);
 					}
@@ -1870,49 +1878,52 @@ public class bsController extends HttpServlet implements bsConstants  {
 			action_instance.onPreRedirectError();
 			throw ex;
 		}
+		
+		HashMap request2map = null;
+		boolean isRemoteEjb=false;
+		
+		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
+			isRemoteEjb=true;
+			try{
+				request2map = (HashMap)action_instance.asAction().getClass()
+									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+									.invoke(null, new Object[]{request});
+			}catch (Exception e) {
+				new bsControllerException(e, iStub.log_ERROR);
+			}catch (Throwable e) {
+				new bsControllerException(e, iStub.log_ERROR);
+			}
+			if(request2map==null)
+				request2map = new HashMap();
+//			request2map = util_supportbean.request2map(request);
+
+		}		
+		
 		try{
-			action_instance.onPostRedirect(rd);
+			if(!isRemoteEjb)
+				action_instance.onPostRedirect(rd);
 		}catch(Exception e){
 		}
-			if(rd==null){
-				action_instance.onPreRedirectError();
-				rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
-				try{
+			
+		if(rd==null){
+			action_instance.onPreRedirectError();
+			rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
+			try{
+				if(!isRemoteEjb)
 					action_instance.onPostRedirectError(rd);
-				}catch(Exception e){
-				}
+			}catch(Exception e){
 			}
-			if(rd==null){
-				if(!action_instance.get_infoaction().getError().equals("")) action_instance.getCurrent_redirect().set_uriError(action_instance.get_infoaction().getError());
-				else action_instance.getCurrent_redirect().set_uriError(getAction_config().getAuth_error());
-				rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
-			}
+		}
+		if(rd==null){
+			if(!action_instance.get_infoaction().getError().equals("")) action_instance.getCurrent_redirect().set_uriError(action_instance.get_infoaction().getError());
+			else action_instance.getCurrent_redirect().set_uriError(getAction_config().getAuth_error());
+			rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
+		}
 
 		if(rd==null) throw new bsControllerException("Controller generic redirect error. Action: ["+action_instance.get_infoaction().getPath()+"] " +action_instance.getCurrent_redirect(),request,iStub.log_ERROR);
 		else{
 			try{
 				try{
-					HashMap request2map = null;
-					boolean isRemoteEjb=false;
-					
-					if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
-						isRemoteEjb=true;
-						try{
-							request2map = (HashMap)action_instance.asAction().getClass()
-												.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-												.invoke(null, new Object[]{request});
-						}catch (Exception e) {
-							new bsControllerException(e, iStub.log_ERROR);
-						}catch (Throwable e) {
-							new bsControllerException(e, iStub.log_ERROR);
-						}
-						if(request2map==null)
-							request2map = new HashMap();
-//						request2map = util_supportbean.request2map(request);
-
-					}
-
-					
 					try{
 						if(!isRemoteEjb)
 							action_instance.actionBeforeRedirect(request,response);
