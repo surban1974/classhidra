@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -36,6 +37,8 @@ public class util_classes {
 	public  static Class[] getClasses(String pckgname) throws ClassNotFoundException {
 		ArrayList classes = new ArrayList();
 		URL resource = null;
+		URL resourceMETA = null;
+		String path = "";
 		// Get a File object for the package
 
 		try {
@@ -43,8 +46,19 @@ public class util_classes {
 			if (cld == null) {
 				throw new ClassNotFoundException("Can't get class loader.");
 			}
-			String path = '/' + pckgname.replace('.', '/');
+			path = '/' + pckgname.replace('.', '/');
 			resource = cld.getResource(path);
+			
+			if (resource == null) {
+				path = pckgname.replace('.', '/');
+				resource = cld.getResource(path);
+			}
+			
+			if(bsController.getAppInit()!=null && bsController.getAppInit().isScannedManifest()){
+				resourceMETA = cld.getResource("/META-INF/MANIFEST.MF");
+				if(resourceMETA == null)
+					resourceMETA = cld.getResource("META-INF/MANIFEST.MF");
+			}
 			
 			if (resource == null) {
 				throw new ClassNotFoundException("No resource for " + path);
@@ -75,24 +89,97 @@ public class util_classes {
 			}else{
 				File directory = convertUrl2File(resource);
 				
-				if (directory!=null && directory.exists()) {
-					// Get the list of the files contained in the package
+				if(directory!=null && directory.exists()) {
 					String[] files = directory.list();
-					for (int i = 0; i < files.length; i++) {
-						// we are only interested in .class files
-						if (files[i].endsWith(".class")) {
-							// removes the .class extension
-							classes.add(Class.forName(pckgname + '.'+ files[i].substring(0, files[i].length() - 6)));
+					for(int i = 0; i < files.length; i++) {
+						if(files[i].endsWith(".class")){ 
+							try{
+								classes.add(Class.forName(pckgname + '.'+ files[i].substring(0, files[i].length() - 6)));
+							}catch(Exception e){
+							}
 						}
 					}
 					
-				} else {
-					throw new ClassNotFoundException(pckgname
-							+ " does not appear to be a valid package");
-				}
+				}else if(resource.getProtocol().equalsIgnoreCase("jar")){	
+					try{
+						JarURLConnection jarUrlConnection = (JarURLConnection)resource.openConnection(); 
+						JarEntry rootEntry = jarUrlConnection.getJarEntry();
+
+						Enumeration en = null;
+						try{
+							en = jarUrlConnection.getJarFile().entries();
+						}catch(Exception e){
+						}
+
+				        if (en!=null && en.hasMoreElements()){
+				            while (en.hasMoreElements()){
+				            	JarEntry entry = (JarEntry)en.nextElement();
+				            	if(!entry.isDirectory()){
+					            	String package_path = entry.getName();
+					            	if(package_path.indexOf(rootEntry.getName())==0){
+					            		String class_path=package_path.replace("/", ".").replace("\\", ".");
+										if(class_path.endsWith(".class")){
+											class_path=class_path.substring(0,class_path.length()-6);
+											try{
+												classes.add(Class.forName(class_path));
+											}catch(Exception e){
+											}
+										}
+					            	}
+				            	}
+				            }
+				        }
+					}catch(Exception e){
+						throw new ClassNotFoundException(pckgname + " does not appear to be a valid jar");
+					}									
+				}else
+					throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
 
 			}
 		}
+		
+		if(resourceMETA!=null ){
+			try{
+			
+				File directory = convertUrl2File(resourceMETA);
+				if(directory!=null && resourceMETA.toURI().getScheme().equalsIgnoreCase("jar")){
+					String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
+				    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+				    Enumeration entries = jar.entries();
+				    while(entries.hasMoreElements()) {
+				    	try{
+					    	String name = ((JarEntry)entries.nextElement()).getName();
+					    	String foundName = null;
+					    	if (name.startsWith(path))
+					    		foundName = name;
+					    	else if(("/"+name).startsWith(path))
+					    		foundName = "/"+name;
+					        if (foundName!=null) {	
+					        	String class_path=foundName.replace("/", ".").replace("\\", ".");
+								if(class_path.startsWith("/"))
+									class_path = class_path.substring(1, class_path.length());
+								if(class_path.endsWith(".class")){
+									class_path=class_path.substring(0,class_path.length()-6);
+									try{
+										classes.add(Class.forName(class_path));
+									}catch(Exception e){
+									}
+								}
+      
+					        }
+				    	}catch(Exception ex){
+				    		
+				    	}
+				   }
+				}
+			}catch (Exception e) {
+
+			}	 							
+
+		}
+		
+		if(resource==null && resourceMETA==null )
+			throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
 
 		
 		Class[] classesA = new Class[classes.size()];
@@ -103,6 +190,7 @@ public class util_classes {
 	public static ArrayList getResources(String pckgname) throws ClassNotFoundException {
 		ArrayList res = new ArrayList();
 		URL resource = null;
+		URL resourceMETA = null;
 		String path = "";
 		
 		try {
@@ -117,12 +205,20 @@ public class util_classes {
 				path = pckgname.replace('.', '/');
 				resource = cld.getResource(path);
 			}
-			if (resource == null) {
+			
+			if(bsController.getAppInit()!=null && bsController.getAppInit().isScannedManifest()){
+				resourceMETA = cld.getResource("/META-INF/MANIFEST.MF");
+				if(resourceMETA == null)
+					resourceMETA = cld.getResource("META-INF/MANIFEST.MF");
+			}
+			
+			if (resource == null && resourceMETA == null) {
 				throw new ClassNotFoundException("No resource for " + path);
 			}
 		} catch (NullPointerException x) {
 			throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
 		}
+		
 		if(resource!=null){
 			if(resource.getProtocol().equalsIgnoreCase("vfs")){
 				Object arr = null;
@@ -148,21 +244,23 @@ public class util_classes {
 							String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
 						    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
 						    Enumeration entries = jar.entries();
-//						    Set result = new HashSet();
 						    while(entries.hasMoreElements()) {
 						    	try{
 							    	String name = ((JarEntry)entries.nextElement()).getName();
 							    	String foundName = null;
 							    	if (name.startsWith(path))
 							    		foundName = name;
-							    	else if (("/"+name).startsWith(path))
+							    	else if(("/"+name).startsWith(path))
 							    		foundName = "/"+name;
 							        if (foundName!=null) {
-							        	String entry = foundName.substring(path.length());
+//							        	String entry = foundName.substring(path.length());
+							        	String entry = foundName.substring(path.length(),foundName.length());				
+										if(entry.startsWith("/"))
+											entry = entry.substring(1, entry.length());
+
 							            int checkSubdir = entry.indexOf("/");
-							            if (checkSubdir >= 0) {
-							              entry = entry.substring(0, checkSubdir);
-							            }
+							            if(checkSubdir >= 0) 
+							            	entry = entry.substring(0, checkSubdir);
 							            if(!entry.trim().equals(""))
 							            	res.add(entry);
 							        }
@@ -171,9 +269,9 @@ public class util_classes {
 						    	}
 						   }
 						 							
-						}else{
+						}else
 							throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
-						}
+						
 					}catch(Exception ex){
 						throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
 					}
@@ -181,7 +279,49 @@ public class util_classes {
 				}
 				
 			}
+		} 
+		
+		if(resourceMETA!=null ){
+			try{
+			
+				File directory = convertUrl2File(resourceMETA);
+				if(directory!=null && resourceMETA.toURI().getScheme().equalsIgnoreCase("jar")){
+					String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
+				    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+				    Enumeration entries = jar.entries();
+				    while(entries.hasMoreElements()) {
+				    	try{
+					    	String name = ((JarEntry)entries.nextElement()).getName();
+					    	String foundName = null;
+					    	if (name.startsWith(path))
+					    		foundName = name;
+					    	else if(("/"+name).startsWith(path))
+					    		foundName = "/"+name;
+					        if (foundName!=null) {					        	
+					        	String entry = foundName.substring(path.length(),foundName.length());				
+								if(entry.startsWith("/"))
+									entry = entry.substring(1, entry.length());
+					            int checkSubdir = entry.indexOf("/");
+					            if(checkSubdir >= 0) 
+					            	entry = entry.substring(0, checkSubdir);
+					            if(!entry.trim().equals(""))
+					            	res.add(entry);
+				            
+					        }
+				    	}catch(Exception ex){
+				    		
+				    	}
+				   }
+				}
+			}catch (Exception e) {
+
+			}
+			 							
+
 		}
+		
+		if(resource==null && resourceMETA==null )
+			throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
 		
 
 		return res;

@@ -38,13 +38,16 @@ import it.classhidra.core.tool.util.util_sort;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.jar.JarEntry;
 
 
 
@@ -123,12 +126,14 @@ public class annotation_scanner implements i_annotation_scanner {
 
 			if(package_annotated!=null && !package_annotated.trim().equals("")){
 				try{
+					String path = null;
 					URL resource = null;
+					URL resourceMETA = null;
 					try {
 						
 						if (cld == null)
 							throw new ClassNotFoundException("Can't get class loader.");
-						String path = null;
+						
 						if(package_annotated.lastIndexOf(".class")==package_annotated.length()-6){
 							package_annotated=package_annotated.substring(0,package_annotated.length()-6);
 							path = '/' + package_annotated.replace('.', '/')+".class";
@@ -138,17 +143,28 @@ public class annotation_scanner implements i_annotation_scanner {
 						resource = cld.getResource(path);
 						
 						if (resource == null) {
-							path = package_annotated.replace('.', '/');
+							if(path.indexOf("/")==0)
+								path = path.substring(1, path.length());
+//							path = package_annotated.replace('.', '/');
 							resource = cld.getResource(path);
 						}
-						if (resource == null) {
+						
+
+						if(bsController.getAppInit()!=null && bsController.getAppInit().isScannedManifest()){
+							resourceMETA = cld.getResource("/META-INF/MANIFEST.MF");
+							if(resourceMETA == null)
+								resourceMETA = cld.getResource("META-INF/MANIFEST.MF");
+						}
+			
+						
+						if (resource == null && resourceMETA==null) {
 							throw new ClassNotFoundException("No resource for " + path);
 						}
 
 					}catch(Exception ex){
-						new bsException("Load_actions ClassLoader Error Annotation scaner: "+ex.toString(), iStub.log_ERROR);
+						new bsException("Load_actions Loader Annotation scanner Error: "+ex.toString(), iStub.log_ERROR);
 					}catch(Throwable t){
-						new bsException("Load_actions ClassLoader Error Annotation scaner: "+t.toString(), iStub.log_ERROR);
+						new bsException("Load_actions Loader Annotation scanner Error: "+t.toString(), iStub.log_ERROR);
 					}
 					
 					
@@ -203,7 +219,7 @@ public class annotation_scanner implements i_annotation_scanner {
 							}
 							if(directory==null) return;	
 							
-							if (directory.exists() && directory.isDirectory()) {
+							if(directory.exists() && directory.isDirectory()) {
 								File[] files = directory.listFiles();
 								for(int i=0;i<files.length;i++){
 									String package_path = files[i].getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
@@ -212,30 +228,116 @@ public class annotation_scanner implements i_annotation_scanner {
 										checkBranch(package_path);					
 									else{
 										String class_path=package_path;
-										if(class_path.lastIndexOf(".class")==class_path.length()-6)
+										if(class_path.endsWith(".class")){
 											class_path=class_path.substring(0,class_path.length()-6);
-										checkClassAnnotation(class_path);
+											checkClassAnnotation(class_path);
+										}
 
 									}
 								}
-							}
-							if (directory.exists() && directory.isFile()) {
+							}else if(directory.exists() && directory.isFile()) {
 									String package_path = directory.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
 									package_path=package_annotated+package_path;
 									String class_path=package_path;
-									if(class_path.lastIndexOf(".class")==class_path.length()-6)
+									if(class_path.endsWith(".class")){
 										class_path=class_path.substring(0,class_path.length()-6);
-									checkClassAnnotation(class_path);
+										checkClassAnnotation(class_path);
+									}
+							}else if(resource.getProtocol().equalsIgnoreCase("jar")){
+								try{
+									JarURLConnection jarUrlConnection = (JarURLConnection)resource.openConnection(); 
+									JarEntry rootEntry = jarUrlConnection.getJarEntry();
 
+									Enumeration en = null;
+									try{
+										en = jarUrlConnection.getJarFile().entries();
+									}catch(Exception e){
+									}
+
+							        if (en!=null && en.hasMoreElements()){
+							            while (en.hasMoreElements()){
+							            	JarEntry entry = (JarEntry)en.nextElement();
+							            	if(!entry.isDirectory()){
+								            	String package_path = entry.getName();
+								            	String correct_pack_name = null;
+								            	if(package_path.startsWith(rootEntry.getName()))
+								            		correct_pack_name = package_path;
+								            	else if(("/"+package_path).startsWith(rootEntry.getName()))
+								            		correct_pack_name = "/"+package_path;
+								            	if(correct_pack_name!=null){
+								            		String class_path=correct_pack_name.replace("/", ".").replace("\\", ".");
+													if(class_path.endsWith(".class")){
+														class_path=class_path.substring(0,class_path.length()-6);
+														checkClassAnnotation(class_path);
+													}
+								            	}
+							            	}
+							            }
+
+							        }else{
+							        	String package_path = rootEntry.getName();
+							        	String class_path=package_path.replace("/", ".").replace("\\", ".");
+										if(class_path.endsWith(".class")){
+											class_path=class_path.substring(0,class_path.length()-6);
+											checkClassAnnotation(class_path);
+										}
+							        }
+								}catch(Exception e){
+								}								
 							}
 						}
 					
 					}
 					
+					if(resourceMETA!=null && resourceMETA.getProtocol().equalsIgnoreCase("jar")){
+						try{
+							JarURLConnection jarUrlConnection = (JarURLConnection)resourceMETA.openConnection(); 
+							Enumeration en = null;
+							try{
+								en = jarUrlConnection.getJarFile().entries();
+							}catch(Exception e){
+							}
+
+					        if (en!=null && en.hasMoreElements()){
+					            while (en.hasMoreElements()){
+					            	JarEntry entry = (JarEntry)en.nextElement();
+					            	if(!entry.isDirectory()){
+						            	String package_path = entry.getName();
+						            	String correct_pack_name = null;
+						            	if(package_path.startsWith(path))
+						            		correct_pack_name = package_path;
+						            	else if(("/"+package_path).startsWith(path))
+						            		correct_pack_name = "/"+package_path;
+						            	if(correct_pack_name!=null){
+							            	String class_path=correct_pack_name.replace("/", ".").replace("\\", ".");
+											if(class_path.endsWith(".class")){
+												class_path=class_path.substring(0,class_path.length()-6);
+												checkClassAnnotation(class_path);
+											}
+							            }						            	
+						            }
+					            }
+
+					        }else{
+					        	String package_path = path;
+					        	String class_path=package_path.replace("/", ".").replace("\\", ".");
+								if(class_path.endsWith(".class")){
+									class_path=class_path.substring(0,class_path.length()-6);
+									checkClassAnnotation(class_path);
+								}
+					        }
+						}catch(Exception e){
+						}
+
+					}
+					
+					if(resource==null && resourceMETA==null )
+						throw new ClassNotFoundException("No resource for " + path);
+					
 				}catch(Exception e){
-					new bsException("Load_actions Loader Error Annotation scaner: "+e.toString(), iStub.log_ERROR);
+					new bsException("Load_actions Loader Annotation scanner Error: "+e.toString(), iStub.log_ERROR);
 				}catch(Throwable t){
-					new bsException("Load_actions Loader Error Annotation scaner: "+t.toString(), iStub.log_ERROR);
+					new bsException("Load_actions Loader Annotation scanner Error: "+t.toString(), iStub.log_ERROR);
 				}
 			}
 	}
@@ -294,6 +396,8 @@ public class annotation_scanner implements i_annotation_scanner {
 		}
 
 	}
+	
+	
 	
 
 	public void checkClassAnnotation(String class_path) {
@@ -492,7 +596,7 @@ public class annotation_scanner implements i_annotation_scanner {
 
 				
 			}
-			
+//			new bsException("OK scanned class: "+class_path, iStub.log_INFO);
 		}catch(Exception e){	
 			new bsException("Load_actions Loader Error Annotation scaner for class: "+class_path+" : "+e.toString(), iStub.log_ERROR);
 		}

@@ -640,7 +640,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
 							resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
 						else
-							util_classes.getResourceAsByte("it/classhidra/core/controller/resources/"+loadSrc);
+							output = util_classes.getResourceAsByte("it/classhidra/core/controller/resources/"+loadSrc);
 						if(output==null && (resources==null || resources.size()==0))
 							resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
 					}

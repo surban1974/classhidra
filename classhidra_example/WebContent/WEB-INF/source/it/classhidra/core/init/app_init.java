@@ -68,6 +68,7 @@ public class app_init implements Serializable{
 	public final static String id_transf_elaborationpoint	=	"application.transformation.event.after.elaborationpoint";
 	public final static String id_transf_elaborationwrapper	=	"application.transformation.event.after.elaborationwrapper";
 	public final static String id_annotation_scanner		= 	"application.annotation.scanner";
+	public final static String id_annotation_scanner_asjar	= 	"application.annotation.scanner.asjar";
 	public final static String id_package_annotated			=	"application.package.annotated";
 	public final static String id_debug						=	"application.debug";
 	public final static String id_permit_redirect_resource	=	"application.permit.redirect.resource";
@@ -104,6 +105,7 @@ public class app_init implements Serializable{
 	private String _statistic;
 	private String _statistic_provider;
 	private String _annotation_scanner;
+	private String _annotation_scanner_asjar;
 	private String _statistic_stacklength;
 	private String _vfs_plugin = PATH_VFS_PLUGIN;
 
@@ -209,6 +211,8 @@ public class app_init implements Serializable{
 			
 			
 			_annotation_scanner=(_annotation_scanner==null)?System.getProperty(id_annotation_scanner):_annotation_scanner;
+			_annotation_scanner_asjar=(_annotation_scanner_asjar==null)?System.getProperty(id_annotation_scanner_asjar):_annotation_scanner_asjar;
+			
 			_vfs_plugin=(_vfs_plugin==null)?System.getProperty(id_vfs_plugin):_vfs_plugin;
 			
 			
@@ -281,6 +285,7 @@ public class app_init implements Serializable{
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
 		_annotation_scanner=(_annotation_scanner==null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
+		_annotation_scanner_asjar=(_annotation_scanner_asjar==null)?property.getProperty(id_annotation_scanner_asjar):_annotation_scanner_asjar;
 		_vfs_plugin=(_vfs_plugin==null)?property.getProperty(id_vfs_plugin):_vfs_plugin;
 		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
 		_actioncall_separator=(_actioncall_separator==null)?property.getProperty(id_actioncall_separator):_actioncall_separator;
@@ -526,6 +531,10 @@ public class app_init implements Serializable{
 		return _annotation_scanner;
 	}
 
+	public String get_annotation_scanner_asjar() {
+		return _annotation_scanner_asjar;
+	}
+
 	public String get_init_loader() {
 		return _init_loader;
 	}
@@ -604,5 +613,11 @@ public class app_init implements Serializable{
 
 	public String get_context_provider() {
 		return _context_provider;
+	}
+	
+	public boolean isScannedManifest(){
+		if(_annotation_scanner_asjar==null || !_annotation_scanner_asjar.equalsIgnoreCase("true"))
+			return false;
+		return true;
 	}
 }

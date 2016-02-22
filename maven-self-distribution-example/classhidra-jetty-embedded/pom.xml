@@ -140,6 +140,7 @@
 		                        <delete file="src/main/java/WebContent/WEB-INF/applicationContext.xml"/>
 		                        <delete file="src/main/java/WebContent/WEB-INF/beans.xml"/>
 		                        <delete file="src/main/java/WebContent/WEB-INF/web.xml"/>
+		                        <delete file="src/main/java/classhidra_log.properties"/>
 	                        </tasks>
 	                    </configuration>
 	                    <goals>
