@@ -4253,6 +4253,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 				try{
 				
 					wrapper = (i_ProviderWrapper)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
+					if(wrapper!=null){
+						try{
+							wrapper.getInstance();
+						}catch(Exception e){
+							new bsControllerException(e, iStub.log_ERROR);
+							wrapper=null;
+							request.getSession().removeAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
+						}
+					}
 					if(wrapper==null){
 						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_onlysession(), (request==null)?null:request.getSession().getServletContext());
 						if(wrapper!=null && request!=null && wrapper.getInfo_context()!=null && wrapper.getInfo_context().isStateful())
@@ -4414,6 +4423,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(wrapper==null && getEjbDefaultProvider()!=null){
 				try{
 					wrapper = (i_ProviderWrapper)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION+"$wrapper");
+					if(wrapper!=null){
+						try{
+							wrapper.getInstance();
+						}catch(Exception e){
+							new bsControllerException(e, iStub.log_ERROR);
+							wrapper=null;
+							request.getSession().removeAttribute(bsConstants.CONST_BEAN_$NAVIGATION+"$wrapper");
+						}
+					}
 					if(wrapper==null){
 						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_navigated(), (request==null)?null:request.getSession().getServletContext());
 						if(wrapper!=null && request!=null && wrapper.getInfo_context()!=null && wrapper.getInfo_context().isStateful())

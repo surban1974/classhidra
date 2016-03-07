@@ -190,7 +190,7 @@
                 	navigated="true"
                 	memoryInSession="false"
                 	reloadAfterAction="true">
-                 
+                  <call name="send" method="send_mail" path="alternatePathSandMail"/>                 
         	</action>  
         	        	    
 		<action path="about"
