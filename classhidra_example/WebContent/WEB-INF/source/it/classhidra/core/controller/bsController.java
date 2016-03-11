@@ -1532,6 +1532,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static Object[] chech4AnotherOutputMode(i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response,boolean allowAnotherOutput) throws bsControllerException{
+		
 		if(	allowAnotherOutput &&
 				action_instance.get_bean()!=null &&
 				(
@@ -1597,15 +1598,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 					byte[] output4BYTE = (byte[])action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4BYTE);
 
 
-
+						boolean isDebug=false;
+						try{
+							isDebug = System.getProperty("debug").equalsIgnoreCase("true");
+						}catch(Exception e){
+							try{
+								isDebug = bsController.getAppInit().get_debug().equalsIgnoreCase("true");
+							}catch(Exception ex){
+							}
+						}
+						
+						boolean avoidCheckPermission = (isDebug)?true:false;
 
 
 						if(action_instance.get_bean().getXmloutput()){
 							if(output4SOAP==null)
 								output4SOAP = util_beanMessageFactory.bean2xml(
-										action_instance.get_bean(),
+										action_instance.get_bean().asBean(),
 										(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
-										true);
+										true,
+										avoidCheckPermission);
 
 							try{
 								if(action_instance.get_bean().getXmloutput_encoding()!=null && !action_instance.get_bean().getXmloutput_encoding().equals(""))
@@ -1620,9 +1632,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(action_instance.get_bean().getJsonoutput()){
 							if(output4JSON==null)
 								output4JSON = util_beanMessageFactory.bean2json(
-										action_instance.get_bean(),
-										(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName()
-										);
+										action_instance.get_bean().asBean(),
+										(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
+										avoidCheckPermission);
 
 							try{
 								if(action_instance.get_bean().getJsonoutput_encoding()!=null && !action_instance.get_bean().getJsonoutput_encoding().equals(""))
@@ -1685,9 +1697,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 								){
 									if(output4SOAP==null)
 										output4SOAP = util_beanMessageFactory.bean2xml(
-												action_instance.get_bean(),
+												action_instance.get_bean().asBean(),
 												(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
-												true);
+												true,
+												avoidCheckPermission);
 									action_instance.onPreTransform(output4SOAP);
 									outTranformation = cTransformation.transform(output4SOAP, request);
 									action_instance.onPostTransform(outTranformation);
@@ -1705,6 +1718,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 			}
+		
+		
+		
+		
+		
 		return new Object[]{response, Boolean.valueOf(false)};
 
 	}

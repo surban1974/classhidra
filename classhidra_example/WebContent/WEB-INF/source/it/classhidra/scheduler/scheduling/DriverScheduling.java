@@ -1,8 +1,10 @@
 package it.classhidra.scheduler.scheduling; 
 
 
+import it.classhidra.core.controller.bsController;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
@@ -16,7 +18,64 @@ public class DriverScheduling{
 	private static IBatchScheduling external;
 	private static IBatchFactory factory;
 	
-	public static void init(IBatchScheduling _external){
+	
+	public static DriverScheduling init(){
+		DriverScheduling.init(
+				bsController.checkSchedulerContainer(),
+				
+				new IBatchFactory() {
+					
+//					@Override
+					public i_batch getInstance(String cd_btch, String cls_batch) {
+						try{
+							i_batch instance = null;
+							if(bsController.getAppInit()!=null && bsController.getAppInit().get_context_provider()!=null && !bsController.getAppInit().get_context_provider().equals("")){
+								try{
+									instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getAppInit().get_context_provider(),  cd_btch, cls_batch, null);
+								}catch(Exception e){
+								}
+							}
+							if(instance==null && bsController.getAppInit()!=null && bsController.getAppInit().get_cdi_provider()!=null && !bsController.getAppInit().get_cdi_provider().equals("")){
+								try{
+									instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getAppInit().get_cdi_provider(),  cd_btch, cls_batch, null);
+								}catch(Exception e){
+								}
+							}
+							if(instance==null && bsController.getAppInit()!=null && bsController.getAppInit().get_ejb_provider()!=null && !bsController.getAppInit().get_ejb_provider().equals("")){
+								try{
+									instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getAppInit().get_ejb_provider(),  cd_btch, cls_batch, null);
+								}catch(Exception e){
+								}
+							}
+							if(instance==null && bsController.getCdiDefaultProvider()!=null){
+								try{
+									instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getCdiDefaultProvider(),   cd_btch, cls_batch, null);
+								}catch(Exception e){
+								}
+							}
+							if(instance==null && bsController.getEjbDefaultProvider()!=null){
+								try{
+									instance = (i_batch)util_provider.getBeanFromObjectFactory(bsController.getEjbDefaultProvider(),   cd_btch, cls_batch, null);
+								}catch(Exception e){
+								}
+							}
+
+							if(instance == null)
+								instance = (i_batch)Class.forName(cls_batch).newInstance();
+
+							return instance;
+						}catch(Exception e){
+						}catch(Throwable t){
+						}
+						
+						return null;
+					}
+				}
+		);
+		return null;
+	}
+	
+	public static DriverScheduling init(IBatchScheduling _external){
 		if(_external!=null){
 			try{
 				_external.stop();
@@ -32,9 +91,10 @@ public class DriverScheduling{
 				new bsException("Scheduler: "+e.toString(),iStub.log_ERROR);
 			}
 		}
+		return null;
 	}	
 	
-	public static void init(IBatchScheduling _external, IBatchFactory _factory){
+	public static DriverScheduling init(IBatchScheduling _external, IBatchFactory _factory){
 		if(_factory!=null)
 			factory = _factory;
 		if(_external!=null){
@@ -52,6 +112,7 @@ public class DriverScheduling{
 				new bsException("Scheduler: "+e.toString(),iStub.log_ERROR);
 			}
 		}
+		return null;
 	}
 	
 	public static void start(){
