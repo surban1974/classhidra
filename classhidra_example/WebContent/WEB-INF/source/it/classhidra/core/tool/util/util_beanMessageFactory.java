@@ -6,8 +6,6 @@ import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 
 
-
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -89,10 +87,14 @@ public class util_beanMessageFactory {
 	}
 	
 	public static String bean2xml(Object obj, String name, boolean lowerCase1char){
-		return bean2xml(obj,null,false,false);
+		return bean2xml(obj,null,false,false,null);
 	}
 	
 	public static String bean2xml(Object obj, String name, boolean lowerCase1char, boolean avoidCheckPermission){
+		return bean2xml(obj, name, lowerCase1char, avoidCheckPermission, null);
+	}
+	
+	public static String bean2xml(Object obj, String name, boolean lowerCase1char, boolean avoidCheckPermission, String textencoding){
 		Map avoidCyclicPointers = new HashMap();
 		
 		boolean showInXml = true;
@@ -108,7 +110,7 @@ public class util_beanMessageFactory {
 			result+="<error>Object is NULL</error>";
 		else{
 			if(showInXml)
-				result+=generateXmlItem(obj,name,0,false,lowerCase1char,avoidCyclicPointers);
+				result+=generateXmlItem(obj,name,0,false,lowerCase1char,avoidCyclicPointers,textencoding);
 			else
 				result+="<error>Object ["+obj.getClass().getName()+"] does not contain the method [convert2xml] or this method return [false]</error>";
 		}
@@ -116,14 +118,18 @@ public class util_beanMessageFactory {
 	}
 	
 	public static String bean2json(Object obj){
-		return bean2json(obj,null,false);
+		return bean2json(obj,null,false,null);
 	}
 	
 	public static String bean2json(Object obj, String name){
-		return bean2json(obj,name,false);
+		return bean2json(obj,name,false,null);
 	}
-
+	
 	public static String bean2json(Object obj, String name, boolean avoidCheckPermission){
+		return bean2json(obj,name,avoidCheckPermission,null);
+	}	
+
+	public static String bean2json(Object obj, String name, boolean avoidCheckPermission, String textencoding){
 		Map avoidCyclicPointers = new HashMap();		
 		
 		boolean showInJson = true;
@@ -139,7 +145,7 @@ public class util_beanMessageFactory {
 			result+="\"error\":  \"Object is NULL\"";
 		else{
 			if(showInJson)
-				result+=generateJsonItem(obj,name,0,false,avoidCyclicPointers);
+				result+=generateJsonItem(obj,name,0,false,avoidCyclicPointers,textencoding);
 			else
 				result+="\"error\":  \"Object ["+obj.getClass().getName()+"] does not contain the method [convert2json] or this method return [false]\"";
 		}
@@ -148,23 +154,30 @@ public class util_beanMessageFactory {
 	}	
 	
 
-
-
 	public static String bean2message(Object obj, String name, boolean lowerCase1char){
+		return bean2message(obj, name, lowerCase1char, null);
+	}
+
+	public static String bean2message(Object obj, String name, boolean lowerCase1char,String textencoding){
 		Map avoidCyclicPointers = new HashMap();
 		String result="";
-		result+=generateXmlItem(obj,name,0,false,lowerCase1char,avoidCyclicPointers);
+		result+=generateXmlItem(obj,name,0,false,lowerCase1char,avoidCyclicPointers,textencoding);
 		return result;
 	}
+	
 	public static String bean2message(Object obj){
-		return bean2message(obj,null,false);
+		return bean2message(obj,null,false,null);
 	}
 
 
 	public static String bean2messageNormalized(Object obj, String name, boolean lowerCase1char){
+		return bean2messageNormalized(obj, name, lowerCase1char,null);
+	}
+	
+	public static String bean2messageNormalized(Object obj, String name, boolean lowerCase1char,String textencoding){
 		Map avoidCyclicPointers = new HashMap();
 		String result="";
-		result+=generateXmlItem(obj,name,0, true,lowerCase1char,avoidCyclicPointers);
+		result+=generateXmlItem(obj,name,0, true,lowerCase1char,avoidCyclicPointers,textencoding);
 		return result;
 	}
 	public static String bean2messageNormalized(Object obj){
@@ -375,10 +388,10 @@ public class util_beanMessageFactory {
 		return result;
 	}
 
-	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers ){
+	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, String textencoding ){
 		String result="";
 		result+=generateJsonItemTag_Start(sub_obj, name,level, notFirst);
-		result+=generateJsonItemTag_Content(sub_obj, name,level,avoidCyclicPointers);
+		result+=generateJsonItemTag_Content(sub_obj, name,level,avoidCyclicPointers, textencoding);
 		result+=generateJsonItemTag_Finish(sub_obj, name, level, notFirst);		
 		return result;
 	}
@@ -439,7 +452,7 @@ public class util_beanMessageFactory {
 	}
 	
 	
-	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers){
+	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers, String textencoding){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		
 		String result="";
@@ -460,11 +473,11 @@ public class util_beanMessageFactory {
 						result_tmp+=generateJsonItemTag_Finish(new Object(), null,level+1, nFirst);
 					}else{
 						avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-						result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers);
+						result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,textencoding);
 						avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 					}
 				}else
-					result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers);
+					result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,textencoding);
 
 				
 //				result_tmp+=generateJsonItem(list_sub_obj.get(i),null,level+1,nFirst,avoidCyclicPointers);
@@ -490,11 +503,11 @@ public class util_beanMessageFactory {
 						result_tmp+=generateJsonItemTag_Finish(new Object(), pair.getKey().toString(),level+1, nFirst);
 					}else{
 						avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-						result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers);
+						result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers,textencoding);
 						avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 					}
 				}else
-					result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers);
+					result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers,textencoding);
 				
 				
 //				result_tmp+=generateJsonItem(pair.getValue(),pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers);
@@ -522,12 +535,12 @@ public class util_beanMessageFactory {
 			boolean check=false;
 			if(sub_obj instanceof String){
 				check=true;
-				result+="\""+normalJSON(value)+"\"";
+				result+="\""+normalJSON(value,textencoding)+"\"";
 				return result;
 			}
 			if(sub_obj instanceof Boolean){
 				check=true;
-				result+=normalJSON(value);
+				result+=normalJSON(value,textencoding);
 				return result;
 			}
 			
@@ -551,7 +564,7 @@ public class util_beanMessageFactory {
 					result+= df.format(new java.math.BigDecimal(value.trim()).doubleValue());
 					return result;
 				}catch(Exception e){
-					result+=normalJSON(value);
+					result+=normalJSON(value,textencoding);
 					return result;
 				}
 			}
@@ -581,11 +594,11 @@ public class util_beanMessageFactory {
 									result_tmp+=generateJsonItemTag_Finish(new Object(), methodName,level+1, nFirst);
 								}else{
 									avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-									result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers);
+									result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers,textencoding);
 									avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 								}
 							}else
-								result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers);
+								result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers,textencoding);
 								
 						}
 					}
@@ -628,10 +641,10 @@ public class util_beanMessageFactory {
 	
 	
 	
-	private static String generateXmlItem(Object sub_obj, String name, int level, boolean normalized, boolean lowerCase1char,Map avoidCyclicPointer){
+	private static String generateXmlItem(Object sub_obj, String name, int level, boolean normalized, boolean lowerCase1char,Map avoidCyclicPointer,String textencoding){
 		String result="";
 		result+=generateXmlItemTag_Start(sub_obj, name,level,normalized,lowerCase1char);
-		result+=generateXmlItemTag_Content(sub_obj, name,level,normalized,lowerCase1char,avoidCyclicPointer);
+		result+=generateXmlItemTag_Content(sub_obj, name,level,normalized,lowerCase1char,avoidCyclicPointer,textencoding);
 		result+=generateXmlItemTag_Finish(sub_obj, name, level,normalized,lowerCase1char);
 		return result;
 	}
@@ -677,7 +690,7 @@ public class util_beanMessageFactory {
 		return result;
 	}
 
-	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, boolean normalized, boolean lowerCase1char, Map avoidCyclicPointers){
+	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, boolean normalized, boolean lowerCase1char, Map avoidCyclicPointers, String textencoding){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String result="";
 		if(sub_obj==null) return result;
@@ -694,11 +707,11 @@ public class util_beanMessageFactory {
 						result+=generateXmlItemTag_Finish(new Object(), null,level+1, normalized,lowerCase1char);
 					}else{
 						avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-						result+=generateXmlItem(sub_obj2, null,level+1,normalized,lowerCase1char,avoidCyclicPointers);
+						result+=generateXmlItem(sub_obj2, null,level+1,normalized,lowerCase1char,avoidCyclicPointers,textencoding);
 						avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, null,level+1,normalized,lowerCase1char,avoidCyclicPointers);				
+					result+=generateXmlItem(sub_obj2, null,level+1,normalized,lowerCase1char,avoidCyclicPointers,textencoding);				
 				
 //				result+=generateXmlItem(list_sub_obj.get(i),null,level+1,normalized,lowerCase1char);
 			}
@@ -719,11 +732,11 @@ public class util_beanMessageFactory {
 						result+=generateXmlItemTag_Finish(new Object(), pair.getKey().toString(),level+1, normalized,lowerCase1char);
 					}else{
 						avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-						result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,normalized,lowerCase1char,avoidCyclicPointers);
+						result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,normalized,lowerCase1char,avoidCyclicPointers,textencoding);
 						avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,normalized,lowerCase1char,avoidCyclicPointers);
+					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,normalized,lowerCase1char,avoidCyclicPointers,textencoding);
 		        
 //		        result+=generateXmlItem(sub_obj2,pair.getKey().toString(),level+1,normalized,lowerCase1char);	        
 		    }
@@ -747,7 +760,7 @@ public class util_beanMessageFactory {
 			boolean check=false;
 			if(sub_obj instanceof String || sub_obj instanceof Boolean){
 				check=true;
-				result+=normalXML(value);
+				result+=normalXML(value,textencoding);
 				return result;
 			}
 			if(sub_obj instanceof Number){
@@ -770,7 +783,7 @@ public class util_beanMessageFactory {
 					result+= df.format(new java.math.BigDecimal(value.trim()).doubleValue());
 					return result;
 				}catch(Exception e){
-					result+=normalXML(value);
+					result+=normalXML(value,textencoding);
 					return result;
 				}
 			}
@@ -794,11 +807,11 @@ public class util_beanMessageFactory {
 									result+=generateXmlItemTag_Finish(new Object(), methodName,level+1, normalized,lowerCase1char);
 								}else{
 									avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-									result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,lowerCase1char,avoidCyclicPointers);
+									result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,lowerCase1char,avoidCyclicPointers,textencoding);
 									avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 								}
 							}else
-								result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,lowerCase1char,avoidCyclicPointers);
+								result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,lowerCase1char,avoidCyclicPointers,textencoding);
 							
 //							result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,checkConvert2xml,lowerCase1char);
 						}
@@ -878,7 +891,7 @@ public class util_beanMessageFactory {
 		return result;
 	}
 
-	private static String normalXML (String input) {
+	private static String normalXML (String input, String encoding) {
 
 		if (input==null) return input;
 
@@ -903,21 +916,29 @@ public class util_beanMessageFactory {
 				else if (input.charAt(i)=='"') result+="&quot;";
 				else result+=input.charAt(i);
 			}
-			return result;
 		}
 		else
-			return input;
+			result = input;
+		
+		if(encoding==null || encoding.equals(""))
+			return result;
+		else if(encoding.equalsIgnoreCase("asci"))
+			return util_xml.normalASCII((result==null)?"":result.toString());
+		else{
+			try{
+				return new String(result.getBytes(),encoding);
+			}catch(Exception e){
+			}
+		}
+		
+		return result;		
+		
 	}
 	
-	private static String normalJSON (String input) {
+	private static String normalJSON (String input, String encoding) {
 
 		if (input==null) return input;
 
-//		try{
-//			input = new String(input.getBytes(),"utf8");
-//		}catch(Exception e){
-//			input="";
-//		}
 
 		String result="";
 		if (
@@ -929,10 +950,23 @@ public class util_beanMessageFactory {
 				else if (input.charAt(i)=='"') result+="\"";
 				else result+=input.charAt(i);
 			}
-			return result;
+			
 		}
 		else
-			return input;
+			result = input;
+		
+		if(encoding==null || encoding.equals(""))
+			return result;
+		else if(encoding.equalsIgnoreCase("asci"))
+			return util_xml.normalASCII((result==null)?"":result.toString());
+		else{
+			try{
+				return new String(result.getBytes(),encoding);
+			}catch(Exception e){
+			}
+		}
+		
+		return result;
 	}
 
 

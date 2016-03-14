@@ -63,15 +63,23 @@ public class bean extends elementBeanBase implements i_bean  {
 	protected String middleAction;
 	protected String js4ajax="false";
 	protected boolean refresh=false;
+	
+	protected String outputappliedfor;
+	
 	protected boolean xmloutput=false;
 	protected String xmloutput_encoding="";
+	
 	protected boolean jsonoutput=false;
 	protected String jsonoutput_encoding="";
-	protected boolean transformationoutput=false;
+	
 	protected boolean binaryoutput=false;
 	protected String binaryoutput_encoding="";
-	protected boolean virtual=false;
+
 	protected boolean gzipoutput=false;
+	
+	protected boolean transformationoutput=false;
+	
+	protected boolean virtual=false;
 	protected int countActions;
 
 	protected listener_bean listener_b;
@@ -139,7 +147,12 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 	public void initNormal(HttpServletRequest request) throws bsControllerException{
 		xmloutput=false;
+		xmloutput_encoding="";
 		jsonoutput=false;
+		jsonoutput_encoding="";
+		binaryoutput=false;
+		binaryoutput_encoding="";		
+		outputappliedfor=null;
 		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
@@ -1335,6 +1348,14 @@ public void setBinaryoutput_encoding(String binaryoutputEncoding) {
 	binaryoutput_encoding = binaryoutputEncoding;
 }
 
+public String getOutputappliedfor() {
+	return outputappliedfor;
+}
+
+public void setOutputappliedfor(String outputfor) {
+	this.outputappliedfor = outputfor;
+}
+
 public boolean convert2xml(){
 	return false;
 }
@@ -1358,6 +1379,8 @@ public info_context getInfo_context() {
 public void setInfo_context(i_info_context info_context) {
 	this.info_context = (info_context)info_context;
 }
+
+
 
 
 

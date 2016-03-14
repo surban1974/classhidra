@@ -1592,6 +1592,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 
 
+					String outputappliedfor = action_instance.get_bean().getOutputappliedfor();
+					
 					String output4SOAP = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4SOAP);
 					String output4JSON = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4JSON);
 
@@ -1614,15 +1616,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(action_instance.get_bean().getXmloutput()){
 							if(output4SOAP==null)
 								output4SOAP = util_beanMessageFactory.bean2xml(
-										action_instance.get_bean().asBean(),
-										(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
+										(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
+										(outputappliedfor==null || outputappliedfor.trim().equals(""))
+											?
+											(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+												?
+														(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+												:
+												action_instance.get_bean().get_infobean().getName()
+											:
+											outputappliedfor
+										,
 										true,
-										avoidCheckPermission);
+										avoidCheckPermission,
+										action_instance.get_bean().getXmloutput_encoding());
 
 							try{
-								if(action_instance.get_bean().getXmloutput_encoding()!=null && !action_instance.get_bean().getXmloutput_encoding().equals(""))
-									response.getOutputStream().write(output4SOAP.getBytes(action_instance.get_bean().getXmloutput_encoding()));
-								else response.getOutputStream().write(output4SOAP.getBytes());
+//								if(action_instance.get_bean().getXmloutput_encoding()!=null && !action_instance.get_bean().getXmloutput_encoding().equals(""))
+//									response.getOutputStream().write(output4SOAP.getBytes(action_instance.get_bean().getXmloutput_encoding()));
+//								else response.getOutputStream().write(output4SOAP.getBytes());
+								response.getOutputStream().write(output4SOAP.getBytes());
 								return new Object[]{response, Boolean.valueOf(true)};
 							}catch(Exception e){
 								throw new bsControllerException("Controller generic redirect error. Print Bean as XML. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
@@ -1632,14 +1645,25 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(action_instance.get_bean().getJsonoutput()){
 							if(output4JSON==null)
 								output4JSON = util_beanMessageFactory.bean2json(
-										action_instance.get_bean().asBean(),
-										(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
-										avoidCheckPermission);
+										(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
+										(outputappliedfor==null || outputappliedfor.trim().equals(""))
+											?
+											(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+												?
+														(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+												:
+												action_instance.get_bean().get_infobean().getName()
+											:
+											outputappliedfor
+										,
+										avoidCheckPermission,
+										action_instance.get_bean().getJsonoutput_encoding());
 
 							try{
-								if(action_instance.get_bean().getJsonoutput_encoding()!=null && !action_instance.get_bean().getJsonoutput_encoding().equals(""))
-									response.getOutputStream().write(output4JSON.getBytes(action_instance.get_bean().getJsonoutput_encoding()));
-								else response.getOutputStream().write(output4JSON.getBytes());
+//								if(action_instance.get_bean().getJsonoutput_encoding()!=null && !action_instance.get_bean().getJsonoutput_encoding().equals(""))
+//									response.getOutputStream().write(output4JSON.getBytes(action_instance.get_bean().getJsonoutput_encoding()));
+//								else response.getOutputStream().write(output4JSON.getBytes());
+								response.getOutputStream().write(output4JSON.getBytes());
 								return new Object[]{response, Boolean.valueOf(true)};
 							}catch(Exception e){
 								throw new bsControllerException("Controller generic redirect error. Print Bean as JSON. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
@@ -1697,10 +1721,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 								){
 									if(output4SOAP==null)
 										output4SOAP = util_beanMessageFactory.bean2xml(
-												action_instance.get_bean().asBean(),
-												(action_instance.get_bean().get_infobean()==null)?null:action_instance.get_bean().get_infobean().getName(),
+												(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
+												(outputappliedfor==null || outputappliedfor.trim().equals(""))
+													?
+													(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+														?
+																(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+														:
+														action_instance.get_bean().get_infobean().getName()
+													:
+													outputappliedfor
+												,
 												true,
-												avoidCheckPermission);
+												avoidCheckPermission
+												);
 									action_instance.onPreTransform(output4SOAP);
 									outTranformation = cTransformation.transform(output4SOAP, request);
 									action_instance.onPostTransform(outTranformation);

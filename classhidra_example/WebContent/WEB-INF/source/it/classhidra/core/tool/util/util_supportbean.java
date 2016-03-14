@@ -135,7 +135,14 @@ public static void init(i_bean bean, HttpServletRequest request) throws bsContro
 
 	public static void initNormal(i_bean bean,HttpServletRequest request) throws bsControllerException{
 		bean.setXmloutput(false);
+		bean.setXmloutput_encoding("");
 		bean.setJsonoutput(false);
+		bean.setJsonoutput_encoding("");
+		bean.setBinaryoutput(false);
+		bean.setBinaryoutput_encoding("");
+		bean.setOutputappliedfor(null);
+		
+
 		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||

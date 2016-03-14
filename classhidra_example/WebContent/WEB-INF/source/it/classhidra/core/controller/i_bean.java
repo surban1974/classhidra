@@ -103,22 +103,32 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void setXmloutput(boolean xmloutput);
 	String getXmloutput_encoding();
 	void setXmloutput_encoding(String xmloutputEncoding);
+	
 	boolean getJsonoutput();
 	void setJsonoutput(boolean jsonoutput);
 	String getJsonoutput_encoding();
 	void setJsonoutput_encoding(String jsonoutputEncoding);
-	boolean getTransformationoutput();
-	void setTransformationoutput(boolean transformationoutput);
+	
 	boolean getBinaryoutput();
 	void setBinaryoutput(boolean binaryoutput);
 	String getBinaryoutput_encoding();
 	void setBinaryoutput_encoding(String binaryoutputEncoding);
+	
+	boolean getGzipoutput();
+	void setGzipoutput(boolean gzipoutput);	
+	
+	String getOutputappliedfor();
+
+	void setOutputappliedfor(String outputfor);
+	
+	boolean getTransformationoutput();
+	void setTransformationoutput(boolean transformationoutput);
+
 	Object getDelegated();
 	void setDelegated(Object delegated);
 	boolean getVirtual();
 	void setVirtual(boolean virtual);
-	boolean getGzipoutput();
-	void setGzipoutput(boolean gzipoutput);
+
 	info_context getInfo_context();
 	void setInfo_context(i_info_context info_context);
 	
