@@ -1,11 +1,10 @@
 package it.classhidra.framework.web.integration;
 
+import it.classhidra.core.tool.integration.i_integration;
 
-
-
-public interface i_module_integration {
+public interface i_module_integration extends i_integration{
 	public final static String FROM = "APP";
-	public final static String o_FINDFORMLIST = "FINDFORMLIST";
+//	public final static String o_FINDFORMLIST = "FINDFORMLIST";
 	public final static String o_FIND = "FIND";	
 	public final static String o_FINDCONTROL = "FINDCONTROL";
 	public final static String o_FINDTOTAL = "FINDTOTAL";

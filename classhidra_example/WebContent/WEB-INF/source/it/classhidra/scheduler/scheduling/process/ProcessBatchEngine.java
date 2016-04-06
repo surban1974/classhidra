@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.integration.i_integration;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.framework.web.integration.i_module_integration;
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
@@ -93,7 +93,7 @@ public class ProcessBatchEngine  {
 		HashMap form = new HashMap();
 
 		try{
-			elementsAll = (List)m4b.operation(i_module_integration.o_FINDFORMLIST, form);
+			elementsAll = (List)m4b.operation(i_integration.o_FINDFORMLIST, form);
 		}catch(Exception e){
 			e.toString();
 		}
