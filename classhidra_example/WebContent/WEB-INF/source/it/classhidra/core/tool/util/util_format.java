@@ -637,8 +637,8 @@ public static String makeFormatedString(String format, String language,String co
 	if(format==null) return ref.toString();	
 	Locale locale = null;
 	try{
-		if(language!=null){
-			if(country!=null)
+		if(language!=null && !language.equals("")){
+			if(country!=null && !country.equals(""))
 				locale = new Locale(language,country);
 			else
 				locale = new Locale(language);

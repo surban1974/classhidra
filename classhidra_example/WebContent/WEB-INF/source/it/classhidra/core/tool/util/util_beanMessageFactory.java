@@ -946,11 +946,13 @@ public class util_beanMessageFactory {
 			input.indexOf("\"")>-1) {
 
 			for (int i=0;i<input.length();i++) {
-				if (input.charAt(i)=='\\') result+="\\\\";
-				else if (input.charAt(i)=='"') result+="\"";
-				else result+=input.charAt(i);
+				if (input.charAt(i)=='\\') 
+					result+="\\\\";
+				else 
+					if (input.charAt(i)=='"') result+="\\\"";
+				else 
+					result+=input.charAt(i);
 			}
-			
 		}
 		else
 			result = input;

@@ -27,8 +27,10 @@
 package it.classhidra.core.controller;
 
 import it.classhidra.annotation.elements.ActionCall;
+import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.serialize.JsonWriter;
 import it.classhidra.core.tool.util.util_supportbean;
 import it.classhidra.core.tool.util.util_format;
 
@@ -176,6 +178,21 @@ public class action extends bean implements i_action, Serializable{
 		}catch(Exception ex){
 		}
 		return null;
+	}
+	
+	@ActionCall(name="json",navigated="false",Redirect=@Redirect(contentType="application/json"))
+	public String modelAsJson(HttpServletRequest request, HttpServletResponse response){
+		String modelName = getString("modelname");
+		
+		if(modelName==null || modelName.equals("")){
+			if(get_infobean()!=null && get_infobean().getName()!=null && !get_infobean().getName().equals(""))
+				modelName = get_infobean().getName();
+			else if(get_infoaction()!=null && get_infoaction().getName()!=null && !get_infoaction().getName().equals(""))
+				modelName = get_infoaction().getName();
+			else
+				modelName = "json";
+		}
+		return JsonWriter.object2json(this.get_bean(), modelName);
 	}
 
 	public i_bean get_bean() {

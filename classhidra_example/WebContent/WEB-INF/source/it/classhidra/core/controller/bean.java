@@ -43,6 +43,7 @@ import it.classhidra.core.tool.elements.elementBeanBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.serialize.JsonMapper;
 import it.classhidra.core.tool.util.util_makeValue;
 import it.classhidra.core.tool.util.util_multipart;
 import it.classhidra.core.tool.util.util_reflect;
@@ -290,6 +291,10 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	}
 
 	public boolean initJsonPart(HttpServletRequest request) throws bsControllerException{
+		return initJsonPart(request,null);
+	}
+	
+	public boolean initJsonPart(HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
 		boolean isJson=false;
 		HashMap parameters = new HashMap();
 		DataInputStream in = null;
@@ -306,26 +311,33 @@ public void init(HttpServletRequest request) throws bsControllerException{
 			}
 
 			String json = new String(dataBytes,0,dataBytes.length).trim();
-			if(json.charAt(0)=='{' && json.charAt(json.length()-1)=='}') isJson=true;
-			if(isJson){
-				if(json.charAt(0)=='{' && json.length()>0) json=json.substring(1,json.length());
-				if(json.charAt(json.length()-1)=='}' && json.length()>0) json=json.substring(0,json.length()-1);
-				StringTokenizer st = new StringTokenizer(json,",");
-				while(st.hasMoreTokens()){
-					String pair = st.nextToken();
-					StringTokenizer st1 = new StringTokenizer(pair,":");
-					String key=null;
-					String value=null;
-					if(st1.hasMoreTokens()) key=st1.nextToken();
-					if(st1.hasMoreTokens()) value=st1.nextToken();
-					if(key!=null && value!=null){
-						key=key.trim();
-						if(key.charAt(0)=='"' && key.length()>0) key=key.substring(1,key.length());
-						if(key.charAt(key.length()-1)=='"' && key.length()>0) key=key.substring(0,key.length()-1);
-						value=value.trim();
-						if(value.charAt(0)=='"' && value.length()>0) value=value.substring(1,value.length());
-						if(value.charAt(value.length()-1)=='"' && value.length()>0) value=value.substring(0,value.length()-1);
-						parameters.put(key, value);
+			
+			if(mapper!=null){
+				parameters = (HashMap)mapper.mapping(json, parameters);
+				isJson=true;
+			}else{
+			
+				if(json.charAt(0)=='{' && json.charAt(json.length()-1)=='}') isJson=true;
+				if(isJson){
+					if(json.charAt(0)=='{' && json.length()>0) json=json.substring(1,json.length());
+					if(json.charAt(json.length()-1)=='}' && json.length()>0) json=json.substring(0,json.length()-1);
+					StringTokenizer st = new StringTokenizer(json,",");
+					while(st.hasMoreTokens()){
+						String pair = st.nextToken();
+						StringTokenizer st1 = new StringTokenizer(pair,":");
+						String key=null;
+						String value=null;
+						if(st1.hasMoreTokens()) key=st1.nextToken();
+						if(st1.hasMoreTokens()) value=st1.nextToken();
+						if(key!=null && value!=null){
+							key=key.trim();
+							if(key.charAt(0)=='"' && key.length()>0) key=key.substring(1,key.length());
+							if(key.charAt(key.length()-1)=='"' && key.length()>0) key=key.substring(0,key.length()-1);
+							value=value.trim();
+							if(value.charAt(0)=='"' && value.length()>0) value=value.substring(1,value.length());
+							if(value.charAt(value.length()-1)=='"' && value.length()>0) value=value.substring(0,value.length()-1);
+							parameters.put(key, value);
+						}
 					}
 				}
 			}
