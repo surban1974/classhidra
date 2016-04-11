@@ -1,4 +1,4 @@
-package it.classhidra.core.tool.serialize;
+package it.classhidra.serialize;
 
 
 import java.lang.annotation.Retention;
@@ -14,5 +14,7 @@ public @interface Format {
 	String regex() default "";
 	boolean ascii() default false;
 	String characterset() default "";
+	String replaceOnBlank() default "";
+	String replaceOnErrorFormat() default "";
 
 }

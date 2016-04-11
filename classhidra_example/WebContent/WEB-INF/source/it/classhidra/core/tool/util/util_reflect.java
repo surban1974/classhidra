@@ -808,6 +808,81 @@ public static Object prepareWriteValueFromBean(String fromBean, HttpServletReque
 
 
 
+public static Field getField(Object req, String key) throws Exception{
+	Field fld = null;
+	try{
+		fld=req.getClass().getField(key);
+	}catch(Exception ex){
+	}
+	if(fld==null){
+		try{
+			fld=req.getClass().getDeclaredField(key);
+		}catch(Exception ex){
+		}			
+	}
+	return fld;
+}
+
+public static Field getField(Class req_class, String key) throws Exception{
+	Field fld = null;
+	try{
+		fld=req_class.getField(key);
+	}catch(Exception ex){
+	}
+	if(fld==null){
+		try{
+			fld=req_class.getDeclaredField(key);
+		}catch(Exception ex){
+		}			
+	}
+	return fld;
+}
+
+public static Class getRetClass(Object req, String key) throws Exception{
+	Object resultObject = null;
+	Field fld = null;
+	Method ret_fld = null;
+	Class ret_class = null;
+	try{
+		fld=req.getClass().getField(key);
+	}catch(Exception ex){
+	}
+	if(fld==null){
+		try{
+			fld=req.getClass().getDeclaredField(key);
+		}catch(Exception ex){
+		}			
+	}
+	if(fld==null){
+		try{
+			ret_fld = req.getClass().getMethod("get"+util_reflect.adaptMethodName(key),new Class[0]);
+		}catch(Exception e){
+			if(	req instanceof HashMap &&
+				((HashMap)req).get(key)!=null) {
+				ret_class = ((HashMap)req).get(key).getClass();
+			}
+			if(	req instanceof HashMap &&
+					((HashMap)req).get(key)==null) {
+					ret_class = new String().getClass();
+				}
+		}
+	}
+
+	if(fld!=null) ret_class = fld.getType();
+	if(fld==null && ret_fld!=null) ret_class = ret_fld.getReturnType();
+
+	if(ret_class==null) return null;
+	return ret_class;
+}	
+
+public static Method getSetMethod(Object req, String key) throws Exception{
+	Method ret_fld = null;
+	try{
+		ret_fld = req.getClass().getMethod("set"+util_reflect.adaptMethodName(key),new Class[]{util_reflect.getRetClass(req,key)});
+	}catch(Exception e){			
+	}
+	return ret_fld;
+}
 
 //	TODO @Deprecated
 public static Object convertType(Class CTarget, Object source, String format) throws Exception {

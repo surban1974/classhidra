@@ -1,4 +1,4 @@
-package it.classhidra.core.tool.serialize;
+package it.classhidra.serialize;
 
 
 import java.lang.annotation.Retention;

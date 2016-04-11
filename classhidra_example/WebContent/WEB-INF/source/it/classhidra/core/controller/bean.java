@@ -26,6 +26,7 @@ package it.classhidra.core.controller;
 
 
 import java.io.DataInputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,10 +44,11 @@ import it.classhidra.core.tool.elements.elementBeanBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.serialize.JsonMapper;
 import it.classhidra.core.tool.util.util_makeValue;
 import it.classhidra.core.tool.util.util_multipart;
 import it.classhidra.core.tool.util.util_reflect;
+import it.classhidra.serialize.JsonMapper;
+import it.classhidra.serialize.Serialized;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -374,6 +376,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 //		Vector en = new Vector(parameters.keySet());
 //		for(int k=0;k<parameters.keySet().size();k++){
+		
 		for (Object elem : parameters.keySet()) {
 			String key = (String)elem;
 
@@ -483,11 +486,40 @@ public void init(HttpServletRequest request) throws bsControllerException{
 													replaceOnErrorFormat
 										)
 								);
-							else setCampoValuePoint(
-										current_requested,
-										last_field_name,
-										util_makeValue.makeValue1(current_requested,value,last_field_name)
+							else{
+								Serialized serialized_annotation = null;
+								Object checkForDes = parameters.get(JsonMapper.CONST_ID_CHECKFORDESERIALIZE);								
+								if(checkForDes!=null && checkForDes.toString().equalsIgnoreCase("true")){
+									Method ret_method = util_reflect.getSetMethod(current_requested, last_field_name);
+									if(ret_method!=null)
+										serialized_annotation =ret_method.getAnnotation(Serialized.class);
+									if(serialized_annotation==null){
+										Field ret_field = util_reflect.getField(current_requested, last_field_name);
+										if(ret_field!=null)
+											serialized_annotation =ret_field.getAnnotation(Serialized.class);
+									}
+								}
+								if(serialized_annotation!=null && serialized_annotation.input()!=null)
+									setCampoValuePoint(
+											current_requested,
+											last_field_name,
+											util_makeValue.makeFormatedValue1(
+														current_requested,
+														serialized_annotation.input().format(),
+														value,
+														last_field_name,
+														serialized_annotation.input().replaceOnBlank(),
+														serialized_annotation.input().replaceOnErrorFormat()
+											)
 									);
+								else	
+									setCampoValuePoint(
+											current_requested,
+											last_field_name,
+											util_makeValue.makeValue1(current_requested,value,last_field_name)
+										);
+								
+							}
 						}catch(Exception e){
 							try{
 								if(format!=null)

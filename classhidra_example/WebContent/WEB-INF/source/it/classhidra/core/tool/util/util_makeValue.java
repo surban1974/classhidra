@@ -8,14 +8,21 @@ import java.util.HashMap;
 
 public class util_makeValue {
 
+
 	public static Object makeValue1(Object req, String value, String key) throws Exception{
 		Object resultObject = null;
 		Field fld = null;
 		Method ret_fld = null;
 		Class ret_class = null;
 		try{
-			fld=req.getClass().getField(key);
+			fld=req.getClass().getDeclaredField(key);
 		}catch(Exception ex){
+		}
+		if(fld==null){
+			try{
+				fld=req.getClass().getField(key);
+			}catch(Exception ex){
+			}			
 		}
 		if(fld==null){
 			try{
@@ -186,8 +193,14 @@ public class util_makeValue {
 		Method ret_fld = null;
 		Class ret_class = null;
 		try{
-			fld=req.getClass().getField(key);
+			fld=req.getClass().getDeclaredField(key);
 		}catch(Exception ex){
+		}
+		if(fld==null){
+			try{
+				fld=req.getClass().getField(key);
+			}catch(Exception ex){
+			}			
 		}
 		if(fld==null){
 			try{

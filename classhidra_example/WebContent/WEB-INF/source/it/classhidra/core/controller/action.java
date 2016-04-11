@@ -30,8 +30,8 @@ import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.serialize.JsonWriter;
 import it.classhidra.core.tool.util.util_supportbean;
+import it.classhidra.serialize.JsonWriter;
 import it.classhidra.core.tool.util.util_format;
 
 import java.io.Serializable;

@@ -1,6 +1,7 @@
-package it.classhidra.core.tool.serialize;
+package it.classhidra.serialize;
 
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -334,6 +335,11 @@ public class JsonWriter {
 				for(int i=0;i<methods.length;i++){
 					String methodName = methods[i].getName().substring(3);
 					Serialized sub_annotation = methods[i].getAnnotation(Serialized.class);
+					if(sub_annotation==null){
+						Field sub_field = util_reflect.getField(sub_obj.getClass(), util_reflect.revAdaptMethodName(methodName));
+						if(sub_field!=null)
+							sub_annotation = sub_field.getAnnotation(Serialized.class);
+					}
 					if(sub_annotation!=null || serializeChildren){
 						Object sub_obj2 = util_reflect.getValue(sub_obj, "get"+util_reflect.adaptMethodName(methodName), null);
 						if(sub_obj2!=null){
