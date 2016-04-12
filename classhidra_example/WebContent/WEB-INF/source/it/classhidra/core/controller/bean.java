@@ -499,7 +499,10 @@ public void init(HttpServletRequest request) throws bsControllerException{
 											serialized_annotation =ret_field.getAnnotation(Serialized.class);
 									}
 								}
-								if(serialized_annotation!=null && serialized_annotation.input()!=null)
+								if(	serialized_annotation!=null &&
+									serialized_annotation.input()!=null &&
+									serialized_annotation.input().format()!=null &&
+									!serialized_annotation.input().format().equals(""))
 									setCampoValuePoint(
 											current_requested,
 											last_field_name,

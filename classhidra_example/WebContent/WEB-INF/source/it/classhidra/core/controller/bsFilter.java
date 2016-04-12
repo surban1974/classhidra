@@ -538,6 +538,12 @@ public class bsFilter implements Filter {
 									resultBs.id_call = iCall.getName();
 									resultBs.id_complete = id_current;
 									return resultBs;
+								}else if(bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod())!=null){
+									info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod());
+									resultBs.id_action = iCall.getOwner();
+									resultBs.id_call = iCall.getName();
+									resultBs.id_complete = id_current;
+									return resultBs;
 								}else
 									return resultBs;
 							}
@@ -568,6 +574,12 @@ public class bsFilter implements Filter {
 								resultBs.id_call = iCall.getName();
 								resultBs.id_complete = id_current;
 								return resultBs;
+							}else if(bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod())!=null){
+								info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod());
+								resultBs.id_action = iCall.getOwner();
+								resultBs.id_call = iCall.getName();
+								resultBs.id_complete = id_current;
+								return resultBs;
 							}else
 								return resultBs;
 						}
@@ -589,6 +601,12 @@ public class bsFilter implements Filter {
 					return resultBs;
 				}else if(bsController.getAction_config().get_actioncalls().get(id_current)!=null){
 					info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current);
+					resultBs.id_action = iCall.getOwner();
+					resultBs.id_call = iCall.getName();
+					resultBs.id_complete = id_current;
+					return resultBs;
+				}else if(bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod())!=null){
+					info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod());
 					resultBs.id_action = iCall.getOwner();
 					resultBs.id_call = iCall.getName();
 					resultBs.id_complete = id_current;

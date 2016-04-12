@@ -16,5 +16,4 @@ public @interface Format {
 	String characterset() default "";
 	String replaceOnBlank() default "";
 	String replaceOnErrorFormat() default "";
-
 }

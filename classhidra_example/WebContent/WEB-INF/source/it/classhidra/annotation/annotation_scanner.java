@@ -8,6 +8,7 @@ import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Apply_to_action;
 import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Entity;
+import it.classhidra.annotation.elements.Expose;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.annotation.elements.Section;
@@ -794,6 +795,11 @@ public class annotation_scanner implements i_annotation_scanner {
     	iAction.setStatistic(annotationAction.statistic());
     	iAction.setHelp(annotationAction.help());
     	iAction.setListener(annotationAction.listener());
+    	
+		Expose action_exposed = annotationAction.Expose();
+		if(action_exposed!=null)
+			iAction.addExposed(action_exposed.method()).addExposed(action_exposed.methods());
+    	
     	setEntity(iAction,annotationAction.entity());
     	iAction.setAnnotationLoaded(true);
     	
@@ -892,9 +898,19 @@ public class annotation_scanner implements i_annotation_scanner {
 		    		}
 		    	}
 
-				
-				if(iAction.get_calls().get(iCall.getName())==null)
-					iAction.get_calls().put(iCall.getName(),iCall);
+				Expose call_exposed = annotationCall.Expose();
+				if(call_exposed!=null)
+					iCall.addExposed(call_exposed.method()).addExposed(call_exposed.methods());
+				if(iCall.getExposed().size()==0){
+					if(iAction.get_calls().get(iCall.getName())==null)
+						iAction.get_calls().put(iCall.getName(),iCall);
+				}else{
+					for(int e=0;e<iCall.getExposed().size();e++){
+						String suffix = "."+iCall.getExposed().get(e).toString();
+						if(iAction.get_calls().get(iCall.getName()+suffix)==null)
+							iAction.get_calls().put(iCall.getName()+suffix,iCall);
+					}
+				}
 			}
 			iAction.getV_info_calls().addAll(new Vector(iAction.get_calls().values()));
 			iAction.setV_info_calls(new util_sort().sort(iAction.getV_info_calls(),"int_order"));
@@ -1094,17 +1110,40 @@ public class annotation_scanner implements i_annotation_scanner {
     		}
     	}
     	
+		Expose call_exposed = annotationCall.Expose();
+		if(call_exposed!=null)
+			iCall.addExposed(call_exposed.method()).addExposed(call_exposed.methods());
 		
+
 		
 		
 		if(iAction!=null && iCall.getOwner().equals(iAction.getPath())){
-			if(iAction.get_calls().get(iCall.getName())==null)
-				iAction.get_calls().put(iCall.getName(),iCall);
+			if(iCall.getExposed().size()==0){
+				if(iAction.get_calls().get(iCall.getName())==null)
+					iAction.get_calls().put(iCall.getName(),iCall);
+			}else{
+				for(int e=0;e<iCall.getExposed().size();e++){
+					String suffix = "."+iCall.getExposed().get(e).toString();
+					if(iAction.get_calls().get(iCall.getName()+suffix)==null)
+						iAction.get_calls().put(iCall.getName()+suffix,iCall);
+				}
+			}
+
 		}else{
 			info_action iActionOwner = (info_action)_actions.get(iCall.getOwner());
 			if(iActionOwner!=null){
-				if(iActionOwner.get_calls().get(iCall.getName())==null)
-					iActionOwner.get_calls().put(iCall.getName(),iCall);
+				
+				if(iCall.getExposed().size()==0){
+					if(iActionOwner.get_calls().get(iCall.getName())==null)
+						iActionOwner.get_calls().put(iCall.getName(),iCall);
+				}else{
+					for(int e=0;e<iCall.getExposed().size();e++){
+						String suffix = "."+iCall.getExposed().get(e).toString();
+						if(iActionOwner.get_calls().get(iCall.getName()+suffix)==null)
+							iActionOwner.get_calls().put(iCall.getName()+suffix,iCall);
+					}
+				}
+
 			}
 		}
 

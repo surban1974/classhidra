@@ -331,34 +331,37 @@ public class JsonWriter {
 
 			String result_tmp="";
 			try{
-				Method[] methods = util_reflect.getMethods(sub_obj,"get");
-				for(int i=0;i<methods.length;i++){
-					String methodName = methods[i].getName().substring(3);
-					Serialized sub_annotation = methods[i].getAnnotation(Serialized.class);
-					if(sub_annotation==null){
-						Field sub_field = util_reflect.getField(sub_obj.getClass(), util_reflect.revAdaptMethodName(methodName));
-						if(sub_field!=null)
-							sub_annotation = sub_field.getAnnotation(Serialized.class);
-					}
-					if(sub_annotation!=null || serializeChildren){
-						Object sub_obj2 = util_reflect.getValue(sub_obj, "get"+util_reflect.adaptMethodName(methodName), null);
-						if(sub_obj2!=null){
-							if(sub_obj2.equals(sub_obj)){
-							}else{
-								boolean nFirst = true;
-								if(result_tmp.length()==0) nFirst=false;
-								
-							
-									if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-										result_tmp+=generateJsonItemTag_Start(new Object(), methodName,level+1, nFirst);
-										result_tmp+="\"WARNING: cyclic pointer\"";
-										result_tmp+=generateJsonItemTag_Finish(new Object(), methodName,level+1, nFirst);
-									}else{
-										avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-										result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers,sub_annotation,(sub_annotation!=null)?sub_annotation.children():false);
-										avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
-									}
+				String[] prefixes = new String[]{"get","is"};
+				for(int p=0;p<prefixes.length;p++){
+					Method[] methods = util_reflect.getMethods(sub_obj,prefixes[p]);
+					for(int i=0;i<methods.length;i++){
+						String methodName = methods[i].getName().substring(prefixes[p].length());
+						Serialized sub_annotation = methods[i].getAnnotation(Serialized.class);
+						if(sub_annotation==null){
+							Field sub_field = util_reflect.getField(sub_obj.getClass(), util_reflect.revAdaptMethodName(methodName));
+							if(sub_field!=null)
+								sub_annotation = sub_field.getAnnotation(Serialized.class);
+						}
+						if(sub_annotation!=null || serializeChildren){
+							Object sub_obj2 = util_reflect.getValue(sub_obj, prefixes[p]+util_reflect.adaptMethodName(methodName), null);
+							if(sub_obj2!=null){
+								if(sub_obj2.equals(sub_obj)){
+								}else{
+									boolean nFirst = true;
+									if(result_tmp.length()==0) nFirst=false;
 									
+								
+										if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
+											result_tmp+=generateJsonItemTag_Start(new Object(), methodName,level+1, nFirst);
+											result_tmp+="\"WARNING: cyclic pointer\"";
+											result_tmp+=generateJsonItemTag_Finish(new Object(), methodName,level+1, nFirst);
+										}else{
+											avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
+											result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers,sub_annotation,(sub_annotation!=null)?sub_annotation.children():false);
+											avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
+										}
+										
+								}
 							}
 						}
 					}

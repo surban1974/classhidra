@@ -31,4 +31,5 @@ public @interface Action {
 	Transformation[] transformations() default {};
 	ActionCall[] calls() default {};
 	Bean[] beans() default {};
+	Expose Expose() default @Expose;
 }

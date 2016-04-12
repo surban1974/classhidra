@@ -26,20 +26,24 @@
 
 package it.classhidra.core.controller;
 
-import it.classhidra.annotation.elements.ActionCall;
-import it.classhidra.annotation.elements.Redirect;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_supportbean;
-import it.classhidra.serialize.JsonWriter;
-import it.classhidra.core.tool.util.util_format;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.*;
-import javax.servlet.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import it.classhidra.annotation.elements.ActionCall;
+import it.classhidra.annotation.elements.Expose;
+import it.classhidra.annotation.elements.Redirect;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_supportbean;
+import it.classhidra.serialize.JsonWriter;
 
 public class action extends bean implements i_action, Serializable{
 	private static final long serialVersionUID = -6220391111031079562L;
@@ -333,6 +337,11 @@ public class action extends bean implements i_action, Serializable{
 						call.setNavigated("false");
 					else call.setNavigated(a_call.navigated());
 					call.setAnnotated("true");
+					
+					Expose call_exposed = a_call.Expose();
+					if(call_exposed!=null)
+						call.addExposed(call_exposed.method()).addExposed(call_exposed.methods());
+					
 					return new Object[]{current,call};
 				}
 			}catch (Exception e) {
@@ -342,6 +351,7 @@ public class action extends bean implements i_action, Serializable{
 			return getMethodAndCall(cls.getSuperclass(), annotation_name);
 		return null;
 	}
+	
 
 	public listener_action getListener_a() {
 		return listener_a;

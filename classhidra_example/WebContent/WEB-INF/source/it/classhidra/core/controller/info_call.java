@@ -25,12 +25,16 @@ package it.classhidra.core.controller;
 
 
 
+import it.classhidra.annotation.elements.Expose;
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -43,7 +47,9 @@ public class info_call extends info_entity implements i_elementBase{
 	private String path;
 	private String method;
 	private String navigated;
+	private String expose;
 	private info_redirect iRedirect;
+	private List exposed;
 	
 	public info_call(){
 		super();
@@ -97,6 +103,8 @@ public class info_call extends info_entity implements i_elementBase{
 		path="";
 		method="";
 		navigated="";
+		expose="";
+		exposed=new ArrayList();
 	}
 	public String getName() {
 		return name;
@@ -115,6 +123,14 @@ public class info_call extends info_entity implements i_elementBase{
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(path!=null && !path.trim().equals("")) result+=" path=\""+util_format.normaliseXMLText(path)+"\"";
 		if(method!=null && !method.trim().equals("")) result+=" method=\""+util_format.normaliseXMLText(method)+"\"";
+		if(exposed!=null && exposed.size()>0){
+			result+=" expose=\"";
+			for(int i=0;i<exposed.size();i++){
+				if(i>0) result+=",";
+				result+=exposed.get(i).toString();
+			}
+			result+="\"";
+		}
 		result+=super.toXml();
 		if(iRedirect==null)
 			result+="/>";
@@ -170,6 +186,59 @@ public class info_call extends info_entity implements i_elementBase{
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public List getExposed() {
+		if(exposed==null)
+			exposed=new ArrayList();
+		return exposed;
+	}
+	
+	public info_call addExposed(String method) {
+		if(method!=null && (method.equals(Expose.GET) || method.equals(Expose.POST) || method.equals(Expose.PATCH) || method.equals(Expose.PUT) || method.equals(Expose.DELETE)))
+			getExposed().add(method);
+		return this;
+	}
+	
+	public info_call addExposed(String[] methods) {
+		if(methods!=null){
+			for(int i=0;i<methods.length;i++)
+				addExposed(methods[i]);
+		}
+		return this;
+	}	
+
+	public void setExposed(List expose) {
+		this.exposed = expose;
+	}
+
+	public String getExpose() {
+		return expose;
+	}
+	
+	public boolean isExposed(String method){
+		if(exposed==null || exposed.size()==0)
+			return true;
+		else{
+			for(int i=0;i<exposed.size();i++){
+				if(exposed.get(i)!=null && exposed.get(i).toString().equalsIgnoreCase(method))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public void setExpose(String expose) {
+		if(exposed==null)
+			exposed=new ArrayList();
+		exposed.clear();
+		if(expose!=null){
+			this.expose = expose;
+			StringTokenizer st = new StringTokenizer(this.expose, ",");
+			while(st.hasMoreTokens())
+				exposed.add(st.nextToken().toUpperCase());
+		}
+		
 	}
 
 

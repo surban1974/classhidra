@@ -23,13 +23,17 @@
 *********************************************************************************/
 package it.classhidra.core.controller;
 
+import it.classhidra.annotation.elements.Expose;
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_sort;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.servlet.ServletContext;
@@ -56,6 +60,8 @@ public class info_action extends info_entity implements i_elementBase{
 	private String syncro;
 	private String listener;
 	private String statistic;
+	private String expose;
+	private List exposed;
 
 
 	private String wac;
@@ -213,6 +219,8 @@ public class info_action extends info_entity implements i_elementBase{
 		syncro="false";
 		listener="";
 		statistic="true";
+		expose="";
+		exposed=new ArrayList();
 
 
 		_redirects=new HashMap();
@@ -353,6 +361,14 @@ public class info_action extends info_entity implements i_elementBase{
 		if(navigatedMemoryContent!=null && !navigatedMemoryContent.trim().equals("")) result+=" navigatedMemoryContent=\""+util_format.normaliseXMLText(navigatedMemoryContent)+"\"";
 		if(syncro!=null && !syncro.trim().equals("")) result+=" syncro=\""+util_format.normaliseXMLText(syncro)+"\"";
 		if(listener!=null && !listener.trim().equals("")) result+=" listener=\""+util_format.normaliseXMLText(listener)+"\"";
+		if(exposed!=null && exposed.size()>0){
+			result+=" expose=\"";
+			for(int i=0;i<exposed.size();i++){
+				if(i>0) result+=",";
+				result+=exposed.get(i).toString();
+			}
+			result+="\"";
+		}
 		
 		if(memoryInSession!=null && !memoryInSession.trim().equals("")) result+=" memoryInSession=\""+util_format.normaliseXMLText(memoryInSession)+"\"";
 		if(memoryAsLastInstance!=null && !memoryAsLastInstance.trim().equals("")) result+=" memoryAsLastInstance=\""+util_format.normaliseXMLText(memoryAsLastInstance)+"\"";
@@ -567,6 +583,58 @@ public class info_action extends info_entity implements i_elementBase{
 
 
 
+	public List getExposed() {
+		if(exposed==null)
+			exposed=new ArrayList();
+		return exposed;
+	}
+	
+	public info_action addExposed(String method) {
+		if(method!=null && (method.equals(Expose.GET) || method.equals(Expose.POST) || method.equals(Expose.PATCH) || method.equals(Expose.PUT) || method.equals(Expose.DELETE)))
+			getExposed().add(method);
+		return this;
+	}
+	
+	public info_action addExposed(String[] methods) {
+		if(methods!=null){
+			for(int i=0;i<methods.length;i++)
+				addExposed(methods[i]);
+		}
+		return this;
+	}	
+
+	public void setExposed(List expose) {
+		this.exposed = expose;
+	}
+
+	public String getExpose() {
+		return expose;
+	}
+	
+	public boolean isExposed(String method){
+		if(exposed==null || exposed.size()==0)
+			return true;
+		else{
+			for(int i=0;i<exposed.size();i++){
+				if(exposed.get(i)!=null && exposed.get(i).toString().equalsIgnoreCase(method))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public void setExpose(String expose) {
+		if(exposed==null)
+			exposed=new ArrayList();
+		exposed.clear();
+		if(expose!=null){
+			this.expose = expose;
+			StringTokenizer st = new StringTokenizer(this.expose, ",");
+			while(st.hasMoreTokens())
+				exposed.add(st.nextToken().toUpperCase());
+		}
+		
+	}
 
 
 

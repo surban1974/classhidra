@@ -933,12 +933,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(id_call!=null){
 			try{
 				iCall = (info_call)action_instance.get_infoaction().get_calls().get(id_call);
+				if(iCall==null)
+					iCall = (info_call)action_instance.get_infoaction().get_calls().get(id_call+"."+request.getMethod());
 				if(iCall==null){
 					Object[] method_call = action_instance.getMethodAndCall(id_call);
 					if(method_call!=null){
 						iCallMethod = (Method)method_call[0];
 						iCall =  (info_call)method_call[1];
-						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
+						if(iCall.getExposed().size()==0)
+								action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
+						else{
+							for(int e=0;e<iCall.getExposed().size();e++){
+								String suffix = "."+iCall.getExposed().get(e).toString();
+								if(action_instance.get_infoaction().get_calls().get(iCall.getName()+suffix)==null)
+									action_instance.get_infoaction().get_calls().put(iCall.getName()+suffix,iCall);
+							}
+						}
+
+//						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
 					}
 				}else{
 					try{
@@ -980,6 +992,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 // ACTIONSEVICE
 		redirects current_redirect = null;
 		if(id_call==null){
+			
+			if(!action_instance.get_infoaction().isExposed(request.getMethod()))
+				throw new bsControllerException("HTTP Method "+request.getMethod()+" is not supported for /"+action_instance.get_infoaction().getPath(), request, iStub.log_FATAL);
 			
 			Method iActionMethod = null;
 			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){

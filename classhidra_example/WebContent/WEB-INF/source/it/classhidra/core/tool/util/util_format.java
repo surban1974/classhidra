@@ -559,7 +559,8 @@ public static String makeFormatedStringWithMethod(String format, Object ref) thr
 }
 
 public static String makeFormatedString(String format, Object ref) throws Exception{
-	if(format==null) return ref.toString();	
+	if(format==null || format.equals("")) 
+		return ref.toString();	
 	if(ref.getClass().isPrimitive()) return ref.toString();
 	if(	!(ref instanceof java.sql.Date) &&
 		!(ref instanceof java.util.Date) &&
@@ -632,9 +633,10 @@ public static String makeFormatedString(String format, Object ref) throws Except
 }
 
 
-public static String makeFormatedString(String format, String language,String country, Object ref) throws Exception{
+public static String makeFormatedString(String format, String language, String country, Object ref) throws Exception{
 	if(ref==null) return null;	
-	if(format==null) return ref.toString();	
+	if(format==null || format.equals(""))
+		return ref.toString();	
 	Locale locale = null;
 	try{
 		if(language!=null && !language.equals("")){
