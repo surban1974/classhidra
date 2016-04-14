@@ -43,8 +43,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.ServletContext;
@@ -84,6 +84,7 @@ public class load_actions extends elementBase{
 
 	private static HashMap _actions;
 	private static HashMap _actioncalls;
+	private static HashMap _restmapping;
 	private static HashMap _streams;
 	private static HashMap _streams_apply_to_actions;
 
@@ -211,6 +212,10 @@ public void reInit(i_externalloader _externalloader){
 		_externalloader.getProperty(i_externalloader.ACTIONS_actioncalls) instanceof HashMap){
 		_actioncalls.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_actioncalls));
 	}	
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_restmapping)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_restmapping) instanceof HashMap){
+		_actioncalls.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_restmapping));
+	}		
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_streams)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_streams) instanceof HashMap){
 		_streams.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_streams));
@@ -312,6 +317,7 @@ public void reimposta(){
 
 	if(_actions==null) _actions = new HashMap();
 	if(_actioncalls==null) _actioncalls = new HashMap();
+	if(_restmapping==null) _restmapping = new HashMap();
 	if(_streams==null){
 		_streams = new HashMap();
 		readDef = false;
@@ -448,6 +454,7 @@ public void loadFromAnnotations(){
 	
 	if(_actions==null) _actions = new HashMap();
 	if(_actioncalls==null) _actioncalls = new HashMap();
+	if(_restmapping==null) _restmapping = new HashMap();
 	if(_streams==null){
 		_streams = new HashMap();
 		readDef = false;
@@ -688,6 +695,24 @@ public void loadFromAnnotations(){
 
 						}
 					}
+					
+					if(((info_call)a_actioncalls.get(j)).getRestmapping()!=null && ((info_call)a_actioncalls.get(j)).getRestmapping().size()>0){
+						for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
+							info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
+							if(_restmapping.get(iRest.getPath())==null)
+								_restmapping.put(iRest.getPath(), new Vector());
+							((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+						}
+					}
+				}
+				
+			}
+			if(((info_action)a_actions.get(i)).getRestmapping().size()>0){
+				for(int r=0;r<((info_action)a_actions.get(i)).getRestmapping().size();r++){
+					info_rest iRest = (info_rest)((info_action)a_actions.get(i)).getRestmapping().get(r);
+					if(_restmapping.get(iRest.getPath())==null)
+						_restmapping.put(iRest.getPath(), new Vector());
+					((Vector)_restmapping.get(iRest.getPath())).add(iRest);
 				}
 			}
 		}
@@ -978,11 +1003,26 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 
 						}
 					}
-					
-					
+					if(((info_call)a_actioncalls.get(j)).getRestmapping()!=null && ((info_call)a_actioncalls.get(j)).getRestmapping().size()>0){
+						for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
+							info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
+							if(_restmapping.get(iRest.getPath())==null)
+								_restmapping.put(iRest.getPath(), new Vector());
+							((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+						}
+					}
 				}
-
+				
 			}
+			if(((info_action)a_actions.get(i)).getRestmapping().size()>0){
+				for(int r=0;r<((info_action)a_actions.get(i)).getRestmapping().size();r++){
+					info_rest iRest = (info_rest)((info_action)a_actions.get(i)).getRestmapping().get(r);
+					if(_restmapping.get(iRest.getPath())==null)
+						_restmapping.put(iRest.getPath(), new Vector());
+					((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+				}
+			}
+
 		}
 		v_info_actions = (new Vector(_actions.values()));
 		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
@@ -1030,19 +1070,20 @@ public void load_from_resources() {
 	
 	
 	String property_name =  "config."+bsController.CONST_XML_ACTIONS_FOLDER;
-	ArrayList array = new ArrayList();
+
 
 	try{
-		array = util_classes.getResources(property_name);
+		List array = util_classes.getResources(property_name);
+		for(int i=0;i<array.size();i++){
+			String property_name0 =  bsController.CONST_XML_ACTIONS_FOLDER+"/"+array.get(i);
+			if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
+				load_from_resources("/config/"+property_name0);
+		}
 	}catch(Exception e){
     	bsController.writeLog("Load_actions from resources Array ERROR:"+e.toString(),iStub.log_ERROR);
 	}
 
-	for(int i=0;i<array.size();i++){
-		String property_name0 =  bsController.CONST_XML_ACTIONS_FOLDER+"/"+array.get(i);
-		if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
-			load_from_resources("/config/"+property_name0);
-	}
+
 
 }
 
@@ -1227,6 +1268,7 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 	if(documentXML!=null){
 		if(_actions==null) _actions = new HashMap();
 		if(_actioncalls==null) _actioncalls = new HashMap();
+		if(_restmapping==null) _restmapping = new HashMap();
 		if(_streams==null){
 			_streams = new HashMap();
 			readDef = false;
@@ -2231,10 +2273,26 @@ private void readFormElements(Node node) throws Exception{
 
 								}
 							}
-							
-
+							if(((info_call)a_actioncalls.get(j)).getRestmapping()!=null && ((info_call)a_actioncalls.get(j)).getRestmapping().size()>0){
+								for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
+									info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
+									if(_restmapping.get(iRest.getPath())==null)
+										_restmapping.put(iRest.getPath(), new Vector());
+									((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+								}
+							}
 						}
-					}					
+						
+					}
+					if(iAction.getRestmapping().size()>0){
+						for(int r=0;r<iAction.getRestmapping().size();r++){
+							info_rest iRest = (info_rest)iAction.getRestmapping().get(r);
+							if(_restmapping.get(iRest.getPath())==null)
+								_restmapping.put(iRest.getPath(), new Vector());
+							((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+						}
+					}
+										
 				}
 			}
 		}
@@ -2606,15 +2664,23 @@ public static HashMap get_actioncalls() {
 	return _actioncalls;
 }
 
+public static HashMap get_restmapping(){
+	return _restmapping;
+}
+
 public static void set_actioncalls(HashMap _actioncalls) {
 	load_actions._actioncalls = _actioncalls;
 }
 
+public static void set_restmapping(HashMap _restmapping) {
+	load_actions._restmapping = _restmapping;
+}
 
 class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private HashMap _b_actions=null;
 	private HashMap _b_actioncalls=null;
+	private HashMap _b_restmapping=null;
 	private HashMap _b_streams=null;
 	private HashMap _b_streams_apply_to_actions=null;
 
@@ -2626,6 +2692,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 		super();
 		if(_b_actions==null) _b_actions = new HashMap();
 		if(_b_actioncalls==null) _b_actioncalls = new HashMap();
+		if(_b_restmapping==null) _b_restmapping = new HashMap();
 		if(_b_streams==null) _b_streams = new HashMap();
 		if(_b_streams_apply_to_actions==null){
 			_b_streams_apply_to_actions = new HashMap();
@@ -2640,6 +2707,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	public void syncroWithBuilder(){
 		load_actions._actions =_b_actions;
 		load_actions._actioncalls =_b_actioncalls;
+		load_actions._restmapping = _b_restmapping;
 		load_actions._streams = _b_streams;
 		load_actions._streams_apply_to_actions = _b_streams_apply_to_actions;
 		load_actions._beans = _b_beans;
@@ -2782,6 +2850,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 		
 		if(_b_actions==null) _b_actions = new HashMap();
 		if(_b_actioncalls==null) _b_actioncalls = new HashMap();
+		if(_b_restmapping==null) _b_restmapping = new HashMap();
 		if(_b_streams==null){
 			_b_streams = new HashMap();
 			readDef = false;
@@ -3004,8 +3073,26 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 						}
 					}
 					
+					if(((info_call)a_actioncalls.get(j)).getRestmapping()!=null && ((info_call)a_actioncalls.get(j)).getRestmapping().size()>0){
+						for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
+							info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
+							if(_b_restmapping.get(iRest.getPath())==null)
+								_b_restmapping.put(iRest.getPath(), new Vector());
+							((Vector)_b_restmapping.get(iRest.getPath())).add(iRest);
+						}
+					}
 				}
-			}			
+				
+			}
+			if(((info_action)a_actions.get(i)).getRestmapping().size()>0){
+				for(int r=0;r<((info_action)a_actions.get(i)).getRestmapping().size();r++){
+					info_rest iRest = (info_rest)((info_action)a_actions.get(i)).getRestmapping().get(r);
+					if(_b_restmapping.get(iRest.getPath())==null)
+						_b_restmapping.put(iRest.getPath(), new Vector());
+					((Vector)_b_restmapping.get(iRest.getPath())).add(iRest);
+				}
+			}
+		
 		}
 		v_info_actions = (new Vector(_b_actions.values()));
 		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
@@ -3227,8 +3314,23 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 
 									}
 								}
-								
-								
+								if(((info_call)a_actioncalls.get(j)).getRestmapping()!=null && ((info_call)a_actioncalls.get(j)).getRestmapping().size()>0){
+									for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
+										info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
+										if(_b_restmapping.get(iRest.getPath())==null)
+											_b_restmapping.put(iRest.getPath(), new Vector());
+										((Vector)_b_restmapping.get(iRest.getPath())).add(iRest);
+									}
+								}
+							}
+							
+						}
+						if(iAction.getRestmapping().size()>0){
+							for(int r=0;r<iAction.getRestmapping().size();r++){
+								info_rest iRest = (info_rest)iAction.getRestmapping().get(r);
+								if(_b_restmapping.get(iRest.getPath())==null)
+									_b_restmapping.put(iRest.getPath(), new Vector());
+								((Vector)_b_restmapping.get(iRest.getPath())).add(iRest);
 							}
 						}
 					}
@@ -3272,6 +3374,10 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	public HashMap get_b_actioncalls() {
 		return _b_actioncalls;
 	}
+	
+	public HashMap get_b_restmapping() {
+		return _b_restmapping;
+	}	
 }
 
 

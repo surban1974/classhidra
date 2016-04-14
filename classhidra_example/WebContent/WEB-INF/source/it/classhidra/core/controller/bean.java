@@ -25,13 +25,11 @@ package it.classhidra.core.controller;
 
 
 
-import java.io.DataInputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +43,11 @@ import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_makeValue;
-import it.classhidra.core.tool.util.util_multipart;
 import it.classhidra.core.tool.util.util_reflect;
+import it.classhidra.core.tool.util.util_supportbean;
 import it.classhidra.serialize.JsonMapper;
 import it.classhidra.serialize.Serialized;
+import it.classhidra.serialize.XmlMapper;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -143,12 +142,19 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
 		if(initJsonPart(request)) return;
 	}
+	
+	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
+		if(initXmlPart(request)) return;
+	}	
 
 	initNormal(request);
 
 }
 
+
 	public void initNormal(HttpServletRequest request) throws bsControllerException{
+		util_supportbean.initNormal(this, request);
+/*		
 		xmloutput=false;
 		xmloutput_encoding="";
 		jsonoutput=false;
@@ -284,19 +290,24 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 			}
 		}
+*/		
 	}
 
 
 	public void initMultiPart(HttpServletRequest request) throws bsControllerException{
-		HashMap parameters = util_multipart.popolateHashMap(request);
-		initPartFromMap(parameters);
+		util_supportbean.initMultiPart(this, request);
+//		HashMap parameters = util_multipart.popolateHashMap(request);
+//		initPartFromMap(parameters);
 	}
 
 	public boolean initJsonPart(HttpServletRequest request) throws bsControllerException{
-		return initJsonPart(request,null);
+		return util_supportbean.initJsonPart(this,request,null);
+//		return initJsonPart(request,null);
 	}
 	
 	public boolean initJsonPart(HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
+		return util_supportbean.initJsonPart(this,request,mapper);
+/*		
 		boolean isJson=false;
 		HashMap parameters = new HashMap();
 		DataInputStream in = null;
@@ -357,11 +368,20 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		if(isJson) initPartFromMap(parameters);
 
 		return isJson;
+*/		
 	}
 
+	public boolean initXmlPart(HttpServletRequest request) throws bsControllerException{
+		return util_supportbean.initXmlPart(this,request,null);
+	}	
+	
+	public boolean initXmlPart(HttpServletRequest request, XmlMapper mapper) throws bsControllerException{
+		return util_supportbean.initXmlPart(this,request,mapper);
+	}	
 
 	public void initPartFromMap(HashMap parameters) throws bsControllerException{
-		if(parameters==null) parameters=new HashMap();
+		if(parameters==null) 
+			parameters=new HashMap();
 		parametersMP = parameters;
 
 		xmloutput=false;

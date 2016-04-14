@@ -289,7 +289,10 @@ public class info_redirect extends info_entity implements i_elementBase{
 	}
 	
 	public String toXml(){
-		String result=System.getProperty("line.separator")+"         <"+prefix+"redirect";
+		return toXml("");
+	}
+	public String toXml(String space){
+		String result=System.getProperty("line.separator")+space+"      <"+prefix+"redirect";
 		if(auth_id!=null && !auth_id.trim().equals("")) result+=" auth_id=\""+util_format.normaliseXMLText(auth_id)+"\"";
 		if(path!=null && !path.trim().equals("")) result+=" path=\""+util_format.normaliseXMLText(path)+"\"";
 		if(contentType!=null && !contentType.trim().equals("")) result+=" contentType=\""+util_format.normaliseXMLText(contentType)+"\"";
@@ -320,7 +323,7 @@ public class info_redirect extends info_entity implements i_elementBase{
 		}
 
 		if(isEntity)
-			result+=System.getProperty("line.separator")+"         </"+prefix+"redirect>";
+			result+=System.getProperty("line.separator")+space+"      </"+prefix+"redirect>";
 		else result+="</"+prefix+"redirect>";
 
 

@@ -62,7 +62,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String statistic;
 	private String expose;
 	private List exposed;
-
+	private List restmapping;
 
 	private String wac;
 	private HashMap _redirects;
@@ -161,6 +161,12 @@ public class info_action extends info_entity implements i_elementBase{
 		    		if(iBean!=null && getName()==null || getName().equals("") && iBean.getName()!=null && !iBean.getName().equals(""))
 		    			setName(iBean.getName());
 				}
+				if(nodeList.item(i).getNodeName().toLowerCase().equals("rest")){
+					info_rest iRest = new info_rest();
+					iRest.init(nodeList.item(i));
+					iRest.setMapped_entity(this);
+					restmapping.add(iRest);
+				}
 
 			}
 		}
@@ -221,6 +227,7 @@ public class info_action extends info_entity implements i_elementBase{
 		statistic="true";
 		expose="";
 		exposed=new ArrayList();
+		restmapping=new ArrayList();
 
 
 		_redirects=new HashMap();
@@ -381,6 +388,52 @@ public class info_action extends info_entity implements i_elementBase{
 		result+=">";
 		boolean isEntity=false;
 		
+		if(_beans!=null && _beans.size()>0){
+			for(Object obj : new util_sort().sort(new Vector(_beans.values()),"int_order")){
+				info_bean iBean = (info_bean)obj;
+				if(iBean!=null){
+					result+=iBean.toXml("      ");
+					isEntity=true;
+				}
+			}
+		}
+		if(_redirects!=null && _redirects.size()>0){
+			for(Object obj : new util_sort().sort(new Vector(_redirects.values()),"int_order")){
+				info_redirect iRedirect = (info_redirect)obj;
+				if(iRedirect!=null && iRedirect.getSystem().equals("false")){
+					result+=iRedirect.toXml("      ");
+					isEntity=true;
+				}
+			}
+		}	
+		if(_transformationoutput!=null && _transformationoutput.size()>0){
+			for(Object obj : new util_sort().sort(new Vector(_transformationoutput.values()),"int_order")){
+				info_transformation iTransformation = (info_transformation)obj;
+				if(iTransformation!=null){
+					result+=iTransformation.toXml("      ");
+					isEntity=true;
+				}
+			}
+		}		
+		if(_calls!=null && _calls.size()>0){
+			for(Object obj : new util_sort().sort(new Vector(_calls.values()),"int_order")){
+				info_call iCall = (info_call)obj;
+				if(iCall!=null && iCall.getSystem().equals("false")){
+					result+=iCall.toXml("      ");
+					isEntity=true;
+				}
+			}
+		}	
+		if(restmapping!=null && restmapping.size()>0){
+			for(int i=0;i<restmapping.size();i++){
+				info_rest iRest = (info_rest)restmapping.get(i);
+				if(iRest!=null){
+					result+=iRest.toXml("      ");
+					isEntity=true;
+				}
+			}
+		}		
+/*		
 		if(v_info_beans!=null && v_info_beans.size()>0){
 
 			for(int i=0;i<v_info_beans.size();i++){
@@ -391,7 +444,6 @@ public class info_action extends info_entity implements i_elementBase{
 				}
 			}
 		}
-		
 		if(v_info_redirects!=null && v_info_redirects.size()>0){
 
 			for(int i=0;i<v_info_redirects.size();i++){
@@ -401,7 +453,7 @@ public class info_action extends info_entity implements i_elementBase{
 					isEntity=true;
 				}
 			}
-		}
+		}	
 		if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
 			isEntity=true;
 			for(int i=0;i<v_info_transformationoutput.size();i++){
@@ -411,7 +463,7 @@ public class info_action extends info_entity implements i_elementBase{
 					isEntity=true;
 				}
 			}
-		}
+		}	
 		if(v_info_calls!=null && v_info_calls.size()>0){
 
 			for(int i=0;i<v_info_calls.size();i++){
@@ -421,8 +473,8 @@ public class info_action extends info_entity implements i_elementBase{
 					isEntity=true;
 				}
 			}
-		}
-		
+		}				
+*/
 		
 		if(isEntity)
 			result+=System.getProperty("line.separator")+"      </action>";
@@ -608,6 +660,14 @@ public class info_action extends info_entity implements i_elementBase{
 	}
 
 	public String getExpose() {
+		if(exposed!=null && exposed.size()>0){
+			String result="";
+			for(int i=0;i<exposed.size();i++){
+				if(i>0) result+=",";
+				result+=exposed.get(i).toString();
+			}
+			return result;
+		}
 		return expose;
 	}
 	
@@ -634,6 +694,14 @@ public class info_action extends info_entity implements i_elementBase{
 				exposed.add(st.nextToken().toUpperCase());
 		}
 		
+	}
+
+	public List getRestmapping() {
+		return restmapping;
+	}
+
+	public void setRestmapping(List restmapping) {
+		this.restmapping = restmapping;
 	}
 
 

@@ -31,8 +31,10 @@ public class JsonWriter {
 		String result="{\n";
 		if(obj==null)
 			result+="\"error\":  \"Object is NULL\"";
-		else
-			result+=generateJsonItem(obj,name,0,false,new HashMap(),null, false);
+		else{
+			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);		
+			result+=generateJsonItem(obj,name,0,false,new HashMap(),null, (annotation!=null)?annotation.children():false);
+		}
 		return result+"\n}";
 	}	
 

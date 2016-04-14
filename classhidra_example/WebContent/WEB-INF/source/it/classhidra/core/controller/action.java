@@ -44,6 +44,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_supportbean;
 import it.classhidra.serialize.JsonWriter;
+import it.classhidra.serialize.XmlWriter;
 
 public class action extends bean implements i_action, Serializable{
 	private static final long serialVersionUID = -6220391111031079562L;
@@ -198,6 +199,21 @@ public class action extends bean implements i_action, Serializable{
 		}
 		return JsonWriter.object2json(this.get_bean(), modelName);
 	}
+	
+	@ActionCall(name="xml",navigated="false",Redirect=@Redirect(contentType="application/xml"))
+	public String modelAsXml(HttpServletRequest request, HttpServletResponse response){
+		String modelName = getString("modelname");
+		
+		if(modelName==null || modelName.equals("")){
+			if(get_infobean()!=null && get_infobean().getName()!=null && !get_infobean().getName().equals(""))
+				modelName = get_infobean().getName();
+			else if(get_infoaction()!=null && get_infoaction().getName()!=null && !get_infoaction().getName().equals(""))
+				modelName = get_infoaction().getName();
+			else
+				modelName = "xml";
+		}
+		return XmlWriter.object2xml(this.get_bean(), modelName);
+	}	
 
 	public i_bean get_bean() {
 		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){

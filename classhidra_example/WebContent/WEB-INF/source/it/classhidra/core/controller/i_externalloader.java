@@ -3,6 +3,7 @@ package it.classhidra.core.controller;
 public interface i_externalloader{
 	public static final String ACTIONS_actions="actions";
 	public static final String ACTIONS_actioncalls="actioncalls";
+	public static final String ACTIONS_restmapping="restmapping";
 	public static final String ACTIONS_streams="streams";
 	public static final String ACTIONS_streams_apply_to_actions="streams_apply_to_actions";
 	public static final String ACTIONS_beans="beans";

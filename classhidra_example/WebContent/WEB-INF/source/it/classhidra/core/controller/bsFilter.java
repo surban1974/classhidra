@@ -38,7 +38,10 @@ import it.classhidra.core.tool.util.util_format;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +64,7 @@ public class bsFilter implements Filter {
 	public final static String CONST_INIT_EXCLUDEDPATTERN					= "ExcludedPattern";
 	public final static String CONST_INIT_CONTENT_TYPE 						= "ContentType";
 	public final static String CONST_INIT_CHARACTER_ENCODING 				= "CharacterEncoding";
+	public final static String CONST_REST_SUPPORT 							= "RestSupport";
 
 	class ForCheckBs{
 		private String id_action;
@@ -159,9 +163,75 @@ public class bsFilter implements Filter {
 				}
 
 				
-			
+				
 				
 				ForCheckBs id_bs = new ForCheckBs();
+				
+				String restSupport = config.getInitParameter(CONST_REST_SUPPORT);
+				if(restSupport!=null && restSupport.equalsIgnoreCase("true")){
+					List restmapping = null;
+					String parameters="";
+					try{
+						Iterator it = bsController.getAction_config().get_restmapping().keySet().iterator();
+					    while (it.hasNext()) {
+					        String key = (String)it.next();
+					        if(key!=null && key.length()>0){
+					        	if(url.indexOf(key)>-1){
+					        		restmapping = (List)bsController.getAction_config().get_restmapping().get(key);
+					        		parameters = url.substring(url.indexOf(key)+key.length(),url.length());
+					        		break;
+					        	}
+					        	else if(url.indexOf(key.substring(0,key.length()-1))>-1 && url.indexOf(key.substring(0,key.length()-1))+key.substring(0,key.length()-1).length()==url.length()){
+					        		restmapping = (List)bsController.getAction_config().get_restmapping().get(key);
+					        		parameters = url.substring(url.indexOf(key)+key.length()-1,url.length());
+					        		break;
+					        	}					        	
+					        }
+					    }
+					}catch(Exception e){						
+					}
+					
+					if(restmapping!=null){
+						List exposed = new ArrayList(); 
+						List exposed_correctparam = new ArrayList();
+						for(int i=0;i<restmapping.size();i++){
+							info_rest iRest = (info_rest)restmapping.get(i);
+							if(iRest.isExposed(request.getMethod())){
+								exposed.add(iRest);
+								if(iRest.mapParameterIfCorrect(parameters)!=null)
+									exposed_correctparam.add(iRest);
+							}
+						}
+						info_rest correctRest = null;
+						if(exposed_correctparam.size()>0)
+							correctRest = (info_rest)exposed_correctparam.get(0);
+						else if(exposed.size()>0)
+							correctRest = (info_rest)exposed.get(0);
+						
+						if(correctRest!=null && correctRest.getMapped_entity()!=null){
+							if(correctRest.getMapped_entity() instanceof info_call){
+								id_bs.id_action = ((info_call)correctRest.getMapped_entity()).getOwner();
+								id_bs.id_call = ((info_call)correctRest.getMapped_entity()).getName();
+							}
+							
+							if(correctRest.getMapped_entity() instanceof info_action){
+								id_bs.id_action = ((info_action)correctRest.getMapped_entity()).getPath();
+								id_bs.id_complete = id_bs.id_action;
+							}
+							
+							if(id_bs.id_action!=null && !id_bs.id_action.equals("")){
+								request.setAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS, correctRest.mapParameterIfCorrect(parameters));
+								if(elaborate_BS(id_bs.id_action,id_bs.id_call,id_bs.id_complete,chain,request,response))
+									return;
+							}
+
+						}
+					}
+					
+				}
+			
+				
+
 
 				boolean elaborateBsCheck=true;
 				
@@ -227,7 +297,7 @@ public class bsFilter implements Filter {
 					String def_TransformationElPoint = bsController.getAppInit().get_transf_elaborationpoint();
 					if(def_TransformationElPoint==null || def_TransformationElPoint.trim().length()==0) def_TransformationElPoint=bsConstants.CONST_TRANSFORMATION_ELPOINT_CONTROLLER;
 					
-					responseWrapped = bsController.service(id_current, id_call, id_complete, request.getSession().getServletContext(), request,response);
+					responseWrapped = bsController.service(id_current, id_call, id_complete, request.getSession().getServletContext(), request, response);
 
 					if(responseWrapped instanceof a_ResponseWrapper){
 						

@@ -50,6 +50,7 @@ public class info_call extends info_entity implements i_elementBase{
 	private String expose;
 	private info_redirect iRedirect;
 	private List exposed;
+	private List restmapping;
 	
 	public info_call(){
 		super();
@@ -90,6 +91,12 @@ public class info_call extends info_entity implements i_elementBase{
 								glob_redirects.put(iRedirect.getPath(),iRedirect);
 						}
 					}
+					if(nodeList.item(i).getNodeName().toLowerCase().equals("rest")){
+						info_rest iRest = new info_rest();
+						iRest.init(nodeList.item(i));
+						iRest.setMapped_entity(this);
+						restmapping.add(iRest);
+					}
 				}
 			}
 		}catch(Exception e){
@@ -105,6 +112,7 @@ public class info_call extends info_entity implements i_elementBase{
 		navigated="";
 		expose="";
 		exposed=new ArrayList();
+		restmapping=new ArrayList();
 	}
 	public String getName() {
 		return name;
@@ -118,7 +126,11 @@ public class info_call extends info_entity implements i_elementBase{
 	}
 	
 	public String toXml(){
-		String result=System.getProperty("line.separator")+"            <call";
+		return toXml("");
+	}
+	
+	public String toXml(String space){
+		String result=System.getProperty("line.separator")+space+"      <call";
 		if(owner!=null && !owner.trim().equals("")) result+=" owner=\""+util_format.normaliseXMLText(owner)+"\"";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(path!=null && !path.trim().equals("")) result+=" path=\""+util_format.normaliseXMLText(path)+"\"";
@@ -132,12 +144,29 @@ public class info_call extends info_entity implements i_elementBase{
 			result+="\"";
 		}
 		result+=super.toXml();
-		if(iRedirect==null)
-			result+="/>";
-		else{
+		if(iRedirect==null){
+			if(restmapping!=null && restmapping.size()>0){
+				for(int i=0;i<restmapping.size();i++){
+					info_rest iRest = (info_rest)restmapping.get(i);
+					if(iRest!=null){
+						result+=iRest.toXml(space+"            ");
+					}
+				}
+				result+=System.getProperty("line.separator")+space+"      </call>";
+			}else			
+				result+="/>";
+		}else{
 			result+=">";
-			result+=iRedirect.toXml();
-			result+=System.getProperty("line.separator")+"            </call>";
+			result+=iRedirect.toXml(space+"            ");
+			if(restmapping!=null && restmapping.size()>0){
+				for(int i=0;i<restmapping.size();i++){
+					info_rest iRest = (info_rest)restmapping.get(i);
+					if(iRest!=null){
+						result+=iRest.toXml(space+"            ");
+					}
+				}
+			}
+			result+=System.getProperty("line.separator")+space+"      </call>";
 		}
 		return result;
 	}
@@ -212,7 +241,15 @@ public class info_call extends info_entity implements i_elementBase{
 		this.exposed = expose;
 	}
 
-	public String getExpose() {
+	public String getExpose() {		
+		if(exposed!=null && exposed.size()>0){
+			String result="";
+			for(int i=0;i<exposed.size();i++){
+				if(i>0) result+=",";
+				result+=exposed.get(i).toString();
+			}
+			return result;
+		}
 		return expose;
 	}
 	
@@ -239,6 +276,14 @@ public class info_call extends info_entity implements i_elementBase{
 				exposed.add(st.nextToken().toUpperCase());
 		}
 		
+	}
+
+	public List getRestmapping() {
+		return restmapping;
+	}
+
+	public void setRestmapping(List restmapping) {
+		this.restmapping = restmapping;
 	}
 
 

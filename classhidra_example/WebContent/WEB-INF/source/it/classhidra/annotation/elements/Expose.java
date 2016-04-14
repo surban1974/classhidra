@@ -15,4 +15,5 @@ public @interface Expose {
 
 	String method() default ""; 
 	String[] methods() default {};
+	Rest[] restmapping() default {};
 }

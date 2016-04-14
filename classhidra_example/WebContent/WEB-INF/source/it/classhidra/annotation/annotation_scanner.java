@@ -11,6 +11,7 @@ import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Expose;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.annotation.elements.Redirect;
+import it.classhidra.annotation.elements.Rest;
 import it.classhidra.annotation.elements.Section;
 import it.classhidra.annotation.elements.SessionDirective;
 import it.classhidra.annotation.elements.Stream;
@@ -27,6 +28,7 @@ import it.classhidra.core.controller.info_call;
 import it.classhidra.core.controller.info_entity;
 import it.classhidra.core.controller.info_redirect;
 import it.classhidra.core.controller.info_relation;
+import it.classhidra.core.controller.info_rest;
 import it.classhidra.core.controller.info_section;
 import it.classhidra.core.controller.info_stream;
 import it.classhidra.core.controller.info_transformation;
@@ -797,8 +799,14 @@ public class annotation_scanner implements i_annotation_scanner {
     	iAction.setListener(annotationAction.listener());
     	
 		Expose action_exposed = annotationAction.Expose();
-		if(action_exposed!=null)
+		if(action_exposed!=null){
 			iAction.addExposed(action_exposed.method()).addExposed(action_exposed.methods());
+			if(action_exposed.restmapping()!=null && action_exposed.restmapping().length>0){
+				for(int r=0;r<action_exposed.restmapping().length;r++)
+					iAction.getRestmapping().add(checkRestAnnotation(action_exposed.restmapping()[r], iAction.getExpose(), iAction));
+
+			}
+		}
     	
     	setEntity(iAction,annotationAction.entity());
     	iAction.setAnnotationLoaded(true);
@@ -899,8 +907,15 @@ public class annotation_scanner implements i_annotation_scanner {
 		    	}
 
 				Expose call_exposed = annotationCall.Expose();
-				if(call_exposed!=null)
+				if(call_exposed!=null){
 					iCall.addExposed(call_exposed.method()).addExposed(call_exposed.methods());
+					if(call_exposed.restmapping()!=null && call_exposed.restmapping().length>0){
+						for(int r=0;r<call_exposed.restmapping().length;r++)
+							iCall.getRestmapping().add(checkRestAnnotation(call_exposed.restmapping()[r], iCall.getExpose(), iCall));
+
+					}
+				
+				}
 				if(iCall.getExposed().size()==0){
 					if(iAction.get_calls().get(iCall.getName())==null)
 						iAction.get_calls().put(iCall.getName(),iCall);
@@ -1111,9 +1126,13 @@ public class annotation_scanner implements i_annotation_scanner {
     	}
     	
 		Expose call_exposed = annotationCall.Expose();
-		if(call_exposed!=null)
+		if(call_exposed!=null){
 			iCall.addExposed(call_exposed.method()).addExposed(call_exposed.methods());
-		
+			if(call_exposed.restmapping()!=null && call_exposed.restmapping().length>0){
+				for(int r=0;r<call_exposed.restmapping().length;r++)
+					iCall.getRestmapping().add(checkRestAnnotation(call_exposed.restmapping()[r], iCall.getExpose(),iCall));
+			}
+		}
 
 		
 		
@@ -1149,6 +1168,17 @@ public class annotation_scanner implements i_annotation_scanner {
 
 		return iCall;
 	}
+	
+	private info_rest checkRestAnnotation(Rest annotationRest, String expose, info_entity mapped_entity){
+		info_rest iRest = new info_rest();
+
+		iRest.setPath(annotationRest.path());
+		iRest.setParametermapping(annotationRest.parametermapping());
+		iRest.setMapped_entity(mapped_entity);
+		iRest.setExpose(expose);
+
+		return iRest;
+	}	
 	
 	private void setEntity(info_entity iEntity, Entity entity){
 		if(iEntity==null || entity==null) return;

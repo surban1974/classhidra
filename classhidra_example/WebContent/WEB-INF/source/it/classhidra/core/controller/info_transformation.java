@@ -110,7 +110,11 @@ public class info_transformation extends info_entity implements i_elementBase{
 	}
 	
 	public String toXml(){
-		String result=System.getProperty("line.separator")+"            <transformationoutput";
+		return toXml("");
+	}
+	
+	public String toXml(String space){
+		String result=System.getProperty("line.separator")+space+"      <transformationoutput";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(type!=null && !type.trim().equals("")) result+=" type=\""+util_format.normaliseXMLText(type)+"\"";
 
