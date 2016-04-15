@@ -340,7 +340,7 @@ public class JsonWriter {
 						String methodName = methods[i].getName().substring(prefixes[p].length());
 						Serialized sub_annotation = methods[i].getAnnotation(Serialized.class);
 						if(sub_annotation==null){
-							Field sub_field = util_reflect.getField(sub_obj.getClass(), util_reflect.revAdaptMethodName(methodName));
+							Field sub_field = util_reflect.getFieldRecursive(sub_obj.getClass(), util_reflect.revAdaptMethodName(methodName));
 							if(sub_field!=null)
 								sub_annotation = sub_field.getAnnotation(Serialized.class);
 						}

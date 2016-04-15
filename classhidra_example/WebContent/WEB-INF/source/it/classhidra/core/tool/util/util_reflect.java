@@ -838,6 +838,25 @@ public static Field getField(Class req_class, String key) throws Exception{
 	return fld;
 }
 
+public static Field getFieldRecursive(Class req_class, String key) throws Exception{
+	if(req_class==null || key==null)
+		return null;
+	Field fld = null;
+	try{
+		fld=req_class.getField(key);
+	}catch(Exception ex){
+	}
+	if(fld==null){
+		try{
+			fld=req_class.getDeclaredField(key);
+		}catch(Exception ex){
+		}			
+	}
+	if(fld==null && req_class.getSuperclass()!=null)
+		return getFieldRecursive(req_class.getSuperclass(), key);
+	return fld;
+}
+
 public static Class getRetClass(Object req, String key) throws Exception{
 	Object resultObject = null;
 	Field fld = null;
