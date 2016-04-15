@@ -64,8 +64,12 @@ public class info_apply_to_action extends info_entity implements i_elementBase{
 		return toXml();
 	}
 
+	
 	public String toXml(){
-		String result=System.getProperty("line.separator")+"         <apply-to-action";
+		return toXml("");
+	}	
+	public String toXml(String space){
+		String result=System.getProperty("line.separator")+space+"      <apply-to-action";
 		if(action!=null && !action.trim().equals("")) result+=" action=\""+util_format.normaliseXMLText(action)+"\"";
 		if(excluded!=null && !excluded.trim().equals("") && !excluded.trim().toLowerCase().equals("false")) result+=" excluded=\""+util_format.normaliseXMLText(excluded)+"\"";
 

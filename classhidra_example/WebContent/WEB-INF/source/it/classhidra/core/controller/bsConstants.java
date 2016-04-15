@@ -70,6 +70,7 @@ public interface bsConstants {
 	public final static String CONST_ID_$ACTION_FROM 					=	"$action_from";
 	public final static String CONST_ID_$ACTION_WAC 					=	"$wac_fascia";
 	public final static String CONST_BEAN_$AUTHENTIFICATION 			=	"$authentication";
+	public final static String CONST_REST_$AUTHENTIFICATION 			=	"$restauthentication";
 
 //	TODO	@Deprecated
 	public final static String CONST_BEAN_$NAVIGATION 					=	"$navigation";

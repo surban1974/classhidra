@@ -120,6 +120,7 @@ public class redirects implements Serializable{
 		if(_infoaction!=null){
 		}
 
+		if(_uri==null || _uri.equals("")) return rd;
 		if(	_uri.indexOf("/Controller?$")==0 ||
 			_uri.indexOf(bsController.getAppInit().get_extention_do()+"?")>0 ||
 			_uri.lastIndexOf(bsController.getAppInit().get_extention_do()) == _uri.length()-bsController.getAppInit().get_extention_do().length()) return scontext.getRequestDispatcher(transformURI(_uri));

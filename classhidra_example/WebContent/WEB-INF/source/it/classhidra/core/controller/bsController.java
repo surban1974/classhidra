@@ -1973,22 +1973,30 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 			
 		if(rd==null){
-			action_instance.onPreRedirectError();
-			rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
-			try{
-				if(!isRemoteEjb)
-					action_instance.onPostRedirectError(rd);
-			}catch(Exception e){
+			if(action_instance.getCurrent_redirect().get_uri()!=null && !action_instance.getCurrent_redirect().get_uri().trim().equals("")){
+				action_instance.onPreRedirectError();
+				rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
+				try{
+					if(!isRemoteEjb)
+						action_instance.onPostRedirectError(rd);
+				}catch(Exception e){
+				}
 			}
 		}
 		if(rd==null){
-			if(!action_instance.get_infoaction().getError().equals("")) action_instance.getCurrent_redirect().set_uriError(action_instance.get_infoaction().getError());
-			else action_instance.getCurrent_redirect().set_uriError(getAction_config().getAuth_error());
-			rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
+			if(action_instance.getCurrent_redirect().get_uri()!=null && !action_instance.getCurrent_redirect().get_uri().trim().equals("")){
+				if(!action_instance.get_infoaction().getError().equals("")) 
+					action_instance.getCurrent_redirect().set_uriError(action_instance.get_infoaction().getError());
+				else 
+					action_instance.getCurrent_redirect().set_uriError(getAction_config().getAuth_error());
+				rd = action_instance.getCurrent_redirect().redirectError(servletContext, action_instance.get_infoaction());
+			}
 		}
 
-		if(rd==null) throw new bsControllerException("Controller generic redirect error. Action: ["+action_instance.get_infoaction().getPath()+"] " +action_instance.getCurrent_redirect(),request,iStub.log_ERROR);
-		else{
+		if(rd==null){
+			if(action_instance.getCurrent_redirect().get_uri()!=null && !action_instance.getCurrent_redirect().get_uri().trim().equals(""))
+				throw new bsControllerException("Controller generic redirect error. Action: ["+action_instance.get_infoaction().getPath()+"] " +action_instance.getCurrent_redirect(),request,iStub.log_ERROR);
+		}else{
 			try{
 				try{
 					try{
@@ -2061,6 +2069,32 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		HashMap request2map = null;
 		boolean isRemoteEjb=false;
+		
+		info_redirect iRedirect = currentStreamRedirect.get_inforedirect();
+		if(iRedirect==null)
+			iRedirect = (currentStream.get_infostream()!=null)?currentStream.get_infostream().getIRedirect():null;
+		
+		if(iRedirect!=null){
+			if(iRedirect.getContentType()!=null && !iRedirect.getContentType().equals("")){
+				if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+    				response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase()+
+    						((iRedirect.getContentEncoding()!=null)?";charset="+iRedirect.getContentEncoding():"")
+    				);
+				else
+					response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase());
+				
+			}
+			if(iRedirect.getContentName()!=null && !iRedirect.getContentName().equals(""))
+				response.setHeader("Content-Disposition","attachment; filename="+iRedirect.getContentName());
+			if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+				response.setHeader("Content-Transfer-Encoding",iRedirect.getContentEncoding());
+		}
+
+		
+		if(currentStreamRedirect.get_uri()==null || currentStreamRedirect.get_uri().equals("")){
+			return;
+		}
+		
 			
 		if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
 			isRemoteEjb=true;
@@ -2179,15 +2213,30 @@ public class bsController extends HttpServlet implements bsConstants  {
 		else{
 			Vector _streams = new Vector();
 			if(_streams_orig!=null) _streams.addAll(_streams_orig);
+			
 			Vector _4add = new Vector();
 			HashMap _4remove = new HashMap();
+/*			
+			for(int i=0;i<_streams.size();i++){
+				info_stream currentis = (info_stream)_streams.get(i);
+				if(currentis.get_apply_to_action()!=null){
+					info_apply_to_action currentiata = (info_apply_to_action)currentis.get_apply_to_action().get(id_action);
+					if(currentiata==null)
+						currentiata = (info_apply_to_action)currentis.get_apply_to_action().get("*");
+					if(currentiata!=null && currentiata.getExcluded()!=null && currentiata.getExcluded().equalsIgnoreCase("true"))
+						_4remove.put(currentis.getName(),currentis.getName());
+				}
+			}
+*/			
 			for(int i=0;i<_streams4action.size();i++){
 				info_stream currentis = (info_stream)_streams4action.get(i);
 				if(currentis.get_apply_to_action()!=null){
 					info_apply_to_action currentiata = (info_apply_to_action)currentis.get_apply_to_action().get(id_action);
-					if(currentiata.getExcluded()!=null && currentiata.getExcluded().equalsIgnoreCase("true"))
-						_4remove.put(currentis.getName(),currentis.getName());
-					else _4add.add(currentis);
+					if(currentiata!=null){ 
+						if(currentiata.getExcluded()!=null && currentiata.getExcluded().equalsIgnoreCase("true"))
+							_4remove.put(currentis.getName(),currentis.getName());
+						else _4add.add(currentis);
+					}
 				}
 			}
 			_streams.addAll(_4add);

@@ -382,7 +382,9 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	public void initPartFromMap(HashMap parameters) throws bsControllerException{
 		if(parameters==null) 
 			parameters=new HashMap();
-		parametersMP = parameters;
+		if(parametersMP==null)
+			parametersMP=new HashMap();
+		parametersMP.putAll(parameters);
 
 		xmloutput=false;
 		jsonoutput=false;

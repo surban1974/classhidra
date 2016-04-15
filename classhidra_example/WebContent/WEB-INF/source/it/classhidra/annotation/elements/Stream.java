@@ -10,4 +10,5 @@ public @interface Stream {
 	String name() default "";
 	String listener() default "";
 	Apply_to_action[] applied() default {};
+	Redirect Redirect() default @Redirect;
 }

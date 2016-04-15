@@ -300,6 +300,8 @@ public class action extends bean implements i_action, Serializable{
 				}
 				if(global!=null)
 					current_redirect.set_inforedirect(global);
+				else if(get_infoaction()!=null && get_infoaction().getIRedirect()!=null)
+					current_redirect.set_inforedirect(get_infoaction().getIRedirect());
 				
 			}
 		}catch(Exception e){

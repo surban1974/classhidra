@@ -740,6 +740,24 @@ public class annotation_scanner implements i_annotation_scanner {
 		    		iStream.getV_info_apply_to_action().addAll(new Vector(iStream.get_apply_to_action().values()));
 		    		iStream.setV_info_apply_to_action(new util_sort().sort(iStream.getV_info_apply_to_action(),"int_order"));
 		    	}
+				Redirect redirect = annotationStream.Redirect();
+		    	if(redirect!=null){
+		    		info_redirect iRedirect = checkRedirectAnnotation(iStream, redirect, -1);
+		    		if(iRedirect!=null && !iRedirect.isEmpty()){
+		    			iStream.setIRedirect(iRedirect);
+			    		if(iRedirect!=null && iRedirect.getPath()!=null && !iRedirect.getPath().equals("")){
+			    			info_redirect stored = (info_redirect)_redirects.get(iRedirect.getPath());
+			    			if(stored!=null){
+			    				try{
+			    					stored.init(iRedirect);
+			    				}catch(Exception e){
+			    					_redirects.put(iRedirect.getPath(),iRedirect);
+			    				}
+			    			}else
+			    				_redirects.put(iRedirect.getPath(),iRedirect);
+			    		}
+		    		}
+		    	}
 		    	_streams.put(iStream.getName(),iStream);
 		    }
 		    
@@ -819,6 +837,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	    		if(iAction.getRedirect()==null || iAction.getRedirect().equals("")){
 	    			if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
 	    				iAction.setRedirect(iRedirect.getPath());
+	    			iAction.setIRedirect(iRedirect);
 	    		}
     		}
     	}
@@ -1017,7 +1036,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		return iBean;
 	}
 	
-	private info_redirect checkRedirectAnnotation(info_action iAction, Redirect annotationRedirect1, int i){
+	private info_redirect checkRedirectAnnotation(info_entity entity, Redirect annotationRedirect1, int i){
 		info_redirect iRedirect = new info_redirect();		    			
 		iRedirect.setPath(annotationRedirect1.path());
 		iRedirect.setAuth_id(annotationRedirect1.auth_id());
@@ -1032,7 +1051,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		iRedirect.setContentName(annotationRedirect1.contentName());
 		iRedirect.setTransformationName(annotationRedirect1.transformationName());
 		iRedirect.setAvoidPermissionCheck(annotationRedirect1.avoidPermissionCheck());
-		iRedirect.setParent(iAction);
+		iRedirect.setParent(entity);
 		setEntity(iRedirect,annotationRedirect1.entity());
 		if(iRedirect.getOrder().equals("")) iRedirect.setOrder(Integer.valueOf(i+1).toString()); 
 		iRedirect.setAnnotationLoaded(true);
@@ -1076,8 +1095,10 @@ public class annotation_scanner implements i_annotation_scanner {
 			iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
 
 		}
-		if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
-			iAction.get_redirects().put(bodyURI(iRedirect.getPath()),iRedirect);
+		if(iRedirect.getPath()!=null && !iRedirect.getPath().equals("")){
+			if(entity instanceof info_action)
+				((info_action)entity).get_redirects().put(bodyURI(iRedirect.getPath()),iRedirect);
+		}
 		
 		return iRedirect;
 

@@ -147,7 +147,7 @@ public class auth_init implements Serializable{
 					property = util_file.loadProperty(property_name);
 					loadedFrom+=" "+property_name;
 				}catch(Exception ex){
-					new bsException(ex,iStub.log_DEBUG);
+//					new bsException(ex,iStub.log_DEBUG);
 				}
 			}
 		}else{

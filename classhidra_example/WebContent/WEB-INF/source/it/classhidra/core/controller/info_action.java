@@ -63,6 +63,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String expose;
 	private List exposed;
 	private List restmapping;
+	private info_redirect iRedirect;
 
 	private String wac;
 	private HashMap _redirects;
@@ -132,6 +133,7 @@ public class info_action extends info_entity implements i_elementBase{
 	    	    		if(getRedirect()==null || getRedirect().equals("")){
 	    	    			if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
 	    	    				setRedirect(iRedirect.getPath());
+	    	    			setIRedirect(iRedirect);
 	    	    		}
 	        		}
 				}
@@ -406,6 +408,8 @@ public class info_action extends info_entity implements i_elementBase{
 				}
 			}
 		}	
+		if(this.iRedirect!=null)
+				result+=iRedirect.toXml("      ");
 		if(_transformationoutput!=null && _transformationoutput.size()>0){
 			for(Object obj : new util_sort().sort(new Vector(_transformationoutput.values()),"int_order")){
 				info_transformation iTransformation = (info_transformation)obj;
@@ -702,6 +706,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setRestmapping(List restmapping) {
 		this.restmapping = restmapping;
+	}
+
+	public info_redirect getIRedirect() {
+		return iRedirect;
+	}
+
+	public void setIRedirect(info_redirect iRedirect) {
+		this.iRedirect = iRedirect;
 	}
 
 

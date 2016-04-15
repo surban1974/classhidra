@@ -2050,7 +2050,7 @@ private void readFormElements(Node node) throws Exception{
 		for(int k=0;k<node.getChildNodes().getLength();k++){
 			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 				info_stream iStream = new info_stream();
-				iStream.init(node.getChildNodes().item(k));
+				iStream.init(node.getChildNodes().item(k),_redirects);
 
 					info_stream old_stream = (info_stream)_streams.get(iStream.getName());
 					if(old_stream!=null){
@@ -3131,7 +3131,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			for(int k=0;k<node.getChildNodes().getLength();k++){
 				if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 					info_stream iStream = new info_stream();
-					iStream.init(node.getChildNodes().item(k));
+					iStream.init(node.getChildNodes().item(k),_b_redirects);
 					if(iStream!=null){
 						info_stream old_stream = (info_stream)_b_streams.get(iStream.getName());
 						if(old_stream!=null){

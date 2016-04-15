@@ -42,6 +42,7 @@ public class info_stream extends info_entity implements i_elementBase{
 	private String type;
 	private String name;
 	private String listener;
+	private info_redirect iRedirect;
 
 	private HashMap _apply_to_action;
 	private Vector v_info_apply_to_action;
@@ -55,8 +56,12 @@ public class info_stream extends info_entity implements i_elementBase{
 		super();
 		reimposta();
 	}
-
+	
 	public void init(Node node) throws bsControllerException{
+		init(node,null);
+	}
+
+	public void init(Node node, HashMap glob_redirects) throws bsControllerException{
 		if(node==null) return;
 		try{
 			NamedNodeMap nnm = node.getAttributes();
@@ -82,11 +87,25 @@ public class info_stream extends info_entity implements i_elementBase{
 		int order=0;
 		for(int i=0;i<nodeList.getLength();i++){
 			if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-				info_apply_to_action iApply = new info_apply_to_action();
-				iApply.init(nodeList.item(i));
-				order++;
-				iApply.setOrder(Integer.valueOf(order).toString());
-				if(iApply!=null) _apply_to_action.put(iApply.getAction(),iApply);
+				if(nodeList.item(i).getNodeName().toLowerCase().equals("apply-to-action")){
+					info_apply_to_action iApply = new info_apply_to_action();
+					iApply.init(nodeList.item(i));
+					order++;
+					iApply.setOrder(Integer.valueOf(order).toString());
+					if(iApply!=null)
+						_apply_to_action.put(iApply.getAction(),iApply);
+				}
+				
+				if(nodeList.item(i).getNodeName().toLowerCase().equals("redirect")){
+					iRedirect = new info_redirect();
+					iRedirect.init(nodeList.item(i));
+
+					if(glob_redirects!=null && glob_redirects.get(iRedirect.getPath())==null){
+						iRedirect.setOrder(Integer.valueOf(glob_redirects.size()).toString());
+						if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+							glob_redirects.put(iRedirect.getPath(),iRedirect);
+					}
+				}
 			}
 		}
 		v_info_apply_to_action.addAll(new Vector(_apply_to_action.values()));
@@ -131,6 +150,9 @@ public class info_stream extends info_entity implements i_elementBase{
 	}
 
 	public String toXml(){
+		return toXml("");
+	}
+	public String toXml(String space){
 		String result=System.getProperty("line.separator")+"      <stream";
 		if(name!=null && !name.trim().equals("")) result+=" name=\""+util_format.normaliseXMLText(name)+"\"";
 		if(type!=null && !type.trim().equals("")) result+=" type=\""+util_format.normaliseXMLText(type)+"\"";
@@ -142,9 +164,13 @@ public class info_stream extends info_entity implements i_elementBase{
 			isEntity=true;
 			for(int i=0;i<v_info_apply_to_action.size();i++){
 				info_apply_to_action iApply_to_action = (info_apply_to_action)v_info_apply_to_action.get(i);
-				if(iApply_to_action!=null) result+=iApply_to_action.toXml();
+				if(iApply_to_action!=null)
+					result+=iApply_to_action.toXml(space+"            ");
 			}
 		}
+		if(iRedirect!=null)
+			result+=iRedirect.toXml(space+"            ");
+		
 		if(isEntity)
 			result+=System.getProperty("line.separator")+"      </stream>";
 		else result+="</stream>";
@@ -167,6 +193,14 @@ public class info_stream extends info_entity implements i_elementBase{
 
 	public void setListener(String listener) {
 		this.listener = listener;
+	}
+
+	public info_redirect getIRedirect() {
+		return iRedirect;
+	}
+
+	public void setIRedirect(info_redirect iRedirect) {
+		this.iRedirect = iRedirect;
 	}
 	
 	
