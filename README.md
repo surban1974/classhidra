@@ -45,5 +45,5 @@ Maven dependencies (jar):<br>
 &lt;artifactId&gt;classhidra-ejb-example&lt;/artifactId&gt;<br>
 &lt;artifactId&gt;classhidra-cdi-ejb-example&lt;/artifactId&gt;<br>
 --&gt;<br>
-&lt;version&gt;1.5.3&lt;/version&gt;<br>
+&lt;version&gt;1.5.4&lt;/version&gt;<br>
 &lt;/dependency<br>
