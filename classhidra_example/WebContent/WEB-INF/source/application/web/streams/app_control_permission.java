@@ -81,7 +81,7 @@ public class app_control_permission extends stream implements i_stream{
 		}
 
 		info_action i_a = (info_action)bsController.getAction_config().get_actions().get(id_action);
-		if(i_a!=null && !auth.is_logged() && !i_a.getProperty("allway").equals("public")){
+		if(i_a!=null && !auth.is_logged() && !i_a.getProperty("allway").equals("public") && !i_a.getProperty("always").equals("public")){
 			redirectURI = service_ErrorRedirect(id_action,request.getSession().getServletContext(),request, response);
 			 new bsControllerMessageException(
 						"error_9",

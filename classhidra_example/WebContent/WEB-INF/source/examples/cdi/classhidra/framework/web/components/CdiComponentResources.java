@@ -36,7 +36,7 @@ import it.classhidra.core.tool.util.util_container;
 	redirect="/jsp/framework/resources.jsp",
 	syncro="true",
 	entity=@Entity(
-			property="allway:public",
+			property="always:public",
 			permissions=@Access(
 					forbidden={
 							@AccessRelation(targets="default_target;", rules="GUESTS;" )	

@@ -60,6 +60,7 @@ public class action extends bean implements i_action, Serializable{
 
 	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		i_bean bean4init = null;
+//setCurrent_redirect(null);		
 		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
 			if(getRealBean()!=null)
 				bean4init = getRealBean();
@@ -187,30 +188,51 @@ public class action extends bean implements i_action, Serializable{
 	
 	@ActionCall(name="json",navigated="false",Redirect=@Redirect(contentType="application/json"))
 	public String modelAsJson(HttpServletRequest request, HttpServletResponse response){
-		String modelName = getString("modelname");
 		
+		String modelName = getString("outputserializedname");
+		if(modelName==null || modelName.equals(""))
+			modelName = request.getParameter("outputserializedname");
+		
+		String outputappliedfor = getOutputappliedfor();
+		if(outputappliedfor==null || outputappliedfor.equals(""))
+			outputappliedfor = request.getParameter("outputappliedfor");
+		if(outputappliedfor!=null && !outputappliedfor.trim().equals(""))
+			return JsonWriter.object2json(get_bean().asBean().get(outputappliedfor), (modelName==null || modelName.equals(""))?outputappliedfor:modelName);
+		
+
 		if(modelName==null || modelName.equals("")){
 			if(get_infobean()!=null && get_infobean().getName()!=null && !get_infobean().getName().equals(""))
 				modelName = get_infobean().getName();
 			else if(get_infoaction()!=null && get_infoaction().getName()!=null && !get_infoaction().getName().equals(""))
 				modelName = get_infoaction().getName();
 			else
-				modelName = "json";
+				modelName = "model";
 		}
 		return JsonWriter.object2json(this.get_bean(), modelName);
 	}
 	
 	@ActionCall(name="xml",navigated="false",Redirect=@Redirect(contentType="application/xml"))
 	public String modelAsXml(HttpServletRequest request, HttpServletResponse response){
-		String modelName = getString("modelname");
 		
+		String modelName = getString("outputserializedname");
+		if(modelName==null || modelName.equals(""))
+			modelName = request.getParameter("outputserializedname");
+		
+		String outputappliedfor = getOutputappliedfor();
+		if(outputappliedfor==null || outputappliedfor.equals(""))
+			outputappliedfor = request.getParameter("outputappliedfor");
+		if(outputappliedfor!=null && !outputappliedfor.trim().equals(""))
+			return XmlWriter.object2xml(get_bean().asBean().get(outputappliedfor), (modelName==null || modelName.equals(""))?outputappliedfor:modelName);
+				
+		
+
 		if(modelName==null || modelName.equals("")){
 			if(get_infobean()!=null && get_infobean().getName()!=null && !get_infobean().getName().equals(""))
 				modelName = get_infobean().getName();
 			else if(get_infoaction()!=null && get_infoaction().getName()!=null && !get_infoaction().getName().equals(""))
 				modelName = get_infoaction().getName();
 			else
-				modelName = "xml";
+				modelName = "model";
 		}
 		return XmlWriter.object2xml(this.get_bean(), modelName);
 	}	
@@ -355,7 +377,7 @@ public class action extends bean implements i_action, Serializable{
 						call.setNavigated("false");
 					else call.setNavigated(a_call.navigated());
 					call.setAnnotated("true");
-					
+					call.setMappedMethodParameterTypes(current.getParameterTypes());
 					Expose call_exposed = a_call.Expose();
 					if(call_exposed!=null)
 						call.addExposed(call_exposed.method()).addExposed(call_exposed.methods());

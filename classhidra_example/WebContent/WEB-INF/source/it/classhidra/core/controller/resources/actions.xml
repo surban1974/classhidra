@@ -18,6 +18,11 @@
 -->			
 		</stream>
 		
+<!-- 
+		<stream name="def_basic_authorization" type="it.classhidra.core.controller.streams.def_basic_authorization" system="true"/>
+
+ -->		
+		
 		
 	</action-streams>
 	

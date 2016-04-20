@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 		redirect="/jsp/framework/menuCreator.jsp",
         memoryInSession="true",
         entity=@Entity(
-				property="allway:public"
+				property="always:public"
 		)
 )
 

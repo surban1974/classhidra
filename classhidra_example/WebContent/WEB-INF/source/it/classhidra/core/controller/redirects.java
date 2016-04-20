@@ -43,29 +43,61 @@ public class redirects implements Serializable{
 	private boolean _avoidPermissionCheck=false;
 	private boolean def_avoidPermissionCheck=true;
 	private String description;
+	
+	private int responseStatus = 0;
+	private String contentType;
+	private String contentName;
+	private String contentEncoding;
 
 	public redirects(String uri){
 		super();
 		_uri = uri;
 	}
+	public redirects(String uri, int status){
+		super();
+		_uri = uri;
+		responseStatus = status;
+	}
 
+	
 	public redirects(URL resource){
 		super();
 		_resource = resource;
 	}
+	public redirects(URL resource, int status){
+		super();
+		_resource = resource;
+		responseStatus = status;
+	}
 
+	
 	public redirects(String uri, boolean avoidPermissionCheck){
 		super();
 		_uri = uri;
 		_avoidPermissionCheck = avoidPermissionCheck;
 		def_avoidPermissionCheck = false;
 	}
+	public redirects(String uri, boolean avoidPermissionCheck, int status){
+		super();
+		_uri = uri;
+		_avoidPermissionCheck = avoidPermissionCheck;
+		def_avoidPermissionCheck = false;
+		responseStatus = status;
+	}
+	
 
 	public redirects(String uri, String transformationName){
 		super();
 		_uri = uri;
 		_transformationName=transformationName;
 	}
+	public redirects(String uri, String transformationName, int status){
+		super();
+		_uri = uri;
+		_transformationName=transformationName;
+		responseStatus = status;
+	}
+	
 
 	public redirects(String uri, String transformationName, boolean avoidPermissionCheck){
 		super();
@@ -74,26 +106,56 @@ public class redirects implements Serializable{
 		_avoidPermissionCheck = avoidPermissionCheck;
 		def_avoidPermissionCheck = false;
 	}
+	public redirects(String uri, String transformationName, boolean avoidPermissionCheck, int status){
+		super();
+		_uri = uri;
+		_transformationName=transformationName;
+		_avoidPermissionCheck = avoidPermissionCheck;
+		def_avoidPermissionCheck = false;
+		responseStatus = status;
+	}
+	
 
 	public redirects(URL resource, boolean avoidPermissionCheck){
 		super();
 		_resource = resource;
 		_avoidPermissionCheck = avoidPermissionCheck;
 	}
+	public redirects(URL resource, boolean avoidPermissionCheck, int status){
+		super();
+		_resource = resource;
+		_avoidPermissionCheck = avoidPermissionCheck;
+		responseStatus = status;
+	}
 
+	
 	public redirects(URL resource, String transformationName){
 		super();
 		_resource = resource;
 		_transformationName=transformationName;
+	}	
+	public redirects(URL resource, String transformationName, int status){
+		super();
+		_resource = resource;
+		_transformationName=transformationName;
+		responseStatus = status;
 	}
 
+	
 	public redirects(URL resource, String transformationName, boolean avoidPermissionCheck){
 		super();
 		_resource = resource;
 		_transformationName=transformationName;
 		_avoidPermissionCheck = avoidPermissionCheck;
 	}
-
+	public redirects(URL resource, String transformationName, boolean avoidPermissionCheck, int status){
+		super();
+		_resource = resource;
+		_transformationName=transformationName;
+		_avoidPermissionCheck = avoidPermissionCheck;
+		responseStatus = status;
+	}
+	
 
 	public String getRedirectUri(info_action _infoaction) { 
 
@@ -206,14 +268,16 @@ public class redirects implements Serializable{
 	}
 
 
-	public void decodeMessage(HttpServletRequest request){
+	public redirects decodeMessage(HttpServletRequest request){
 		if(this._inforedirect!=null && (description==null || description.equals("")))
 			description = (bsController.writeLabel(request,this._inforedirect.getMess_id(),this._inforedirect.getDescr(),null));
+		return this;
 	}
 
 
-	public void set_uriError(String string) {
+	public redirects set_uriError(String string) {
 		_uriError = string;
+		return this;
 	}
 
 	public String get_uri() {
@@ -229,14 +293,16 @@ public class redirects implements Serializable{
 	}
 
 
-	public void set_inforedirect(info_redirect redirect) {
+	public redirects set_inforedirect(info_redirect redirect) {
 		_inforedirect = redirect;
 		if(def_avoidPermissionCheck && _inforedirect!=null && _inforedirect.getAvoidPermissionCheck()!=null && _inforedirect.getAvoidPermissionCheck().equalsIgnoreCase("true"))
 			_avoidPermissionCheck=true;
+		return this;
 	}
 
-	public void set_uri(String string) {
+	public redirects set_uri(String string) {
 		_uri = string;
+		return this;
 	}
 
 
@@ -250,8 +316,9 @@ public class redirects implements Serializable{
 	}
 
 
-	public void set_transformationName(String transformationName) {
+	public redirects set_transformationName(String transformationName) {
 		_transformationName = transformationName;
+		return this;
 	}
 
 
@@ -260,8 +327,9 @@ public class redirects implements Serializable{
 	}
 
 
-	public void set_avoidPermissionCheck(boolean avoidPermissionCheck) {
+	public redirects set_avoidPermissionCheck(boolean avoidPermissionCheck) {
 		_avoidPermissionCheck = avoidPermissionCheck;
+		return this;
 	}
 
 
@@ -270,8 +338,9 @@ public class redirects implements Serializable{
 	}
 
 
-	public void setDescription(String description) {
+	public redirects setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 
@@ -280,8 +349,39 @@ public class redirects implements Serializable{
 	}
 
 
-	public void set_resource(URL _resource) {
+	public redirects set_resource(URL _resource) {
 		this._resource = _resource;
+		return this;
+	}
+
+	public int getResponseStatus() {
+		return responseStatus;
+	}
+
+	public redirects setResponseStatus(int responseStatus) {
+		this.responseStatus = responseStatus;
+		return this;
+	}
+	public String getContentType() {
+		return contentType;
+	}
+	public redirects setContentType(String contentType) {
+		this.contentType = contentType;
+		return this;
+	}
+	public String getContentName() {
+		return contentName;
+	}
+	public redirects setContentName(String contentName) {
+		this.contentName = contentName;
+		return this;
+	}
+	public String getContentEncoding() {
+		return contentEncoding;
+	}
+	public redirects setContentEncoding(String contentEncoding) {
+		this.contentEncoding = contentEncoding;
+		return this;
 	}
 
 }

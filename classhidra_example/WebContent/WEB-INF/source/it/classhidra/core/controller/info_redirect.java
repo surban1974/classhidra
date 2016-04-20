@@ -256,24 +256,27 @@ public class info_redirect extends info_entity implements i_elementBase{
 		return contentType;
 	}
 
-	public void setContentType(String contenttype) {
+	public info_redirect setContentType(String contenttype) {
 		this.contentType = contenttype;
+		return this;
 	}
 	
 	public String getContentEncoding() {
 		return contentEncoding;
 	}
 
-	public void setContentEncoding(String contentencoding) {
+	public info_redirect setContentEncoding(String contentencoding) {
 		this.contentEncoding = contentencoding;
+		return this;
 	}
 	
 	public String getContentName() {
 		return contentName;
 	}
 
-	public void setContentName(String contentName) {
+	public info_redirect setContentName(String contentName) {
 		this.contentName = contentName;
+		return this;
 	}	
 	
 	public String toString(){

@@ -183,7 +183,7 @@ public class bsFilter implements Filter {
 					        	}
 					        	else if(url.indexOf(key.substring(0,key.length()-1))>-1 && url.indexOf(key.substring(0,key.length()-1))+key.substring(0,key.length()-1).length()==url.length()){
 					        		restmapping = (List)bsController.getAction_config().get_restmapping().get(key);
-					        		parameters = url.substring(url.indexOf(key)+key.length()-1,url.length());
+					        		parameters = url.substring(url.indexOf(key.substring(0,key.length()-1))+key.length()-1,url.length());
 					        		break;
 					        	}					        	
 					        }

@@ -352,6 +352,9 @@ public void reimposta(){
 	xmlEncoding="";
 	loadedFrom="";
 
+//	bsController.removeFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+//	bsController.removeFromLocalContainer(bsConstants.CONST_CONTAINER_REFMETHODS);
+	
 	if(!readDef){
 		load_def_actions();
 	}
@@ -1080,7 +1083,7 @@ public void load_from_resources() {
 				load_from_resources("/config/"+property_name0);
 		}
 	}catch(Exception e){
-    	bsController.writeLog("Load_actions from resources Array ERROR:"+e.toString(),iStub.log_ERROR);
+    	bsController.writeLog("Load_actions from resources Array KO "+e.toString(),iStub.log_ERROR);
 	}
 
 
@@ -1135,6 +1138,8 @@ private boolean load_from_resources(String property_name) {
 			bsController.writeLog("Load_actions from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
 		}
     }
+    else
+    	bsController.writeLog("Load_actions from "+property_name+" KO ",iStub.log_INFO);
     
     return false;
 
@@ -1544,12 +1549,7 @@ public i_stream streamFactory(String id_stream,ServletContext servletContext){
 public i_stream streamFactory(String id_stream,HttpSession session,ServletContext servletContext){
 	i_stream rStream = null;
 	if(memoryInContainer_streams.equalsIgnoreCase("true")){
-		HashMap container_streams_instance = (HashMap)bsController.getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
-		if(container_streams_instance==null){
-			container_streams_instance = new HashMap();
-			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
-		}
-		rStream = (i_stream)container_streams_instance.get(id_stream);
+		rStream = bsController.getStreamFromContainer(id_stream);
 		if(rStream!=null) return rStream;
 	}
 		
@@ -1664,14 +1664,8 @@ public i_stream streamFactory(String id_stream,HttpSession session,ServletContex
 		
 		rStream.set_infostream(iStream);
 		
-		if(memoryInContainer_streams.equalsIgnoreCase("true")){
-			HashMap container_streams_instance = (HashMap)bsController.getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
-			if(container_streams_instance==null){
-				container_streams_instance = new HashMap();
-				bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
-			}
-			container_streams_instance.put(iStream.getName(), rStream);
-		}
+		if(memoryInContainer_streams.equalsIgnoreCase("true"))
+			bsController.putStreamIntoContainer(iStream.getName(), rStream);
 	
 	return rStream;
 }

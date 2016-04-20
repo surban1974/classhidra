@@ -34,7 +34,7 @@ public class XmlWriter {
 
 		String result="";
 		if(obj==null)
-			result+="<error>Object is NULL</error>";
+			result+="<error>Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL</error>";
 		else{
 			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);	
 			result+=generateXmlItem(obj,name,0,avoidCyclicPointers,null, (annotation!=null)?annotation.children():false);

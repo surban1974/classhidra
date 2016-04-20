@@ -67,6 +67,7 @@ public class bean extends elementBeanBase implements i_bean  {
 	protected boolean refresh=false;
 	
 	protected String outputappliedfor;
+	protected String outputserializedname;
 	
 	protected boolean xmloutput=false;
 	protected String xmloutput_encoding="";
@@ -1425,6 +1426,14 @@ public void setOutputappliedfor(String outputfor) {
 	this.outputappliedfor = outputfor;
 }
 
+public String getOutputserializedname() {
+	return outputserializedname;
+}
+
+public void setOutputserializedname(String outputserializedname) {
+	this.outputserializedname = outputserializedname;
+}
+
 public boolean convert2xml(){
 	return false;
 }
@@ -1448,6 +1457,7 @@ public info_context getInfo_context() {
 public void setInfo_context(i_info_context info_context) {
 	this.info_context = (info_context)info_context;
 }
+
 
 
 

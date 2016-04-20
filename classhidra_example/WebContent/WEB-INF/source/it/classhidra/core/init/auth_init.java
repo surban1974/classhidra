@@ -376,6 +376,9 @@ public class auth_init implements Serializable{
 	public void set_matricola(String string) {
 		_matricola = string;
 	}
+	public void set_matriculation(String string) {
+		_matricola = string;
+	}	
 	public String get_risoluzione() {
 		return _risoluzione;
 	}

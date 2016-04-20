@@ -578,10 +578,17 @@ public void refreshV_info_targets(){
 	}
 
 
+	public void load_from_resources(){
+		load_from_resources("/config/"+bsController.CONST_XML_USERS);
+		load_from_resources("/config/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_USERS);
+		
+		load_from_resources("META-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_USERS);	
+		load_from_resources("WEB-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_USERS);
+	}
 
-	public void load_from_resources() {
+	private boolean load_from_resources(String property_name) {
 
-		String property_name = "/config/"+bsController.CONST_XML_USERS;
+//		String property_name = "/config/"+bsController.CONST_XML_USERS;
 
 		InputStream is = null;
 	    BufferedReader br = null;
@@ -591,6 +598,10 @@ public void refreshV_info_targets(){
 
 	    try {
 	    	is = getClass().getResourceAsStream(property_name);
+	    	if(is==null)
+	    		is = this.getClass().getClassLoader().getResourceAsStream(property_name);
+	    	if(is==null)
+	    		is = ClassLoader.getSystemClassLoader().getResourceAsStream(property_name);
 	    	if(is!=null){
 	    		result="";
 		    	br = new BufferedReader(new InputStreamReader(is));
@@ -613,12 +624,15 @@ public void refreshV_info_targets(){
     			readOk_Resource = true;
     			bsController.writeLog("Load_users from "+property_name+" OK ",iStub.log_INFO);
     			loadedFrom+=" "+property_name;
+    			return true;
     		}else{
+    			bsController.writeLog("Load_users from "+property_name+" KO ",iStub.log_INFO);
     			readOk_Resource = false;
     		}
 	    }catch (Exception e) {
 
 		}
+	    return false;
 	}
 
 	public String toString(){

@@ -118,8 +118,10 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void setGzipoutput(boolean gzipoutput);	
 	
 	String getOutputappliedfor();
-
 	void setOutputappliedfor(String outputfor);
+
+	String getOutputserializedname();
+	void setOutputserializedname(String outputserializedname);
 	
 	boolean getTransformationoutput();
 	void setTransformationoutput(boolean transformationoutput);

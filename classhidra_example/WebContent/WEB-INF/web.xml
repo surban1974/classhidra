@@ -17,7 +17,11 @@
 		<init-param>
 			<param-name>ExcludedPattern</param-name>
 			<param-value>^(?!.*/neohort/).*\.jsp$</param-value>
-		</init-param>		
+		</init-param>	
+	    <init-param>
+	      <param-name>RestSupport</param-name>
+	      <param-value>true</param-value>
+	    </init-param>			
 	</filter>
 	<filter-mapping>
 		<filter-name>bsFilter</filter-name>

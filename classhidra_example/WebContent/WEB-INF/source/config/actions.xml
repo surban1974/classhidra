@@ -72,7 +72,7 @@
                		navigated="true"
                 	memoryInSession="true"
                 	reloadAfterAction="false"
-                	property="allway:public" />
+                	property="always:public" />
                 	
 		
                 	
@@ -100,7 +100,7 @@
 			type="application.web.actions.actionMinimizer" 
 			redirect="/jsp/framework/minimizer.jsp"
 			memoryInSession="true"
-			property="allway:public" 
+			property="always:public" 
 		/>   
 
 		<action path="log_users"
@@ -119,7 +119,7 @@
                 	memoryInSession="true"
                 	reloadAfterAction="false"
                 	help="/jsp/help/help_login.html"
-                	property="allway:public" />
+                	property="always:public" />
                 	
         		<action path="loginVirtual"
                 	name="formLoginVirtual"
@@ -129,7 +129,7 @@
                 	memoryInSession="true"
                 	reloadAfterAction="false"
                 	help="/jsp/help/help_login.html"
-                	property="allway:public" />        	
+                	property="always:public" />        	
  	
  		<action path="builder"
 			name="formBuilder"
@@ -158,7 +158,7 @@
 			type="application.web.actions.actionRecources" 
 			redirect="/jsp/framework/resources.jsp"
 			navigated="true"
-			property="allway:public"
+			property="always:public"
 		>
 			<redirect auth_id="res_id" path="*"/>
 		</action>
@@ -228,7 +228,7 @@
 				
 		<action path="neohort"
 			redirect="/jsp/neohort/examples.jsp"
-			property="allway:public"
+			property="always:public"
 		/>			
 				
 

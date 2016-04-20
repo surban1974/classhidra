@@ -33,7 +33,7 @@ import javax.servlet.*;
 		reloadAfterAction="false",
 		help="/jsp/help/help_login.html",
 		entity=@Entity(
-				property="allway:public"
+				property="always:public"
 		)
 )
 

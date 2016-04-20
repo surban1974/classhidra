@@ -23,13 +23,6 @@
 *********************************************************************************/
 package it.classhidra.core.controller;
 
-import it.classhidra.annotation.elements.Expose;
-import it.classhidra.core.tool.elements.i_elementBase;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +34,13 @@ import javax.servlet.ServletContext;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import it.classhidra.annotation.elements.Expose;
+import it.classhidra.core.tool.elements.i_elementBase;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_sort;
 
 public class info_action extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -6936168913529591521L;
@@ -79,6 +79,9 @@ public class info_action extends info_entity implements i_elementBase{
 	private Vector  v_info_beans;
 	
 	private Vector  vm_streams;
+	
+	private boolean R_R = true;
+
 
 	public info_action(){
 		super();
@@ -714,6 +717,15 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setIRedirect(info_redirect iRedirect) {
 		this.iRedirect = iRedirect;
+	}
+
+
+	public boolean isR_R() {
+		return R_R;
+	}
+
+	public void setR_R(boolean r_R) {
+		R_R = r_R;
 	}
 
 

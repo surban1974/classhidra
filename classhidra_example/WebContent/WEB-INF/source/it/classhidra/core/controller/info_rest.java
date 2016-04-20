@@ -117,8 +117,12 @@ public class info_rest extends info_entity implements i_elementBase{
 	public HashMap mapParameterIfCorrect(String extparametermapping){
 		if(extparametermapping==null) 
 			return null;
-		if(extparametermapping.equals("") || extparametermapping.equals("/"))
-			return null;
+		if(extparametermapping.equals("") || extparametermapping.equals("/")){
+			if(parameters==null || parameters.size()==0)
+				return new HashMap();
+			else
+				return null;
+		}
 
 		List extparameters=new ArrayList();
 		StringTokenizer st = new StringTokenizer(extparametermapping,"/");

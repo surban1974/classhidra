@@ -29,23 +29,23 @@ public interface i_annotation_scanner {
 
 	String getSession_error();
 	
-	public String getListener_actions();
+	String getListener_actions();
 
-	public String getListener_beans();
+	String getListener_beans();
 
-	public String getListener_streams();
+	String getListener_streams();
 	
-	public String getMemoryInContainer_streams();
+	String getMemoryInContainer_streams();
 	
-	public String getProvider();
+	String getProvider();
 	
-	public String getInstance_navigated();
+	String getInstance_navigated();
 
-	public String getInstance_local_container();
+	String getInstance_local_container();
 	
-	public String getInstance_scheduler_container();
+	String getInstance_scheduler_container();
 	
-	public String getInstance_onlysession();
+	String getInstance_onlysession();
 	
 
 }

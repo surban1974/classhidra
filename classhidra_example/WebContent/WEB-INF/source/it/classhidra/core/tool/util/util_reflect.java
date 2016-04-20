@@ -338,12 +338,28 @@ public static Object getValue(Object requested,Method mtd, Object[] value) throw
 	try{
 
 		Class[] cls = new Class[value.length];
-		for(int i=0;i<value.length;i++) cls[i]=value[i].getClass();
+		for(int i=0;i<value.length;i++){
+			if(value[i]!=null)
+				cls[i]=value[i].getClass();
+		}
 		resultObject =mtd.invoke(requested, value);
 	}catch(Exception e){
 	}
 	return  resultObject;
 }
+
+public static Object getValue(Object requested,Method mtd, Object[] value, Class[] cls) throws Exception{
+	if (mtd == null || requested==null) return null;
+	if(value==null) value = new Object[0];
+	if(cls==null) cls = new Class[0];
+	Object resultObject = null;
+	try{
+		resultObject =mtd.invoke(requested, value);
+	}catch(Exception e){
+	}
+	return  resultObject;
+}
+
 
 public static Object getValueMethodName(Object requested, String nome, Object[] value) throws Exception{
 	if (nome == null || nome.trim().length()==0 || requested==null) return null;
@@ -352,7 +368,10 @@ public static Object getValueMethodName(Object requested, String nome, Object[] 
 	try{
 		java.lang.reflect.Method mtd = null;
 		Class[] cls = new Class[value.length];
-		for(int i=0;i<value.length;i++) cls[i]=value[i].getClass();
+		for(int i=0;i<value.length;i++){
+			if(value[i]!=null)
+				cls[i]=value[i].getClass();
+		}
 		mtd = getMethodName(requested,nome,cls);
 		if(mtd==null) return null;
 		resultObject =mtd.invoke(requested, value);
@@ -372,8 +391,12 @@ public static java.lang.reflect.Method getMethodNull(Object requested, String no
 			boolean isCorrect=true;
 			for(int j=0;j<cls.length;j++){
 				if(cls[j]!=null){
-					if(cls[j].getName().equals(par[j].getName())) isCorrect&=true;
-					else isCorrect&=false;
+					if(cls[j].getName().equals(par[j].getName()))
+						isCorrect&=true;
+					else if(cls[j].isAssignableFrom((par[j])) || par[j].isAssignableFrom((cls[j])))
+						isCorrect&=true;
+					else
+						isCorrect&=false;
 				}
 			}
 			if(isCorrect) return current;
@@ -394,6 +417,7 @@ public static java.lang.reflect.Method getMethodName(Object requested, String no
 	}
 	return result;
 }
+
 
 
 

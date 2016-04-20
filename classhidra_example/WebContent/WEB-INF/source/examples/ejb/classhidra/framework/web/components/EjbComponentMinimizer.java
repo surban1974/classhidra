@@ -38,7 +38,7 @@ import it.classhidra.framework.web.beans.option_element;
 		redirect="/jsp/framework/minimizer.jsp",
         statistic="false",
         entity=@Entity(
-				property="allway:public"
+				property="always:public"
 		)
 )
 

@@ -57,7 +57,7 @@ import it.classhidra.framework.web.integration.i_module_integration;
 						reloadAfterAction="true",
 						help="/jsp/help/help_login.html",
 						entity=@Entity(
-								property="allway:public"
+								property="always:public"
 						)
 				)
 

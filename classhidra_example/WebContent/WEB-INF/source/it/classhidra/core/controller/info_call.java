@@ -25,12 +25,6 @@ package it.classhidra.core.controller;
 
 
 
-import it.classhidra.annotation.elements.Expose;
-import it.classhidra.core.tool.elements.i_elementBase;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_format;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +33,12 @@ import java.util.StringTokenizer;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import it.classhidra.annotation.elements.Expose;
+import it.classhidra.core.tool.elements.i_elementBase;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_format;
 
 public class info_call extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -605542733311006711L;
@@ -51,6 +51,8 @@ public class info_call extends info_entity implements i_elementBase{
 	private info_redirect iRedirect;
 	private List exposed;
 	private List restmapping;
+
+	private boolean R_R = true;
 	
 	public info_call(){
 		super();
@@ -286,6 +288,14 @@ public class info_call extends info_entity implements i_elementBase{
 		this.restmapping = restmapping;
 	}
 
+
+	public boolean isR_R() {
+		return R_R;
+	}
+
+	public void setR_R(boolean r_R) {
+		R_R = r_R;
+	}
 
 	
 }

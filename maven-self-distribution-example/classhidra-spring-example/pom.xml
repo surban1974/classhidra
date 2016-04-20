@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.surban1974.classhidra</groupId>
   <artifactId>classhidra-spring-example</artifactId>
-  <version>1.5.3</version>
+  <version>1.5.4</version>
   <packaging>war</packaging>
 	<name>ClassHidra Framework Example Spring Implementation</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Spring Implementation. Distributed Tomcat 7.</description>
@@ -61,7 +61,7 @@
 		                 		<artifactItem>
 		                   			<groupId>com.github.surban1974.classhidra</groupId>
 		                   			<artifactId>classhidra-origin</artifactId>
-		                   			<version>1.5.3</version>
+		                   			<version>1.5.4</version>
 		                   			<type>rar</type>
 		                   			<overWrite>false</overWrite>
 		                   			<outputDirectory>src/main</outputDirectory>
@@ -255,14 +255,14 @@
  		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-origin</artifactId>
-			<version>1.5.3</version>
+			<version>1.5.4</version>
 			<type>rar</type>
 		</dependency>
 
  		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-spring</artifactId>
-			<version>1.5.3</version>
+			<version>1.5.4</version>
 		</dependency>			
 
 		

@@ -784,6 +784,7 @@ public class annotation_scanner implements i_annotation_scanner {
     			iAction.setMethod(annotationAction.method());
     		else if(method!=null)
     			iAction.setMethod(method.getName());
+    		iAction.setMappedMethodParameterTypes(method.getParameterTypes());
     	}
     		
     	iAction.setRedirect(annotationAction.redirect());
@@ -1105,6 +1106,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 	
 	private info_call checkActionCallAnnotation(ActionCall annotationCall, info_action iAction, Method current, int i){
+		
 		info_call iCall = new info_call();
 		if((annotationCall.owner()==null || annotationCall.owner().equals("")) && iAction==null)
 			return null;
@@ -1122,6 +1124,9 @@ public class annotation_scanner implements i_annotation_scanner {
 		if(annotationCall.navigated()==null || annotationCall.navigated().equals(""))
 			iCall.setNavigated("false");
 		else iCall.setNavigated(annotationCall.navigated());
+		if(current!=null)
+			iCall.setMappedMethodParameterTypes(current.getParameterTypes());
+		
 		iCall.setParent(iAction);
 		setEntity(iCall,annotationCall.entity());
 		if(iCall.getOrder().equals("")) iCall.setOrder(Integer.valueOf(i+1).toString());
@@ -1352,7 +1357,6 @@ public class annotation_scanner implements i_annotation_scanner {
 		return memoryInContainer_streams;
 	}
 
-
 	public String getProvider() {
 		return provider;
 	}
@@ -1374,6 +1378,9 @@ public class annotation_scanner implements i_annotation_scanner {
 	public String getInstance_scheduler_container() {
 		return instance_scheduler_container;
 	}
+
+
+
 
 
 

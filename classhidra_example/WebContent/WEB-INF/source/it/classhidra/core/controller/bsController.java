@@ -26,6 +26,7 @@ package it.classhidra.core.controller;
 
 
 
+import it.classhidra.annotation.elements.Parameter;
 import it.classhidra.core.controller.wrappers.a_ResponseWrapper;
 import it.classhidra.core.controller.wrappers.responseWrapperFactory;
 import it.classhidra.core.init.app_init;
@@ -49,6 +50,7 @@ import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_cloner;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_makeValue;
 import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_sort;
@@ -69,6 +71,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -899,6 +902,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 //				request2map = util_supportbean.request2map(request);
 		}
 		
+//20160419
+		if(action_instance.getCurrent_redirect()!=null)
+			action_instance.setCurrent_redirect(null);
+//-------
+		
 		try{
 			if(!isRemoteEjb)
 				action_instance.onPreInit(request, response);
@@ -939,10 +947,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 					Object[] method_call = action_instance.getMethodAndCall(id_call);
 					if(method_call!=null){
 						iCallMethod = (Method)method_call[0];
-						iCall =  (info_call)method_call[1];
-						if(iCall.getExposed().size()==0)
+						iCall =  (info_call)method_call[1];						
+						if(iCall.getExposed().size()==0){
 								action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
-						else{
+						}else{
 							for(int e=0;e<iCall.getExposed().size();e++){
 								String suffix = "."+iCall.getExposed().get(e).toString();
 								if(action_instance.get_infoaction().get_calls().get(iCall.getName()+suffix)==null)
@@ -953,29 +961,73 @@ public class bsController extends HttpServlet implements bsConstants  {
 //						action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
 					}
 				}else{
-					try{
-						if(!isRemoteEjb)
-//							iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
-							iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+					List searchErrors = new ArrayList();
+						if(iCallMethod==null){
+							try{
+								if(!isRemoteEjb)
+	//								iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+									iCallMethod = action_instance.getClass().getMethod(iCall.getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+								else
+	//								iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{HashMap.class});
+									iCallMethod = action_instance.getClass().getMethod(iCall.getMethod(), new Class[]{HashMap.class});
+							}catch(Exception em){	
+								searchErrors.add(em);
+//								new bsControllerException(em, iStub.log_ERROR);
+							}
+						}
+						if(iCallMethod==null){
+							try{
+								if(!isRemoteEjb)
+	//								iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+									iCallMethod = action_instance.asAction().getClass().getMethod(iCall.getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+								else
+	//								iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{HashMap.class});
+									iCallMethod = action_instance.asAction().getClass().getMethod(iCall.getMethod(), new Class[]{HashMap.class});
+								if(iCallMethod!=null)
+									useAsAction=true;
+							}catch(Exception em){
+								searchErrors.add(em);
+//								new bsControllerException(em, iStub.log_ERROR);
+							}	
+						}
+						if(iCallMethod==null && iCall.getMappedMethodParameterTypes()!=null){
+							try{
+								if(!isRemoteEjb)
+									iCallMethod = action_instance.getClass().getMethod(iCall.getMethod(), iCall.getMappedMethodParameterTypes());
+								else
+									iCallMethod = action_instance.getClass().getMethod(iCall.getMethod(), iCall.getMappedMethodParameterTypes());
+								if(iCallMethod!=null){
+									useAsAction=true;
+									iCall.setR_R(false);
+								}
+							}catch(Exception em){
+								searchErrors.add(em);
+//								new bsControllerException(em, iStub.log_ERROR);
+							}	
+						}
+						if(iCallMethod==null && iCall.getMappedMethodParameterTypes()!=null){
+							try{
+								if(!isRemoteEjb)
+									iCallMethod = action_instance.asAction().getClass().getMethod(iCall.getMethod(), iCall.getMappedMethodParameterTypes());
+								else
+									iCallMethod = action_instance.asAction().getClass().getMethod(iCall.getMethod(), iCall.getMappedMethodParameterTypes());
+								if(iCallMethod!=null){
+									useAsAction=true;
+									iCall.setR_R(false);
+								}
+							}catch(Exception em){
+								searchErrors.add(em);
+//								new bsControllerException(em, iStub.log_ERROR);
+							}	
+						}
+						if(iCallMethod==null){
+							for(int er=0;er<searchErrors.size();er++)
+								new bsControllerException((Exception)searchErrors.get(er), iStub.log_ERROR);
+						}
 
-						else
-							iCallMethod = util_reflect.getMethodName(action_instance,iCall.getMethod(), new Class[]{HashMap.class});
-					}catch(Exception em){						
-						new bsControllerException(em, iStub.log_ERROR);
-					}
-					if(iCallMethod==null){
-						try{
-							if(!isRemoteEjb)
-//								iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{request.getClass(),response.getClass()});
-								iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
-							else
-								iCallMethod = util_reflect.getMethodName(action_instance.asAction(),iCall.getMethod(), new Class[]{HashMap.class});
-							if(iCallMethod!=null)
-								useAsAction=true;
-						}catch(Exception em){
-							new bsControllerException(em, iStub.log_ERROR);
-						}	
-					}
+					
+					
+					
 				}
 			}catch(Exception ex){
 				new bsControllerException(ex, iStub.log_ERROR);
@@ -998,30 +1050,49 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 			Method iActionMethod = null;
 			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
-				try{
-					if(!isRemoteEjb)
-						iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
-					else
-						iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HashMap.class});
-						
-				}catch(Exception e){
-					new bsControllerException(e, iStub.log_ERROR);
-				}
-				if(iActionMethod==null){
-					try{
-						if(!isRemoteEjb)
-							iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
-						else
-							iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HashMap.class});
-							
-						if(iActionMethod!=null)
-							useAsAction=true;
-					}catch(Exception e){
-						new bsControllerException(e, iStub.log_ERROR);
-					}
-				}
-
 				
+					if(iActionMethod==null){
+						try{
+							if(!isRemoteEjb)
+								iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+							else
+								iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HashMap.class});
+								
+						}catch(Exception e){
+							new bsControllerException(e, iStub.log_ERROR);
+						}
+					}
+					if(iActionMethod==null){
+						try{
+							if(!isRemoteEjb)
+								iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HttpServletRequest.class, HttpServletResponse.class});
+							else
+								iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HashMap.class});
+								
+							if(iActionMethod!=null)
+								useAsAction=true;
+						}catch(Exception e){
+							new bsControllerException(e, iStub.log_ERROR);
+						}
+					}
+	
+					if(iActionMethod==null && action_instance.get_infoaction().getMappedMethodParameterTypes()!=null){
+						try{
+							if(!isRemoteEjb)
+								iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), action_instance.get_infoaction().getMappedMethodParameterTypes());
+							else
+								iActionMethod = action_instance.asAction().getClass().getMethod(action_instance.get_infoaction().getMethod(), action_instance.get_infoaction().getMappedMethodParameterTypes());
+								
+							if(iActionMethod!=null){
+								useAsAction=true;
+								action_instance.get_infoaction().setR_R(false);
+							}
+						}catch(Exception e){
+							new bsControllerException(e, iStub.log_ERROR);
+						}
+					}
+
+
 			}
 			
 
@@ -1050,27 +1121,47 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else{
 					
 					try{
-//						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
+//						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response})
 						if(!isRemoteEjb){
 							if(useAsAction)
 								current_redirect = prepareActionResponse(
-										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
+										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
+										?
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), request, response), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+										:
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response})
+										,										
 										iActionMethod, action_instance.get_infoaction(),
 										response);
 							else
 								current_redirect = prepareActionResponse(
-										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+										(action_instance.get_infoaction()!=null && !action_instance.get_infoaction().isR_R())
+										?
+											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, request, response), action_instance.get_infoaction().getMappedMethodParameterTypes())
+										:
+											util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response})
+										,
 										iActionMethod, action_instance.get_infoaction(),
 										response);
 						}else{
 							if(useAsAction)
 								current_redirect = prepareActionResponse(
-										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map}),
+										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
+										?
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), request, response), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+										:
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map})
+										,
 										iActionMethod, action_instance.get_infoaction(),
 										response);
 							else
-								current_redirect = prepareActionResponse(
-										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map}),
+								current_redirect = prepareActionResponse(										
+										(action_instance.get_infoaction()!=null && !action_instance.get_infoaction().isR_R())
+										?
+											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, request, response), action_instance.get_infoaction().getMappedMethodParameterTypes())
+										:
+											util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map})
+										,
 										iActionMethod, action_instance.get_infoaction(),
 										response);
 							
@@ -1123,23 +1214,47 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(!isRemoteEjb){
 							if(useAsAction)
 								current_redirect = prepareActionResponse(
-										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
+//										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
+										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
+										?
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), request, response), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+										:
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response})
+										,										
 										iActionMethod, action_instance.get_infoaction(),
 										response);
 							else
 								current_redirect = prepareActionResponse(
-										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+//										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
+										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
+										?
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), request, response), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+										:
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map})
+										,
 										iActionMethod, action_instance.get_infoaction(),
 										response);
 						}else{
 							if(useAsAction)
 								current_redirect = prepareActionResponse(
-										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map}),
+//										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map}),
+										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
+										?
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), request, response), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+										:
+											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map})
+										,
 										iActionMethod, action_instance.get_infoaction(),
 										response);
 							else
 								current_redirect = prepareActionResponse(
-										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map}),
+//										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map}),
+										(action_instance.get_infoaction()!=null && !action_instance.get_infoaction().isR_R())
+										?
+											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, request, response), action_instance.get_infoaction().getMappedMethodParameterTypes())
+										:
+											util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map})
+										,
 										iActionMethod, action_instance.get_infoaction(),
 										response);
 						}
@@ -1179,14 +1294,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 							if(!isRemoteEjb){
 								if(useAsAction)
 									current_redirect = prepareActionCallResponse(
-											util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request,response}),
+											(iCall.isR_R())
+											?
+												util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request,response})
+											:
+												util_reflect.getValue(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), request, response), iCall.getMappedMethodParameterTypes()),
 											iCallMethod,
 											action_instance.get_infoaction(),
 											iCall,
 											response);
 								else
 									current_redirect = prepareActionCallResponse(
-											util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response}),
+											(iCall.isR_R())
+											?
+												util_reflect.getValue(action_instance, iCallMethod, new Object[]{request,response})
+											:
+												util_reflect.getValue(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, request, response), iCall.getMappedMethodParameterTypes()),
 											iCallMethod,
 											action_instance.get_infoaction(),
 											iCall,
@@ -1194,14 +1317,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 							}else{
 								if(useAsAction)
 									current_redirect = prepareActionCallResponse(
-											util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request2map}),
+											(iCall.isR_R())
+											?
+												util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request2map})
+											:
+												util_reflect.getValue(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), request, response), iCall.getMappedMethodParameterTypes()),
 											iCallMethod,
 											action_instance.get_infoaction(),
 											iCall,
 											response);
 								else
 									current_redirect = prepareActionCallResponse(
-											util_reflect.getValue(action_instance, iCallMethod, new Object[]{request2map}),
+											(iCall.isR_R())
+											?
+												util_reflect.getValue(action_instance, iCallMethod, new Object[]{request2map})
+											:
+												util_reflect.getValue(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, request, response), iCall.getMappedMethodParameterTypes()),
 											iCallMethod,
 											action_instance.get_infoaction(),
 											iCall,
@@ -1265,7 +1396,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(action_instance.isBeanEqualAction())
 					form = action_instance;
 				else
-				form = action_instance.get_bean();
+					form = action_instance.get_bean();
 				
 				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
 /*
@@ -1608,6 +1739,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 					String outputappliedfor = action_instance.get_bean().getOutputappliedfor();
+					String outputserializedname = action_instance.get_bean().getOutputserializedname();
 					
 					String output4SOAP = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4SOAP);
 					String output4JSON = (String)action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4JSON);
@@ -1632,15 +1764,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 							if(output4SOAP==null)
 								output4SOAP = util_beanMessageFactory.bean2xml(
 										(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
-										(outputappliedfor==null || outputappliedfor.trim().equals(""))
+										(outputserializedname==null || outputserializedname.trim().equals(""))
 											?
-											(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+											(	
+												(outputappliedfor==null || outputappliedfor.trim().equals(""))
 												?
-														(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+												(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+													?
+													(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+													:
+													action_instance.get_bean().get_infobean().getName()
 												:
-												action_instance.get_bean().get_infobean().getName()
+												outputappliedfor
+											)
 											:
-											outputappliedfor
+										outputserializedname
 										,
 										true,
 										avoidCheckPermission,
@@ -1661,15 +1799,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 							if(output4JSON==null)
 								output4JSON = util_beanMessageFactory.bean2json(
 										(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
-										(outputappliedfor==null || outputappliedfor.trim().equals(""))
+										(outputserializedname==null || outputserializedname.trim().equals(""))
 											?
-											(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+											(	
+												(outputappliedfor==null || outputappliedfor.trim().equals(""))
 												?
-														(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+												(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+													?
+													(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+													:
+													action_instance.get_bean().get_infobean().getName()
 												:
-												action_instance.get_bean().get_infobean().getName()
+												outputappliedfor
+											)
 											:
-											outputappliedfor
+										outputserializedname
 										,
 										avoidCheckPermission,
 										action_instance.get_bean().getJsonoutput_encoding());
@@ -1737,15 +1881,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 									if(output4SOAP==null)
 										output4SOAP = util_beanMessageFactory.bean2xml(
 												(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
-												(outputappliedfor==null || outputappliedfor.trim().equals(""))
+												(outputserializedname==null || outputserializedname.trim().equals(""))
 													?
-													(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+													(	
+														(outputappliedfor==null || outputappliedfor.trim().equals(""))
 														?
-																(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+														(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+															?
+															(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+															:
+															action_instance.get_bean().get_infobean().getName()
 														:
-														action_instance.get_bean().get_infobean().getName()
+														outputappliedfor
+													)
 													:
-													outputappliedfor
+												outputserializedname
 												,
 												true,
 												avoidCheckPermission
@@ -1776,6 +1926,59 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	}
 	
+	
+	public static Object[] prepareMethod(Method method, i_action action_instance, HttpServletRequest request, HttpServletResponse response){
+		if(method==null || method.getParameterTypes()==null || method.getParameterTypes().length==0)
+			return new Object[0];
+		Object[] result = new Object[method.getParameterTypes().length];
+		for(int i=0;i<method.getParameterTypes().length;i++){
+			Class current = method.getParameterTypes()[i];
+			Parameter annotationParameter = null;
+			if(method.getParameterAnnotations()!=null && method.getParameterAnnotations()[i]!=null){
+				for(int j=0;j<method.getParameterAnnotations()[i].length;j++){
+					if(method.getParameterAnnotations()[i][j] instanceof Parameter)
+						annotationParameter = (Parameter)method.getParameterAnnotations()[i][j];
+				}
+			}
+			if(annotationParameter!=null){
+				try{
+					Object ret = action_instance.get_bean().asBean().get(annotationParameter.name());
+					if(ret!=null && (ret.getClass().isAssignableFrom(current) || current.isAssignableFrom(ret.getClass())))
+						result[i] = ret;
+					else if(ret!=null){
+						result[i] = util_makeValue.makeFormatedValue1(current,ret.toString(),null);
+					}else if(request.getParameter(annotationParameter.name())!=null){
+						ret = request.getParameter(annotationParameter.name());
+						result[i] = util_makeValue.makeFormatedValue1(current,(ret!=null)?ret.toString():"",null);
+					}else if(ret==null){
+						try{
+							ret = current.newInstance();
+							util_supportbean.initNormal(ret, annotationParameter.name(), request);
+							util_supportbean.initPartFromMap(ret, annotationParameter.name(), action_instance.get_bean().asBean().getParametersMP());
+							result[i] = ret;
+						}catch(Exception e){
+							e.toString();
+						}
+					}
+				}catch(Exception e){
+					
+				}
+			}else{
+				try{
+					if(current.isAssignableFrom(HttpServletRequest.class))
+						result[i] = request;
+					else if(current.isAssignableFrom(HttpServletResponse.class))
+						result[i] = response;
+					else if(current.isPrimitive())
+						result[i] = util_makeValue.makeFormatedValue1(current,"",null);
+				}catch(Exception e){
+					
+				}
+			}
+		}
+		return result;
+	}
+	
 	public static redirects prepareActionCallResponse(Object retVal, Method method, info_action iAction, info_call iCall, HttpServletResponse response) throws Exception{
 		
 		redirects current_redirect = null;
@@ -1783,23 +1986,33 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(method.getReturnType()!=null && !method.getReturnType().equals(Void.TYPE)){
 				if(redirects.class.isAssignableFrom(method.getReturnType()))
 					current_redirect = (redirects)retVal;
-				else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
+				else if(response_wrapper.class.isAssignableFrom(method.getReturnType())){
 					if(retVal!=null){
+						response_wrapper rWrapper = (response_wrapper)retVal;
+						info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
 						if(iCall!=null && iCall.getIRedirect()!=null){
-							if(iCall.getIRedirect().getContentType()!=null && !iCall.getIRedirect().getContentType().equals("")){
-								if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
-				    				response.setHeader("Content-Type",iCall.getIRedirect().getContentType().toLowerCase()+
-				    						((iCall.getIRedirect().getContentEncoding()!=null)?";charset="+iCall.getIRedirect().getContentEncoding():"")
-				    				);
-								else
-									response.setHeader("Content-Type",iCall.getIRedirect().getContentType().toLowerCase());
-								
-							}
+							if(iCall.getIRedirect().getContentType()!=null && !iCall.getIRedirect().getContentType().equals(""))
+								fake.setContentType(iCall.getIRedirect().getContentType());
 							if(iCall.getIRedirect().getContentName()!=null && !iCall.getIRedirect().getContentName().equals(""))
-								response.setHeader("Content-Disposition","attachment; filename="+iCall.getIRedirect().getContentName());
+								fake.setContentName(iCall.getIRedirect().getContentName());		
 							if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
-								response.setHeader("Content-Transfer-Encoding",iCall.getIRedirect().getContentEncoding());
+								fake.setContentEncoding(iCall.getIRedirect().getContentEncoding());								
 						}
+						updateResponseContentType(fake, response, rWrapper.getResponseStatus());
+						if(rWrapper.getContent()!=null){
+							if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
+								response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
+							else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
+								response.getOutputStream().write(((byte[])rWrapper.getContent()));
+							else 
+								response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+						}
+					}
+				}else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
+					if(retVal!=null){
+						if(iCall!=null && iCall.getIRedirect()!=null)
+							updateResponseContentType(iCall.getIRedirect(), response, 0);
+						
 						if(String.class.isAssignableFrom(method.getReturnType()))
 							response.getOutputStream().write(((String)retVal).getBytes());
 						if(byte[].class.isAssignableFrom(method.getReturnType()))
@@ -1841,27 +2054,38 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(method.getReturnType()!=null && !method.getReturnType().equals(Void.TYPE)){
 				if(redirects.class.isAssignableFrom(method.getReturnType()))
 					current_redirect = (redirects)retVal;
-				else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
+				else if(response_wrapper.class.isAssignableFrom(method.getReturnType())){
+					if(retVal!=null){
+						response_wrapper rWrapper = (response_wrapper)retVal;
+						info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
+						if(iAction!=null && iAction.getIRedirect()!=null){
+							if(iAction.getIRedirect().getContentType()!=null && !iAction.getIRedirect().getContentType().equals(""))
+								fake.setContentType(iAction.getIRedirect().getContentType());
+							if(iAction.getIRedirect().getContentName()!=null && !iAction.getIRedirect().getContentName().equals(""))
+								fake.setContentName(iAction.getIRedirect().getContentName());		
+							if(iAction.getIRedirect().getContentEncoding()!=null && !iAction.getIRedirect().getContentEncoding().equals(""))
+								fake.setContentEncoding(iAction.getIRedirect().getContentEncoding());								
+						}
+						updateResponseContentType(fake, response, rWrapper.getResponseStatus());
+						if(rWrapper.getContent()!=null){
+							if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
+								response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
+							else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
+								response.getOutputStream().write(((byte[])rWrapper.getContent()));
+							else 
+								response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+						}
+					}
+				
+				}else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
 					if(retVal!=null){
 						info_redirect iRedirect = null;
 						if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
 							iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
 						
-						if(iRedirect!=null){
-							if(iRedirect.getContentType()!=null && !iRedirect.getContentType().equals("")){
-								if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
-				    				response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase()+
-				    						((iRedirect.getContentEncoding()!=null)?";charset="+iRedirect.getContentEncoding():"")
-				    				);
-								else
-									response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase());
-								
-							}
-							if(iRedirect.getContentName()!=null && !iRedirect.getContentName().equals(""))
-								response.setHeader("Content-Disposition","attachment; filename="+iRedirect.getContentName());
-							if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
-								response.setHeader("Content-Transfer-Encoding",iRedirect.getContentEncoding());
-						}
+						if(iRedirect!=null)
+							updateResponseContentType(iRedirect, response, 0);
+						
 						if(String.class.isAssignableFrom(method.getReturnType()))
 							response.getOutputStream().write(((String)retVal).getBytes());
 						if(byte[].class.isAssignableFrom(method.getReturnType()))
@@ -1903,21 +2127,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 		RequestDispatcher rd = null;
 		try{
 			redirects current = action_instance.getCurrent_redirect();
-			if(current!=null && current.get_inforedirect()!=null){
-				if(current.get_inforedirect().getContentType()!=null && !current.get_inforedirect().getContentType().equals("")){
+			if(current!=null){
+				info_redirect fake = new info_redirect().setContentType(current.getContentType()).setContentName(current.getContentName()).setContentEncoding(current.getContentEncoding());
+				if(current.get_inforedirect()!=null){
+					if(current.get_inforedirect().getContentType()!=null && !current.get_inforedirect().getContentType().equals(""))
+						fake.setContentType(current.get_inforedirect().getContentType());
+					if(current.get_inforedirect().getContentName()!=null && !current.get_inforedirect().getContentName().equals(""))
+						fake.setContentName(current.get_inforedirect().getContentName());		
 					if(current.get_inforedirect().getContentEncoding()!=null && !current.get_inforedirect().getContentEncoding().equals(""))
-	    				response.setHeader("Content-Type",current.get_inforedirect().getContentType().toLowerCase()+
-	    						((current.get_inforedirect().getContentEncoding()!=null)?";charset="+current.get_inforedirect().getContentEncoding():"")
-	    				);
-					else
-						response.setHeader("Content-Type",current.get_inforedirect().getContentType().toLowerCase());
-					
+						fake.setContentEncoding(current.get_inforedirect().getContentEncoding());				
+					updateResponseContentType(fake,response,current.getResponseStatus());
 				}
-				if(current.get_inforedirect().getContentName()!=null && !current.get_inforedirect().getContentName().equals(""))
-					response.setHeader("Content-Disposition","attachment; filename="+current.get_inforedirect().getContentName());
-				if(current.get_inforedirect().getContentEncoding()!=null && !current.get_inforedirect().getContentEncoding().equals(""))
-					response.setHeader("Content-Transfer-Encoding",current.get_inforedirect().getContentEncoding());
 			}
+			
 			
 			rd = action_instance.getCurrent_redirect().redirect(servletContext, action_instance.get_infoaction());
 		}catch(Exception ex){
@@ -2069,26 +2291,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		HashMap request2map = null;
 		boolean isRemoteEjb=false;
-		
-		info_redirect iRedirect = currentStreamRedirect.get_inforedirect();
-		if(iRedirect==null)
-			iRedirect = (currentStream.get_infostream()!=null)?currentStream.get_infostream().getIRedirect():null;
-		
-		if(iRedirect!=null){
-			if(iRedirect.getContentType()!=null && !iRedirect.getContentType().equals("")){
-				if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
-    				response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase()+
-    						((iRedirect.getContentEncoding()!=null)?";charset="+iRedirect.getContentEncoding():"")
-    				);
-				else
-					response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase());
-				
-			}
-			if(iRedirect.getContentName()!=null && !iRedirect.getContentName().equals(""))
-				response.setHeader("Content-Disposition","attachment; filename="+iRedirect.getContentName());
-			if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
-				response.setHeader("Content-Transfer-Encoding",iRedirect.getContentEncoding());
+
+		info_redirect fake = new info_redirect().setContentType(currentStreamRedirect.getContentType()).setContentName(currentStreamRedirect.getContentName()).setContentEncoding(currentStreamRedirect.getContentEncoding());
+		if(currentStreamRedirect.get_inforedirect()!=null){
+			if(currentStreamRedirect.get_inforedirect().getContentType()!=null && !currentStreamRedirect.get_inforedirect().getContentType().equals(""))
+				fake.setContentType(currentStreamRedirect.get_inforedirect().getContentType());
+			if(currentStreamRedirect.get_inforedirect().getContentName()!=null && !currentStreamRedirect.get_inforedirect().getContentName().equals(""))
+				fake.setContentName(currentStreamRedirect.get_inforedirect().getContentName());		
+			if(currentStreamRedirect.get_inforedirect().getContentEncoding()!=null && !currentStreamRedirect.get_inforedirect().getContentEncoding().equals(""))
+				fake.setContentEncoding(currentStreamRedirect.get_inforedirect().getContentEncoding());				
 		}
+		updateResponseContentType(fake,response,currentStreamRedirect.getResponseStatus());
+		
 
 		
 		if(currentStreamRedirect.get_uri()==null || currentStreamRedirect.get_uri().equals("")){
@@ -2153,6 +2367,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	}
 
+	
+	public static void updateResponseContentType(info_redirect iRedirect, HttpServletResponse response, int status){
+		if(iRedirect!=null && response!=null){
+			if(iRedirect.getContentType()!=null && !iRedirect.getContentType().equals("")){
+				if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+    				response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase()+
+    						((iRedirect.getContentEncoding()!=null)?";charset="+iRedirect.getContentEncoding():"")
+    				);
+				else
+					response.setHeader("Content-Type",iRedirect.getContentType().toLowerCase());
+				
+			}
+			if(iRedirect.getContentName()!=null && !iRedirect.getContentName().equals(""))
+				response.setHeader("Content-Disposition","attachment; filename="+iRedirect.getContentName());
+			if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+				response.setHeader("Content-Transfer-Encoding",iRedirect.getContentEncoding());
+			if(status!=0)
+				response.setStatus(status);
+		}
+	}
 
 	public static Vector getActionStreams(String id_action){
 		Vector _streams = null;
@@ -2399,6 +2633,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(action_instance.getCurrent_redirect()!=null){
 					request.removeAttribute(CONST_ID_REQUEST_TYPE);
 					response = execRedirect(action_instance,servletContext,request,response,true);
+				}else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getIRedirect()!=null){
+					updateResponseContentType(action_instance.get_infoaction().getIRedirect(),response,0);
 				}
 
 				environmentState(request,id_action);
@@ -4870,6 +5106,28 @@ public class bsController extends HttpServlet implements bsConstants  {
 		
 		return false;
 	}
+
+	
+	public static i_stream getStreamFromContainer(String id_stream){
+		HashMap container_streams_instance = (HashMap)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		if(container_streams_instance==null){
+			container_streams_instance = new HashMap();
+			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
+		}
+		return (i_stream)container_streams_instance.get(id_stream);
+	}
+	
+	public static void putStreamIntoContainer(String id_stream, i_stream rStream){
+		if(id_stream==null)
+			return;
+		HashMap container_streams_instance = (HashMap)bsController.getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		if(container_streams_instance==null){
+			container_streams_instance = new HashMap();
+			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
+		}
+		container_streams_instance.put(id_stream, rStream);
+	}
+	
 
 
 	public static void setReInit(boolean reInit) {

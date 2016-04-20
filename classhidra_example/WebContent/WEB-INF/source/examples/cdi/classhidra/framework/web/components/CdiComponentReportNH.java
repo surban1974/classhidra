@@ -22,7 +22,7 @@ import it.classhidra.core.tool.exception.bsControllerException;
 @Action (
 	path="report_neohort",
 	entity=@Entity(
-			property="allway:public"
+			property="always:public"
 	),
 
 	redirects={

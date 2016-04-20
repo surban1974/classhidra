@@ -27,6 +27,7 @@ import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.util.util_format;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -57,6 +58,10 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	
 	protected boolean annotationLoaded=false;
 	protected info_entity parent;
+	
+	private Class[] mappedMethodParameterTypes;
+
+
 
 	public info_entity(){
 		super();
@@ -323,6 +328,17 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	public void setParent(info_entity parent) {
 		this.parent = parent;
 	}
+
+
+	public Class[] getMappedMethodParameterTypes() {
+		return mappedMethodParameterTypes;
+	}
+
+
+	public void setMappedMethodParameterTypes(Class[] mappedMethodParameterTypes) {
+		this.mappedMethodParameterTypes = mappedMethodParameterTypes;
+	}
+
 
 
 

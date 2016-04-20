@@ -340,9 +340,18 @@ function ajax_makeParameters64(frm,url) {
     return getstr;
  }
 
-function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType) {
+function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus) {
 		var urlOnly="";
 		var parametersOnly="";
+		var method="POST";
+		var enlargeServerStatus = false;
+		
+		if(requestMethod && requestMethod!=""){
+			method = requestMethod;
+		}
+		
+		if(anyServerStatus)
+			enlargeServerStatus = anyServerStatus;
 
 		if(urlWidthParameters.indexOf("?")>-1){
 			var pos = urlWidthParameters.indexOf("?");
@@ -413,7 +422,10 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 	    http_request.onreadystatechange = function() {
 	    	try{
 		    	if (http_request.readyState == 4) {
-		            if (http_request.status == 200 ) {
+		            if (	(enlargeServerStatus==false && http_request.status == 200)
+		            		||
+		            		(enlargeServerStatus==true && (http_request.status == 200 || http_request.status == 201 || http_request.status == 400 || http_request.status == 401 || http_request.status == 404 || http_request.status == 405))
+		            ) {
 		            	if(redrawTargetJSFunction && redrawTargetJSFunction!=""){
 		            		if (typeof redrawTargetJSFunction === "function") {
 		            			redrawTargetJSFunction(http_request,target);
@@ -451,7 +463,7 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 
 
 
-	    http_request.open("POST", urlOnly, true);
+	    http_request.open(method, urlOnly, true);
 	    if(responseType && responseType!="" && setResponseType==false){
 	    	try{
 	    		   http_request.responseType = responseType;
@@ -633,9 +645,18 @@ function ajax_makeJSONParameters64(frm,url) {
  }
 
 
-function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType) {
+function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus) {
 
 		var urlOnly="";
+		var method="POST";
+		var enlargeServerStatus = false;
+		
+		if(requestMethod && requestMethod!=""){
+			method = requestMethod;
+		}
+		
+		if(anyServerStatus)
+			enlargeServerStatus = anyServerStatus;
 
 		if(urlWidthParameters.indexOf("?")>-1){
 			var pos = urlWidthParameters.indexOf("?");
@@ -711,7 +732,11 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 	    http_request.onreadystatechange = function() {
 	    	try{
 		    	if (http_request.readyState == 4) {
-		            if (http_request.status == 200 ) {
+		    		
+		            if (	(enlargeServerStatus==false && http_request.status == 200)
+		            		||
+		            		(enlargeServerStatus==true && (http_request.status == 200 || http_request.status == 201 || http_request.status == 400 || http_request.status == 401 || http_request.status == 404 || http_request.status == 405))
+		            ) {
 		            	if(redrawTargetJSFunction && redrawTargetJSFunction!=""){
 		            		if (typeof redrawTargetJSFunction === "function") {
 		            			redrawTargetJSFunction(http_request,target);
@@ -749,7 +774,7 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 
         var json_string = JSON.stringify(jsonParameters);
 
-	    http_request.open("POST", urlOnly, true);
+	    http_request.open(method, urlOnly, true);
 	    if(responseType && responseType!="" && setResponseType==false){
 	       try{
 	    	   http_request.responseType = responseType;
@@ -954,9 +979,18 @@ function ajax_makeMPARTParameters64(frm,url) {
  }
 
 
-function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunction,redrawTargetJSFunction,showImgBack) {
+function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunction,redrawTargetJSFunction,showImgBack,requestMethod,anyServerStatus) {
 	if(window.FormData){
 		var urlOnly="";
+		var method="POST";
+		var enlargeServerStatus = false;
+		
+		if(requestMethod && requestMethod!=""){
+			method = requestMethod;
+		}
+		
+		if(anyServerStatus)
+			enlargeServerStatus = anyServerStatus;
 
 		if(urlWidthParameters.indexOf("?")>-1){
 			var pos = urlWidthParameters.indexOf("?");
@@ -1022,7 +1056,10 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 
 	    http_request.onload = function(e) {
 	    	try{
-		            if (http_request.status == 200 ) {
+	            if (	(enlargeServerStatus==false && http_request.status == 200)
+	            		||
+	            		(enlargeServerStatus==true && (http_request.status == 200 || http_request.status == 201 || http_request.status == 400 || http_request.status == 401 || http_request.status == 404 || http_request.status == 405))
+	            ) {
 		            	if(redrawTargetJSFunction && redrawTargetJSFunction!=""){
 		            		if (typeof redrawTargetJSFunction === "function") {
 		            			redrawTargetJSFunction(http_request,target);
@@ -1056,7 +1093,7 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 
         };
 
-        http_request.open("POST",urlOnly, true);
+        http_request.open(method,urlOnly, true);
         http_request.send(formdata);
 	}else{
 		alert("Features supported for object FormData (). Available in Chrome, FireFox, Safari.");

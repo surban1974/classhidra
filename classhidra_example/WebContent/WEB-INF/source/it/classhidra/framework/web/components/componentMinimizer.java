@@ -27,7 +27,7 @@ import javax.servlet.*;
         memoryInSession="true",
         statistic="false",
         entity=@Entity(
-				property="allway:public"
+				property="always:public"
 		)
 )
 

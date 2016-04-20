@@ -28,8 +28,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
@@ -45,7 +45,6 @@ import it.classhidra.core.tool.exception.message;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_classes;
-import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_xml;
 
@@ -318,19 +317,18 @@ public void load_from_resources() {
 		load_from_resources("WEB-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);
 		
 		String property_name =  "config."+bsController.CONST_XML_MESSAGES_FOLDER;
-		ArrayList array = new ArrayList();
-
 		try{
-			array = util_classes.getResources(property_name);
+			List array = util_classes.getResources(property_name);
+			for(int i=0;i<array.size();i++){
+				String property_name0 =  bsController.CONST_XML_MESSAGES_FOLDER+"/"+array.get(i);
+				if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
+					load_from_resources("/config/"+property_name0);
+			}
 		}catch(Exception e){
-			util_format.writeToConsole(bsController.getLogInit(),"LoadMessages: Array.ERROR:"+e.toString());
+			bsController.writeLog("Load_messages from resources Array KO "+e.toString(),iStub.log_ERROR);
 		}
 
-		for(int i=0;i<array.size();i++){
-			String property_name0 =  bsController.CONST_XML_MESSAGES_FOLDER+"/"+array.get(i);
-			if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
-				load_from_resources("/config/"+property_name0);
-		}
+
 
 }
 private boolean load_from_resources(String property_name) {

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 	path="report_neohort",
 	navigated="false",
 	entity=@Entity(
-			property="allway:public"
+			property="always:public"
 	),
 
 	redirects={
