@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Wed Apr 20 17:20:53 CEST 2016
+classhidra-base-1.5.4.jar>=
+classhidra-base-1.5.4-sources.jar>=
+classhidra-base-1.5.4.pom>=
