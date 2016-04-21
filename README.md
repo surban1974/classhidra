@@ -9,6 +9,7 @@ Implementation:
 - EJB (enterprise java bean) map action/form as @Stateless, @Stateful, @Singleton;
 - Spring(4.*) map action/form as @Component;  
 - RESTfull compatible (alfa)
+
 Compatible:
 Google AppEngine - http://classhidra4ape.appspot.com 
 <br>
