@@ -35,6 +35,7 @@ import it.classhidra.scheduler.scheduling.implementation.mysql.db_4Batch;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Properties;
 
 public class batch_init implements Serializable{
@@ -58,6 +59,12 @@ public class batch_init implements Serializable{
 public batch_init() {
 	super();
 	init();
+}
+
+public batch_init(Properties properties) {
+	super();
+	if(properties!=null)
+		init(properties);
 }
 
 public void init() {
@@ -87,43 +94,7 @@ public void init() {
 		property_name = System.getProperty(app_path+environment_id_property);
 
 
-/*	
-	if(property_name==null || property_name.equals("")){
-		property_name = "environment";
-		try{
-			property = util_file.loadProperty(ainit.get_path_config()+property_name);
-			loadedFrom+=" "+ainit.get_path_config()+property_name;
-		}catch(Exception e){
-			try{
-				property = util_file.loadProperty(property_name);
-				loadedFrom+=" "+property_name;
-			}catch(Exception ex){
-			}
-		}
-	}else{
-		try{
-			property = util_file.loadProperty(property_name);
-			loadedFrom+=" "+property_name;
-		}catch(Exception e){
-		}
-	}
 
-
-	if(property!=null){
-		loadedFrom+=" "+property_name;
-		init(property);
-	}else{		
-		_active = (System.getProperty(id_active)==null)?_active:System.getProperty(id_active);
-		_sleep = (System.getProperty(id_sleep)==null)?_sleep:System.getProperty(id_sleep);
-		_scan = (System.getProperty(id_scan)==null)?_scan:System.getProperty(id_scan);
-		_db_prefix = (System.getProperty(id_db_prefix)==null)?_db_prefix:System.getProperty(id_db_prefix);
-		_stub = (System.getProperty(id_stub)==null)?_stub:System.getProperty(id_stub);
-		
-		if(_sleep!=null && _scan!=null) loadedFrom="System.property";
-
-	}
-	
-*/	
 	
 	if(property_name==null || property_name.equals("")){
 		property_name="classhidra_scheduler";
@@ -208,16 +179,23 @@ public String getLoadedFrom() {
 }
 
 public i_4Batch get4BatchManager(){
-	i_4Batch result = null;
-	if(_stub!=null && !_stub.equals("")){
+	i_4Batch batchManager = null;
+	if(_stub!=null && _stub.equalsIgnoreCase("empty")){
+		batchManager = new i_4Batch() {
+			public Object operation(String oper, HashMap form) throws Exception {
+				return null;
+			}
+		};
+	}else if(_stub!=null && !_stub.equals("")){
 		try{
-			result = (i_4Batch)Class.forName(_stub).newInstance();
+			batchManager = (i_4Batch)Class.forName(_stub).newInstance();
 		}catch(Exception e){		
 		}catch(Throwable e){		
 		}
 	}
-	if(result!=null) return result;
-	else return new db_4Batch();
+	if(batchManager==null) 
+		batchManager = new db_4Batch();
+	return batchManager;
 }
 
 public boolean initDB(String path, String db_name) throws bsControllerException, Exception{
@@ -260,5 +238,10 @@ public String get_db_prefix() {
 
 public void set_db_prefix(String _db_prefix) {
 	this._db_prefix = _db_prefix;
+}
+
+public batch_init set_stub(String _stub) {
+	this._stub = _stub;
+	return this;
 }
 }

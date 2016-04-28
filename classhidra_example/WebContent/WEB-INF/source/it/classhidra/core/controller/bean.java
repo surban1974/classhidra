@@ -118,6 +118,9 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		}catch(Exception ex){
 		}
 	}
+	
+//	if(parametersFly!=null)
+//		parametersFly.clear();
 
 	if(get_infoaction()!=null && get_infoaction().getReloadAfterNextNavigated()!=null && get_infoaction().getReloadAfterNextNavigated().equalsIgnoreCase("false")){
 		String id_prev = request.getParameter(bsConstants.CONST_BEAN_$NAVIGATION);
@@ -308,68 +311,6 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	
 	public boolean initJsonPart(HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
 		return util_supportbean.initJsonPart(this,request,mapper);
-/*		
-		boolean isJson=false;
-		HashMap parameters = new HashMap();
-		DataInputStream in = null;
-		try{
-			in = new DataInputStream(request.getInputStream());
-			int formDataLength = request.getContentLength();
-
-			byte dataBytes[] = new byte[formDataLength];
-			int bytesRead = 0;
-			int totalBytesRead = 0;
-			while (totalBytesRead < formDataLength && totalBytesRead>-1) {
-				bytesRead = in.read(dataBytes, totalBytesRead, formDataLength);
-				totalBytesRead += bytesRead;
-			}
-
-			String json = new String(dataBytes,0,dataBytes.length).trim();
-			
-			if(mapper!=null){
-				parameters = (HashMap)mapper.mapping(json, parameters);
-				isJson=true;
-			}else{
-			
-				if(json.charAt(0)=='{' && json.charAt(json.length()-1)=='}') isJson=true;
-				if(isJson){
-					if(json.charAt(0)=='{' && json.length()>0) json=json.substring(1,json.length());
-					if(json.charAt(json.length()-1)=='}' && json.length()>0) json=json.substring(0,json.length()-1);
-					StringTokenizer st = new StringTokenizer(json,",");
-					while(st.hasMoreTokens()){
-						String pair = st.nextToken();
-						StringTokenizer st1 = new StringTokenizer(pair,":");
-						String key=null;
-						String value=null;
-						if(st1.hasMoreTokens()) key=st1.nextToken();
-						if(st1.hasMoreTokens()) value=st1.nextToken();
-						if(key!=null && value!=null){
-							key=key.trim();
-							if(key.charAt(0)=='"' && key.length()>0) key=key.substring(1,key.length());
-							if(key.charAt(key.length()-1)=='"' && key.length()>0) key=key.substring(0,key.length()-1);
-							value=value.trim();
-							if(value.charAt(0)=='"' && value.length()>0) value=value.substring(1,value.length());
-							if(value.charAt(value.length()-1)=='"' && value.length()>0) value=value.substring(0,value.length()-1);
-							parameters.put(key, value);
-						}
-					}
-				}
-			}
-
-
-		}catch(Exception e){
-
-		}finally{
-			try{
-				in.close();
-			}catch (Exception ex) {
-			}
-		}
-
-		if(isJson) initPartFromMap(parameters);
-
-		return isJson;
-*/		
 	}
 
 	public boolean initXmlPart(HttpServletRequest request) throws bsControllerException{
@@ -380,12 +321,18 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		return util_supportbean.initXmlPart(this,request,mapper);
 	}	
 
+	
 	public void initPartFromMap(HashMap parameters) throws bsControllerException{
 		if(parameters==null) 
 			parameters=new HashMap();
 		if(parametersMP==null)
 			parametersMP=new HashMap();
 		parametersMP.putAll(parameters);
+		
+		
+		initFromMap(parameters,true);
+		
+/*
 
 		xmloutput=false;
 		jsonoutput=false;
@@ -397,13 +344,15 @@ public void init(HttpServletRequest request) throws bsControllerException{
 			);
 
 
-//		Vector en = new Vector(parameters.keySet());
-//		for(int k=0;k<parameters.keySet().size();k++){
 		
 		for (Object elem : parameters.keySet()) {
 			String key = (String)elem;
 
 			if(parameters.get(key) instanceof String ){
+				
+				if(parametersList!=null)
+					parametersList.add(key);
+				
 				String value = (String)parameters.get(key);
 				String format = (String)parameters.get("$format_"+key);
 				String replaceOnBlank = (String)parameters.get("$replaceOnBlank_"+key);
@@ -560,8 +509,194 @@ public void init(HttpServletRequest request) throws bsControllerException{
 				}
 			}
 		}
-
+*/
 	}
+	
+	public void initFromMap(HashMap parameters, boolean add2fly) throws bsControllerException{
+		if(parameters==null) 
+			parameters=new HashMap();
+
+
+
+		xmloutput=false;
+		jsonoutput=false;
+		boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
+				(
+						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
+						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+				)
+			);
+
+
+		
+		for (Object elem : parameters.keySet()) {
+			String key = (String)elem;
+
+			if(parameters.get(key) instanceof String ){
+
+				
+				String value = (String)parameters.get(key);
+				String format = (String)parameters.get("$format_"+key);
+				String replaceOnBlank = (String)parameters.get("$replaceOnBlank_"+key);
+				String replaceOnErrorFormat = (String)parameters.get("$replaceOnErrorFormat_"+key);
+
+				if(inputBase64){
+					String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
+
+					try{
+						if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+					}catch(Exception e){}
+					try{
+						if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+					}catch(Exception e){}
+					try{
+						if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+					}catch(Exception e){}
+					try{
+						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+					}catch(Exception e){
+					}
+				}
+
+
+				if(key.indexOf(".")==-1){
+					try{
+						Object makedValue=null;
+						if(format!=null){
+							if(delegated!=null){
+								makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
+								if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
+							}else{
+								makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
+							}
+						}else{
+							if(delegated!=null){
+								makedValue=util_makeValue.makeValue1(delegated,value,key);
+								if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
+							}else{
+								makedValue=util_makeValue.makeValue1(this,value,key);
+							}
+						}
+						if(!setCampoValueWithPoint(key,makedValue))
+							throw new Exception();
+					}catch(Exception e){
+						try{
+							Object makedValue=null;
+
+							if(format!=null){
+								if(delegated!=null){
+									makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+									if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+								}else{
+									makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+								}
+							}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
+
+							if(!setCampoValueWithPoint(key,makedValue))
+								throw new Exception();
+						}catch(Exception ex){
+							if(add2fly){
+								if(parametersFly==null) 
+									parametersFly = new HashMap();
+								if(key!=null && key.length()>0 && key.indexOf(0)!='$') 
+									parametersFly.put(key, value);
+							}
+						}
+					}
+
+				}else{
+					Object writeValue=null;
+					Object current_requested = (delegated==null)?this:delegated;
+
+					String last_field_name = null;
+					StringTokenizer st = new StringTokenizer(key,".");
+					while(st.hasMoreTokens()){
+						if(st.countTokens()>1){
+							String current_field_name = st.nextToken();
+							try{
+								writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
+								if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
+								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
+
+							}catch(Exception e){
+							}
+							current_requested = writeValue;
+						}else{
+							last_field_name = st.nextToken();
+						}
+						writeValue = null;
+					}
+
+					if(current_requested!=null){
+						try{
+							if(format!=null)
+								setCampoValuePoint(
+										current_requested,
+										last_field_name,
+										util_makeValue.makeFormatedValue1(
+													current_requested,
+													format,
+													value,
+													last_field_name,
+													replaceOnBlank,
+													replaceOnErrorFormat
+										)
+								);
+							else{
+								Serialized serialized_annotation = null;
+								Object checkForDes = parameters.get(JsonMapper.CONST_ID_CHECKFORDESERIALIZE);								
+								if(checkForDes!=null && checkForDes.toString().equalsIgnoreCase("true")){
+									Method ret_method = util_reflect.getSetMethod(current_requested, last_field_name);
+									if(ret_method!=null)
+										serialized_annotation =ret_method.getAnnotation(Serialized.class);
+									if(serialized_annotation==null){
+										Field ret_field = util_reflect.getField(current_requested, last_field_name);
+										if(ret_field!=null)
+											serialized_annotation =ret_field.getAnnotation(Serialized.class);
+									}
+								}
+								if(	serialized_annotation!=null &&
+									serialized_annotation.input()!=null &&
+									serialized_annotation.input().format()!=null &&
+									!serialized_annotation.input().format().equals(""))
+									setCampoValuePoint(
+											current_requested,
+											last_field_name,
+											util_makeValue.makeFormatedValue1(
+														current_requested,
+														serialized_annotation.input().format(),
+														value,
+														last_field_name,
+														serialized_annotation.input().replaceOnBlank(),
+														serialized_annotation.input().replaceOnErrorFormat()
+											)
+									);
+								else	
+									setCampoValuePoint(
+											current_requested,
+											last_field_name,
+											util_makeValue.makeValue1(current_requested,value,last_field_name)
+										);
+								
+							}
+						}catch(Exception e){
+							try{
+								if(format!=null)
+									setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
+								else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
+							}catch(Exception ex){
+							}
+						}
+					}
+
+
+				}
+			}
+		}
+
+	}	
 
 public void init(HashMap _content) throws bsControllerException{
 	init_(_content);
@@ -569,7 +704,8 @@ public void init(HashMap _content) throws bsControllerException{
 
 public void init_(HashMap _content) throws bsControllerException{
 	if(_content==null) return;
-
+	initFromMap(_content,true);
+/*
 	xmloutput=false;
 	jsonoutput=false;
 	boolean inputBase64 = (_content.get(bsController.CONST_ID_INPUTBASE64)!=null &&
@@ -643,8 +779,10 @@ public void init_(HashMap _content) throws bsControllerException{
 					if(!setCampoValueWithPoint(key,makedValue))
 						throw new Exception();
 				}catch(Exception ex){
-					if(parametersFly==null) parametersFly = new HashMap();
-					if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
+					if(parametersFly==null) 
+						parametersFly = new HashMap();
+					if(key!=null && key.length()>0 && key.indexOf(0)!='$') 
+						parametersFly.put(key, value);
 				}
 			}
 		}else{
@@ -703,6 +841,7 @@ public void init_(HashMap _content) throws bsControllerException{
 		}
 
 	}
+*/	
 }
 
 public void init(i_bean another_bean) throws bsControllerException{
@@ -743,6 +882,15 @@ public void reInit(i_bean another_bean){
 		}
 	}catch(Exception ex){
 	}
+
+}
+
+public void clearBeforeStore(){
+	if(parametersMP!=null)
+		parametersMP.clear();
+	
+//	if(parametersFly!=null)
+//		parametersFly.clear();
 
 }
 
@@ -1103,7 +1251,8 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 				else{
 					boolean res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
 					if(!res){
-						if(parametersFly==null) parametersFly = new HashMap();
+						if(parametersFly==null) 
+							parametersFly = new HashMap();
 						parametersFly.put(name, value);
 					}
 					return res;

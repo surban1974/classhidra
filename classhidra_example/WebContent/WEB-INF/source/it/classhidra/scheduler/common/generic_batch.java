@@ -160,32 +160,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 		}catch(Exception e){
 			new bsException(e,iStub.log_ERROR);
 		}		
-/*		
-		Connection conn=null;
-		Statement st=null;
-		ResultSet rs=null;
-		String sql="SELECT * FROM "+b_init.get_db_prefix()+"batch_property \n";
-			sql+="where cd_btch='"+util_format.convertAp(_batch.getCd_btch())+"' and cd_ist="+_batch.getCd_ist()+" \n";
 		
-		try{
-			conn = new db_connection().getContent();
-			st = conn.createStatement();
-
-			rs = st.executeQuery(sql);
-			
-			while(rs.next()){
-				String key = rs.getString("cd_property");
-				String value = rs.getString("value");
-				if(key!=null && value!=null){
-					property.put(key, value);
-				}
-			}
-		}catch(Exception ex){
-			new bsException("Scheduler: "+ex.toString(), iStub.log_ERROR);
-		}finally{
-			db_connection.release(rs, st, conn);
-		}
-*/		
 		return property;
 	}
 

@@ -1050,7 +1050,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 			Method iActionMethod = null;
 			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
-				
+				List searchErrors = new ArrayList();
 					if(iActionMethod==null){
 						try{
 							if(!isRemoteEjb)
@@ -1058,8 +1058,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 							else
 								iActionMethod = action_instance.getClass().getMethod(action_instance.get_infoaction().getMethod(), new Class[]{HashMap.class});
 								
-						}catch(Exception e){
-							new bsControllerException(e, iStub.log_ERROR);
+						}catch(Exception em){
+							searchErrors.add(em);
+//							new bsControllerException(e, iStub.log_ERROR);
 						}
 					}
 					if(iActionMethod==null){
@@ -1071,8 +1072,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								
 							if(iActionMethod!=null)
 								useAsAction=true;
-						}catch(Exception e){
-							new bsControllerException(e, iStub.log_ERROR);
+						}catch(Exception em){
+							searchErrors.add(em);
+//							new bsControllerException(e, iStub.log_ERROR);
 						}
 					}
 	
@@ -1087,9 +1089,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 								useAsAction=true;
 								action_instance.get_infoaction().setR_R(false);
 							}
-						}catch(Exception e){
-							new bsControllerException(e, iStub.log_ERROR);
+						}catch(Exception em){
+							searchErrors.add(em);
+//							new bsControllerException(e, iStub.log_ERROR);
 						}
+					}
+					if(iActionMethod==null){
+						for(int er=0;er<searchErrors.size();er++)
+							new bsControllerException((Exception)searchErrors.get(er), iStub.log_ERROR);
 					}
 
 
@@ -1953,8 +1960,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}else if(ret==null){
 						try{
 							ret = current.newInstance();
-							util_supportbean.initNormal(ret, annotationParameter.name(), request);
-							util_supportbean.initPartFromMap(ret, annotationParameter.name(), action_instance.get_bean().asBean().getParametersMP());
+							util_supportbean.init(ret, annotationParameter.name(), request);
+//							util_supportbean.initNormal(ret, annotationParameter.name(), request);
+//							util_supportbean.initPartFromMap(ret, annotationParameter.name(), action_instance.get_bean().asBean().getParametersMP());
 							result[i] = ret;
 						}catch(Exception e){
 							e.toString();
@@ -2988,13 +2996,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 						form.onAddToSession();
 // Mod 20150402 --
 //					fromSession.put(form.get_infobean().getName(),form);
-					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null)
+					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null){
+						form.clearBeforeStore();
 						setToOnlySession(form.get_infoaction().getPath(),form, request);
+					}
 //						fromSession.put(form.get_infoaction().getPath(),form);
 				}
 				if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
-					if(form!=null)
+					if(form!=null){
 						form.onAddToLastInstance();
+						form.clearBeforeStore();
+					}
 					request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
 				}
 
@@ -3004,6 +3016,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}else{
 			try{
 				info_navigation nav = new info_navigation();
+				if(form!=null)
+					form.clearBeforeStore();
 				nav.init(form.get_infoaction(),action_instance.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
 				info_navigation fromNav = getFromInfoNavigation(null, request);
 				if(fromNav!=null){

@@ -17,10 +17,11 @@ public class XmlReader2Map implements XmlMapper {
 
 
 	public Map mapping(i_bean bean, String xml, Map table) {
-		if(xml==null)
-			return table;
 		if(table==null)
 			table = new HashMap();
+		if(xml==null)
+			return table;
+
 		try{			
 			Object obj = createMap(util_xml.readXMLData(xml).getDocumentElement(),true);
 			if(obj instanceof Map){
@@ -67,7 +68,7 @@ public class XmlReader2Map implements XmlMapper {
 		return table;
 	}
 
-	private Map<String, Object> recursive(String key, Map<String, Object> original, Map<String, Object> result, String prefix){
+	private static Map<String, Object> recursive(String key, Map<String, Object> original, Map<String, Object> result, String prefix){
 		if(original.get(key) instanceof Map){
 			Map<String, Object> sub = (Map<String, Object>)original.get(key);
 			for(Object elem : sub.keySet())

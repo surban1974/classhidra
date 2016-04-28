@@ -47,6 +47,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void init(i_bean another_bean) throws bsControllerException;
 	void reInit(i_elementDBBase _i_el);
 	void initPartFromMap(HashMap parameters) throws bsControllerException;
+	void initFromMap(HashMap parameters, boolean add2fly) throws bsControllerException;
 	redirects validate(HttpServletRequest request)  throws bsControllerException;
 	redirects validate(HashMap parameters)  throws bsControllerException;
 	info_bean get_infobean();
@@ -139,4 +140,6 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void setListener_b(listener_bean listener);
 	i_action asAction();
 	i_bean asBean();
+	
+	void clearBeforeStore();
 }

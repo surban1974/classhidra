@@ -11,4 +11,5 @@ public @interface Serialized {
 	Format output() default @Format;
 	Format input() default @Format;
 	boolean children() default false;
+	int depth() default 0;
 }

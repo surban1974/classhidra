@@ -17,6 +17,7 @@ public class DriverScheduling{
 	
 	private static IBatchScheduling external;
 	private static IBatchFactory factory;
+	private static batch_init configuration;
 	
 	
 	public static DriverScheduling init(){
@@ -75,26 +76,17 @@ public class DriverScheduling{
 		return null;
 	}
 	
-	public static DriverScheduling init(IBatchScheduling _external){
-		if(_external!=null){
-			try{
-				_external.stop();
-			}catch(Exception e){
-				new bsException("Scheduler: "+e.toString(),iStub.log_ERROR);
-			}			
-		}
-		external = _external;
-		if(servletBatchScheduling.isActive()){
-			try{
-				servletBatchScheduling.stop();
-			}catch(Exception e){
-				new bsException("Scheduler: "+e.toString(),iStub.log_ERROR);
-			}
-		}
-		return null;
+	public static DriverScheduling init(IBatchScheduling _external){		
+		return DriverScheduling.init(_external, null, null);
 	}	
 	
 	public static DriverScheduling init(IBatchScheduling _external, IBatchFactory _factory){
+		return DriverScheduling.init(_external, _factory, null);
+	}
+	
+	public static DriverScheduling init(IBatchScheduling _external, IBatchFactory _factory, batch_init _configuration){
+		if(_configuration!=null)
+			configuration = _configuration;
 		if(_factory!=null)
 			factory = _factory;
 		if(_external!=null){
@@ -165,7 +157,9 @@ public class DriverScheduling{
 	}	
 
 	public static batch_init getConfiguration() {
-		if(external!=null)
+		if(configuration!=null)
+			return configuration;
+		else if(external!=null)
 			return external.getConfiguration();
 		else
 			return servletBatchScheduling.getConfiguration();

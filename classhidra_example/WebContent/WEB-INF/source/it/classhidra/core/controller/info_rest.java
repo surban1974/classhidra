@@ -129,9 +129,9 @@ public class info_rest extends info_entity implements i_elementBase{
 		while(st.hasMoreTokens())
 			extparameters.add(st.nextToken());
 		
-		if(parameters.size()==extparameters.size()){
+		if(Math.min(parameters.size(),extparameters.size())>0){
 			HashMap map = new HashMap();
-			for(int i=0;i<parameters.size();i++)
+			for(int i=0;i<Math.min(parameters.size(),extparameters.size());i++)
 				map.put(parameters.get(i), extparameters.get(i));
 			return map;
 		}
@@ -150,9 +150,8 @@ public class info_rest extends info_entity implements i_elementBase{
 			extparameters.add(st.nextToken());
 		
 		HashMap map = new HashMap();
-		for(int i=0;i<parameters.size();i++)
-			if(i<extparameters.size())
-				map.put(parameters.get(i), extparameters.get(i));
+		for(int i=0;i<Math.min(parameters.size(),extparameters.size());i++)
+			map.put(parameters.get(i), extparameters.get(i));
 		return map;
 	}	
 

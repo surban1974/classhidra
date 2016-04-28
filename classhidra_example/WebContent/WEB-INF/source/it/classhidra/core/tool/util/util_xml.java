@@ -27,6 +27,11 @@ package it.classhidra.core.tool.util;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class util_xml {
 	
@@ -173,6 +178,42 @@ public static String normalHTML(String input, String charSet) {
 	}
 	else 
 		return input;
+}
+
+public static Map convertFilters(List filters){
+	Map treeFilters = null;
+	if(filters!=null){
+		treeFilters = new HashMap();
+		Iterator it = filters.iterator();
+		while(it.hasNext()){
+			String filter = it.next().toString();
+			if(filter.indexOf(".")>-1){
+				Map current = null; 
+				StringTokenizer st = new StringTokenizer(filter, ".");
+				while(st.hasMoreTokens()){
+					String part = st.nextToken();
+					if(current==null){
+						current=(Map)treeFilters.get(part);
+						if(current==null){
+							current = new HashMap();
+							treeFilters.put(part, current);
+						}
+					}else{
+						Map subcurrent = (Map)current.get(part);
+						if(subcurrent==null){
+							subcurrent = new HashMap();
+							current.put(part, subcurrent);									
+						}	
+						current = subcurrent;
+					}
+				}
+			}else{
+				if(treeFilters.get(filter)==null)
+					treeFilters.put(filter, new HashMap());
+			}
+		}
+	}
+	return treeFilters;
 }
 
 }

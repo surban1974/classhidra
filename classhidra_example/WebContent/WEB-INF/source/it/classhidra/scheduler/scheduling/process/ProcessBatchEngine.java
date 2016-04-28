@@ -166,35 +166,11 @@ public class ProcessBatchEngine  {
 			new bsException(e,iStub.log_ERROR);
 		}		
 
-/*
-		Connection conn=null;
-		Statement st=null;
-
-		try{
-			conn = new db_connection().getContent();
-			st = conn.createStatement();
-
-			for(int i=0;i<sql_updates.size();i++){
-				try{
-					st.executeUpdate((String)sql_updates.get(i));
-				}catch (Exception e) {
-					e.toString();
-				}
-			}
-
-
-		}catch(Exception ex){
-			new bsControllerMessageException(ex);
-		}finally{
-			db_connection.release(null, st, conn);
-		}
-*/
 		
 		if(h_batchs!=null && h_batchs.size()>0){
 			Iterator it = h_batchs.entrySet().iterator();
 		    while (it.hasNext()) {
 				db_batch el = (db_batch)((Map.Entry)it.next()).getValue();
-//				long deltaBatch = el.getTm_next().getTime() - new Date().getTime();
 				schedulingThreadEvent t_ev_old = util_batch.findFromPbe(this, el.getCd_btch());
 				if(t_ev_old!=null){
 					t_ev_old.setStateThread(2);
@@ -202,12 +178,6 @@ public class ProcessBatchEngine  {
 					t_ev_old.interrupt();
 					this.getContainer_threadevents().remove(t_ev_old);
 				}
-/*				
-				schedulingThreadEvent t_ev = new schedulingThreadEvent(
-						deltaBatch,
-						el,
-						this);
-*/
 				schedulingThreadEvent t_ev = new schedulingThreadEvent(el,this);
 				t_ev.start();
 			}

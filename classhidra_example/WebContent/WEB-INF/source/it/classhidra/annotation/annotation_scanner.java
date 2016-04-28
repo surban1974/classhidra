@@ -480,8 +480,9 @@ public class annotation_scanner implements i_annotation_scanner {
 					for(int i=0;i<transformations.length;i++)
 						checkClassAnnotation(classType, class_path, transformations[i], subAnnotations);
 				}
-				
-				if(i_action.class.isAssignableFrom(classType)){
+			}
+			
+			if(i_action.class.isAssignableFrom(classType)){
 					
 					List callMethods = new ArrayList();
 					List actionMethods = new ArrayList();
@@ -498,7 +499,6 @@ public class annotation_scanner implements i_annotation_scanner {
 					
 					for(int i=0;i<callMethods.size();i++)
 						checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), null, (Method)callMethods.get(i), i);
-				}
 				
 			}
 			

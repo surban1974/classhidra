@@ -36,7 +36,6 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
@@ -114,7 +113,7 @@ public class util_supportbean  {
 		}
 	
 		if(bean.get_infoaction()!=null && bean.get_infoaction().getReloadAfterNextNavigated()!=null && bean.get_infoaction().getReloadAfterNextNavigated().equalsIgnoreCase("false")){
-			String id_prev = request.getParameter(bsConstants.CONST_BEAN_$NAVIGATION);
+			String id_prev = request.getParameter(bsController.CONST_BEAN_$NAVIGATION);
 			if(id_prev!=null && id_prev.indexOf(":")>-1){
 				id_prev = id_prev.substring(0,id_prev.indexOf(":"));
 				info_navigation nav = bsController.getFromInfoNavigation(null, request);
@@ -136,6 +135,10 @@ public class util_supportbean  {
 	
 		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
 			if(initJsonPart(bean,request)) return;
+		}
+		
+		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
+			if(initXmlPart(bean,request)) return;
 		}
 	
 		initNormal(bean, request);
@@ -221,8 +224,10 @@ public class util_supportbean  {
 						if(!bean.setCampoValueWithPoint(key,makedValue))
 							throw new Exception();
 					}catch(Exception ex){
-						if(bean.getParametersFly()==null) bean.setParametersFly(new HashMap());
-						if(key!=null && key.length()>0 && key.indexOf(0)!='$') bean.getParametersFly().put(key, value);
+						if(bean.getParametersFly()==null)
+							bean.setParametersFly(new HashMap());
+						if(key!=null && key.length()>0 && key.indexOf(0)!='$')
+							bean.getParametersFly().put(key, value);
 					}
 				}
 			}else{
@@ -282,7 +287,7 @@ public class util_supportbean  {
 			}
 		}
 		
-		bean.initPartFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));
+		bean.initFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);
 		
 	}
 
@@ -290,7 +295,7 @@ public class util_supportbean  {
 	public static void initMultiPart(i_bean bean, HttpServletRequest request) throws bsControllerException{
 		HashMap parameters = util_multipart.popolateHashMap(request);
 		bean.initPartFromMap(parameters);
-		bean.initPartFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));
+		bean.initFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);
 	}
 	
 	public static boolean initJsonPart(i_bean bean, HttpServletRequest request) throws bsControllerException{
@@ -300,12 +305,15 @@ public class util_supportbean  {
 	public static boolean initJsonPart(i_bean bean, HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
 		boolean isJson=false;
 		HashMap parameters = new HashMap();
+
+		
 		DataInputStream in = null;
+		byte[] dataBytes = null;
 		try{
 			in = new DataInputStream(request.getInputStream());
 			int formDataLength = request.getContentLength();
 
-			byte dataBytes[] = new byte[formDataLength];
+			dataBytes = new byte[formDataLength];
 			int bytesRead = 0;
 			int totalBytesRead = 0;
 			while (totalBytesRead < formDataLength && totalBytesRead>-1) {
@@ -314,6 +322,7 @@ public class util_supportbean  {
 			}
 
 			String json = new String(dataBytes,0,dataBytes.length).trim();
+
 			if(mapper!=null){
 				parameters = (HashMap)mapper.mapping(bean, json, parameters);
 				if(parameters!=null)
@@ -365,10 +374,13 @@ public class util_supportbean  {
 			}
 		}
 
-		if(isJson)
-			bean.initPartFromMap(parameters);
+		if(isJson){
+			bean.initFromMap(parameters,false);
+			if(dataBytes!=null)
+				request.setAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT, dataBytes);
+		}
 
-		bean.initPartFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
+		bean.initFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);		
 
 		return isJson;
 	}
@@ -381,11 +393,12 @@ public class util_supportbean  {
 		boolean isXml=false;
 		HashMap parameters = new HashMap();
 		DataInputStream in = null;
+		byte[] dataBytes = null;
 		try{
 			in = new DataInputStream(request.getInputStream());
 			int formDataLength = request.getContentLength();
 
-			byte dataBytes[] = new byte[formDataLength];
+			dataBytes = new byte[formDataLength];
 			int bytesRead = 0;
 			int totalBytesRead = 0;
 			while (totalBytesRead < formDataLength && totalBytesRead>-1) {
@@ -413,18 +426,153 @@ public class util_supportbean  {
 			}
 		}
 
-		if(isXml)
-			bean.initPartFromMap(parameters);
+		if(isXml){
+			bean.initFromMap(parameters,false);
+			if(dataBytes!=null)
+				request.setAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT, dataBytes);
 
-		bean.initPartFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
+		}
+
+		bean.initFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);		
 
 		return isXml;
 	}
 
 	
-	public static void initNormal(Object bean, String prefix, HttpServletRequest request) throws bsControllerException{
+//******************************
+	
+	
+	public static void init(Object bean, String prefix, HttpServletRequest request) throws bsControllerException{
+		if(request==null) return;
 
+		if(request.getContentType()!=null && request.getContentType().indexOf("multipart")>-1){
+			initMultiPart(bean,prefix,request);
+			return;
+		}
+	
+		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
+			if(initJsonPart(bean,prefix,request,null)) 
+				return;
+		}
 		
+		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
+			if(initXmlPart(bean,prefix,request,null))
+				return;
+		}
+		
+	
+		initNormal(bean, prefix, request);
+	
+	}
+	
+	
+	public static void initMultiPart(Object bean, String prefix, HttpServletRequest request) throws bsControllerException{
+		HashMap parameters = util_multipart.popolateHashMap(request);
+		initPartFromMap(bean,prefix,parameters);
+		initFromMap(bean, prefix, (HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));
+	}
+	
+	
+	public static void initPartFromMap(Object bean, String prefix, HashMap parameters) throws bsControllerException{
+		if(parameters==null) 
+			parameters=new HashMap();
+		initFromMap(bean,prefix,parameters);
+	}
+	
+	public static boolean initJsonPart(Object bean, String prefix, HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
+		boolean isJson=false;
+		HashMap parameters = new HashMap();
+		try{
+			byte[] dataBytes = (byte[])request.getAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT);
+			if(dataBytes!=null){
+				String json = new String(dataBytes,0,dataBytes.length).trim();
+				if(mapper!=null){
+					parameters = (HashMap)mapper.mapping(null, json, parameters);
+					if(parameters!=null)
+						isJson=true;
+				}else{
+					try{
+						parameters = (HashMap)new JsonReader2Map().mapping(null, json, parameters);
+						if(parameters!=null)
+							isJson=true;
+					}catch(Exception e){
+					}		
+				}
+				if(!isJson){
+					if(json.charAt(0)=='{' && json.charAt(json.length()-1)=='}') isJson=true;
+					if(isJson){
+						if(json.charAt(0)=='{' && json.length()>0) json=json.substring(1,json.length());
+						if(json.charAt(json.length()-1)=='}' && json.length()>0) json=json.substring(0,json.length()-1);
+						StringTokenizer st = new StringTokenizer(json,",");
+						while(st.hasMoreTokens()){
+							String pair = st.nextToken();
+							StringTokenizer st1 = new StringTokenizer(pair,":");
+							String key=null;
+							String value=null;
+							if(st1.hasMoreTokens()) key=st1.nextToken();
+							if(st1.hasMoreTokens()) value=st1.nextToken();
+							if(key!=null && value!=null){
+								key=key.trim();
+								if(key.charAt(0)=='"' && key.length()>0) key=key.substring(1,key.length());
+								if(key.charAt(key.length()-1)=='"' && key.length()>0) key=key.substring(0,key.length()-1);
+								value=value.trim();
+								if(value.charAt(0)=='"' && value.length()>0) value=value.substring(1,value.length());
+								if(value.charAt(value.length()-1)=='"' && value.length()>0) value=value.substring(0,value.length()-1);
+								parameters.put(key, value);
+							}
+						}
+					}
+				}
+			}
+
+
+		}catch(Exception e){
+
+		}finally{
+		}
+
+		if(isJson)
+			initFromMap(bean,prefix,parameters);
+
+		initFromMap(bean,prefix,(HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
+
+		return isJson;
+	}
+
+	public static boolean initXmlPart(Object bean, String prefix, HttpServletRequest request, XmlMapper mapper) throws bsControllerException{
+		boolean isXml=false;
+		HashMap parameters = new HashMap();
+		try{
+
+			byte[] dataBytes = (byte[])request.getAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT);
+			if(dataBytes!=null){
+				String xml = new String(dataBytes,0,dataBytes.length).trim();
+				if(mapper!=null){
+					parameters = (HashMap)mapper.mapping(null, xml, parameters);
+					isXml=true;
+				}else{
+					parameters = (HashMap)new XmlReader2Map().mapping(null, xml, parameters);
+					if(parameters!=null)
+						isXml=true;
+				}
+			}
+
+		}catch(Exception e){
+
+		}finally{
+		}
+
+		if(isXml)
+			initFromMap(bean,prefix,parameters);
+
+		initFromMap(bean,prefix,(HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
+
+		return isXml;
+	}
+
+	
+	
+	public static void initNormal(Object bean, String prefix, HttpServletRequest request) throws bsControllerException{
 
 		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
@@ -542,8 +690,14 @@ public class util_supportbean  {
 		
 	}	
 	
-	public static void initPartFromMap(Object bean, String prefix, HashMap parameters) throws bsControllerException{
+	
+	
+	
+	
+	public static void initFromMap(Object bean, String prefix, HashMap parameters) throws bsControllerException{
 
+		if(parameters==null)
+			return;
 		boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||

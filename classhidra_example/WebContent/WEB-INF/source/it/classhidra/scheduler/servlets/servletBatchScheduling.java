@@ -52,18 +52,6 @@ public class servletBatchScheduling extends HttpServlet {
 
 	public static void reScan(){
 		reStart();
-/*		
-		try{
-			configuration=new batch_init();
-			clearContainer();
-			
-			thProcess = new schedulingThreadProcess();
-			thProcess.start();
-			new bsException("Scheduler: Start schedulingThreadProcess");
-		}catch(Exception e){	
-			e.toString();
-		}
-*/		
 	}
 	
 	public static void reStart(){
@@ -115,28 +103,6 @@ public class servletBatchScheduling extends HttpServlet {
 		}catch(Exception e){
 			new bsException("ERROR Scheduler:Clean schedulingThreadProcess "+e.toString(),iStub.log_ERROR);
 		}
-/*		
-		try{
-
-			int initialSize = thProcess.getPbe().getContainer_threadevents().size();
-			for(int i=0; i<thProcess.getPbe().getContainer_threadevents().size();i++){
-				schedulingThreadEvent ste =  (schedulingThreadEvent)thProcess.getPbe().getContainer_threadevents().get(i);
-				if(ste.getStateThread()==0){
-					ste.setThreadDone(true);
-					ste.setStateThread(2);				
-				}
-				ste.interrupt();
-				if(thProcess.getPbe().getContainer_threadevents().size()<initialSize){
-					initialSize = thProcess.getPbe().getContainer_threadevents().size();
-					i--;
-				}
-			}
-
-		}catch (Exception e) {
-
-		}
-*/			
-		
 	}
 	
 	public static void kill4timeout(){
@@ -164,9 +130,6 @@ public class servletBatchScheduling extends HttpServlet {
 		return active;
 	}
 
-//	public static void setPbe(ProcessBatchEngine pbe) {
-//		servletBatchScheduling.pbe = pbe;
-//	}
 	
 
 }
