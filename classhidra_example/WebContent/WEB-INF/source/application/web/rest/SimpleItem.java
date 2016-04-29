@@ -4,7 +4,10 @@ import java.io.Serializable;
 
 import it.classhidra.serialize.Serialized;
 
+//@Serialized
 public class SimpleItem implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	@Serialized
 	private int id;
 	@Serialized

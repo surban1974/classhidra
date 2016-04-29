@@ -291,6 +291,18 @@ public class util_batch {
 		return null;
 	}
 	
+	public static batch_init getBatch_init(){
+		batch_init b_init=null;
+	    try{
+	    	b_init = DriverScheduling.getConfiguration();
+	    	if(b_init==null)
+	    		b_init = new batch_init();
+	    }catch(Exception e){
+	    	b_init = new batch_init();
+	    }
+	    return b_init;
+	}
+	
 
 
 }
