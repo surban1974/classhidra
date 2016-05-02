@@ -47,6 +47,30 @@ public class XmlWriter {
 		return result;
 	}
 	
+	public static String object2xml(Object obj, String name, List filters, boolean children, int depth){
+		Map avoidCyclicPointers = new HashMap();
+
+		String result="";
+		if(obj==null)
+			result+="<error>Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL</error>";
+		else{
+			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);	
+			result+=generateXmlItem(
+					obj,
+					name,
+					0,
+					avoidCyclicPointers,
+					null,
+					(annotation!=null)?(annotation.children() || children):children,
+					(annotation!=null)
+					?
+					(depth>annotation.depth())?depth:annotation.depth()
+					:
+					depth,
+					util_xml.convertFilters(filters));
+		}
+		return result;
+	}
 
 
 	

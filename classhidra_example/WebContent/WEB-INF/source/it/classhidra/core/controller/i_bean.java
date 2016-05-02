@@ -82,6 +82,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void set(String name, boolean value);
 	void set(String name, char value);
 	void setCampoValuePoint(Object req, String nome, Object value) throws Exception;
+	void setCampoValuePoint(Object req, String nome, Object value, boolean log) throws Exception;
 	boolean setCampoValueWithPoint(String name, Object value) throws Exception;
 
 	info_action get_infoaction();

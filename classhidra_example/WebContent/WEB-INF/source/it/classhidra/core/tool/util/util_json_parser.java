@@ -240,7 +240,7 @@ public class util_json_parser {
 		int lastIndex = lastIndexOfNumber(json, index);
 		int charLength = (lastIndex - index) + 1;
 
-		double number = Double.valueOf(new String(json).substring(index,charLength));
+		double number = Double.valueOf(new String(json).substring(index,index+charLength));
 		success=true;
 		
 //		success = Double.TryParse(new String(json, index, charLength), NumberStyles.Any, CultureInfo.InvariantCulture, out number);

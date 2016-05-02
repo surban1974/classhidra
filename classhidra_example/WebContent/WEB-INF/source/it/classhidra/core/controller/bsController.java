@@ -1960,9 +1960,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}else if(ret==null){
 						try{
 							ret = current.newInstance();
-							util_supportbean.init(ret, annotationParameter.name(), request);
-//							util_supportbean.initNormal(ret, annotationParameter.name(), request);
-//							util_supportbean.initPartFromMap(ret, annotationParameter.name(), action_instance.get_bean().asBean().getParametersMP());
+							if(ret!=null){
+								if(	ret.getClass().isPrimitive() ||
+										ret instanceof String ||
+										ret instanceof Number ||
+										ret instanceof Date ||
+										ret instanceof Boolean)
+									ret = util_supportbean.init(ret.getClass(), annotationParameter.name(), request);
+								else
+									util_supportbean.init(ret, annotationParameter.name(), request);
+							}
 							result[i] = ret;
 						}catch(Exception e){
 							e.toString();

@@ -642,7 +642,8 @@ public void init(HttpServletRequest request) throws bsControllerException{
 													last_field_name,
 													replaceOnBlank,
 													replaceOnErrorFormat
-										)
+										),
+										false
 								);
 							else{
 								Serialized serialized_annotation = null;
@@ -671,21 +672,24 @@ public void init(HttpServletRequest request) throws bsControllerException{
 														last_field_name,
 														serialized_annotation.input().replaceOnBlank(),
 														serialized_annotation.input().replaceOnErrorFormat()
-											)
+														
+											),
+											false
 									);
 								else	
 									setCampoValuePoint(
 											current_requested,
 											last_field_name,
-											util_makeValue.makeValue1(current_requested,value,last_field_name)
+											util_makeValue.makeValue1(current_requested,value,last_field_name),
+											false
 										);
 								
 							}
 						}catch(Exception e){
 							try{
 								if(format!=null)
-									setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
-								else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
+									setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat),false);
+								else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)),false);
 							}catch(Exception ex){
 							}
 						}
@@ -903,6 +907,17 @@ public void setCampoValuePoint(Object req, String nome, Object value) throws Exc
 		setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),par);
 	}
 }
+
+public void setCampoValuePoint(Object req, String nome, Object value, boolean log) throws Exception{
+	if(req instanceof Map){
+		((Map)req).put(nome, value);
+	}else{
+		Object[] par = new Object[1];
+		par[0]=value;
+		setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),par,log);
+	}
+}
+
 
 public Object get(String value) {
 	try{

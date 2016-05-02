@@ -43,6 +43,31 @@ public class JsonWriter {
 		return result+"\n}";
 	}	
 
+	
+	public static String object2json(Object obj, String name, List filters, boolean children, int depth){
+		String result="{\n";
+		if(obj==null)
+			result+="\"error\":  \"Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL\"";
+		else{
+			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);		
+			result+=generateJsonItem(
+					obj,
+					name,
+					0,
+					false,
+					new HashMap(),
+					null,
+					(annotation!=null)?(annotation.children() || children):children,
+					(annotation!=null)
+					?
+					(depth>annotation.depth())?depth:annotation.depth()
+					:
+					depth,
+					util_xml.convertFilters(filters));
+		}
+		return result+"\n}";
+	}	
+	
 
 	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters){
 		String result="";

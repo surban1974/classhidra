@@ -343,9 +343,6 @@ public class util_makeValue {
 	
 	public static Object makeFormatedValue1(Class ret_class, String value, String format) throws Exception{
 		Object resultObject = null;
-		Field fld = null;
-		Method ret_fld = null;
-
 
 		if(ret_class.isPrimitive()){
 			try{
