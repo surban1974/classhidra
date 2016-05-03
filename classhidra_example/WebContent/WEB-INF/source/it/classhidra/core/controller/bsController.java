@@ -1972,7 +1972,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 							}
 							result[i] = ret;
 						}catch(Exception e){
-							e.toString();
+							try{
+								if(	current.isPrimitive())
+									result[i] = util_supportbean.init(current, annotationParameter.name(), request);	
+							}catch(Exception ex){
+							}
 						}
 					}
 				}catch(Exception e){

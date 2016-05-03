@@ -137,7 +137,7 @@ public class util_json_parser {
 			case util_json_parser.TOKEN_STRING:
 				return parseString(json);
 			case util_json_parser.TOKEN_NUMBER:
-				return parseNumber(json);
+				return parseNumber(json)[0];
 			case util_json_parser.TOKEN_CURLY_OPEN:
 				return parseObject(json);
 			case util_json_parser.TOKEN_SQUARED_OPEN:
@@ -207,7 +207,8 @@ public class util_json_parser {
 						// parse the 32 bit hex into an integer codepoint
 						int codePoint = 0;
 						try{
-							codePoint = Integer.valueOf(new String(json).substring(index,4));
+//							codePoint = Integer.valueOf(new String(json).substring(index,4));
+							codePoint = Integer.valueOf(new String(json).substring(index,index+4));
 						}catch(Exception e){
 							return "";
 						}
@@ -234,19 +235,33 @@ public class util_json_parser {
 		return s.toString();
 	}
 
-	private static double parseNumber(char[] json){
+	private static Object[] parseNumber(char[] json){
+		Object[] result = new Object[]{0};
 		whitespace(json);
 
 		int lastIndex = lastIndexOfNumber(json, index);
 		int charLength = (lastIndex - index) + 1;
 
-		double number = Double.valueOf(new String(json).substring(index,index+charLength));
-		success=true;
+		try{
+			int number = Integer.valueOf(new String(json).substring(index,index+charLength));
+			success=true;
+			result[0] = number;
+		}catch(Exception e){			
+		}
+		if(!success){
+			try{
+				double number = Double.valueOf(new String(json).substring(index,index+charLength));
+				success=true;
+				result[0] = number;
+			}catch(Exception e){			
+			}
+		}
+		
 		
 //		success = Double.TryParse(new String(json, index, charLength), NumberStyles.Any, CultureInfo.InvariantCulture, out number);
 
 		index = lastIndex + 1;
-		return number;
+		return result;
 	}
 
 	private static int lastIndexOfNumber(char[] json, int index){
