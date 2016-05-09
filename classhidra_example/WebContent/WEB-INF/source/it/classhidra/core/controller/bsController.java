@@ -125,33 +125,53 @@ public class bsController extends HttpServlet implements bsConstants  {
 	private static boolean reInit=false;
 	private static boolean canBeProxed=true;
 	private static boolean isInitDefProfider=false;
+	private static boolean initialized = false;
+	private static boolean loadedonstartup = false;
 
 
 	class LoaderConfigThreadProcess extends Thread {
 	    private boolean threadDone = false;
-
-
 	    public LoaderConfigThreadProcess() {
 	        super();
 	        threadDone=false;
-
 	    }
-
 	    public void run() {
 	        while (!threadDone) {
 	    		try {
 	    			loadOnInit();
 	    			threadDone=true;
 	    		} catch (Exception e) {
+	    			threadDone=true;
 	    			Thread.currentThread().interrupt();
 	    		}
 	        }
 	     }
-
+	}
+	
+	static class LoaderConfigThreadProcessS extends Thread {
+	    private boolean threadDone = false;
+	    private Map othersProperties = null;
+	    public LoaderConfigThreadProcessS(Map othersProperties) {
+	        super();
+	        this.othersProperties = othersProperties;
+	        threadDone=false;
+	    }
+	    public void run() {
+	        while (!threadDone) {
+	    		try {
+	    			loadOnInitS(othersProperties);
+	    			threadDone=true;
+	    		} catch (Exception e) {
+//	    			threadDone=true;
+	    			Thread.currentThread().interrupt();
+	    		}
+	        }
+	     }
 	}
 
 	public void init() throws ServletException, UnavailableException {
-
+		initialized = true;
+		loadedonstartup = true;
 		StatisticEntity stat = null;
 		try{
 			stat = new StatisticEntity(
@@ -254,6 +274,36 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	}
+	
+	public static void loadOnInitS(Map othersProperties){
+		logInit = new log_init();
+		if(othersProperties!=null && othersProperties.get(log_init.id_property)!=null && othersProperties.get(log_init.id_property) instanceof Properties)
+			logInit.init((Properties)othersProperties.get(log_init.id_property));
+		else
+			logInit.init();
+		
+		dbInit = new db_init();
+		if(othersProperties!=null && othersProperties.get(db_init.id_property)!=null && othersProperties.get(db_init.id_property) instanceof Properties)
+			dbInit.init((Properties)othersProperties.get(db_init.id_property),"");
+		else
+			dbInit.init();
+			
+		checkLogGenerator(logInit);	
+		if(getLogG().isReadError()) 
+			reloadLog_generator(null);
+
+		resourcesInit(null);
+
+		if(!getAction_config().isReadOk())
+			reloadAction_config(null);
+		if(!getMess_config().isReadOk())
+			reloadMess_config(null);
+		if(!getAuth_config().isReadOk())
+			reloadAuth_config(null);
+		if(!getOrg_config().isReadOk())
+			reloadOrg_config(null);
+	}
+	
 
 	public static void resourcesInit(){
 		resourcesInit(null);
@@ -3560,6 +3610,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static String getContextConfigPath(ServletContext servletContext){
+		if(servletContext==null)
+			return "";
 		String path=servletContext.getRealPath("/");
 		if(appInit!=null && appInit.getApplication_path_config()!=null)
 			path+=appInit.getApplication_path_config();
@@ -3828,7 +3880,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static void reloadLog_generator(ServletContext servletContext){
-		if(logInit.get_LogPath()==null || logInit.get_LogPath().equals("")){
+		if(servletContext!=null && (logInit.get_LogPath()==null || logInit.get_LogPath().equals(""))){
 			logInit.init();
 			String new_path =util_classes.getPathWebContent(servletContext)+"/"+CONST_LOG_FOLDER+"/";
 			logInit.set_LogPath(new_path);
@@ -5169,5 +5221,70 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static boolean isCanBeProxed() {
 		return canBeProxed;
+	}
+
+	public static boolean isInitialized() {
+		return isInitialized(null,null);
+	}
+	
+	public static boolean isInitialized(Properties appInitProperty, Map othersProperties) {
+		if(!initialized){
+			try{
+				initialized = true;
+				StatisticEntity stat = null;
+				try{
+					stat = new StatisticEntity(
+							"ClassHidra",
+							"",
+							"",
+							"",
+							"init",
+							null,
+							new Date(),
+							null,
+							null);
+				}catch(Exception e){
+				}
+
+
+				if(appInit==null){
+					appInit = new app_init();
+					appInit.init();
+				}
+				
+				if(appInitProperty!=null && appInitProperty.size()>0)
+					appInit.init(appInitProperty);
+					
+					
+					
+				checkDefaultProvider(null);
+
+				boolean	loadModeAsThread=false;
+				try{
+					if(appInit.get_load_res_mode().equalsIgnoreCase("thread")) loadModeAsThread=true;
+				}catch(Exception e){
+				}
+				if(loadModeAsThread)
+					new LoaderConfigThreadProcessS(othersProperties).start();
+				else
+					loadOnInitS(othersProperties);
+
+				
+				if(stat!=null){
+					stat.setFt(new Date());
+					putToStatisticProvider(stat);
+				}
+				
+			}catch(Exception e){
+				new bsControllerException(e, iStub.log_ERROR);
+			}catch(Throwable th){
+				new bsControllerException(th, iStub.log_ERROR);
+			}
+		}
+		return initialized;
+	}
+
+	public static boolean isLoadedonstartup() {
+		return loadedonstartup;
 	}
 }

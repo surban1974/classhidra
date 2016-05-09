@@ -38,21 +38,22 @@ import java.util.Properties;
 public class db_init implements Serializable{
 	private static final long serialVersionUID = -296126065245352700L;
 
-	static public String id_driver= 					"application.db.driver";
-	static public String id_url = 						"application.db.url";
-	static public String id_server = 					"application.db.server";
-	static public String id_dbname =					"application.db.dbname";
-	static public String id_datasource =				"application.db.datasource";
-	static public String id_connectiontype =			"application.db.connectiontype";
-	static public String id_user =						"application.db.user";
-	static public String id_password =					"application.db.password";
-	static public String id_allwayone =					"application.db.allwayone";
-	static public String id =							"application.db.id";
+	public final static String id_property				= 	"classhidra_db";
+	public final static String id_driver				= 	"application.db.driver";
+	public final static String id_url 					= 	"application.db.url";
+	public final static String id_server 				= 	"application.db.server";
+	public final static String id_dbname 				=	"application.db.dbname";
+	public final static String id_datasource 			=	"application.db.datasource";
+	public final static String id_connectiontype 		=	"application.db.connectiontype";
+	public final static String id_user 					=	"application.db.user";
+	public final static String id_password 				=	"application.db.password";
+	public final static String id_allwayone 			=	"application.db.allwayone";
+	public final static String id 						=	"application.db.id";
 
-	static public String id_local_pool_size =			"application.db.local_pool_size";
-	static public String id_local_pool_timeout =		"application.db.local_pool_timeout";
-	static public String id_local_pool_delay =			"application.db.local_pool_delay";
-	static public String id_local_pool_provider=		"application.db.local_pool_provider";
+	public final static String id_local_pool_size 		=	"application.db.local_pool_size";
+	public final static String id_local_pool_timeout 	=	"application.db.local_pool_timeout";
+	public final static String id_local_pool_delay 		=	"application.db.local_pool_delay";
+	public final static String id_local_pool_provider	=	"application.db.local_pool_provider";
 
 	private String _driver;
 	private String _url;
@@ -75,13 +76,13 @@ public class db_init implements Serializable{
 
 	private String loadedFrom="";
 
-	static public String CT_DRIVERMANAGER = 			"drivermanager";
-	static public String CT_JSQLDATASOURCE = 			"javaxsqldatasource";
-	static public String CT_POOLDATASOURCE4 = 			"pooldatasourcev4";
-	static public String CT_POOLDATASOURCE41 = 			"pooldatasourcev41";
-	static public String CT_POOLDATASOURCE5 = 			"pooldatasourcev5";
-	static public String CT_POOLDATASOURCE51 = 			"pooldatasourcev51";
-	static public String CT_LOCALPOOL = 				"localpool";
+	public final static String CT_DRIVERMANAGER 	= 	"drivermanager";
+	public final static String CT_JSQLDATASOURCE 	= 	"javaxsqldatasource";
+	public final static String CT_POOLDATASOURCE4 	= 	"pooldatasourcev4";
+	public final static String CT_POOLDATASOURCE41 	= 	"pooldatasourcev41";
+	public final static String CT_POOLDATASOURCE5 	= 	"pooldatasourcev5";
+	public final static String CT_POOLDATASOURCE51 	= 	"pooldatasourcev51";
+	public final static String CT_LOCALPOOL 		= 	"localpool";
 
 public db_init() {
 	super();
@@ -111,7 +112,7 @@ public void init() {
 		property_name = ainit.getResources_path().getProperty(app_path+bsController.db_id_property);
 
 	if(property_name==null || property_name.equals("")){
-		property_name = "classhidra_db";
+		property_name = id_property;
 		try{
 			property = util_file.loadProperty(ainit.get_path_config()+property_name);
 			loadedFrom+=" "+ainit.get_path_config()+property_name;
@@ -193,7 +194,8 @@ public boolean init(Properties property, String prefix) {
 	}else{
 		if(property.getProperty(id_connectiontype+"."+prefix)==null) return false;
 		_id = property.getProperty(id+"."+prefix);
-			if(_id==null) _id=prefix;
+		if(_id==null)
+			_id=prefix;
 		_connectiontype = property.getProperty(id_connectiontype+"."+prefix);
 		_driver = property.getProperty(id_driver+"."+prefix);
 		_url = property.getProperty(id_url+"."+prefix);

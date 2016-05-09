@@ -163,7 +163,7 @@ public class bsFilter implements Filter {
 				}
 
 				
-				
+				bsController.isInitialized();
 				
 				ForCheckBs id_bs = new ForCheckBs();
 				

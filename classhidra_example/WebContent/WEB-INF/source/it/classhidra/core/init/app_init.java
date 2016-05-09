@@ -45,6 +45,9 @@ public class app_init implements Serializable{
 	public final static String PATH_VFS_PLUGIN				= 	"it.classhidra.plugin.vfs.util_vfs_classes";
 	
 	public final static String CONST_PAGESIZE				= 	"application.const.pagesize";
+	
+	public final static String id_property					= 	"classhidra_app";
+	
 	public final static String id_path 						= 	"application.path";
 	public final static String id_enterpoint 				= 	"application.auth.action.enterpoint";
 	public final static String id_nav_excluded 				= 	"application.auth.tag_navigation.action_excluded";
@@ -149,7 +152,7 @@ public class app_init implements Serializable{
 		String property_name = System.getProperty(bsConstants.app_id_property);
 		try{
 			
-			if(property_name==null || property_name.equals("")) property_name = "classhidra_app";
+			if(property_name==null || property_name.equals("")) property_name = id_property;
 			ResourceBundle rb = ResourceBundle.getBundle(property_name);
 			Enumeration en = rb.getKeys();
 		

@@ -224,6 +224,7 @@ public class util_supportbean  {
 						if(!bean.setCampoValueWithPoint(key,makedValue))
 							throw new Exception();
 					}catch(Exception ex){
+						bean.getInitErrors().put(key,"Init Normal: ["+key+"] not found in the bean ["+bean.getClass().getName()+"]. Will be added into FLY.");
 						if(bean.getParametersFly()==null)
 							bean.setParametersFly(new HashMap());
 						if(key!=null && key.length()>0 && key.indexOf(0)!='$')
@@ -281,10 +282,14 @@ public class util_supportbean  {
 						try{
 							if(format!=null)
 								bean.setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((bean.getDelegated()==null)?bean:bean.getDelegated(),format,value,bean.getCampoValue(key),replaceOnBlank,replaceOnErrorFormat),false);
-							else bean.setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,bean.getCampoValue(key)),false);
+							else 
+								bean.setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,bean.getCampoValue(key)),false);
 						}catch(Exception ex){
+							bean.getInitErrors().put(key,"Init Normal: ["+key+"] not found in the bean ["+bean.getClass().getName()+"].");
 						}
 					}
+				}else{
+					bean.getInitErrors().put(key,"Init Normal: ["+key+"] not found in the bean ["+bean.getClass().getName()+"].");
 				}
 			}
 		}

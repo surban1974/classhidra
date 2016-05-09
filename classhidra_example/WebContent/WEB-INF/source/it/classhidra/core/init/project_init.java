@@ -13,7 +13,7 @@ import java.util.Properties;
 public class project_init implements Serializable{
 	private static final long serialVersionUID = -1L;
 
-	static public String id_property =					"application.suiteprojects.property";
+	public final static String id_property =	"application.suiteprojects.property";
 
 	Properties property = null;
 	private String loadedFrom="";

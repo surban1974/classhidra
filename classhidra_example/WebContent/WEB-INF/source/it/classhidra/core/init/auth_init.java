@@ -51,12 +51,12 @@ public class auth_init implements Serializable{
 	private static final long serialVersionUID = -7458249663298875859L;
 
 
-
-	static public String id_manager = 					"application.auth.manager";
-	static public String id_authentication_filter = 	"application.auth.filter";
-	static public String id_jaas_systemname = 			"application.auth.jaas_systemname";
-	static public String id_jaas_defaultfilename =		"application.auth.jaas_fileconfig";
-	static public String id_jaas_policy =				"application.auth.policy";
+	public final static String id_property				= 	"classhidra_auth";
+	public final static String id_manager 				= 	"application.auth.manager";
+	public final static String id_authentication_filter = 	"application.auth.filter";
+	public final static String id_jaas_systemname 		= 	"application.auth.jaas_systemname";
+	public final static String id_jaas_defaultfilename 	=	"application.auth.jaas_fileconfig";
+	public final static String id_jaas_policy 			=	"application.auth.policy";
 
 
 	private String jaas_managername;
@@ -138,7 +138,7 @@ public class auth_init implements Serializable{
 
 
 		if(property_name==null || property_name.equals("")){
-			property_name = "classhidra_auth";
+			property_name = id_property;
 			try{
 				property = util_file.loadProperty(ainit.get_path_config()+property_name);
 				loadedFrom+=" "+ainit.get_path_config()+property_name;

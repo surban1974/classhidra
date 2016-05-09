@@ -242,21 +242,38 @@ public class util_json_parser {
 		int lastIndex = lastIndexOfNumber(json, index);
 		int charLength = (lastIndex - index) + 1;
 
+		success=false;
 		try{
-			int number = Integer.valueOf(new String(json).substring(index,index+charLength));
-			success=true;
-			result[0] = number;
-		}catch(Exception e){			
-		}
-		if(!success){
-			try{
-				double number = Double.valueOf(new String(json).substring(index,index+charLength));
-				success=true;
-				result[0] = number;
-			}catch(Exception e){			
+			String value = new String(json).substring(index,index+charLength);
+			if(value.indexOf('.')==-1){
+				if(!success){
+					try{
+						int number = Integer.valueOf(value);
+						success=true;
+						result[0] = number;
+					}catch(Exception e){			
+					}
+				}
+			}else{
+				if(!success){
+					try{
+						double number = Double.valueOf(value);
+						success=true;
+						result[0] = number;
+					}catch(Exception e){			
+					}
+				}
 			}
+			if(!success){
+				try{
+					double number = Double.valueOf(value);
+					success=true;
+					result[0] = number;
+				}catch(Exception e){			
+				}
+			}
+		}catch(Exception ex){
 		}
-		
 		
 //		success = Double.TryParse(new String(json, index, charLength), NumberStyles.Any, CultureInfo.InvariantCulture, out number);
 

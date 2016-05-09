@@ -143,4 +143,5 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	i_bean asBean();
 	
 	void clearBeforeStore();
+	Map getInitErrors();
 }

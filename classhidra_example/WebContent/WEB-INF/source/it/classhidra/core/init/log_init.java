@@ -43,20 +43,21 @@ import java.util.Properties;
 public class log_init implements Serializable{
 	private static final long serialVersionUID = -6472537615470267850L;
 
-	static public String id_LogStub =			"application.log.stub";
-	static public String id_LogLevel =			"application.log.level";
+	public final static String id_property		= 	"classhidra_log";
+	public final static String id_LogStub 		=	"application.log.stub";
+	public final static String id_LogLevel 		=	"application.log.level";
 
-	static public String id_LogGenerator =		"application.log.generator";
-	static public String id_LogPattern = 		"application.log.pattern";
-	static public String id_LogPath = 			"application.log.path";
-	static public String id_LogName = 			"application.log.name";
-	static public String id_LogMaskName =		"application.log.maskname";
-	static public String id_LogMaskFormat =		"application.log.maskformat";
-	static public String id_LogMaxLength =		"application.log.maxlength";
-	static public String id_LogMaxFiles =		"application.log.maxfiles";
-	static public String id_LogFlashRate =		"application.log.flashrate";
-	static public String id_LogFlashSize =		"application.log.flashsize";
-	static public String id_Write2Concole =		"application.log.write2console";
+	public final static String id_LogGenerator 	=	"application.log.generator";
+	public final static String id_LogPattern 	= 	"application.log.pattern";
+	public final static String id_LogPath 		= 	"application.log.path";
+	public final static String id_LogName 		= 	"application.log.name";
+	public final static String id_LogMaskName 	=	"application.log.maskname";
+	public final static String id_LogMaskFormat =	"application.log.maskformat";
+	public final static String id_LogMaxLength 	=	"application.log.maxlength";
+	public final static String id_LogMaxFiles 	=	"application.log.maxfiles";
+	public final static String id_LogFlashRate 	=	"application.log.flashrate";
+	public final static String id_LogFlashSize 	=	"application.log.flashsize";
+	public final static String id_Write2Concole =	"application.log.write2console";
 
 
 	private String _LogGenerator;
@@ -137,7 +138,7 @@ public void init() {
 			}catch(Exception e){
 			}
 
-			property_name = "classhidra_log";
+			property_name = id_property;
 			try{
 				property = util_file.loadProperty(ainit.get_path_config()+property_name);
 				loadedFrom+=" "+ainit.get_path_config()+property_name;
@@ -245,8 +246,9 @@ public Properties initDB(app_init ainit) throws bsControllerException, Exception
 	
 	try{
 		ByteArrayInputStream instrm = new ByteArrayInputStream(propertyData.getBytes());
-		if(instrm!=null) property.load(instrm);
-		else property=null;		
+		if(instrm!=null) 
+			property.load(instrm);
+//		else property=null;		
 	}catch(Exception e){
 		property=null;
 		throw e;
@@ -393,49 +395,49 @@ public void set_LogMaxFiles(String string) {
 		return _LogStub;
 	}
 
-	public static void setId_LogFlashRate(String string) {
-		id_LogFlashRate = string;
-	}
-
-	public static void setId_LogFlashSize(String string) {
-		id_LogFlashSize = string;
-	}
-
-	public static void setId_LogLevel(String string) {
-		id_LogLevel = string;
-	}
-
-	public static void setId_LogMaskFormat(String string) {
-		id_LogMaskFormat = string;
-	}
-
-	public static void setId_LogMaskName(String string) {
-		id_LogMaskName = string;
-	}
-
-	public static void setId_LogMaxFiles(String string) {
-		id_LogMaxFiles = string;
-	}
-
-	public static void setId_LogMaxLength(String string) {
-		id_LogMaxLength = string;
-	}
-
-	public static void setId_LogName(String string) {
-		id_LogName = string;
-	}
-
-	public static void setId_LogPath(String string) {
-		id_LogPath = string;
-	}
-
-	public static void setId_LogPattern(String string) {
-		id_LogPattern = string;
-	}
-
-	public static void setId_LogStub(String string) {
-		id_LogStub = string;
-	}
+//	public static void setId_LogFlashRate(String string) {
+//		id_LogFlashRate = string;
+//	}
+//
+//	public static void setId_LogFlashSize(String string) {
+//		id_LogFlashSize = string;
+//	}
+//
+//	public static void setId_LogLevel(String string) {
+//		id_LogLevel = string;
+//	}
+//
+//	public static void setId_LogMaskFormat(String string) {
+//		id_LogMaskFormat = string;
+//	}
+//
+//	public static void setId_LogMaskName(String string) {
+//		id_LogMaskName = string;
+//	}
+//
+//	public static void setId_LogMaxFiles(String string) {
+//		id_LogMaxFiles = string;
+//	}
+//
+//	public static void setId_LogMaxLength(String string) {
+//		id_LogMaxLength = string;
+//	}
+//
+//	public static void setId_LogName(String string) {
+//		id_LogName = string;
+//	}
+//
+//	public static void setId_LogPath(String string) {
+//		id_LogPath = string;
+//	}
+//
+//	public static void setId_LogPattern(String string) {
+//		id_LogPattern = string;
+//	}
+//
+//	public static void setId_LogStub(String string) {
+//		id_LogStub = string;
+//	}
 
 	public void set_LogLevel(String string) {
 		_LogLevel = string;

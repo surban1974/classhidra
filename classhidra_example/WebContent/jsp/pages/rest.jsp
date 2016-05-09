@@ -26,15 +26,16 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 <table border="0" width="100%"  height="95%" >
 <tr>
 	<td align="left" style="border-bottom-style: solid 1px; min-height: 50px" valign="middle" height="10%">	
-		<table cellspacing="0">	
+		<table cellspacing="0" >	
 		<tr>
 			<td align="right" class="labelLeft"><nobr><b>Item:</b></nobr></td>
-			<td align="right" class="labelLeft" style="border: 1px solid silver; border-right: none"><nobr>Id</nobr></td>
+			<td align="right" class_="labelLeft" style="border: 1px solid silver; border-right: none"><nobr>Id</nobr></td>
 			<td width="30"  style="border: 1px solid silver; border-left: none; border-right: none;"><bs:input name="item.id" size="30" toUpperCase="no" styleClass ="input200" style="width:30px"/></td>
-			<td align="right" class="labelLeft" style="border: 1px solid silver; border-left: none; border-right: none;"><nobr>Name</nobr></td>
+			<td align="right" class_="labelLeft" style="border: 1px solid silver; border-left: none; border-right: none;"><nobr>Name</nobr></td>
 			<td width="100"  style="border: 1px solid silver; border-left: none; border-right: none;"><bs:input name="item.name" size="30" toUpperCase="no" styleClass ="input200" style="width:100px"/></td>
-			<td align="right" class="labelLeft" style="border: 1px solid silver; border-left: none; border-right: none;"><nobr>Surname</nobr></td>
+			<td align="right" class_="labelLeft" style="border: 1px solid silver; border-left: none; border-right: none;"><nobr>Surname</nobr></td>
 			<td width="100" style="border: 1px solid silver; border-left: none"><bs:input name="item.surname" size="30" toUpperCase="no" styleClass ="input200" style="width:100px"/></td>
+			
 			<td>&nbsp;</td>
 			<td width="50" style="width:50px"><script>ObjectDraw("page1","button",10,"GET","getItem(false)","page_section","","images/menu/","",true,24,"50");</script></td>
 			<td>&nbsp;</td>
@@ -47,6 +48,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 		<tr>
 			<td align="right" class="labelLeft"><nobr><b>Link:</b></nobr></td>
 			<td colspan="6"><bs:input name="link" size="370" toUpperCase="no" styleClass ="input200" style="width:370px" value="rest/examples/"/></td>
+			
 			<td>&nbsp;</td>
 			<td width="50" style="width:50px"><script>ObjectDraw("page1","button",14,"GET","getItems(true)","page_section","","images/menu/","",true,24,"50");</script></td>
 			<td>&nbsp;</td>

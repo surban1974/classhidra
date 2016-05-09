@@ -90,6 +90,8 @@ public class bean extends elementBeanBase implements i_bean  {
 	protected Object delegated;
 	
 	protected info_context info_context = new info_context(this.getClass());
+	
+	protected HashMap initErrors;
 
 
 
@@ -111,13 +113,15 @@ public redirects validate(HashMap parameters){
 
 
 public void init(HttpServletRequest request) throws bsControllerException{
-	if(request==null) return;
+	if(request==null)
+		return;
 	if(current_auth==null){
 		try{
 			current_auth = bsController.checkAuth_init(request);
 		}catch(Exception ex){
 		}
 	}
+	getInitErrors().clear();
 	
 //	if(parametersFly!=null)
 //		parametersFly.clear();
@@ -595,6 +599,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 							if(!setCampoValueWithPoint(key,makedValue))
 								throw new Exception();
 						}catch(Exception ex){
+							getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"]."+((add2fly)?" Will e added into FLY.":""));
 							if(add2fly){
 								if(parametersFly==null) 
 									parametersFly = new HashMap();
@@ -691,9 +696,12 @@ public void init(HttpServletRequest request) throws bsControllerException{
 									setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat),false);
 								else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)),false);
 							}catch(Exception ex){
+								getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"].");
 							}
 						}
-					}
+					}else
+						getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"].");
+
 
 
 				}
@@ -892,6 +900,8 @@ public void reInit(i_bean another_bean){
 public void clearBeforeStore(){
 	if(parametersMP!=null)
 		parametersMP.clear();
+	if(initErrors!=null)
+		initErrors.clear();
 	
 //	if(parametersFly!=null)
 //		parametersFly.clear();
@@ -1620,6 +1630,12 @@ public info_context getInfo_context() {
 
 public void setInfo_context(i_info_context info_context) {
 	this.info_context = (info_context)info_context;
+}
+
+public Map getInitErrors(){ 
+	if(initErrors==null)
+		initErrors = new HashMap();
+	return initErrors;
 }
 
 

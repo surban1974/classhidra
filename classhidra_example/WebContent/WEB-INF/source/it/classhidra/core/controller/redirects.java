@@ -185,7 +185,8 @@ public class redirects implements Serializable{
 		if(_uri==null || _uri.equals("")) return rd;
 		if(	_uri.indexOf("/Controller?$")==0 ||
 			_uri.indexOf(bsController.getAppInit().get_extention_do()+"?")>0 ||
-			_uri.lastIndexOf(bsController.getAppInit().get_extention_do()) == _uri.length()-bsController.getAppInit().get_extention_do().length()) return scontext.getRequestDispatcher(transformURI(_uri));
+			_uri.lastIndexOf(bsController.getAppInit().get_extention_do()) == _uri.length()-bsController.getAppInit().get_extention_do().length())
+			return scontext.getRequestDispatcher(transformURI(_uri));
 		if(_uri==null || _uri.equals("") || _infoaction==null) return rd;
 		if(	bodyURI(_uri).equals(bodyURI(_infoaction.getRedirect())) ||
 			_infoaction.get_redirects().get(bodyURI(_uri))!=null ||
@@ -242,7 +243,10 @@ public class redirects implements Serializable{
 				if(first.indexOf("/actions/")==0) first=util_format.replace(first,"/actions/","/");
 				if(first.indexOf("actions/")==0) first=util_format.replace(first,"actions/","/");
 				if(first.indexOf("/")==0) first=first.substring(1,first.length());
-				uri=first+"/Controller?"+bsController.CONST_ID_$ACTION+"="+id_action+"&"+second;
+				if(bsController.isLoadedonstartup())
+					uri=first+"/Controller?"+bsController.CONST_ID_$ACTION+"="+id_action+"&"+second;
+				else
+					uri=first+"/"+id_action+"?"+second;
 			}
 			return uri;
 		}else{
@@ -260,8 +264,13 @@ public class redirects implements Serializable{
 				if(first.indexOf("/")==0) first=first.substring(1,first.length());
 				String id = first;
 				id = util_format.replace(id,bsController.getAppInit().get_extention_do(),"");
-				first=util_format.replace(first,id+bsController.getAppInit().get_extention_do(),"")+"/Controller";
-				uri=first+"?"+bsController.CONST_ID_$ACTION+"="+id+"&"+second;
+				if(bsController.isLoadedonstartup()){
+					first=util_format.replace(first,id+bsController.getAppInit().get_extention_do(),"")+"/Controller";
+					uri=first+"?"+bsController.CONST_ID_$ACTION+"="+id+"&"+second;
+				}else{
+					first=util_format.replace(first,id+bsController.getAppInit().get_extention_do(),"");
+					uri=first+"/"+id+"?"+second;			
+				}
 			}
 		}
 		return uri;
