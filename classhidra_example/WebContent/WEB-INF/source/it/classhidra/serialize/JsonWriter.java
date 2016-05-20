@@ -397,7 +397,14 @@ public class JsonWriter {
 			
 			if(sub_obj instanceof Number){
 				check=true;
-				if(annotation!=null && annotation.output()!=null){
+				if(sub_obj!=null && (sub_obj.toString().equalsIgnoreCase("NaN") || sub_obj.toString().equalsIgnoreCase("Infinity") || sub_obj.toString().equalsIgnoreCase("-Infinity"))){
+					result = "\""+sub_obj.toString()+"\"";
+				}
+				else if(annotation!=null &&
+						annotation.output()!=null &&
+						annotation.output().format()!=null &&
+						!annotation.output().format().equals("")
+						){
 					try{					
 						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
 						result+="\""+normalJSON(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null))+"\"";

@@ -69,7 +69,7 @@ public class componentRest extends action implements i_action, Serializable{
 			else
 				modelName = "model";
 		}
-		return JsonWriter.object2json(this.get_bean().asBean().asBean(), modelName);
+		return JsonWriter.object2json(this.get_bean().asBean(), modelName);
 	}	
 	
 @ActionCall(

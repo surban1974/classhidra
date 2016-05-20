@@ -14,6 +14,8 @@ public class SimpleItem implements Serializable{
 	private String name;
 	@Serialized
 	private String surname;
+	@Serialized
+	private float age;	
 	
 	public SimpleItem(){
 		super();
@@ -24,6 +26,7 @@ public class SimpleItem implements Serializable{
 		this.id=id;
 		this.name=name;
 		this.surname=surname;
+
 	}
 	
 
@@ -44,5 +47,13 @@ public class SimpleItem implements Serializable{
 	}
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+
+	public float getAge() {
+		return age;
+	}
+
+	public void setAge(float age) {
+		this.age = age;
 	}
 }

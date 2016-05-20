@@ -791,9 +791,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static i_action getActionInstance(String id_action,String id_call, HttpServletRequest request, HttpServletResponse response) throws bsControllerException,ServletException, UnavailableException{
 
-		boolean cloned = (request.getParameter(CONST_ID_EXEC_TYPE)==null)?false:request.getParameter(CONST_ID_EXEC_TYPE).equalsIgnoreCase(CONST_ID_EXEC_TYPE_CLONED);
+		boolean cloned = (request==null)
+				?
+					false
+				:
+					(request.getParameter(CONST_ID_EXEC_TYPE)==null)?false:request.getParameter(CONST_ID_EXEC_TYPE).equalsIgnoreCase(CONST_ID_EXEC_TYPE_CLONED);
 
-		i_action action_instance = getAction_config().actionFactory(id_action,request.getSession(),request.getSession().getServletContext());
+		i_action action_instance = getAction_config().actionFactory(id_action, (request==null)?null:request.getSession(),(request==null)?null:request.getSession().getServletContext());
 
 		i_bean bean_instance = getCurrentForm(id_action,request);
 
@@ -820,7 +824,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						bean_instance = action_instance.asBean();
 				}
 			}else
-				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),request.getSession(), request.getSession().getServletContext(),action_instance);
+				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),(request==null)?null:request.getSession(), (request==null)?null:request.getSession().getServletContext(),action_instance);
 			
 			if(bean_instance!=null){
 				if(bean_instance.getCurrent_auth()==null || action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
@@ -992,7 +996,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			try{
 				iCall = (info_call)action_instance.get_infoaction().get_calls().get(id_call);
 				if(iCall==null)
-					iCall = (info_call)action_instance.get_infoaction().get_calls().get(id_call+"."+request.getMethod());
+					iCall = (info_call)action_instance.get_infoaction().get_calls().get(id_call+"."+((request==null)?"":request.getMethod()));
 				if(iCall==null){
 					Object[] method_call = action_instance.getMethodAndCall(id_call);
 					if(method_call!=null){
@@ -1095,8 +1099,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		redirects current_redirect = null;
 		if(id_call==null){
 			
-			if(!action_instance.get_infoaction().isExposed(request.getMethod()))
-				throw new bsControllerException("HTTP Method "+request.getMethod()+" is not supported for /"+action_instance.get_infoaction().getPath(), request, iStub.log_FATAL);
+			if(!action_instance.get_infoaction().isExposed((request==null)?"":request.getMethod()))
+				throw new bsControllerException("HTTP Method "+((request==null)?"":request.getMethod())+" is not supported for /"+action_instance.get_infoaction().getPath(), request, iStub.log_FATAL);
 			
 			Method iActionMethod = null;
 			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
@@ -1476,7 +1480,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
 					if(form!=null)
 						form.onAddToLastInstance();
-					request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
+					if(request!=null)
+						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
 				}
 			}catch(Exception e){
 			}
@@ -2069,23 +2074,28 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 						updateResponseContentType(fake, response, rWrapper.getResponseStatus());
 						if(rWrapper.getContent()!=null){
-							if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
-								response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
-							else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
-								response.getOutputStream().write(((byte[])rWrapper.getContent()));
-							else 
-								response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+							if(response!=null){
+								if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
+									response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
+								else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
+									response.getOutputStream().write(((byte[])rWrapper.getContent()));
+								else 
+									response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+							}else
+								current_redirect = new redirects(rWrapper);
 						}
 					}
 				}else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
+					if(iCall!=null && iCall.getIRedirect()!=null)
+						updateResponseContentType(iCall.getIRedirect(), response, 0);
 					if(retVal!=null){
-						if(iCall!=null && iCall.getIRedirect()!=null)
-							updateResponseContentType(iCall.getIRedirect(), response, 0);
-						
-						if(String.class.isAssignableFrom(method.getReturnType()))
-							response.getOutputStream().write(((String)retVal).getBytes());
-						if(byte[].class.isAssignableFrom(method.getReturnType()))
-							response.getOutputStream().write(((byte[])retVal));
+						if(response!=null){
+							if(String.class.isAssignableFrom(method.getReturnType()))
+								response.getOutputStream().write(((String)retVal).getBytes());
+							if(byte[].class.isAssignableFrom(method.getReturnType()))
+								response.getOutputStream().write(((byte[])retVal));
+						}else
+							current_redirect = new redirects(new response_wrapper().setContent(retVal));
 					}
 				}
 			}else if((method.getReturnType()!=null && method.getReturnType().equals(Void.TYPE)) || method.getReturnType()==null){
@@ -2137,12 +2147,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 						updateResponseContentType(fake, response, rWrapper.getResponseStatus());
 						if(rWrapper.getContent()!=null){
-							if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
-								response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
-							else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
-								response.getOutputStream().write(((byte[])rWrapper.getContent()));
-							else 
-								response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+							if(response!=null){
+								if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
+									response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
+								else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
+									response.getOutputStream().write(((byte[])rWrapper.getContent()));
+								else 
+									response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+							}else
+								current_redirect = new redirects(rWrapper);
 						}
 					}
 				
@@ -2154,11 +2167,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 						
 						if(iRedirect!=null)
 							updateResponseContentType(iRedirect, response, 0);
-						
-						if(String.class.isAssignableFrom(method.getReturnType()))
-							response.getOutputStream().write(((String)retVal).getBytes());
-						if(byte[].class.isAssignableFrom(method.getReturnType()))
-							response.getOutputStream().write(((byte[])retVal));
+						if(response!=null){
+							if(String.class.isAssignableFrom(method.getReturnType()))
+								response.getOutputStream().write(((String)retVal).getBytes());
+							if(byte[].class.isAssignableFrom(method.getReturnType()))
+								response.getOutputStream().write(((byte[])retVal));
+						}else
+							current_redirect = new redirects(new response_wrapper().setContent(retVal));
 					}
 				}
 			}else if((method.getReturnType()!=null && method.getReturnType().equals(Void.TYPE)) || method.getReturnType()==null){
@@ -3029,7 +3044,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static void setCurrentForm(i_action action_instance, HttpServletRequest request){
-		boolean cloned = (request.getParameter(CONST_ID_EXEC_TYPE)==null)?false:request.getParameter(CONST_ID_EXEC_TYPE).equalsIgnoreCase(CONST_ID_EXEC_TYPE_CLONED);
+		boolean cloned = (request==null)
+						?
+							false
+						:	
+							(request.getParameter(CONST_ID_EXEC_TYPE)==null)?false:request.getParameter(CONST_ID_EXEC_TYPE).equalsIgnoreCase(CONST_ID_EXEC_TYPE_CLONED);
 		if(cloned) return;
 		boolean go = false;
 		i_bean form = null;
@@ -3068,7 +3087,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 						form.onAddToLastInstance();
 						form.clearBeforeStore();
 					}
-					request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
+					if(request!=null)
+						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
 				}
 
 			}catch(Exception e){
@@ -3900,7 +3920,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static auth_init checkAuth_init(HttpServletRequest request) {
+		
 		auth_init auth = null;
+		if(request==null)
+			return auth;
 		if(request.getSession().getAttribute(CONST_BEAN_$AUTHENTIFICATION)==null){
 //			auth = new auth_init();
 
@@ -5282,6 +5305,36 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 		return initialized;
+	}
+	
+	public static void clean(){
+		logInit = null;
+		dbInit = null;
+		appInit = null;
+		
+		logG = null;
+		action_config = null;
+		mess_config = null;
+		user_config = null;
+		auth_config = null;
+		org_config = null;
+		menu_config = null;
+		idApp = null;
+		
+		statisticProvider = null;
+		
+		cdiDefaultProvider = null;
+		ejbDefaultProvider = null;
+
+		if(local_container!=null)
+			local_container.clear();
+
+
+		reInit=false;
+		canBeProxed=true;
+		isInitDefProfider=false;
+		initialized = false;
+		loadedonstartup = false;
 	}
 
 	public static boolean isLoadedonstartup() {

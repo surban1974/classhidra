@@ -48,6 +48,12 @@ public class redirects implements Serializable{
 	private String contentType;
 	private String contentName;
 	private String contentEncoding;
+	private response_wrapper wrapper;
+	
+	public redirects(response_wrapper wrapper){
+		super();
+		this.wrapper = wrapper;
+	}
 
 	public redirects(String uri){
 		super();
@@ -390,6 +396,13 @@ public class redirects implements Serializable{
 	}
 	public redirects setContentEncoding(String contentEncoding) {
 		this.contentEncoding = contentEncoding;
+		return this;
+	}
+	public response_wrapper getWrapper() {
+		return wrapper;
+	}
+	public redirects setWrapper(response_wrapper wrapper) {
+		this.wrapper = wrapper;
 		return this;
 	}
 

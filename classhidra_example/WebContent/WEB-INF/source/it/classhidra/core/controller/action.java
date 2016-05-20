@@ -191,11 +191,11 @@ public class action extends bean implements i_action, Serializable{
 		
 		String modelName = getString("outputserializedname");
 		if(modelName==null || modelName.equals(""))
-			modelName = request.getParameter("outputserializedname");
+			modelName = (request==null)?modelName:request.getParameter("outputserializedname");
 		
 		String outputappliedfor = getOutputappliedfor();
 		if(outputappliedfor==null || outputappliedfor.equals(""))
-			outputappliedfor = request.getParameter("outputappliedfor");
+			outputappliedfor = (request==null)?outputappliedfor:request.getParameter("outputappliedfor");
 		if(outputappliedfor!=null && !outputappliedfor.trim().equals(""))
 			return JsonWriter.object2json(get_bean().asBean().get(outputappliedfor), (modelName==null || modelName.equals(""))?outputappliedfor:modelName);
 		
@@ -216,11 +216,11 @@ public class action extends bean implements i_action, Serializable{
 		
 		String modelName = getString("outputserializedname");
 		if(modelName==null || modelName.equals(""))
-			modelName = request.getParameter("outputserializedname");
+			modelName = (request==null)?modelName:request.getParameter("outputserializedname");
 		
 		String outputappliedfor = getOutputappliedfor();
 		if(outputappliedfor==null || outputappliedfor.equals(""))
-			outputappliedfor = request.getParameter("outputappliedfor");
+			outputappliedfor = (request==null)?outputappliedfor:request.getParameter("outputappliedfor");
 		if(outputappliedfor!=null && !outputappliedfor.trim().equals(""))
 			return XmlWriter.object2xml(get_bean().asBean().get(outputappliedfor), (modelName==null || modelName.equals(""))?outputappliedfor:modelName);
 				
