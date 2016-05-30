@@ -53,6 +53,7 @@ public class info_redirect extends info_entity implements i_elementBase{
 	private String contentType;
 	private String contentName;
 	private String contentEncoding;
+	private String flushBuffer;
 	private String transformationName;
 	private String avoidPermissionCheck;
 
@@ -279,6 +280,15 @@ public class info_redirect extends info_entity implements i_elementBase{
 		return this;
 	}	
 	
+	public String getFlushBuffer() {
+		return flushBuffer;
+	}
+
+	public info_redirect setFlushBuffer(String flushBuffer) {
+		this.flushBuffer = flushBuffer;
+		return this;
+	}
+	
 	public String toString(){
 		return toXml();
 	}
@@ -287,8 +297,9 @@ public class info_redirect extends info_entity implements i_elementBase{
 		return transformationName;
 	}
 
-	public void setTransformationName(String transformationName) {
+	public info_redirect setTransformationName(String transformationName) {
 		this.transformationName = transformationName;
+		return this;
 	}
 	
 	public String toXml(){
@@ -301,6 +312,7 @@ public class info_redirect extends info_entity implements i_elementBase{
 		if(contentType!=null && !contentType.trim().equals("")) result+=" contentType=\""+util_format.normaliseXMLText(contentType)+"\"";
 		if(contentEncoding!=null && !contentEncoding.trim().equals("")) result+=" contentEncoding=\""+util_format.normaliseXMLText(contentEncoding)+"\"";
 		if(contentName!=null && !contentName.trim().equals("")) result+=" contentName=\""+util_format.normaliseXMLText(contentName)+"\"";
+		if(flushBuffer!=null && !flushBuffer.trim().equals("")) result+=" flushBuffer=\""+util_format.normaliseXMLText(flushBuffer)+"\"";
 		if(transformationName!=null && !transformationName.trim().equals("")) result+=" transformationName=\""+util_format.normaliseXMLText(transformationName)+"\"";
 		if(navigated!=null && !navigated.trim().equals("") && !navigated.trim().equals("true")) result+=" navigated=\""+util_format.normaliseXMLText(navigated)+"\"";
 		if(descr!=null && !descr.trim().equals("")) result+=" descr=\""+util_format.normaliseXMLText(descr)+"\"";
@@ -357,12 +369,13 @@ public class info_redirect extends info_entity implements i_elementBase{
 		if(dis==v_info_sections.size())  enabled = CONST_DISABLED;
 	}
 
-	public void setEnableDisable(int value){
+	public info_redirect setEnableDisable(int value){
 		enabled=value;
 		for(int i=0;i<v_info_sections.size();i++){
 			info_section current = (info_section)v_info_sections.get(i);
 			current.setEnableDisable(value);
 		}
+		return this;
 	}
 
 	public void refreshEnableDisableLevel(){
@@ -390,16 +403,18 @@ public class info_redirect extends info_entity implements i_elementBase{
 		return v_info_sections;
 	}
 
-	public void setV_info_sections(Vector vInfoSections) {
+	public info_redirect setV_info_sections(Vector vInfoSections) {
 		v_info_sections = vInfoSections;
+		return this;
 	}
 
 	public Vector getV_info_transformationoutput() {
 		return v_info_transformationoutput;
 	}
 
-	public void setV_info_transformationoutput(Vector vInfoTransformationoutput) {
+	public info_redirect setV_info_transformationoutput(Vector vInfoTransformationoutput) {
 		v_info_transformationoutput = vInfoTransformationoutput;
+		return this;
 	}
 
 	public HashMap get_transformationoutput() {
@@ -412,6 +427,7 @@ public class info_redirect extends info_entity implements i_elementBase{
 		if(contentType!=null && !contentType.trim().equals("")) return false;
 		if(contentEncoding!=null && !contentEncoding.trim().equals("")) return false;
 		if(contentName!=null && !contentName.trim().equals("")) return false;
+		if(flushBuffer!=null && !flushBuffer.trim().equals("")) return false;
 		if(transformationName!=null && !transformationName.trim().equals("")) return false;
 		if(navigated!=null && !navigated.trim().equals("") && !navigated.trim().equals("true")) return false;
 		if(descr!=null && !descr.trim().equals("")) return false;
@@ -424,7 +440,10 @@ public class info_redirect extends info_entity implements i_elementBase{
 		return avoidPermissionCheck;
 	}
 
-	public void setAvoidPermissionCheck(String avoidPermissionCheck) {
+	public info_redirect setAvoidPermissionCheck(String avoidPermissionCheck) {
 		this.avoidPermissionCheck = avoidPermissionCheck;
+		return this;
 	}
+
+
 }

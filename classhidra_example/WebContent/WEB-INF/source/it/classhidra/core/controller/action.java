@@ -208,7 +208,7 @@ public class action extends bean implements i_action, Serializable{
 			else
 				modelName = "model";
 		}
-		return JsonWriter.object2json(this.get_bean(), modelName);
+		return JsonWriter.object2json(this.get_bean().asBean(), modelName);
 	}
 	
 	@ActionCall(name="xml",navigated="false",Redirect=@Redirect(contentType="application/xml"))
@@ -234,7 +234,7 @@ public class action extends bean implements i_action, Serializable{
 			else
 				modelName = "model";
 		}
-		return XmlWriter.object2xml(this.get_bean(), modelName);
+		return XmlWriter.object2xml(this.get_bean().asBean(), modelName);
 	}	
 
 	public i_bean get_bean() {

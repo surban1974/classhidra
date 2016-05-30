@@ -650,6 +650,7 @@ public class annotation_scanner implements i_annotation_scanner {
     			iRedirect.setContentType(annotationRedirect.contentType());
     			iRedirect.setContentEncoding(annotationRedirect.contentEncoding());
     			iRedirect.setContentName(annotationRedirect.contentName());
+    			iRedirect.setFlushBuffer(new Boolean(annotationRedirect.flushBuffer()).toString());
     			iRedirect.setTransformationName(annotationRedirect.transformationName());
     			iRedirect.setAvoidPermissionCheck(annotationRedirect.avoidPermissionCheck());
     			setEntity(iRedirect,annotationRedirect.entity());
@@ -1050,6 +1051,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		iRedirect.setContentType(annotationRedirect1.contentType());
 		iRedirect.setContentEncoding(annotationRedirect1.contentEncoding());
 		iRedirect.setContentName(annotationRedirect1.contentName());
+		iRedirect.setFlushBuffer(new Boolean(annotationRedirect1.flushBuffer()).toString());
 		iRedirect.setTransformationName(annotationRedirect1.transformationName());
 		iRedirect.setAvoidPermissionCheck(annotationRedirect1.avoidPermissionCheck());
 		iRedirect.setParent(entity);

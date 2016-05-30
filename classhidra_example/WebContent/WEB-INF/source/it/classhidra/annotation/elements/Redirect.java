@@ -14,6 +14,7 @@ public @interface Redirect {
 	String contentType() default "";
 	String contentEncoding() default "";
 	String contentName() default "";
+	boolean flushBuffer() default false;
 	String transformationName() default "";
 	String auth_id() default "";
 	String error() default "";

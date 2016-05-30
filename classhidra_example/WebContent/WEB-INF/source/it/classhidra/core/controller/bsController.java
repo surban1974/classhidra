@@ -616,7 +616,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(isDebug && id_action!=null && id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLogS)){
 				try{
 					String content = "LOG<br>";
-					Vector s_log = (Vector)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
+					Vector s_log = (Vector)request.getSession().getAttribute(bsConstants.CONST_SESSION_LOG);
 					if(s_log==null) content="LOG:null";
 					else{
 						for(int i=0;i<s_log.size();i++){
@@ -709,7 +709,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					if(output!=null || (resources!=null && resources.size()>0)){
 						if(loadType!=null)
 							response.setContentType(loadType);
-						setCache((HttpServletResponse)response, request.getParameter(bsController.CONST_DIRECTINDACTION_bsLoadCache));
+						setCache((HttpServletResponse)response, request.getParameter(bsConstants.CONST_DIRECTINDACTION_bsLoadCache));
 					}
 
 					if(output!=null){
@@ -1001,7 +1001,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 					Object[] method_call = action_instance.getMethodAndCall(id_call);
 					if(method_call!=null){
 						iCallMethod = (Method)method_call[0];
-						iCall =  (info_call)method_call[1];						
+						iCall =  (info_call)method_call[1];
+						useAsAction=true;
 						if(iCall.getExposed().size()==0){
 								action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
 						}else{
@@ -2081,6 +2082,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 									response.getOutputStream().write(((byte[])rWrapper.getContent()));
 								else 
 									response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+								
+								if(fake!=null && fake.getFlushBuffer()!=null && fake.getFlushBuffer().equalsIgnoreCase("true")){
+									try{
+										response.getOutputStream().flush();
+									}catch(Exception e){
+										bsController.writeLog(e.toString(), iStub.log_ERROR);
+									}
+								}
+
+								
 							}else
 								current_redirect = new redirects(rWrapper);
 						}
@@ -2094,6 +2105,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 								response.getOutputStream().write(((String)retVal).getBytes());
 							if(byte[].class.isAssignableFrom(method.getReturnType()))
 								response.getOutputStream().write(((byte[])retVal));
+							
+							if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getFlushBuffer()!=null && iCall.getIRedirect().getFlushBuffer().equalsIgnoreCase("true")){
+								try{
+									response.getOutputStream().flush();
+								}catch(Exception e){
+									bsController.writeLog(e.toString(), iStub.log_ERROR);
+								}
+							}
+							
 						}else
 							current_redirect = new redirects(new response_wrapper().setContent(retVal));
 					}
@@ -2154,6 +2174,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 									response.getOutputStream().write(((byte[])rWrapper.getContent()));
 								else 
 									response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+								
+								if(fake!=null && fake.getFlushBuffer()!=null && fake.getFlushBuffer().equalsIgnoreCase("true")){
+									try{
+										response.getOutputStream().flush();
+									}catch(Exception e){
+										bsController.writeLog(e.toString(), iStub.log_ERROR);
+									}
+								}
 							}else
 								current_redirect = new redirects(rWrapper);
 						}
@@ -2172,6 +2200,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 								response.getOutputStream().write(((String)retVal).getBytes());
 							if(byte[].class.isAssignableFrom(method.getReturnType()))
 								response.getOutputStream().write(((byte[])retVal));
+							
+							if(iRedirect!=null && iRedirect.getFlushBuffer()!=null && iRedirect.getFlushBuffer().equalsIgnoreCase("true")){
+								try{
+									response.getOutputStream().flush();
+								}catch(Exception e){
+									bsController.writeLog(e.toString(), iStub.log_ERROR);
+								}
+							}
 						}else
 							current_redirect = new redirects(new response_wrapper().setContent(retVal));
 					}
@@ -2467,8 +2503,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 				response.setHeader("Content-Disposition","attachment; filename="+iRedirect.getContentName());
 			if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
 				response.setHeader("Content-Transfer-Encoding",iRedirect.getContentEncoding());
+			
 			if(status!=0)
 				response.setStatus(status);
+			
 		}
 	}
 
@@ -2732,7 +2770,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				isException(action_instance, request);
 				addAsMessage(e,request);
 //				request.setAttribute(CONST_BEAN_$ERRORACTION, e);
-				if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)!=null) request.getSession().removeAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+				if(request.getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)!=null) request.getSession().removeAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE);
 				service_ErrorRedirect(id_action,servletContext,request, response);
 				stat.setException(e);
 			}catch(Exception ex){
@@ -2743,7 +2781,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				isException(action_instance, request);
 				addAsMessage(ex,request);
 //				request.setAttribute(CONST_BEAN_$ERRORACTION, ex);
-//				if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)!=null) request.getSession().removeAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+//				if(request.getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)!=null) request.getSession().removeAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE);
 
 				service_ErrorRedirect(id_action,servletContext,request, response);
 				stat.setException(ex);
@@ -2771,11 +2809,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static void addAsMessage(Throwable ex, HttpServletRequest request){
-		if(ex!=null && request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)!=null){
+		if(ex!=null && request.getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)!=null){
 			message mess = new message();
 			mess.setDESC_MESS(ex.toString());
 			mess.setTYPE("E");
-			((Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)).add(mess);
+			((Vector)request.getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)).add(mess);
 		}
 	}
 	public static void isException(i_action action_instance, HttpServletRequest request){
@@ -3266,10 +3304,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static void writeLogS(HttpServletRequest request, String mess){
 		if(request!=null){
-			Vector s_log = (Vector)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
+			Vector s_log = (Vector)request.getSession().getAttribute(bsConstants.CONST_SESSION_LOG);
 			if(s_log==null) s_log = new Vector();
 			if(mess!=null && !mess.equals(""))  s_log.add(mess);
-			request.getSession().setAttribute(bsController.CONST_SESSION_LOG, s_log);
+			request.getSession().setAttribute(bsConstants.CONST_SESSION_LOG, s_log);
 		}
 	}
 
@@ -3298,7 +3336,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		try{
 			auth_init aInit = null;
 			try{
-				aInit = (auth_init)_request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
+				aInit = (auth_init)_request.getSession().getAttribute(bsConstants.CONST_BEAN_$AUTHENTIFICATION);
 			}catch(Exception e){
 			}
 			if(aInit!=null)
@@ -3329,7 +3367,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			return message.decodeParameters(def,parameters);
 		String lang="IT";
 		try{
-			auth_init aInit = (auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION);
+			auth_init aInit = (auth_init)request.getSession().getAttribute(bsConstants.CONST_BEAN_$AUTHENTIFICATION);
 			lang = aInit.get_language();
 		}catch(Exception e){
 		}
@@ -3350,9 +3388,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static boolean isSessionValid(HttpServletRequest request){
 
-		String id = request.getParameter(bsController.CONST_ID_$ACTION);
+		String id = request.getParameter(bsConstants.CONST_ID_$ACTION);
 		boolean isController = (request.getRequestURI().indexOf("/Controller")>-1);
-		if(id==null) id = request.getParameter(bsController.CONST_ID_MENU_MENUSOURCE);
+		if(id==null) id = request.getParameter(bsConstants.CONST_ID_MENU_MENUSOURCE);
 		if(	request==null ||
 			request.getSession(false)==null	||
 			(request.getSession(false).isNew() && id!=null && !isController)) return false;

@@ -182,6 +182,26 @@ public class redirects implements Serializable{
 		return null;
 	}
 
+	public String getDispatchedURI(info_action _infoaction){
+		String result = null;
+		if(_uri==null || _uri.equals("")) 
+			return null;
+		if(	_uri.indexOf("/Controller?$")==0 ||
+			_uri.indexOf(bsController.getAppInit().get_extention_do()+"?")>0 ||
+			_uri.lastIndexOf(bsController.getAppInit().get_extention_do()) == _uri.length()-bsController.getAppInit().get_extention_do().length())
+			return transformURI(_uri);
+		if(_uri==null || _uri.equals("") || _infoaction==null) 
+			return null;
+		if(	bodyURI(_uri).equals(bodyURI(_infoaction.getRedirect())) ||
+			_infoaction.get_redirects().get(bodyURI(_uri))!=null ||
+			_infoaction.get_redirects().get("*")!=null){
+			result = transformURI(_uri);
+		}
+		if(result==null && _avoidPermissionCheck){
+			result = transformURI(_uri);
+		}
+		return result;
+	}
 
 	public RequestDispatcher redirect(ServletContext scontext, info_action _infoaction) throws ServletException, UnavailableException{
 		RequestDispatcher rd=null;
@@ -205,7 +225,17 @@ public class redirects implements Serializable{
 		return rd;
 	}
 
+	public String getDispatchedErrorURI(info_action _infoaction){
 
+		if(_uriError==null || _uriError.equals("")){
+			if(_infoaction.get_redirects().get(_uri)==null) return null;
+			info_redirect _inforedirect = (info_redirect)_infoaction.get_redirects().get(_uri);
+			_uriError = _inforedirect.getError();
+		}
+		if(_uriError==null) return null;
+		return _uriError;
+	}
+	
 	public RequestDispatcher redirectError(ServletContext scontext, info_action _infoaction) throws ServletException, UnavailableException{
 		RequestDispatcher rd=null;
 		if(_uriError==null || _uriError.equals("")){
