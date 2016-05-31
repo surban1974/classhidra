@@ -6,11 +6,13 @@ import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Apply_to_action;
+import it.classhidra.annotation.elements.Async;
 import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Expose;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.annotation.elements.Redirect;
+import it.classhidra.annotation.elements.ResponseHeader;
 import it.classhidra.annotation.elements.Rest;
 import it.classhidra.annotation.elements.Section;
 import it.classhidra.annotation.elements.SessionDirective;
@@ -23,9 +25,11 @@ import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.i_transformation;
 import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_apply_to_action;
+import it.classhidra.core.controller.info_async;
 import it.classhidra.core.controller.info_bean;
 import it.classhidra.core.controller.info_call;
 import it.classhidra.core.controller.info_entity;
+import it.classhidra.core.controller.info_header;
 import it.classhidra.core.controller.info_redirect;
 import it.classhidra.core.controller.info_relation;
 import it.classhidra.core.controller.info_rest;
@@ -844,6 +848,13 @@ public class annotation_scanner implements i_annotation_scanner {
     		}
     	}
     	
+    	Async callAsync = annotationAction.Async();
+    	if(callAsync!=null && callAsync.value()){
+    		info_async iAsync = checkAsyncAnnotation(callAsync);
+    		if(iAsync!=null)
+    			iAction.setiAsync(iAsync);
+    	}
+    	
     	Bean bean = annotationAction.Bean();
     	if(bean!=null){
     		info_bean iBean = checkBeanAnnotation(classType, iAction, bean, class_path, -1);
@@ -925,6 +936,13 @@ public class annotation_scanner implements i_annotation_scanner {
 			    		if(iRedirect!=null && iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
 							_redirects.put(iRedirect.getPath(),iRedirect);
 		    		}
+		    	}
+		    	
+		    	Async callAsync1 = annotationCall.Async();
+		    	if(callAsync1!=null && callAsync1.value()){
+		    		info_async iAsync = checkAsyncAnnotation(callAsync1);
+		    		if(iAsync!=null)
+		    			iCall.setiAsync(iAsync);
 		    	}
 
 				Expose call_exposed = annotationCall.Expose();
@@ -1036,6 +1054,30 @@ public class annotation_scanner implements i_annotation_scanner {
 			_beans.put(bodyURI(iBean.getName()),iBean);
 		
 		return iBean;
+	}
+	
+	private info_async checkAsyncAnnotation(Async annotationAsync){
+		info_async iAsync = new info_async();
+
+
+		iAsync.setValue(new Boolean(annotationAsync.value()).toString());
+		iAsync.setTimeout(new Long(annotationAsync.timeout()).toString());
+		iAsync.setFlushBuffer(new Boolean(annotationAsync.flushBuffer()).toString());
+		iAsync.setLoopEvery(new Long(annotationAsync.loopEvery()).toString());
+		ResponseHeader[] headers = annotationAsync.headers();
+		if(headers!=null && headers.length>0){
+			for(int j=0;j<headers.length;j++){
+				ResponseHeader header = headers[j];
+				info_header iHeader = new info_header();
+				iHeader.setName(header.name());
+				iHeader.setValue(header.value());
+				iAsync.getHeaders().add(iHeader);
+			}
+		}
+
+
+
+		return iAsync;
 	}
 	
 	private info_redirect checkRedirectAnnotation(info_entity entity, Redirect annotationRedirect1, int i){
@@ -1151,6 +1193,13 @@ public class annotation_scanner implements i_annotation_scanner {
 	    				_redirects.put(iRedirect.getPath(),iRedirect);
 	    		}
     		}
+    	}
+    	
+    	Async callAsync = annotationCall.Async();
+    	if(callAsync!=null && callAsync.value()){
+    		info_async iAsync = checkAsyncAnnotation(callAsync);
+    		if(iAsync!=null)
+    			iCall.setiAsync(iAsync);
     	}
     	
 		Expose call_exposed = annotationCall.Expose();

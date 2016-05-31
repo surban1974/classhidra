@@ -49,6 +49,7 @@ public class info_call extends info_entity implements i_elementBase{
 	private String navigated;
 	private String expose;
 	private info_redirect iRedirect;
+	private info_async iAsync;
 	private List exposed;
 	private List restmapping;
 
@@ -59,8 +60,8 @@ public class info_call extends info_entity implements i_elementBase{
 		reimposta();
 	}
 
-	public void init(Node node, HashMap glob_redirects) throws bsControllerException{
-		if(node==null) return;
+	public info_call init(Node node, HashMap glob_redirects) throws bsControllerException{
+		if(node==null) return this;
 		try{
 			NamedNodeMap nnm = node.getAttributes();	 		
 			if (nnm!=null){
@@ -93,6 +94,10 @@ public class info_call extends info_entity implements i_elementBase{
 								glob_redirects.put(iRedirect.getPath(),iRedirect);
 						}
 					}
+					if(nodeList.item(i).getNodeName().toLowerCase().equals("async")){
+						iAsync = new info_async();
+						iAsync.init(nodeList.item(i));
+					}
 					if(nodeList.item(i).getNodeName().toLowerCase().equals("rest")){
 						info_rest iRest = new info_rest();
 						iRest.init(nodeList.item(i));
@@ -104,6 +109,7 @@ public class info_call extends info_entity implements i_elementBase{
 		}catch(Exception e){
 			new bsControllerException(e,iStub.log_DEBUG);
 		}
+		return this;
 	}
 
 	public void reimposta(){
@@ -119,8 +125,9 @@ public class info_call extends info_entity implements i_elementBase{
 	public String getName() {
 		return name;
 	}
-	public void setName(String string) {
+	public info_call setName(String string) {
 		name = string;
+		return this;
 	}
 
 	public String toString(){
@@ -146,6 +153,28 @@ public class info_call extends info_entity implements i_elementBase{
 			result+="\"";
 		}
 		result+=super.toXml();
+		result+=">";
+		boolean ls=false;
+		if(iRedirect!=null){
+			result+=iRedirect.toXml(space+"            ");
+			ls=true;
+		}
+		if(iAsync!=null){
+			result+=iAsync.toXml(space+"            ");
+			ls=true;
+		}		
+		if(restmapping!=null && restmapping.size()>0){
+			for(int i=0;i<restmapping.size();i++){
+				info_rest iRest = (info_rest)restmapping.get(i);
+				if(iRest!=null){
+					result+=iRest.toXml(space+"            ");
+				}
+			}
+			ls=true;
+		}
+		
+		result+= (ls)?(System.getProperty("line.separator")+space+"      </call>"):"</call>";
+/*		
 		if(iRedirect==null){
 			if(restmapping!=null && restmapping.size()>0){
 				for(int i=0;i<restmapping.size();i++){
@@ -170,53 +199,60 @@ public class info_call extends info_entity implements i_elementBase{
 			}
 			result+=System.getProperty("line.separator")+space+"      </call>";
 		}
+*/		
 		return result;
 	}
 	
 
 	
-	public void setEnableDisable(int value){
+	public info_call setEnableDisable(int value){
 		enabled=value;
+		return this;
 	}
 
 	public String getMethod() {
 		return method;
 	}
 
-	public void setMethod(String method) {
+	public info_call setMethod(String method) {
 		this.method = method;
+		return this;
 	}
 
 	public String getNavigated() {
 		return navigated;
 	}
 
-	public void setNavigated(String navigated) {
+	public info_call setNavigated(String navigated) {
 		this.navigated = navigated;
+		return this;
 	}
 
 	public String getOwner() {
 		return owner;
 	}
 
-	public void setOwner(String owner) {
+	public info_call setOwner(String owner) {
 		this.owner = owner;
+		return this;
 	}
 
 	public info_redirect getIRedirect() {
 		return iRedirect;
 	}
 
-	public void setIRedirect(info_redirect iRedirect) {
+	public info_call setIRedirect(info_redirect iRedirect) {
 		this.iRedirect = iRedirect;
+		return this;
 	}
 
 	public String getPath() {
 		return path;
 	}
 
-	public void setPath(String path) {
+	public info_call setPath(String path) {
 		this.path = path;
+		return this;
 	}
 
 	public List getExposed() {
@@ -284,8 +320,9 @@ public class info_call extends info_entity implements i_elementBase{
 		return restmapping;
 	}
 
-	public void setRestmapping(List restmapping) {
+	public info_call setRestmapping(List restmapping) {
 		this.restmapping = restmapping;
+		return this;
 	}
 
 
@@ -293,8 +330,18 @@ public class info_call extends info_entity implements i_elementBase{
 		return R_R;
 	}
 
-	public void setR_R(boolean r_R) {
+	public info_call setR_R(boolean r_R) {
 		R_R = r_R;
+		return this;
+	}
+
+	public info_async getiAsync() {
+		return iAsync;
+	}
+
+	public info_call setiAsync(info_async iAsync) {
+		this.iAsync = iAsync;
+		return this;
 	}
 
 	

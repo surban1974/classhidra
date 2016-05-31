@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -66,7 +67,7 @@ public class bsFilter implements Filter {
 	public final static String CONST_INIT_CHARACTER_ENCODING 				= "CharacterEncoding";
 	public final static String CONST_REST_SUPPORT 							= "RestSupport";
 
-	class ForCheckBs{
+	public class ForCheckBs{
 		private String id_action;
 		private String id_call;
 		private String id_complete;
@@ -293,11 +294,24 @@ public class bsFilter implements Filter {
 			boolean result=false;
 			if(id_current!=null){
 				try{
+					
+					info_async iAsync = getAsyncInfo(id_current, id_call, id_complete, request);
+
+
+					
 					HttpServletResponse responseWrapped = null;
 					String def_TransformationElPoint = bsController.getAppInit().get_transf_elaborationpoint();
 					if(def_TransformationElPoint==null || def_TransformationElPoint.trim().length()==0) def_TransformationElPoint=bsConstants.CONST_TRANSFORMATION_ELPOINT_CONTROLLER;
 					
-					responseWrapped = bsController.service(id_current, id_call, id_complete, request.getSession().getServletContext(), request, response);
+					if(iAsync!=null){
+						request.setAttribute(bsConstants.CONST_ASYNC_INFO, iAsync);
+						String async_provider_servlet_path = bsController.getAppInit().get_async_provider_servlet();
+						if(async_provider_servlet_path==null || async_provider_servlet_path.equals(""))
+							async_provider_servlet_path = "/AsyncController";
+						request.getSession().getServletContext().getRequestDispatcher(async_provider_servlet_path).forward(request,response);
+						return result;
+					}else
+						responseWrapped = bsController.service(id_current, id_call, id_complete, request.getSession().getServletContext(), request, response);
 
 					if(responseWrapped instanceof a_ResponseWrapper){
 						
@@ -689,6 +703,27 @@ public class bsFilter implements Filter {
 
 		}
 		
-		
+	public info_async getAsyncInfo(String id_current, String id_call, String id_complete, HttpServletRequest request){
+		info_async iAsync = null;
+		if(id_call!=null){
+			info_call iCall = (info_call)bsController.getAction_config().get_actioncalls().get(id_call);
+			if(iCall==null)
+				iCall = (info_call)bsController.getAction_config().get_actioncalls().get(id_call+"."+request.getMethod());
+			if(iCall==null && id_complete!=null)
+				iCall = (info_call)bsController.getAction_config().get_actioncalls().get(id_complete);						
+			if(iCall==null && id_complete!=null)
+				iCall = (info_call)bsController.getAction_config().get_actioncalls().get(id_complete+"."+request.getMethod());
+			if(iCall!=null)
+				iAsync=iCall.getiAsync();
+		}
+		if(iAsync==null && id_current!=null){
+			info_action iAction = (info_action)bsController.getAction_config().get_actions().get(id_current);
+			if(iAction!=null)
+				iAsync=iAction.getiAsync();
+		}
+		if(iAsync!=null)
+			iAsync.setInfoBs(id_current, id_call, id_complete);
+		return iAsync;
+	}
 
 }

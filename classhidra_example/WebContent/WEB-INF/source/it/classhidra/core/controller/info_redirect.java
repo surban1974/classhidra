@@ -82,6 +82,9 @@ public class info_redirect extends info_entity implements i_elementBase{
 			this.contentEncoding = iRedirect.getContentEncoding();
 		if((this.contentName==null || this.contentName.equals("")) && (iRedirect.getContentName()!=null && !iRedirect.getContentName().equals("")))
 			this.contentName = iRedirect.getContentName();
+		if((this.flushBuffer==null || this.flushBuffer.equals("")) && (iRedirect.getFlushBuffer()!=null && !iRedirect.getFlushBuffer().equals("")))
+			this.flushBuffer = iRedirect.getFlushBuffer();
+		
 		if((this.transformationName==null || this.transformationName.equals("")) && (iRedirect.getTransformationName()!=null && !iRedirect.getTransformationName().equals("")))
 			this.transformationName = iRedirect.getTransformationName();
 		

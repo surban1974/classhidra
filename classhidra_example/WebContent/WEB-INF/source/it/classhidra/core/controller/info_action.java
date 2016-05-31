@@ -64,6 +64,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private List exposed;
 	private List restmapping;
 	private info_redirect iRedirect;
+	private info_async iAsync;
 
 	private String wac;
 	private HashMap _redirects;
@@ -139,6 +140,10 @@ public class info_action extends info_entity implements i_elementBase{
 	    	    			setIRedirect(iRedirect);
 	    	    		}
 	        		}
+				}
+				if(nodeList.item(i).getNodeName().toLowerCase().equals("async")){
+					info_async iAsync = new info_async();
+					iAsync.init(nodeList.item(i));
 				}
 				if(nodeList.item(i).getNodeName().toLowerCase().equals("transformationoutput")){
 					info_transformation iTransformationoutput = new info_transformation();
@@ -413,6 +418,10 @@ public class info_action extends info_entity implements i_elementBase{
 		}	
 		if(this.iRedirect!=null)
 				result+=iRedirect.toXml("      ");
+		
+		if(this.iAsync!=null)
+			result+=iAsync.toXml("      ");
+		
 		if(_transformationoutput!=null && _transformationoutput.size()>0){
 			for(Object obj : new util_sort().sort(new Vector(_transformationoutput.values()),"int_order")){
 				info_transformation iTransformation = (info_transformation)obj;
@@ -726,6 +735,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setR_R(boolean r_R) {
 		R_R = r_R;
+	}
+
+	public info_async getiAsync() {
+		return iAsync;
+	}
+
+	public void setiAsync(info_async iAsync) {
+		this.iAsync = iAsync;
 	}
 
 

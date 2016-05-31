@@ -16,4 +16,5 @@ public @interface ActionCall {
 	String navigated() default "true";
 	Redirect Redirect() default @Redirect;
 	Expose Expose() default @Expose;
+	Async Async() default @Async;
 }

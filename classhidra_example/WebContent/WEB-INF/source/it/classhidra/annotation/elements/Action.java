@@ -32,4 +32,5 @@ public @interface Action {
 	ActionCall[] calls() default {};
 	Bean[] beans() default {};
 	Expose Expose() default @Expose;
+	Async Async() default @Async;
 }

@@ -81,6 +81,8 @@ public class app_init implements Serializable{
 	public final static String id_statistic_provider		=	"application.statistic.provider";
 	public final static String id_statistic_stacklength		= 	"application.statistic.stacklength";
 	
+	public final static String id_async_provider_servlet	= 	"application.async.provider.servletpath";
+	
 	private String _path;
 	private String _path_root;
 	private String _path_config;
@@ -117,6 +119,8 @@ public class app_init implements Serializable{
 	private String _transf_elaborationmode		=	"include";
 	private String _transf_elaborationpoint		=	"controller";
 	private String _transf_elaborationwrapper	=	"it.classhidra.core.controller.wrappers.bsCharResponseWrapper";
+	
+	private String _async_provider_servlet;
 
 	
 	
@@ -201,6 +205,9 @@ public class app_init implements Serializable{
 			_ejb_jndi_name=(_ejb_jndi_name==null)?System.getProperty(id_ejb_jndi_name):_ejb_jndi_name;
 			_ejb_jndi_name_prefix=(_ejb_jndi_name_prefix==null)?System.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
 			_ejb_avoid_loop_reentrant=(_ejb_avoid_loop_reentrant==null)?System.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
+			
+			_async_provider_servlet=(_async_provider_servlet==null)?System.getProperty(id_async_provider_servlet):_async_provider_servlet;
+			
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
@@ -284,6 +291,8 @@ public class app_init implements Serializable{
 		_ejb_jndi_name=(_ejb_jndi_name==null)?property.getProperty(id_ejb_jndi_name):_ejb_jndi_name;
 		_ejb_jndi_name_prefix=(_ejb_jndi_name_prefix==null)?property.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
 		_ejb_avoid_loop_reentrant=(_ejb_avoid_loop_reentrant==null)?property.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
+		
+		_async_provider_servlet=(_async_provider_servlet==null)?property.getProperty(id_async_provider_servlet):_async_provider_servlet;
 		
 		_pin=(_pin==null)?property.getProperty(id_pin):_pin;
 		_db_name=(_db_name==null)?property.getProperty(id_db_name):_db_name;
@@ -622,5 +631,9 @@ public class app_init implements Serializable{
 		if(_annotation_scanner_asjar==null || !_annotation_scanner_asjar.equalsIgnoreCase("true"))
 			return false;
 		return true;
+	}
+
+	public String get_async_provider_servlet() {
+		return _async_provider_servlet;
 	}
 }

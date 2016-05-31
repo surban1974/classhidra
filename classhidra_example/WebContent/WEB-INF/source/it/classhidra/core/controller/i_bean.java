@@ -144,4 +144,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	
 	void clearBeforeStore();
 	Map getInitErrors();
+	
+	boolean isAsyncInterrupt();
+	void setAsyncInterrupt(boolean asyncInterrupt);
 }

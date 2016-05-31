@@ -84,6 +84,7 @@ public class bean extends elementBeanBase implements i_bean  {
 	
 	protected boolean virtual=false;
 	protected int countActions;
+	protected boolean asyncInterrupt=false;
 
 	protected listener_bean listener_b;
 
@@ -1638,10 +1639,13 @@ public Map getInitErrors(){
 	return initErrors;
 }
 
+public boolean isAsyncInterrupt() {
+	return asyncInterrupt;
+}
 
-
-
-
+public void setAsyncInterrupt(boolean asyncInterrupt) {
+	this.asyncInterrupt = asyncInterrupt;
+}
 
 
 }

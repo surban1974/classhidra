@@ -790,6 +790,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static i_action getActionInstance(String id_action,String id_call, HttpServletRequest request, HttpServletResponse response) throws bsControllerException,ServletException, UnavailableException{
+		return getActionInstance(id_action, id_call, request, response, true);
+	}
+	
+	public static i_action getActionInstance(String id_action,String id_call, HttpServletRequest request, HttpServletResponse response, boolean beanInitFromRequest) throws bsControllerException,ServletException, UnavailableException{
 
 		boolean cloned = (request==null)
 				?
@@ -961,31 +965,35 @@ public class bsController extends HttpServlet implements bsConstants  {
 			action_instance.setCurrent_redirect(null);
 //-------
 		
-		try{
-			if(!isRemoteEjb)
-				action_instance.onPreInit(request, response);
-			else
-				action_instance.onPreInit(request2map);
-		}catch(Exception e){ 
-			action_instance.onPreInit(null, null);
-		}
-		try{
-			if(!isRemoteEjb)
-				action_instance.init(request,response);
-			else{ 
-//				action_instance.init(request2map);
-				util_supportbean.init(action_instance, request2map, request);
+		if(beanInitFromRequest){
+			try{
+				if(!isRemoteEjb)
+					action_instance.onPreInit(request, response);
+				else
+					action_instance.onPreInit(request2map);
+			}catch(Exception e){ 
+				action_instance.onPreInit(null, null);
 			}
-		}catch(Exception e){
-			action_instance.init(null,null);
-		}
-		try{
-			if(!isRemoteEjb)
-				action_instance.onPostInit(request, response);
-			else
-				action_instance.onPostInit(request2map);
-		}catch(Exception e){
-			action_instance.onPostInit(null,null);
+
+			try{
+				if(!isRemoteEjb)
+					action_instance.init(request,response);
+				else{ 
+//				action_instance.init(request2map);
+					util_supportbean.init(action_instance, request2map, request);
+				}
+			}catch(Exception e){
+				action_instance.init(null,null);
+			}
+
+			try{
+				if(!isRemoteEjb)
+					action_instance.onPostInit(request, response);
+				else
+					action_instance.onPostInit(request2map);
+			}catch(Exception e){
+				action_instance.onPostInit(null,null);
+			}
 		}
 
 		info_call iCall = null;
@@ -1495,6 +1503,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static i_action getPrevActionInstance(String id_action, String id_current, HttpServletRequest request, HttpServletResponse response) throws bsControllerException,ServletException, UnavailableException{
+		return getPrevActionInstance(id_action, id_current, request, response, true);
+	}
+
+	
+	public static i_action getPrevActionInstance(String id_action, String id_current, HttpServletRequest request, HttpServletResponse response, boolean beanInitFromRequest) throws bsControllerException,ServletException, UnavailableException{
 		i_action prev_action_instance = getAction_config().actionFactory(id_action,request.getSession(),request.getSession().getServletContext());
 
 		i_bean bean_instance = getCurrentForm(id_action,request);
@@ -1521,28 +1534,30 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				}
 
-				try{
-					if(!isRemoteEjb)
-						bean_instance.onPreInit(request);
-					else
-						bean_instance.onPreInit(request2map);
-				}catch(Exception e){
-
-				}
-				try{
-					if(!isRemoteEjb)
-						bean_instance.init(request);
-					else
+				if(beanInitFromRequest){
+					try{
+						if(!isRemoteEjb)
+							bean_instance.onPreInit(request);
+						else
+							bean_instance.onPreInit(request2map);
+					}catch(Exception e){
+	
+					}
+					try{
+						if(!isRemoteEjb)
+							bean_instance.init(request);
+						else
+							util_supportbean.init(bean_instance, request);
+					}catch(Exception e){
 						util_supportbean.init(bean_instance, request);
-				}catch(Exception e){
-					util_supportbean.init(bean_instance, request);
-				}
-				try{
-					if(!isRemoteEjb)
-						bean_instance.onPostInit(request);
-					else
-						bean_instance.onPostInit(request2map);
-				}catch(Exception e){					
+					}
+					try{
+						if(!isRemoteEjb)
+							bean_instance.onPostInit(request);
+						else
+							bean_instance.onPostInit(request2map);
+					}catch(Exception e){					
+					}
 				}
 				try{
 					if(!isRemoteEjb)
@@ -2832,7 +2847,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static i_action performAction(String id_action, String id_call, ServletContext servletContext,
-				HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+			HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+		return performAction(id_action, id_call, servletContext, request, response, true);
+	}
+
+	
+	public static i_action performAction(String id_action, String id_call, ServletContext servletContext,
+				HttpServletRequest request, HttpServletResponse response, boolean beanInitFromRequest) throws bsControllerException, Exception, Throwable{
 		i_action prev_action_instance = null;
 
 		String id_rtype = (String)request.getAttribute(CONST_ID_REQUEST_TYPE);
@@ -2842,7 +2863,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			String id_prev = request.getParameter(CONST_BEAN_$NAVIGATION);
 			if(id_prev!=null && id_prev.indexOf(":")>-1){
 				id_prev = id_prev.substring(0,id_prev.indexOf(":"));
-				prev_action_instance = getPrevActionInstance(id_prev,id_action,request,response);
+				prev_action_instance = getPrevActionInstance(id_prev,id_action,request,response,beanInitFromRequest);
 				if(prev_action_instance!=null && prev_action_instance.getCurrent_redirect()!=null){
 
 					if(request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL)==null)
@@ -2860,7 +2881,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 		i_action action_instance = null;
-		action_instance =getActionInstance(id_action,id_call, request,response);
+		action_instance =getActionInstance(id_action,id_call, request,response,beanInitFromRequest);
 		return action_instance;
 	}
 
