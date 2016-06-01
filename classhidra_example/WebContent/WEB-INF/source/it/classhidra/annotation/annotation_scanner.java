@@ -1064,6 +1064,7 @@ public class annotation_scanner implements i_annotation_scanner {
 		iAsync.setTimeout(new Long(annotationAsync.timeout()).toString());
 		iAsync.setFlushBuffer(new Boolean(annotationAsync.flushBuffer()).toString());
 		iAsync.setLoopEvery(new Long(annotationAsync.loopEvery()).toString());
+		iAsync.setReInitBeenEveryLoop(new Boolean(annotationAsync.reInitBeenEveryLoop()).toString());
 		ResponseHeader[] headers = annotationAsync.headers();
 		if(headers!=null && headers.length>0){
 			for(int j=0;j<headers.length;j++){
