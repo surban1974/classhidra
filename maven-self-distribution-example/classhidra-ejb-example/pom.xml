@@ -270,7 +270,7 @@
 		
 		<dependency>
 			<groupId>com.github.surban1974.neohort</groupId>
-			<artifactId>neoHort</artifactId>
+			<artifactId>neoHort-7</artifactId>
 			<version>1.3.7.3</version>
 		</dependency>			
 

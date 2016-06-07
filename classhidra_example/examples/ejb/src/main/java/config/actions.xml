@@ -26,7 +26,6 @@
 		</form-bean>	
 		
 		<form-bean name="formHelp" type="application.web.forms.formHelp"/>
-		<form-bean name="formMail" type="application.web.forms.formMail"/>
 <!-- 
 		<form-bean name="formLogin" type="application.web.forms.formLogin" model_="config/beans/xmlFormTest.xml"/>
 		<form-bean name="formContent" type="application.web.forms.formContent"/>
@@ -183,15 +182,6 @@
                 	
 
         	
-		<action path="sendMail"
-                	name="formMail"
-                	redirect="/jsp/pages/sendmail.jsp"
-                	type="application.web.actions.actionSendMail"
-                	navigated="true"
-                	memoryInSession="false"
-                	reloadAfterAction="true">
-                 <call name="send" method="send_mail" path="alternatePathSandMail"/>                  
-        	</action>  
         	        	    
 		<action path="about"
                 	redirect="/jsp/pages/about.jsp"

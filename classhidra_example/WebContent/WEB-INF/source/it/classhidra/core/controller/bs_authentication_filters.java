@@ -329,7 +329,10 @@ public class bs_authentication_filters implements i_authentication_filter {
 				
 			}else return false;
 		}else{
-			if(	iAction_complete.get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null)  result = false;
+			if(	iAction_complete.get_redirects().get(_action.getCurrent_redirect().get_inforedirect().getPath())==null){
+				if(	iAction_complete.get_redirects().get("*")==null)
+					result = false;
+			}
 		}
 		return result;
 	}
