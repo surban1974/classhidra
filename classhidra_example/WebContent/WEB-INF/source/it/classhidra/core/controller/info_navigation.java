@@ -299,6 +299,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 				!iNavigation.getIRedirect().getDescr().equals("") &&
 				iNavigation.getIRedirect().getNavigated().toLowerCase().equals("true"))
 				iRedirect = iNavigation.getIRedirect();
+			else if(iNavigation.getIRedirect()!=null && this.iRedirect==null)
+				iRedirect = iNavigation.getIRedirect();
 			child = iNavigation.getChild();
 //			if(!(_content!=null && iNavigation.get_content()==null))
 //				_content = iNavigation.get_content();

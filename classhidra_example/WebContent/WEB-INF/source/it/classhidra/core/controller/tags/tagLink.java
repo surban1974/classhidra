@@ -32,8 +32,10 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
-public class tagLink extends TagSupport{
+public class tagLink extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -5425047027434695445L;
 	protected String charset = null;
 	protected String classObj = null;
@@ -61,6 +63,9 @@ public class tagLink extends TagSupport{
 	protected String title = null;
 	protected String type = null;
 	protected String additionalAttr = null;
+
+	protected Map tagAttributes = new HashMap();
+
 
 
 	public int doStartTag() throws JspException {
@@ -117,6 +122,8 @@ public class tagLink extends TagSupport{
 		title = null;
 		type = null;
 		additionalAttr = null;
+		
+		tagAttributes = new HashMap();
 	}
 
 	protected String createTagBody() {
@@ -263,6 +270,15 @@ public class tagLink extends TagSupport{
 			results.append(" ");
 			results.append(additionalAttr);
 		}
+		
+	    for(Object attrName : tagAttributes.keySet() ) {
+	    	results.append(" ");
+	    	results.append(attrName);
+	    	results.append("=\"");
+	    	results.append(tagAttributes.get(attrName));
+	    	results.append("\"");
+	      }
+		
 
 		results.append(" />");
 		return results.toString();
@@ -424,6 +440,10 @@ public class tagLink extends TagSupport{
 	}
 	public void setAdditionalAttr(String additionalAttr) {
 		this.additionalAttr = additionalAttr;
+	}
+	
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
 	}
 
 }

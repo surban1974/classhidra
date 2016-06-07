@@ -33,16 +33,19 @@ import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.io.IOException;
 
-public class showNavigateStory extends TagSupport{
+public class showNavigateStory extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -8734241232839720501L;
 	protected String style = null;
 	protected String styleClass = null;
 	protected String index = null;
 	protected String _return = null;
 	protected HashMap parameters=null;
+	
+	protected Map tagAttributes = new HashMap();
 
 
 	public HashMap getParameters() {
@@ -73,6 +76,8 @@ public class showNavigateStory extends TagSupport{
 		index=null;
 		_return=null;
 		parameters=null;
+		
+		tagAttributes = new HashMap();
 
 	}
 
@@ -92,15 +97,17 @@ public class showNavigateStory extends TagSupport{
 
 
 			while(iN!=null){
-				try{
-					String subLabel="";
-					if(iN.getIRedirect().getMess_id()!=null && !iN.getIRedirect().getMess_id().equals("")){
-						subLabel = "<a style=\"cursor:pointer;\" onclick=\"goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"')\">"+bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second()+"</a>";
-						sub_results.add(subLabel);
-						sub_results_action.add("goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"')");
-						sub_results_name.add(bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second());
+				if(iN.getIRedirect()!=null){
+					try{
+						String subLabel="";
+						if(iN.getIRedirect().getMess_id()!=null && !iN.getIRedirect().getMess_id().equals("")){
+							subLabel = "<a style=\"cursor:pointer;\" onclick=\"goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"')\">"+bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second()+"</a>";
+							sub_results.add(subLabel);
+							sub_results_action.add("goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"')");
+							sub_results_name.add(bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second());
+						}
+					}catch(Exception ex){
 					}
-				}catch(Exception ex){
 				}
 				iN = iN.getChild();
 			}
@@ -130,6 +137,14 @@ public class showNavigateStory extends TagSupport{
 							results.append(style);
 							results.append('"');
 						}
+					    for(Object attrName : tagAttributes.keySet() ) {
+					    	results.append(" ");
+					    	results.append(attrName);
+					    	results.append("=\"");
+					    	results.append(tagAttributes.get(attrName));
+					    	results.append("\"");
+					      }
+
 						results.append(">"+subLabel + ((i<sub_results.size()-1)?" &#8594; ":""));
 						results.append("</span>");
 					}
@@ -175,6 +190,10 @@ public class showNavigateStory extends TagSupport{
 
 	public void set_return(String string) {
 		_return = string;
+	}
+	
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
 	}
 
 }

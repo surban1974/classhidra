@@ -41,24 +41,28 @@ div#footer_fixedbox{
 					<tr>
 	<bs:sequence bean="navigationAll">
 		<bs:bean name="navigationEntity" source="navigationAll" index="SEQUENCE"/>
-			<td><bs:more bean="bs:sequence" name="index" value="0">&#8594;</bs:more></td>
-			<td >
-				<script>ObjectDraw(
-							"page4",
-							"button",
-							"5<bs:formelement bean="bs:sequence" name="index"/>" ,
-							"<bs:formelement bean="navigationEntity" name="desc_second"/>",
-							"goAction('<bs:formelement bean="navigationEntity" name="iAction.path"/>?middleAction=reload')",
-							"page_section",
-							"",
-							"images/menu/",
-							"",
-							"false",
-							24
-						);
-				</script>
-				
-			</td>
+		<bs:notIsNull bean="navigationEntity" name="iRedirect">
+			<bs:notEqual bean="navigationEntity" name="desc_second" value="::::">
+				<td><bs:more bean="bs:sequence" name="index" value="0">&#8594;</bs:more></td>
+				<td >
+					<script>ObjectDraw(
+								"page4",
+								"button",
+								"5<bs:formelement bean="bs:sequence" name="index"/>" ,
+								"<bs:formelement bean="navigationEntity" name="desc_second"/>",
+								"goAction('<bs:formelement bean="navigationEntity" name="iAction.path"/>?middleAction=reload')",
+								"page_section",
+								"",
+								"images/menu/",
+								"",
+								"false",
+								24
+							);
+					</script>
+					
+				</td>
+			</bs:notEqual>	
+		</bs:notIsNull>	
 	</bs:sequence>
 
 					

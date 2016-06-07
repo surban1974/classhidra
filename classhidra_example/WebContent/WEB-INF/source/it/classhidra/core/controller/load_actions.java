@@ -101,6 +101,7 @@ public class load_actions extends elementBase{
 	private boolean readOk_File=false;
 	private boolean readOk_Db=false;
 	private boolean readOk_ExtLoader=false;
+	private boolean reimposted = false;
 
 	private String externalloader;
 	private String xmlEncoding;
@@ -355,6 +356,7 @@ public void reimposta(){
 //	bsController.removeFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
 //	bsController.removeFromLocalContainer(bsConstants.CONST_CONTAINER_REFMETHODS);
 	
+	reimposted = true;
 	if(!readDef){
 		load_def_actions();
 	}
@@ -2670,6 +2672,15 @@ public static void set_restmapping(HashMap _restmapping) {
 	load_actions._restmapping = _restmapping;
 }
 
+
+public boolean isReimposted() {
+	return reimposted;
+}
+
+public void setReimposted(boolean reimposted) {
+	this.reimposted = reimposted;
+}
+
 class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private HashMap _b_actions=null;
@@ -3373,6 +3384,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 		return _b_restmapping;
 	}	
 }
+
 
 
 

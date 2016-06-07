@@ -31,6 +31,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -43,7 +44,7 @@ import it.classhidra.core.tool.util.util_tag;
 import it.classhidra.core.tool.util.util_xml;
 
 
-public class tagSelect extends tagInput{
+public class tagSelect extends tagInput implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
 	private String multiple=null;
 	public int doEndTag() throws JspException {
@@ -516,7 +517,16 @@ public class tagSelect extends tagInput{
 		if(additionalAttr!=null){
 			results.append(" ");
 			results.append(additionalAttr);
-		}	
+		}
+		
+	    for(Object attrName : tagAttributes.keySet() ) {
+	    	results.append(" ");
+	    	results.append(attrName);
+	    	results.append("=\"");
+	    	results.append(tagAttributes.get(attrName));
+	    	results.append("\"");
+	      }
+
 		
 		results.append(" $modelWire=\"");
 		results.append("select:"+prefixName);

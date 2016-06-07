@@ -27,11 +27,13 @@ package it.classhidra.core.controller.tags;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -43,7 +45,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 import it.classhidra.core.tool.util.util_xml;
 
-public class tagInput extends BodyTagSupport{
+public class tagInput extends BodyTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
 	protected String bean = null;
 	protected String objId = null;// id
@@ -146,6 +148,9 @@ public class tagInput extends BodyTagSupport{
 	protected String solveBeanName=null;
 	protected String asyncUpdate=null;
 	protected String asyncUpdateJsFunction=null;
+	
+	protected Map tagAttributes = new HashMap();
+
 
 	public int doStartTag() throws JspException {
 		StringBuffer results = new StringBuffer();
@@ -256,6 +261,8 @@ public class tagInput extends BodyTagSupport{
 		solveBeanName=null;
 		asyncUpdate=null;
 		asyncUpdateJsFunction=null;
+		
+		tagAttributes = new HashMap();
 	}
 
 	protected String createTagBody() {
@@ -851,6 +858,15 @@ public class tagInput extends BodyTagSupport{
 			results.append(" ");
 			results.append(additionalAttr);
 		}
+		
+	    for(Object attrName : tagAttributes.keySet() ) {
+	    	results.append(" ");
+	    	results.append(attrName);
+	    	results.append("=\"");
+	    	results.append(tagAttributes.get(attrName));
+	    	results.append("\"");
+	      }
+		
 				
 		
 		results.append(" $modelWire=\"");
@@ -1495,6 +1511,9 @@ public class tagInput extends BodyTagSupport{
 		this.placeholder_messagecode = placeholder_messagecode;
 	}
 
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
+	}	
 
 }
 

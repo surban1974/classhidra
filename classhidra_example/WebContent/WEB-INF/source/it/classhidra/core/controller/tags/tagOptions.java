@@ -28,10 +28,12 @@ package it.classhidra.core.controller.tags;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
@@ -43,7 +45,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 import it.classhidra.core.tool.util.util_xml;
 
-public class tagOptions extends TagSupport{
+public class tagOptions extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
 	protected String objId = null;// id
 	protected String label= null;
@@ -93,6 +95,9 @@ public class tagOptions extends TagSupport{
 
 	protected String formatInput = null;
 	protected String ignoreCase =null;
+	
+	protected Map tagAttributes = new HashMap();
+
 
 
 	public int doStartTag() throws JspException {
@@ -201,6 +206,8 @@ public class tagOptions extends TagSupport{
 		onmousewheel = null;
 		ignoreCase = null;
 		additionalAttr= null;
+		
+		tagAttributes = new HashMap();
 
 	}
 
@@ -421,6 +428,14 @@ public class tagOptions extends TagSupport{
 			results.append(additionalAttr);
 			results.append(" ");
 		}	
+
+	    for(Object attrName : tagAttributes.keySet() ) {
+	    	results.append(" ");
+	    	results.append(attrName);
+	    	results.append("=\"");
+	    	results.append(tagAttributes.get(attrName));
+	    	results.append("\"");
+	      }
 		
 
 		results.append('>');
@@ -728,7 +743,9 @@ public class tagOptions extends TagSupport{
 		this.additionalAttr = additionalAttr;
 	}
 
-
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
+	}
 
 }
 

@@ -33,14 +33,16 @@ import it.classhidra.core.controller.info_action;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 import javax.servlet.jsp.tagext.TagSupport;
 
-public class tagForm extends TagSupport{
+public class tagForm extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 1L;
 	protected String bean = null;
 	protected String name = null;
@@ -97,6 +99,9 @@ public class tagForm extends TagSupport{
 	protected String additionalAttr=null;
 
 	protected String embedScript = null;
+	
+	protected Map tagAttributes = new HashMap();
+
 
 
 
@@ -181,6 +186,8 @@ public class tagForm extends TagSupport{
 		additionalAttr = null;
 
 		embedScript=null;
+		
+		tagAttributes = new HashMap();
 	}
 
 	protected String createTagBody() {
@@ -467,7 +474,13 @@ public class tagForm extends TagSupport{
 			results.append(" ");
 		}		
 
-
+	    for(Object attrName : tagAttributes.keySet() ) {
+	    	results.append(" ");
+	    	results.append(attrName);
+	    	results.append("=\"");
+	    	results.append(tagAttributes.get(attrName));
+	    	results.append("\"");
+	      }
 
 		results.append(">"+System.getProperty("line.separator"));
 		if(embedScript!=null && (embedScript.toUpperCase().equals("NO") || embedScript.toUpperCase().equals("FALSE"))){
@@ -838,6 +851,10 @@ public class tagForm extends TagSupport{
 
 	public void setAdditionalAttr(String additionalAttr) {
 		this.additionalAttr = additionalAttr;
+	}
+
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
 	}
 
 }

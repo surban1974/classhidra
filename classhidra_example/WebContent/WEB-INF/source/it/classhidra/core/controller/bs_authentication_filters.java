@@ -271,6 +271,13 @@ public class bs_authentication_filters implements i_authentication_filter {
 			_action.getCurrent_redirect()==null ||
 			_action.getCurrent_redirect().is_avoidPermissionCheck())
 			return true;
+		
+		if(	_action!=null &&
+			_action.get_infoaction()!=null &&
+			(_action.get_infoaction().getProperty("allway").equalsIgnoreCase("public") || _action.get_infoaction().getProperty("always").equals("public"))
+			)
+			
+			return true;
 
 		
 		if(_action.get_infoaction().getPath().equals(bsController.CONST_ID_$ACTION_HELP)) return true;

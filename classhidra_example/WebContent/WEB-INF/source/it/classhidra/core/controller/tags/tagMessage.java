@@ -30,13 +30,15 @@ import it.classhidra.core.tool.util.util_xml;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 import javax.servlet.jsp.tagext.TagSupport;
 
-public class tagMessage extends TagSupport{
+public class tagMessage extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -896536174738762236L;
 	protected String code = null;	
 	protected String styleClass=null;
@@ -45,6 +47,7 @@ public class tagMessage extends TagSupport{
 	protected String normalXML=null;
 	protected String normalASCII=null;
 
+	protected Map tagAttributes = new HashMap();
 
 	
 	public int doEndTag() throws JspException {
@@ -72,6 +75,8 @@ public class tagMessage extends TagSupport{
 		parameters=null;
 		normalXML=null;
 		normalASCII=null;
+		
+		tagAttributes = new HashMap();
 	}
   
 	protected String createTagBody() {
@@ -79,10 +84,21 @@ public class tagMessage extends TagSupport{
 	
 		StringBuffer results = new StringBuffer("");
 		if(code!=null){
-			if(styleClass!=null){
+			if(styleClass!=null || tagAttributes.size()>0){
 				results.append(" <span class=\"");
 				results.append(styleClass);
-				results.append("\">");
+				results.append("\"");
+				
+			    for(Object attrName : tagAttributes.keySet() ) {
+			    	results.append(" ");
+			    	results.append(attrName);
+			    	results.append("=\"");
+			    	results.append(tagAttributes.get(attrName));
+			    	results.append("\"");
+			      }
+
+				results.append(">");
+
 			}
 			results.append(bsController.writeLabel(request,code,defaultValue,parameters));			
 			if(styleClass!=null){
@@ -136,6 +152,9 @@ public class tagMessage extends TagSupport{
 		this.normalASCII = normalASCII;
 	}
 	
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
+	}
 
 
 }

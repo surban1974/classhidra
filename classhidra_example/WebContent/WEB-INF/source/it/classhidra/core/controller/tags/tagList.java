@@ -28,12 +28,14 @@ package it.classhidra.core.controller.tags;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
@@ -46,7 +48,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 import it.classhidra.core.tool.util.util_xml;
 
-public class tagList extends TagSupport{
+public class tagList extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 1L;
 
 	protected String objId = null;// id
@@ -125,6 +127,7 @@ public class tagList extends TagSupport{
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 
+	protected Map tagAttributes = new HashMap();
 
 
 
@@ -461,7 +464,8 @@ public class tagList extends TagSupport{
 		formatLanguage=null;
 		formatCountry=null;
 
-
+		tagAttributes = new HashMap();
+		
 		scroll_row_height="16";
 	}
 
@@ -559,6 +563,16 @@ public class tagList extends TagSupport{
 				results.append('"');
 			}
 		}
+		
+	    for(Object attrName : tagAttributes.keySet() ) {
+	    	results.append(" ");
+	    	results.append(attrName);
+	    	results.append("=\"");
+	    	results.append(tagAttributes.get(attrName));
+	    	results.append("\"");
+	      }
+
+		
 		results.append(">"+System.getProperty("line.separator"));
 results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-decoration: none;\">"+System.getProperty("line.separator"));
 
@@ -1439,6 +1453,10 @@ results.append("</a>"+System.getProperty("line.separator"));
 
 	public void setMin_height(String minHeight) {
 		min_height = minHeight;
+	}
+	
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
 	}
 }
 

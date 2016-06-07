@@ -27,10 +27,12 @@ package it.classhidra.core.controller.tags;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
@@ -44,7 +46,7 @@ import it.classhidra.core.tool.util.util_tag;
 import it.classhidra.core.tool.util.util_xml;
 
 
-public class tagFormelement extends TagSupport{
+public class tagFormelement extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
 	protected String bean = null;
 	protected String name = null;
@@ -58,6 +60,9 @@ public class tagFormelement extends TagSupport{
 	protected String normalASCII=null;
 	protected String normalHTML=null;
 	protected String additionalAttr=null;
+	
+	protected Map tagAttributes = new HashMap();
+
 
 
 
@@ -87,6 +92,7 @@ public class tagFormelement extends TagSupport{
 		normalASCII=null;
 		normalHTML=null;
 		additionalAttr=null;
+		tagAttributes = new HashMap();
 	}
   
 	protected String createTagBody() {
@@ -180,7 +186,7 @@ public class tagFormelement extends TagSupport{
 	protected String drawTagBody(Object writeValue, String prefixName){
 		StringBuffer results = new StringBuffer("");
 		if(writeValue!=null){
-			if(styleClass!=null || additionalAttr!=null){
+			if(styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
 				results.append(" <span ");
 				if(styleClass!=null){
 					results.append(" class=\"");
@@ -191,6 +197,15 @@ public class tagFormelement extends TagSupport{
 					results.append(" ");
 					results.append(additionalAttr);
 				}
+				
+			    for(Object attrName : tagAttributes.keySet() ) {
+			    	results.append(" ");
+			    	results.append(attrName);
+			    	results.append("=\"");
+			    	results.append(tagAttributes.get(attrName));
+			    	results.append("\"");
+			      }
+				
 
 				results.append(" $modelWire=\"");
 				results.append("formelement:"+prefixName);
@@ -306,6 +321,10 @@ public class tagFormelement extends TagSupport{
 
 	public void setAdditionalAttr(String additionalAttr) {
 		this.additionalAttr = additionalAttr;
+	}
+
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
 	}
 
 

@@ -380,7 +380,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}catch(bsControllerException je){}
 
 		}else{
-			if(action_config==null)
+			if(action_config==null || !action_config.isReimposted())
 				action_config = new load_actions();
 			try{
 				action_config.load_from_resources();
@@ -3120,7 +3120,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(form.get_infoaction().getNavigated().equalsIgnoreCase("true")) go = true;
 		}catch(Exception ex){
 		}
-		if(!go || action_instance.getCurrent_redirect()==null){
+//		if(!go || action_instance.getCurrent_redirect()==null){
+		if(!go){
 			try{
 				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
 /*
@@ -3158,7 +3159,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 				info_navigation nav = new info_navigation();
 				if(form!=null)
 					form.clearBeforeStore();
-				nav.init(form.get_infoaction(),action_instance.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
+				if(action_instance.getCurrent_redirect()==null){
+					nav.init(form.get_infoaction(),null,new info_service(request),form);
+				}else	
+					nav.init(form.get_infoaction(),action_instance.getCurrent_redirect().get_inforedirect(),new info_service(request),form);
 				info_navigation fromNav = getFromInfoNavigation(null, request);
 				if(fromNav!=null){
 					if(form!=null) form.onAddToNavigation();

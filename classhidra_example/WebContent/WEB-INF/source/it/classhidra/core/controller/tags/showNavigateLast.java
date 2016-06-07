@@ -34,15 +34,18 @@ import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.io.IOException;
 
-public class showNavigateLast extends TagSupport{
+public class showNavigateLast extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 7713310883516145787L;
 	protected String style = null;
 	protected String styleClass = null;
 	protected String img_path = null;
 	protected HashMap parameters=null;
+	
+	protected Map tagAttributes = new HashMap();
 
 
 	public int doStartTag() throws JspException {
@@ -69,6 +72,8 @@ public class showNavigateLast extends TagSupport{
 		styleClass=null;
 		parameters=null;
 		img_path=null;
+		
+		tagAttributes = new HashMap();
 	}
 
 	protected String createTagBody() {
@@ -87,18 +92,20 @@ public class showNavigateLast extends TagSupport{
 
 
 			while(iN!=null){
-				try{
-					String subLabel="";
-					String id = iN.getIAction().getPath();
-					if((";"+bsController.getAppInit().get_nav_excluded()).indexOf(";"+id+";")==-1){
-						if(iN.getIRedirect().getMess_id()!=null && !iN.getIRedirect().getMess_id().equals("")){
-							subLabel = "<a style=\"cursor:pointer;\" )\"><img src='"+img_path+"/menu/special/action.gif' border='0' desc='"+bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second()+"' onclick=\"goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"' onmouseover='try{nlist_over(this)}catch(e){};'></a>";
-							sub_results.add(subLabel);
-							sub_results_action.add("goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"')");
-							sub_results_name.add(bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second());
+				if(iN.getIRedirect()!=null){
+					try{
+						String subLabel="";
+						String id = iN.getIAction().getPath();
+						if((";"+bsController.getAppInit().get_nav_excluded()).indexOf(";"+id+";")==-1){
+							if(iN.getIRedirect().getMess_id()!=null && !iN.getIRedirect().getMess_id().equals("")){
+								subLabel = "<a style=\"cursor:pointer;\" )\"><img src='"+img_path+"/menu/special/action.gif' border='0' desc='"+bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second()+"' onclick=\"goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"' onmouseover='try{nlist_over(this)}catch(e){};'></a>";
+								sub_results.add(subLabel);
+								sub_results_action.add("goAction('"+iN.getIAction().getPath()+"','"+iN.getIAction().getWac()+"')");
+								sub_results_name.add(bsController.writeLabel(request,iN.getIRedirect().getMess_id(),iN.getIRedirect().getDescr(),parameters)+iN.getDesc_second());
+							}
 						}
+					}catch(Exception ex){
 					}
-				}catch(Exception ex){
 				}
 				iN = iN.getChild();
 			}
@@ -121,6 +128,14 @@ public class showNavigateLast extends TagSupport{
 							results.append(style);
 							results.append('"');
 						}
+					    for(Object attrName : tagAttributes.keySet() ) {
+					    	results.append(" ");
+					    	results.append(attrName);
+					    	results.append("=\"");
+					    	results.append(tagAttributes.get(attrName));
+					    	results.append("\"");
+					      }
+
 						results.append('>');
 						if(i==0 || i==sub_results.size()-1){
 							if(i==0){
@@ -176,6 +191,10 @@ public class showNavigateLast extends TagSupport{
 
 	public void setImg_path(String imgPath) {
 		img_path = imgPath;
+	}
+	
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
 	}
 
 }

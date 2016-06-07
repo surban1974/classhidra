@@ -1,7 +1,7 @@
 /**
 * Name: clAjax.js
-* Version: 1.0.2 
-* Creation date: (01/06/2016)
+* Version: 1.0.3 
+* Creation date: (07/06/2016)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -402,14 +402,23 @@
 //				console.log(e);
 			},
 			
-			load : function(){
-				if(this.asScript){
+			load : function(_url){
+				if(_url){
+					this.url = _url;
+				}
+				if(this.asScript==false && this.asCss==false && this.url){
+					if(this.url.lastIndexOf('.js')==this.url.length-3 || this.url.indexOf('.js?')>-1)
+						this.asScript=true;
+					else if(this.url.lastIndexOf('.css')==this.url.length-4 || this.url.indexOf('.css?')>-1)
+						this.asCss=true;
+				}
+				if(this.url && this.asScript){
 					var e = document.createElement('script');
 			
 					if(this.base64){
 						var parameters = this.getParametersAsUrl(null,this.url);
 						if(this.url.indexOf('?')>-1)
-							e.src = url.substring(0,this.url.indexOf('?'))+parameters;
+							e.src = this.url.substring(0,this.url.indexOf('?'))+parameters;
 						else
 							e.src = this.url+parameters;
 					}else
@@ -426,7 +435,7 @@
 					if(this.contentEncoding && this.contentEncoding!='')
 						e.charset=this.contentEncoding;
 					
-					var instance  = this;
+					var instance  = this.clone();
 					try{
 						if(instance.success && instance.success!=''){
 							if (typeof instance.success === 'function') {
@@ -459,7 +468,7 @@
 						this.exception(e);
 					}
 				}
-				if(this.asCss){
+				if(this.url && this.asCss){
 					var e = document.createElement('link');
 		
 					if(this.base64){
@@ -488,7 +497,7 @@
 					if(this.contentEncoding && this.contentEncoding!='') 
 						e.charset=this.contentEncoding;
 					
-					var instance  = this;
+					var instance  = this.clone();
 					try{
 						if(instance.success && instance.success!=''){
 							if (typeof instance.success === 'function') {

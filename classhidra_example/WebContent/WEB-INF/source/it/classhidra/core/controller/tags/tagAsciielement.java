@@ -25,18 +25,20 @@
 package it.classhidra.core.controller.tags;
 
 
+import javax.servlet.jsp.tagext.DynamicAttributes;
+
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_xml;
 
 
-public class tagAsciielement extends tagFormelement{
+public class tagAsciielement extends tagFormelement implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
 
 	
 	protected String drawTagBody(Object writeValue, String prefixName){
 		StringBuffer results = new StringBuffer("");
 		if(writeValue!=null){
-			if(styleClass!=null || additionalAttr!=null){
+			if(styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
 				results.append(" <span ");
 				if(styleClass!=null){
 					results.append(" class=\"");
@@ -47,6 +49,14 @@ public class tagAsciielement extends tagFormelement{
 					results.append(" ");
 					results.append(additionalAttr);
 				}
+			    for(Object attrName : tagAttributes.keySet() ) {
+			    	results.append(" ");
+			    	results.append(attrName);
+			    	results.append("=\"");
+			    	results.append(tagAttributes.get(attrName));
+			    	results.append("\"");
+			      }
+				
 
 				results.append(" $modelWire=\"");
 				results.append("formelement:"+prefixName);

@@ -26,6 +26,7 @@ package it.classhidra.core.controller.tags;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -33,6 +34,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
@@ -46,7 +48,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_xml;
 
 
-public class tagTranscode extends TagSupport{
+public class tagTranscode extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -6037366698116086666L;
 	protected String source = null;
 	protected String inputField = null;
@@ -64,6 +66,9 @@ public class tagTranscode extends TagSupport{
 	protected String normalASCII=null;
 	protected String normalHTML=null;
 	protected String additionalAttr=null;
+	
+	protected Map tagAttributes = new HashMap();
+
 
 
 
@@ -97,6 +102,8 @@ public class tagTranscode extends TagSupport{
 		normalASCII=null;
 		normalHTML=null;
 		additionalAttr=null;
+		
+		tagAttributes = new HashMap();
 	}
   
 	protected String createTagBody() {
@@ -230,7 +237,7 @@ public class tagTranscode extends TagSupport{
 		if(writeValue==null && valueKey!=null) writeValue=valueKey;
 		
 		if(writeValue!=null){
-			if(styleClass!=null || additionalAttr!=null){
+			if(styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
 				results.append(" <span ");
 				if(styleClass!=null){
 					results.append(" class=\"");
@@ -242,6 +249,14 @@ public class tagTranscode extends TagSupport{
 					results.append(additionalAttr);
 					results.append(" ");
 				}
+			    for(Object attrName : tagAttributes.keySet() ) {
+			    	results.append(" ");
+			    	results.append(attrName);
+			    	results.append("=\"");
+			    	results.append(tagAttributes.get(attrName));
+			    	results.append("\"");
+			      }
+
 				results.append(">");
 			}
 			try{
@@ -438,5 +453,9 @@ public class tagTranscode extends TagSupport{
 	public void setAdditionalAttr(String additionalAttr) {
 		this.additionalAttr = additionalAttr;
 	}
+	
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
+	}	
 }
 

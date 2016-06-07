@@ -33,12 +33,14 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.init.auth_init;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.File;
 /**
  * @author esparm
  *
  */
-public class tagImage extends TagSupport{
+public class tagImage extends TagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 5955985523908683660L;
 	protected String width = null;
 	protected String vspace = null;
@@ -71,6 +73,9 @@ public class tagImage extends TagSupport{
 	protected String align = null;
 	protected String src = null;
 	protected String additionalAttr = null;
+	
+	protected Map tagAttributes = new HashMap();
+
 
 	public tagImage()
 	{
@@ -127,6 +132,8 @@ public class tagImage extends TagSupport{
 		align = null;
 		src = null;
 		additionalAttr = null;
+		
+		tagAttributes = new HashMap();
 	}
 
 	protected String createTagBody(){
@@ -329,6 +336,15 @@ public class tagImage extends TagSupport{
 			results.append(" ");
 			results.append(additionalAttr);
 		}
+		
+	    for(Object attrName : tagAttributes.keySet() ) {
+	    	results.append(" ");
+	    	results.append(attrName);
+	    	results.append("=\"");
+	    	results.append(tagAttributes.get(attrName));
+	    	results.append("\"");
+	      }
+
 		
 		results.append(" />");
 		return results.toString();
@@ -763,4 +779,7 @@ public class tagImage extends TagSupport{
 		this.additionalAttr = additionalAttr;
 	}
 
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
+	}	
 }

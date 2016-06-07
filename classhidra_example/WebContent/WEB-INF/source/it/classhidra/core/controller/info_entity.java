@@ -108,7 +108,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 		}
 	}
 	public String getProperty(String key) {
-		return (properties.get(key)==null)?"":properties.get(key).toString();
+		return (properties==null || properties.get(key)==null)?"":properties.get(key).toString();
 	}
 	public void addProperty(String key, Object value) {
 		properties.put(key,value);
