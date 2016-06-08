@@ -1,0 +1,256 @@
+ <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Classhidra - Hello World</title>
+	<link rel="SHORTCUT ICON" href="images/application.ico">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <style>
+      body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+      .navbar {
+        margin-bottom: 20px;
+      }
+      pre {
+		height: 300px;
+		border: none;
+		background-color: white;
+      }
+
+    </style>
+    
+    <!-- Styles for avoiding jQuery -->
+    <link rel="stylesheet" href="css/navbar.css">
+
+  </head>
+
+  <body>
+
+    <div class="container" style="padding-top: 50px">
+
+      <!-- Navbar -->
+      <nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
+
+
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron" style="padding:5px;background-color: white;">
+      
+       	<div class="panel panel-default" style="padding: 4px;">
+  			<div class="panel-body"><h4>Simple rest implementation</h4>
+  			
+  			<table style="width:100%">
+  				<tr>
+  					<td>
+			  			<div class="form-group">
+				  			<label for="item.id">Id:</label>
+				  			<input type="text" class="form-control" id="item.id">
+						</div>  					
+  					</td>
+  					<td>
+			  			<div class="form-group">
+				  			<label for="item.name">Name:</label>
+				  			<input type="text" class="form-control" id="item.name">	  
+						</div>  					
+  					</td>
+  					<td>
+			  			<div class="form-group">
+				  			<label for="item.surname">Surname:</label>
+				  			<input type="text" class="form-control" id="item.surname">		  						
+						</div>  					
+  					</td>  					  					
+  				</tr>
+  			
+  			</table>
+
+  			
+		      	<ul class="nav nav-tabs">
+		  			<li role="template" class="active"><a href="#">console</a></li>
+				    <li class="pull-right">
+						<table style="width:100%" >
+					 		<tr>
+					 			<td style="width:70px;height: 25px;" align="right" valign="middle">
+					 				  	<label for="link">URL:&nbsp;</label>
+					 			</td>
+					 			<td style="width:300px;height: 25px;">
+	  									<input type="text" style="width: 300px" class="form-control" id="link" value="rest/examples/">
+					 			</td>
+					 			<td style="width:450px;height: 25px;" align="center">
+									
+
+					 			
+					  				<div class="btn-group" role="group" aria-label="...">      	
+					  					<button type="button" class="btn btn-default"
+					  						onclick="getItems(true);"
+					  					>GET(all)</button>
+									</div>
+					  				<div class="btn-group" role="group" aria-label="...">      	
+					  					<button type="button" class="btn btn-default"
+					  						onclick="getItem(false);"
+					  					>GET</button>
+									</div>	
+					  				<div class="btn-group" role="group" aria-label="...">      	
+					  					<button type="button" class="btn btn-default"
+					  						onclick="postItem(false);"
+					  					>POST(new)</button>
+									</div>	
+					  				<div class="btn-group" role="group" aria-label="...">      	
+					  					<button type="button" class="btn btn-default"
+					  						onclick="putItem(false);"
+					  					>PUT(update)</button>
+									</div>	
+					  				<div class="btn-group" role="group" aria-label="...">      	
+					  					<button type="button" class="btn btn-default"
+					  						onclick="deleteItem(false);"
+					  					>DELETE</button>
+									</div>																																				
+					 			</td>
+					 		</tr>
+						</table>
+				    </li>
+		  		</ul>	
+				<div  style="overflow: auto;" >
+					<pre><code id="rest_canvas"></code></pre>
+				</div>
+      		</div>
+      	</div>       	
+      
+
+
+		</div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Navbar JavaScript -->
+    <script src="js/bootstrap-native.patched.js"></script>
+	
+	<!--  ClassHidra Ajax JavaScript -->
+	<script src='js/clAjax.js'></script>  	 
+	
+
+	<script>
+		new clajax()
+			.setUrl('pages/included/top_menu.html')
+			.setTarget(document.getElementById('top_menu'))
+			.setSuccess(function(){ 
+				document.getElementById('top_menu_rest').className += ' active';
+			})
+			.request('POST');
+		
+		function getItems(fromField){
+			var url_ = 'rest/examples/';
+			if(fromField==true)
+				url_ = document.getElementById('link').value;
+			
+			new clajax({
+				target:document.getElementById('rest_canvas'),
+				url:url_,
+//				acceptableStatus: 	[{status:201},{status:400},{status:404},{status:405},{status:500},{status:505}]
+				acceptableStatus: 	[{status:-1}] //any status
+			}).request('GET');
+			
+
+		}	
+		function getItem(fromField){	
+			var url_ = 'rest/examples/';
+			if(fromField==true)
+				url_ = document.getElementById('link').value;
+			else{
+				url_ = 'rest/examples/'+document.getElementById('item.id').value;
+				document.getElementById('link').value = url_;
+			}
+				
+			new clajax({
+				target:document.getElementById('rest_canvas'),
+				url:url_,
+				acceptableStatus: 	[{status:-1}] //any status
+			}).request('GET');
+		}
+		
+		function postItem(fromField){	
+			var url_ = 'rest/examples/';
+			if(fromField==true)
+				url_ = document.getElementById('link').value;
+			else{
+				url_ = 'rest/examples/';
+				document.getElementById('link').value = url_;
+			}
+			
+			new clajax({
+				target:document.getElementById('rest_canvas'),
+				url:url_,
+				json: {
+					'item':{
+						'id':document.getElementById('item.id').value,
+						'name':document.getElementById('item.name').value,
+						'surname':document.getElementById('item.surname').value
+					}
+				},
+				acceptableStatus: 	[{status:-1}] //any status
+			}).request('POST');
+
+
+		}
+		
+		function putItem(fromField){	
+			var url_ = 'rest/examples/';
+			if(fromField==true)
+				url_ = document.getElementById('link').value;
+			else{
+				url = 'rest/examples/'+document.getElementById('item.id').value;
+				document.getElementById('link').value = url_;
+			}
+
+			new clajax({
+				target:document.getElementById('rest_canvas'),
+				url:url_,
+				json: {
+						'item':{
+							'name':document.getElementById('item.name').value,
+							'surname':document.getElementById('item.surname').value
+						}
+					},
+					acceptableStatus: 	[{status:-1}] //any status
+			}).request('PUT');
+			
+
+		}
+		
+		function deleteItem(fromField){	
+			var url_ = "rest/examples/";
+			if(fromField==true)
+				url_ = document.getElementById("link").value;
+			else{
+				url_ = "rest/examples/"+document.getElementById("item.id").value;
+				document.getElementById("link").value = url_;
+			}
+			
+			new clajax({
+				target:document.getElementById('rest_canvas'),
+				url:url_,
+				acceptableStatus: 	[{status:-1}] //any status
+			}).request('DELETE');
+			
+
+		}
+		
+	
+		getItems(false);
+	</script>
+  </body>
+</html>
+
+
+

@@ -1,0 +1,191 @@
+
+ <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Classhidra - Hello World</title>
+	<link rel="SHORTCUT ICON" href="images/application.ico">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <style>
+      body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+      .navbar {
+        margin-bottom: 20px;
+      }
+      pre {
+		height: 300px;
+		border: none;
+		background-color: white;
+      }
+
+    </style>
+    
+    <!-- Styles for avoiding jQuery -->
+    <link rel="stylesheet" href="css/navbar.css">
+
+  </head>
+
+  <body>
+
+    <div class="container" style="padding-top: 50px">
+
+      <!-- Navbar -->
+      <nav id="top_menu" class="navbar navbar-default navbar-fixed-top"></nav>
+
+
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron" style="padding:5px;background-color: white;">
+      	<h3 style="100%;text-align: right;"><b>Hello World</b></h3>
+      	<ul>
+      		<li><h4>HelloWorld project - is the simple starter-example how to use ClassHidra library - lightweight MVC platform for J2EE development.</h4></li>
+      		<li><h4>It's really lightweight - the base package classhidra-base-*.jar = 840k and despite that included: action/model annotations mapping, rest support, 
+      		async execution, the rich tag library for jsp design, scheduling package, json serializing/deserializing, ...</h4></li>
+      		<li><h4>With EJB and CDI plugins implementation is possible to include stateless and stateful EJB objects as model component.</h4></li> 
+      		<li><h4>From <a href="https://sourceforge.net/projects/classhidra/files/classhidra.1/classhidra.1.5.4/">Source Forge</a> is possible to download the different examples 
+      		(as *.war or *.pom files) of variety of implementation: base, ejb, cdi, jetty,... </h4></li>
+      	</ul>
+      	
+      	<h3 style="100%;text-align: right;"><b>Project starter</b></h3>
+ 			<div class="panel-body">
+ 			<ul>
+      			<li><h4>For avoid web.xml into project is included the package <b>starter/</b> which contains filter+servlet+initializer sufficient for processing</h4></li>
+      		</ul>	
+		      	<ul class="nav nav-tabs" >
+		  			<li role="template00" class="active">	<a href="#template00" id="template00-tab" role="template00" data-toggle="tab" aria-controls="template00" aria-expanded="true">StarterController.java</a></li>
+		  			<li role="template01" >					<a href="#template01" id="template01-tab" role="template01" data-toggle="tab" aria-controls="template01" aria-expanded="true">StarterFilter.java</a></li>
+		  			<li role="template02" >					<a href="#template02" id="template02-tab" role="template02" data-toggle="tab" aria-controls="template02" aria-expanded="true">StarterInitializer.java</a></li>
+		  		</ul>	
+		  		<div id="tempate0" class="tab-content" >
+					
+					<div role="template00" class="tab-pane fade active in" id="template00" aria-labelledby="template00-tab" >
+		      			<pre ><xmp id="template00-content" ></xmp></pre>
+		      		</div>
+
+					<div role="template01" class="tab-pane fade in" id="template01" aria-labelledby="template01-tab" >
+		      			<pre ><xmp id="template01-content"></xmp></pre>
+		      		</div>
+
+					<div role="template02" class="tab-pane fade in" id="template02" aria-labelledby="template02-tab" >
+		      			<pre ><xmp id="template02-content"></xmp></pre>
+		      		</div>
+		      	</div>	
+ 			<ul>
+      			<li><h4>StarterInitializer contains the initial application parameters.</h4></li>
+      			<li><h4>StarterFilter is an extension of the basic ClassHidra filter which intercepts the actions/calls request.</h4></li>
+      			<li><h4>StarterController is an extension of the basic ClassHidra controller for processing the incoming request.</h4></li>
+      		</ul>		      	
+		      			      			      			
+      		</div>
+      	
+      	<h3 style="100%;text-align: right;"><b>Project controllers</b></h3>
+ 			<div class="panel-body">
+ 			<ul>
+      			<li><h4>For avoid web.xml is included the package <b>starter/</b> which contains filter+servlet+initializer sufficient for processing</h4></li>
+      		</ul>	
+		      	<ul class="nav nav-tabs" >
+		  			<li role="template10" class="active">	<a href="#template10" id="template10-tab" role="template10" data-toggle="tab" aria-controls="template10" aria-expanded="true">HelloWorld.java</a></li>
+		  			<li role="template11" >					<a href="#template11" id="template11-tab" role="template11" data-toggle="tab" aria-controls="template11" aria-expanded="true">LongPooling.java</a></li>
+		  			<li role="template12" >					<a href="#template12" id="template12-tab" role="template12" data-toggle="tab" aria-controls="template12" aria-expanded="true">ControllerRest.java</a></li>
+		  			<li role="template13" >					<a href="#template13" id="template13-tab" role="template13" data-toggle="tab" aria-controls="template13" aria-expanded="true">Annotations use</a></li>
+		  		</ul>	
+		  		<div id="tempate0" class="tab-content" >
+					
+					<div role="template10" class="tab-pane fade active in" id="template10" aria-labelledby="template10-tab" >
+		      			<pre ><xmp id="template10-content" ></xmp></pre>
+		      		</div>
+
+					<div role="template11" class="tab-pane fade in" id="template11" aria-labelledby="template11-tab" >
+		      			<pre ><xmp id="template11-content"></xmp></pre>
+		      		</div>
+
+					<div role="template12" class="tab-pane fade in" id="template12" aria-labelledby="template12-tab" >
+		      			<pre ><xmp id="template12-content"></xmp></pre>
+		      		</div>
+		      		
+					<div role="template13" class="tab-pane fade in" id="template13" aria-labelledby="template13-tab" >
+		      			<pre ><xmp id="template13-content"></xmp></pre>
+		      		</div>		      		
+		      	</div>	
+ 			<ul>
+      			<li><h4>HelloWord - is controller which manages the current view.</h4></li>
+      			<li><h4>LongPooling - is async controller (deferred) placed as an example how to organize long pooling communication with ClassHidra</h4></li>
+      			<li><h4>ControllerRest - stateful rest implementation.</h4></li>
+      		</ul>		      	
+		      			      			      			
+      		</div>
+
+         
+       	<h3 style="100%;text-align: right;"><b>Provided</b></h3>
+       	<ul>
+       		<li><h4>BackEnd: <a href="https://sourceforge.net/projects/classhidra/files/classhidra.1/classhidra.1.5.4/">ClassHidra (MVC, RESTful, Scheduler)</a></h4></li>
+       		<li><h4>FrontEnd: <a href="http://getbootstrap.com/">Bootstrap</a>, <a href="http://thednp.github.io/bootstrap.native/">BootstrapNativeJS</a></h4></li>
+       		<li><h4>Author: <a href="http://it.linkedin.com/pub/svyatoslav-urbanovych/2/241/754">Svyatoslav Urbanovych</a></h4></li>
+       		<li><h4>EMail: svyatoslav.urbanovych@gmail.com</h4></li>
+       	</ul>
+        
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Navbar JavaScript -->
+    <script src="js/bootstrap-native.patched.js"></script>
+	
+	<!--  ClassHidra Ajax JavaScript -->
+	<script src='js/clAjax.js'></script>  	 
+	
+	
+	<script>
+		new clajax()
+			.setUrl('pages/included/top_menu.html')
+			.setTarget(document.getElementById('top_menu'))
+			.setSuccess(function(){ 
+				document.getElementById('top_menu_hello').className += ' active';
+				new clajax()
+					.setTarget(document.getElementById('template00-content'))
+					.setUrl('hello-resource?resource=resources/StarterController')
+					.request('POST');
+				new clajax()
+					.setTarget(document.getElementById('template01-content'))
+					.setUrl('hello-resource?resource=resources/StarterFilter')
+					.request('POST');
+				new clajax()
+					.setTarget(document.getElementById('template02-content'))
+					.setUrl('hello-resource?resource=resources/StarterInitializer')
+					.request('POST');
+				
+				new clajax()
+					.setTarget(document.getElementById('template10-content'))
+					.setUrl('hello-resource?resource=resources/HelloWorld')
+					.request('POST');
+				new clajax()
+					.setTarget(document.getElementById('template11-content'))
+					.setUrl('hello-resource?resource=resources/LongPooling')
+					.request('POST');
+				new clajax()
+					.setTarget(document.getElementById('template12-content'))
+					.setUrl('hello-resource?resource=resources/ControllerRest')
+					.request('POST');				
+				
+				new clajax()
+					.setTarget(document.getElementById('template13-content'))
+					.setUrl('hello-resource?resource=resources/annotations.info')
+					.request('POST');
+			})
+			.request('POST');
+	
+	</script>
+  </body>
+</html>
