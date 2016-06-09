@@ -34,10 +34,15 @@ Maven dependencies (jar):<br>
 --&gt;<br>
 &lt;!-- JAR<br>
 &lt;artifactId&gt;classhidra-base&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-base-7&lt;/artifactId&gt;<br>
 &lt;artifactId&gt;classhidra-spring&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-spring-7&lt;/artifactId&gt;<br>
 &lt;artifactId&gt;classhidra-cdi&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-cdi-7&lt;/artifactId&gt;<br>
 &lt;artifactId&gt;classhidra-ejb&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-ejb-7&lt;/artifactId&gt;<br>
 &lt;artifactId&gt;classhidra-jboss7-vfs&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-jboss7-vfs-7&lt;/artifactId&gt;<br>
 &lt;artifactId&gt;classhidra-jetty-embedded&lt;/artifactId&gt;<br>
 --&gt;<br>
 &lt;!-- WAR<br>
@@ -46,6 +51,7 @@ Maven dependencies (jar):<br>
 &lt;artifactId&gt;classhidra-cdi-example&lt;/artifactId&gt;<br>
 &lt;artifactId&gt;classhidra-ejb-example&lt;/artifactId&gt;<br>
 &lt;artifactId&gt;classhidra-cdi-ejb-example&lt;/artifactId&gt;<br>
+&lt;artifactId&gt;classhidra-starter-7&lt;/artifactId&gt;<br>
 --&gt;<br>
 &lt;version&gt;1.5.4&lt;/version&gt;<br>
 &lt;/dependency<br>
