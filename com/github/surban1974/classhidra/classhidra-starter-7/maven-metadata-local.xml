@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.github.surban1974.classhidra</groupId>
+  <artifactId>classhidra-starter-7</artifactId>
+  <versioning>
+    <versions>
+      <version>1.5.4-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20160609102803</lastUpdated>
+  </versioning>
+</metadata>
