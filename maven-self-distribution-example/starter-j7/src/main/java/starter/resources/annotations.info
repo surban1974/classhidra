@@ -1,0 +1,51 @@
+ @Action (
+	path="hello",
+	name="model",
+	redirect="/pages/hello.html",
+	Expose=@Expose(methods = {Expose.POST,Expose.GET}),
+	entity=@Entity(
+			property="allway:public"
+	) 
+)
+@Action 			- java object mapped as action and will be processed with ClassHidra controller;
+	path			- [mandatory] action identifier/url ;
+	name			- identifier of model (if the model is defined aside as anothe object with @Bean);
+	redirect		- path for redirected view (*.html, *.jsp, another action, ...);
+	Expose			- supported request methods;
+	entity			- basic parameters, if allway:public - will be avoid security check;
+	
+@SessionDirective	- the action after instance will be stored as session object
+@NavigatedDirective(memoryContent="true")
+					- the action after instance will be stored into navigation chain with another actions marked as navigated 
+					  navigation chain can be stored into session or into ejb context (must use ejb wrapper)
+
+@ActionCall(
+		name="resource",
+		path="",
+		Expose=@Expose(method=Expose.POST)
+		)
+@ActionCall			- this method of action is marked for be requested with different url: [action path]-[name] (ex: hello-resource, where separator '-' is defined into StarterInitializer.class)
+					  as return value call support: redirects object, string, byte[]
+	name			- [mandatory] call identifier/second part of url;
+	path			- if not is blank - complete url for request;
+	Expose			- supported request methods;
+	
+
+@ActionCall(
+	name="check",
+	Redirect=@Redirect(contentType="text/event-stream"),
+	Async=@Async(
+		value=true,
+		flushBuffer=true,
+		timeout=60000,
+		loopEvery=5000,
+		headers = {
+				@ResponseHeader(name="Cache-Control",value="no-cache"),
+				@ResponseHeader(name="Connection",value="keep-alive")
+				}
+		)
+)
+	Redirect		- path for redirected view or the properties of Response 
+	Async			- asynchronizing(deferred) response 
+
+	 							 	

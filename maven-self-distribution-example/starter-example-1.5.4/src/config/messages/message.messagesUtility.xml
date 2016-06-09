@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<messages view="messagesUtility"> 
+	<message cd_mess="messagesUtility_label_0" cd_lang="IT" desc_mess=""/>
+	<message cd_mess="messagesUtility_label_0" cd_lang="EN" desc_mess=""/>
+	<message cd_mess="messagesUtility_label_0" cd_lang="DC" desc_mess=""/>
+	<message cd_mess="messagesUtility_label_0" cd_lang="FR" desc_mess=""/>
+
+	<message cd_mess="messagesUtility_label_1" cd_lang="IT" desc_mess="Percorso INPUT "/>
+	<message cd_mess="messagesUtility_label_1" cd_lang="EN" desc_mess="Path INPUT"/>
+	<message cd_mess="messagesUtility_label_1" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="messagesUtility_label_1" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="messagesUtility_label_3" cd_lang="IT" desc_mess="Lingue(separatore [;]) "/>
+	<message cd_mess="messagesUtility_label_3" cd_lang="EN" desc_mess="Language(separatore [;])"/>
+	<message cd_mess="messagesUtility_label_3" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="messagesUtility_label_3" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="messagesUtility_label_lmenu_1" cd_lang="IT" desc_mess="generare"/>
+	<message cd_mess="messagesUtility_label_lmenu_1" cd_lang="EN" desc_mess="generate"/>
+	<message cd_mess="messagesUtility_label_lmenu_1" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="messagesUtility_label_lmenu_1" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="messagesUtility_label_5" cd_lang="IT" desc_mess="scaricare"/>
+	<message cd_mess="messagesUtility_label_5" cd_lang="EN" desc_mess="download"/>
+	<message cd_mess="messagesUtility_label_5" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="messagesUtility_label_5" cd_lang="FR" desc_mess="???"/>
+
+</messages>

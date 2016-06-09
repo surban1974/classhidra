@@ -1108,7 +1108,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 		redirects current_redirect = null;
 		if(id_call==null){
 			
-			if(!action_instance.get_infoaction().isExposed((request==null)?"":request.getMethod()))
+			
+			if(request!=null && !action_instance.get_infoaction().isExposed((request==null)?"":request.getMethod()))
 				throw new bsControllerException("HTTP Method "+((request==null)?"":request.getMethod())+" is not supported for /"+action_instance.get_infoaction().getPath(), request, iStub.log_FATAL);
 			
 			Method iActionMethod = null;
@@ -2044,8 +2045,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 							result[i] = ret;
 						}catch(Exception e){
 							try{
-								if(	current.isPrimitive())
-									result[i] = util_supportbean.init(current, annotationParameter.name(), request);	
+								if(	current.isPrimitive()){
+									try{
+										result[i] = util_supportbean.init(current, annotationParameter.name(), request);
+									}catch(Exception ex1){
+									}
+									if(result[i]==null)
+										result[i] = util_supportbean.assignPrimitiveDefault(current);
+									
+								}								
 							}catch(Exception ex){
 							}
 						}

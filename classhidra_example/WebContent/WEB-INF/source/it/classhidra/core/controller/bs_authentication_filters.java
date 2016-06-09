@@ -225,9 +225,12 @@ public class bs_authentication_filters implements i_authentication_filter {
 
 	
 	public boolean check_actionIsPermitted(auth_init auth, String id_complete){
+		
+		if(bsController.getAppInit().get_avoid_permission_chech()!=null && bsController.getAppInit().get_avoid_permission_chech().equalsIgnoreCase("true"))
+			return true;
 	
 		if(id_complete!=null && id_complete.equals(bsController.CONST_ID_$ACTION_HELP)) return true;
-		if(!bsController.getAppInit().get_enterpoint().equals("*")){
+		if(bsController.getAppInit().get_enterpoint()!=null && !bsController.getAppInit().get_enterpoint().equals("*")){
 			if(id_complete!=null && id_complete.equals(bsController.getAppInit().get_enterpoint())) return true;
 		}else{
 			if(auth==null) return false;
@@ -267,6 +270,9 @@ public class bs_authentication_filters implements i_authentication_filter {
 	}
 	public boolean check_redirectIsPermitted(auth_init auth, i_action _action){	
 		
+		if(bsController.getAppInit().get_avoid_permission_chech()!=null && bsController.getAppInit().get_avoid_permission_chech().equalsIgnoreCase("true"))
+			return true;
+		
 		if(	_action==null ||
 			_action.getCurrent_redirect()==null ||
 			_action.getCurrent_redirect().is_avoidPermissionCheck())
@@ -281,7 +287,7 @@ public class bs_authentication_filters implements i_authentication_filter {
 
 		
 		if(_action.get_infoaction().getPath().equals(bsController.CONST_ID_$ACTION_HELP)) return true;
-		if(!bsController.getAppInit().get_enterpoint().equals("*")){
+		if(bsController.getAppInit().get_enterpoint()!=null && !bsController.getAppInit().get_enterpoint().equals("*")){
 			if(_action.get_infoaction().getPath().equals(bsController.getAppInit().get_enterpoint())) return true;
 		}else{
 			if(auth==null) return false;

@@ -873,7 +873,25 @@ public class util_supportbean  {
 
 //******************************************************************
 	
-
+		public static Object assignPrimitiveDefault(Class current){
+			if (boolean.class.isAssignableFrom(current))
+				return false; 
+			else if (byte.class.isAssignableFrom(current))
+				return (byte)0; 
+			else if (char.class.isAssignableFrom(current))
+				return (char)' ';
+			else if (double.class.isAssignableFrom(current))
+				return (double)0;
+			else if (float.class.isAssignableFrom(current))
+				return (float)0;
+			else if (int.class.isAssignableFrom(current))
+				return (int)0;
+			else if (long.class.isAssignableFrom(current))
+				return (long)0;
+			else if (short.class.isAssignableFrom(current))
+				return (short)0;
+			return null;
+		}
 	
 	
 		public static Object init(Class ret_class, String name, HttpServletRequest request) throws bsControllerException{

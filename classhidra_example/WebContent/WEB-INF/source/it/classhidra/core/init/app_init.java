@@ -65,6 +65,7 @@ public class app_init implements Serializable{
 	public final static String id_db_name 					=	"application.config.db";
 	public final static String id_extention_do 				=	"application.extention.do";
 	public final static String id_actioncall_separator 		=	"application.actioncall.separator";
+	public final static String id_avoid_permission_chech 	=	"application.avoid.permission.check";
 
 	
 	public final static String id_transf_elaborationmode	=	"application.transformation.event.after.elaborationmode";
@@ -100,11 +101,13 @@ public class app_init implements Serializable{
 	private String _ejb_jndi_name_prefix;
 	private String _ejb_avoid_loop_reentrant;
 	private String _pin;
+	
 	private String _db_name;
 	private boolean db_name_valid=true;
 	
 	private String _extention_do;
 	private String _actioncall_separator;
+	private String _avoid_permission_chech;
 	private String _debug;
 	private String _permit_redirect_resource;
 	private String _statistic;
@@ -212,7 +215,9 @@ public class app_init implements Serializable{
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
 			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
 			_actioncall_separator=(_actioncall_separator==null)?System.getProperty(id_actioncall_separator):_actioncall_separator;
+			_avoid_permission_chech=(_avoid_permission_chech==null)?System.getProperty(id_avoid_permission_chech):_avoid_permission_chech;
 
+			
 			_debug=(_debug==null)?System.getProperty(id_debug):_debug;
 			_permit_redirect_resource=(_permit_redirect_resource==null)?System.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
 			_statistic=(_statistic==null)?System.getProperty(id_statistic):_statistic;
@@ -301,6 +306,8 @@ public class app_init implements Serializable{
 		_vfs_plugin=(_vfs_plugin==null)?property.getProperty(id_vfs_plugin):_vfs_plugin;
 		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
 		_actioncall_separator=(_actioncall_separator==null)?property.getProperty(id_actioncall_separator):_actioncall_separator;
+		_avoid_permission_chech=(_avoid_permission_chech==null)?property.getProperty(id_avoid_permission_chech):_avoid_permission_chech;
+
 		_debug=(_debug==null)?property.getProperty(id_debug):_debug;
 		_permit_redirect_resource=(_permit_redirect_resource==null)?property.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
 
@@ -635,5 +642,9 @@ public class app_init implements Serializable{
 
 	public String get_async_provider_servlet() {
 		return _async_provider_servlet;
+	}
+
+	public String get_avoid_permission_chech() {
+		return _avoid_permission_chech;
 	}
 }
