@@ -20,12 +20,26 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-  
+		
+ 	<distributionManagement>
+    	<repository>
+        	<id>internal.repo</id>
+        	<name>Temporary Staging Repository</name>
+        	<url>file://${project.build.directory}/mvn-repo</url>
+    	</repository>
+	</distributionManagement>    
   
   	<build>
 
 		<plugins>
-
+		
+		   	<plugin>
+		    	<artifactId>maven-deploy-plugin</artifactId>
+		        <version>2.8.1</version>
+		        <configuration>
+		            <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+		        </configuration>
+		    </plugin> 
 		    
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
@@ -33,17 +47,9 @@
 			    <configuration>
 			    	<filesets>
 			        	<fileset>
-			          		<directory>src/main/rar/examples</directory>		          
+			          		<directory>src/main/rar</directory>		          
 			          		<followSymlinks>false</followSymlinks>
 			        	</fileset>
-			        	<fileset>
-			          		<directory>src/main/rar/java</directory>		          
-			          		<followSymlinks>false</followSymlinks>
-			        	</fileset>
-			        	<fileset>
-			          		<directory>src/main/rar/webapp</directory>		          
-			          		<followSymlinks>false</followSymlinks>
-			        	</fileset>			        	
 			      	</filesets>
 				</configuration>
 			</plugin>      
@@ -52,9 +58,9 @@
 				<artifactId>maven-resources-plugin</artifactId>
 		        <version>2.7</version>
 		        <executions>
-				<execution>
+					<execution>
 		            	<id>copy-resources</id>  
-		            	<phase>clean</phase>
+		            	<phase>install</phase>
 		            	<goals>
 		              		<goal>copy-resources</goal>
 		            	</goals>
@@ -103,6 +109,7 @@
 	        	<groupId>org.apache.maven.plugins</groupId>
 	        	<artifactId>maven-rar-plugin</artifactId>
 	        	<version>2.4</version>
+	        	
 	        	<configuration>
 					<includeJar>false</includeJar>	
 	 			    <archive>

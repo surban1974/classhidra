@@ -111,11 +111,11 @@ td.asbts_sel{
 	text-align: center;
 }
 div.asbts{
-	height: 46px;
-	width: 330px;
+	height: 44px;
+	width: 328px;
 	background-color: white;
 	border : 1px solid #ccc;
-	border-radius: 5px;
+	border-radius: 6px;
 	text-align: center;
 	vertical-align: middle;
 	cursor: pointer;
@@ -136,12 +136,13 @@ div.asbts td{
 </style>
 
 <div id="top_menu" style="position:absolute; top:0; left:0; z-index: 1;">
-<table style=" height: 50px; background-color: #F8F8F8; width: 100%; border-bottom: 1px solid #CCCCCC;" cellpadding="0" cellspacing="0">
+<table style=" height: 49px; background-color: #F8F8F8; width: 100%; border-bottom: 1px solid #CCCCCC;" cellpadding="0" cellspacing="0">
 	<tr>
 		<td class="asbts" 
-			style="width: 400px; "
+			style="width: 400px; padding-left: 14px"
 			onclick="location.replace('login')" 
-			valign="middle">
+			valign="middle"
+			>
 			<b>CLASSHIDRA</b> Simple J2EE MVC Implementation
 		</td>
 		<td class="asbts_sel" 
@@ -156,18 +157,20 @@ div.asbts td{
 			valign="middle"> 
 			Starter [Hello World]
 		</td>
-		<td align="right" valign="middle" style="padding-top: 1px; padding-right: 1px; ">
+		<td align="right" valign="middle" style="padding:2px; ">
 			<div class="asbts"
 			onclick="location.replace('https://sourceforge.net/projects/classhidra/files/classhidra.1/classhidra.1.5.4/')">
-			<table cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;">
+			<table cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;" >
 				<tr>
-					<td align="center" valign="middle">&nbsp;Source Forge Download &raquo;</td>
+					<td align="right" valign="middle" style="padding-top: 2px"><img src="starter/images/classhidra_small.gif" border="0"/></td>
+					<td align="left" valign="middle" style="width: 230px;padding-top: 2px">&nbsp;Source Forge Download &raquo;</td>
 				</tr>
 			</table>
 			
 			</div>
 			
 		</td>
+		<td>&nbsp;&nbsp;</td>
 	</tr>
 </table> 
 
