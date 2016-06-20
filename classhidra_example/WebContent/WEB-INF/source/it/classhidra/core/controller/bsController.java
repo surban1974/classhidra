@@ -430,7 +430,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(auth_config==null)	
 				auth_config = new load_authentication();
 			try{
-				auth_config.load_from_resources();
+				if(!auth_config.isReadOk_Resource())
+					auth_config.load_from_resources();
 				auth_config.init();
 				if(!auth_config.isReadOk()){
 					auth_config.initProperties(getAppInit().get_path_config()+CONST_XML_MESSAGES);
