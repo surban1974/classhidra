@@ -42,7 +42,7 @@ public class log_patternSimple implements i_log_pattern_web{
 		if(bsController.getAppInit().get_path()!=null && !bsController.getAppInit().get_path().equals(""))
 			message="["+bsController.getAppInit().get_path()+"]"+message;
 		if(level==null || level.toUpperCase().equals("DEBUG")) 
-			util_format.writeToConsole(null,message);			
+			util_format.writeToConsole(bsController.getLogInit(),message);			
 		return message;
 	}
 	
@@ -53,7 +53,7 @@ public class log_patternSimple implements i_log_pattern_web{
 		if(bsController.getAppInit().get_path()!=null && !bsController.getAppInit().get_path().equals(""))
 			message="["+bsController.getAppInit().get_path()+"]"+message;
 		if(level==null || level.toUpperCase().equals("DEBUG")) 
-			util_format.writeToConsole(null,message);
+			util_format.writeToConsole(bsController.getLogInit(),message);
 		return message;
 	}	
 
@@ -64,7 +64,7 @@ public class log_patternSimple implements i_log_pattern_web{
 		if(bsController.getAppInit().get_path()!=null && !bsController.getAppInit().get_path().equals(""))
 			message="["+bsController.getAppInit().get_path()+"]"+message;
 		if(level==null || level.toUpperCase().equals("DEBUG")) 
-			util_format.writeToConsole(null,message);			
+			util_format.writeToConsole(bsController.getLogInit(),message);			
 		return message;
 	}
 	
@@ -75,7 +75,7 @@ public class log_patternSimple implements i_log_pattern_web{
 		if(bsController.getAppInit().get_path()!=null && !bsController.getAppInit().get_path().equals(""))
 			message="["+bsController.getAppInit().get_path()+"]"+message;
 		if(level==null || level.toUpperCase().equals("DEBUG")) 
-			util_format.writeToConsole(null,message);
+			util_format.writeToConsole(bsController.getLogInit(),message);
 		return message;
 	}	
 }
