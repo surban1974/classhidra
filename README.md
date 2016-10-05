@@ -54,4 +54,4 @@ Maven dependencies (jar):<br>
 &lt;artifactId&gt;classhidra-starter-7&lt;/artifactId&gt;<br>
 --&gt;<br>
 &lt;version&gt;1.5.4&lt;/version&gt;<br>
-&lt;/dependency<br> 
+&lt;/dependency&gt;<br> 
