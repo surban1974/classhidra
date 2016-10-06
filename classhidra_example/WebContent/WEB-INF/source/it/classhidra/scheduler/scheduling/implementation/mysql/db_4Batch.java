@@ -1,19 +1,6 @@
 package it.classhidra.scheduler.scheduling.implementation.mysql;
 
 
-import it.classhidra.core.tool.db.db_connection;
-import it.classhidra.core.tool.exception.bsException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_blob;
-import it.classhidra.core.tool.util.util_format;
-import it.classhidra.scheduler.common.i_4Batch;
-import it.classhidra.scheduler.common.i_batch;
-import it.classhidra.scheduler.scheduling.DriverScheduling;
-import it.classhidra.scheduler.scheduling.db.db_batch;
-import it.classhidra.scheduler.scheduling.db.db_batch_log;
-import it.classhidra.scheduler.scheduling.init.batch_init;
-import it.classhidra.scheduler.util.util_batch;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -21,6 +8,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+
+import it.classhidra.core.tool.db.db_connection;
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_blob;
+import it.classhidra.core.tool.util.util_format;
+import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.common.i_batch;
+import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.db.db_batch_log;
+import it.classhidra.scheduler.util.util_batch;
 
 
 
@@ -123,6 +121,7 @@ public class db_4Batch implements i_4Batch  {
 		try{
 
 			conn = new db_connection().getContent();
+			conn.setAutoCommit(false);
 			st = conn.createStatement();
 
 			original = (db_batch)util_blob.load_db_element(selected, conn, st);
@@ -146,9 +145,14 @@ public class db_4Batch implements i_4Batch  {
 			st.execute(original.sql_Update(original));
 
 
-			conn.close();
+			conn.commit();
 			return new Boolean(true);
 		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 			throw ex;
 		}finally{
 			db_connection.release(null, st, conn);
@@ -190,9 +194,6 @@ public class db_4Batch implements i_4Batch  {
 			
 			conn.commit();
 
-
-
-			conn.close();
 			return new Boolean(true);
 		}catch(Exception ex){
 			try{
@@ -248,10 +249,6 @@ public class db_4Batch implements i_4Batch  {
 
 			
 			conn.commit();
-
-
-
-			conn.close();
 			return new Boolean(true);
 		}catch(Exception ex){
 			try{
@@ -279,6 +276,7 @@ public class db_4Batch implements i_4Batch  {
 		try{
 
 			conn = new db_connection().getContent();
+			conn.setAutoCommit(false);
 			st = conn.createStatement();
 
 			try{
@@ -289,9 +287,14 @@ public class db_4Batch implements i_4Batch  {
 			st.execute(inserted.sql_Insert());
 
 
-			conn.close();
+			conn.commit();
 			return new Boolean(true);
 		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 			throw ex;
 		}finally{
 			db_connection.release(null, st, conn);
@@ -312,13 +315,19 @@ public class db_4Batch implements i_4Batch  {
 		try{
 
 			conn = new db_connection().getContent();
+			conn.setAutoCommit(false);
 			st = conn.createStatement();
 
 			st.executeUpdate(sql_batch.sql_ClearStateBatch(form));
 
-			conn.close();
+			conn.commit();
 			return new Boolean(true);
 		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 			throw ex;
 		}finally{
 			db_connection.release(null, st, conn);
@@ -336,15 +345,20 @@ public class db_4Batch implements i_4Batch  {
 		try{
 
 			conn = new db_connection().getContent();
-
+			conn.setAutoCommit(false);
 			st = conn.createStatement();
 
 			st.execute(sql_batch.sql_DeleteBatchLog(form));
 
 
-			conn.close();
+			conn.commit();
 			return new Boolean(true);
 		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 			throw ex;
 		}finally{
 			db_connection.release(null, st, conn);
@@ -361,15 +375,20 @@ public class db_4Batch implements i_4Batch  {
 		try{
 
 			conn = new db_connection().getContent();
-
+			conn.setAutoCommit(false);
 			st = conn.createStatement();
 
 			st.execute(sql_batch.sql_DeleteBatch(form));
 
 
-			conn.close();
+			conn.commit();
 			return new Boolean(true);
 		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 			throw ex;
 		}finally{
 			db_connection.release(null, st, conn);
@@ -388,14 +407,18 @@ public class db_4Batch implements i_4Batch  {
 		try{
 
 			conn = new db_connection().getContent();
-			st = conn.createStatement();
 			conn.setAutoCommit(false);
+			st = conn.createStatement();
 //			st.executeUpdate(sql_batch.sql_ClearStateBatch(form));
 			st.executeUpdate(sql_batch.sql_ClearBatchState());
 			conn.commit();
-			conn.close();
 			return new Boolean(true);
 		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 			throw ex;
 		}finally{
 			db_connection.release(null, st, conn);
@@ -414,17 +437,19 @@ public class db_4Batch implements i_4Batch  {
 		try{
 
 			conn = new db_connection().getContent();
-			st = conn.createStatement();
 			conn.setAutoCommit(false);
+			st = conn.createStatement();
+
 			st.executeUpdate(sql_batch.sql_Kill4Timeout(form));
 			conn.commit();
-			conn.close();
+
 			return new Boolean(true);
 		}catch(Exception ex){
 			try{
 				conn.rollback();
 			}catch(Exception e){
 			}
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}finally{
 			db_connection.release(null, st, conn);
 		}
@@ -454,9 +479,6 @@ public class db_4Batch implements i_4Batch  {
 			st.executeUpdate(log.sql_Insert());
 			conn.commit();
 
-
-
-			conn.close();
 			return new Boolean(true);
 		}catch(Exception ex){
 			try{
@@ -473,12 +495,7 @@ public class db_4Batch implements i_4Batch  {
 	
 	
 	public Object operation_LOAD_BATCH_PROPERTIES(HashMap form){
-		batch_init b_init = null;
-	    try{
-	    	b_init = DriverScheduling.getConfiguration();
-	    }catch(Exception e){
-	    	b_init = new batch_init();
-	    }
+
 
 	    db_batch batch = (db_batch)form.get("selected");
 	    if(batch==null)

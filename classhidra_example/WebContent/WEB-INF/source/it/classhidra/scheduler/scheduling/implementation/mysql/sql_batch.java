@@ -124,7 +124,7 @@ public class sql_batch {
 
 		result+="( cd_btch = '"+form.get("cd_btch")+"'  \n";
 		result+="OR cd_p_btch = '"+form.get("cd_btch")+"')  \n";
-		result+="AND state != "+i_batch.STATE_SUSPEND+" \n";
+		result+="AND state <> "+i_batch.STATE_SUSPEND+" \n";
 		return result;
 	}
 
@@ -144,7 +144,7 @@ public class sql_batch {
 
 		result+="cd_btch = '"+form.get("cd_btch")+"'  \n";
 //		result+="OR cd_p_btch = '"+form.get("cd_btch")+"')  \n";
-		result+="AND state != "+i_batch.STATE_SUSPEND+" \n";
+		result+="AND state <> "+i_batch.STATE_SUSPEND+" \n";
 		return result;
 	}
 	
@@ -158,9 +158,9 @@ public class sql_batch {
 		String result="";	
 		result+="update "+b_init.get_db_prefix()+"batch \n";
 		result+="inner join ( \n";
-		result+="SELECT cd_btch, CONVERT(value, SIGNED INTEGER) as timeout FROM "+b_init.get_db_prefix()+"batch_property \n";
+		result+="SELECT cd_btch, cd_ist, CONVERT(value, SIGNED INTEGER) as timeout FROM "+b_init.get_db_prefix()+"batch_property \n";
 		result+="where cd_property = '"+i_4Batch.o_KILL4TIMEOUT+"' \n";
-		result+=") prop on prop.cd_btch= "+b_init.get_db_prefix()+"batch.cd_btch \n";
+		result+=") prop on prop.cd_btch= "+b_init.get_db_prefix()+"batch.cd_btch and prop.cd_ist= "+b_init.get_db_prefix()+"batch.cd_ist \n";
 		result+="set state = "+i_batch.STATE_NORMAL+" \n"; 
 		result+="WHERE \n"; 
 		result+=""+b_init.get_db_prefix()+"batch.state = "+i_batch.STATE_INEXEC+" \n";

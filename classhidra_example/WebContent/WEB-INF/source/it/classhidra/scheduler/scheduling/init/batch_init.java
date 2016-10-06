@@ -31,6 +31,7 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_file;
 import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.implementation.mysql.db_4Batch;
 
 import java.io.ByteArrayInputStream;
@@ -179,6 +180,13 @@ public String getLoadedFrom() {
 }
 
 public i_4Batch get4BatchManager(){
+//Modified 20161005	
+	if(	DriverScheduling.getBatchManager()!=null &&
+		(_stub!=null && !_stub.equalsIgnoreCase("empty") && DriverScheduling.getBatchManager().getClass().getName().equalsIgnoreCase(_stub))
+	)
+		return DriverScheduling.getBatchManager();
+//--	
+	
 	i_4Batch batchManager = null;
 	if(_stub!=null && _stub.equalsIgnoreCase("empty")){
 		batchManager = new i_4Batch() {
@@ -195,7 +203,11 @@ public i_4Batch get4BatchManager(){
 	}
 	if(batchManager==null) 
 		batchManager = new db_4Batch();
-	return batchManager;
+	
+//Modified 20161005	
+	DriverScheduling.setBatchManager(batchManager);
+//--	
+	return DriverScheduling.getBatchManager();
 }
 
 public boolean initDB(String path, String db_name) throws bsControllerException, Exception{

@@ -205,15 +205,14 @@ public static void release(Object rs, Statement st, Connection conn){
 }
 
 public static void release(Statement st, Connection conn){
-	db_init init = new db_init();
-	init.init();
-
 	try{
 		if(st!=null) st.close();
 	}catch(Exception e){		
 	}
 	try{
-		if(conn!=null && !conn.isClosed()){		
+		if(conn!=null && !conn.isClosed()){	
+			db_init init = new db_init();
+			init.init();
 			if(!init.get_allwayone().equals("true")) conn.close();
 		}
 	}catch(Exception e){		

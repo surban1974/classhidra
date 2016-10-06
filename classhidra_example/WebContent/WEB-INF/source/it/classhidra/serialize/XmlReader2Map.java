@@ -56,7 +56,7 @@ public class XmlReader2Map implements XmlMapper {
 						cl_parameters = recursive(key, root, cl_parameters, "");
 					}
 					
-					table.put(JsonMapper.CONST_ID_CHECKFORDESERIALIZE, "true");
+					table.put(XmlMapper.CONST_ID_CHECKFORDESERIALIZE, "true");
 					table.putAll(cl_parameters);
 				}
 

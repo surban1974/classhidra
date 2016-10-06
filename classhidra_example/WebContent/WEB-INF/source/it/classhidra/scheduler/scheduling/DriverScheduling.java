@@ -5,6 +5,7 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_provider;
+import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
@@ -18,6 +19,7 @@ public class DriverScheduling{
 	private static IBatchScheduling external;
 	private static IBatchFactory factory;
 	private static batch_init configuration;
+	private static i_4Batch batchManager;
 	
 	
 	public static DriverScheduling init(){
@@ -77,18 +79,24 @@ public class DriverScheduling{
 	}
 	
 	public static DriverScheduling init(IBatchScheduling _external){		
-		return DriverScheduling.init(_external, null, null);
+		return DriverScheduling.init(_external, null, null, null);
 	}	
 	
 	public static DriverScheduling init(IBatchScheduling _external, IBatchFactory _factory){
-		return DriverScheduling.init(_external, _factory, null);
+		return DriverScheduling.init(_external, _factory, null, null);
 	}
 	
 	public static DriverScheduling init(IBatchScheduling _external, IBatchFactory _factory, batch_init _configuration){
+		return DriverScheduling.init(_external, _factory, null, null);
+	}	
+	
+	public static DriverScheduling init(IBatchScheduling _external, IBatchFactory _factory, batch_init _configuration, i_4Batch _batchManager){
 		if(_configuration!=null)
 			configuration = _configuration;
 		if(_factory!=null)
 			factory = _factory;
+		if(_batchManager!=null)
+			batchManager = _batchManager;
 		if(_external!=null){
 			try{
 				_external.stop();
@@ -201,6 +209,14 @@ public class DriverScheduling{
 
 	public static IBatchScheduling getExternal() {
 		return external;
+	}
+
+	public static i_4Batch getBatchManager() {
+		return batchManager;
+	}
+
+	public static void setBatchManager(i_4Batch batchManager) {
+		DriverScheduling.batchManager = batchManager;
 	}
 
 
