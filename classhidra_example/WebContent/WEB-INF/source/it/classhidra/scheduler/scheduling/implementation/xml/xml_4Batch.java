@@ -28,10 +28,11 @@ import it.classhidra.scheduler.util.util_batch;
 
 public class xml_4Batch implements i_4Batch  {
 	
-	private List<db_batch> xml_batch = new ArrayList<db_batch>();
-	private List<db_batch_log> xml_batch_log = new ArrayList<db_batch_log>();
-	private List<db_batch_property> xml_batch_property = new ArrayList<db_batch_property>();
-	private Map<String,db_batch_log> last_batch_log = new HashMap<String, db_batch_log>();
+	private static List<db_batch> xml_batch = new ArrayList<db_batch>();
+	private static List<db_batch_log> xml_batch_log = new ArrayList<db_batch_log>();
+	private static List<db_batch_property> xml_batch_property = new ArrayList<db_batch_property>();
+	private static Map<String,db_batch_log> last_batch_log = new HashMap<String, db_batch_log>();
+	private static final int max_log_size = 20;
 	
 	public xml_4Batch(){
 		super();
@@ -165,7 +166,7 @@ if(oper.equals(o_WRITE_LOG))
 		Vector elements = new Vector();
 		if(form!=null && form.get("operation")!=null && form.get("operation").equals("log")){
 			for(int i=xml_batch_log.size()-1;i>=0;i--){
-				if(elements.size()<21)
+				if(elements.size()<(max_log_size+1))
 					elements.add(xml_batch_log.get(i));
 				else
 					break;
@@ -450,6 +451,8 @@ if(oper.equals(o_WRITE_LOG))
 			return new Boolean(false);
 		
 		xml_batch_log.add(log);
+		if(xml_batch_log.size()>max_log_size)
+			xml_batch_log.remove(0);
 		db_batch_log h_log = last_batch_log.get(log.getCd_btch());
 		if(h_log==null || (h_log!=null && h_log.getTm_fin().getTime()<log.getTm_fin().getTime()))
 			last_batch_log.put(log.getCd_btch(),log);	

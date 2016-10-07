@@ -121,7 +121,7 @@ public class ProcessBatchEngine  {
 			}
 		}
 
-		List sql_updates=new ArrayList();
+
 		List batch_updated=new ArrayList();
 
 		for(int i=0;i<elements.size();i++){

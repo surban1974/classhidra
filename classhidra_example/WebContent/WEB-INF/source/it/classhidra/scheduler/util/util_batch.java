@@ -162,7 +162,7 @@ public class util_batch {
 				if(st.nextToken().equalsIgnoreCase(CONST_EVERY)){
 					if(st.hasMoreTokens()){
 						try{
-							addmillis = new Long(st.nextToken()).longValue()*1000;
+							addmillis = (long)(new Double(st.nextToken()).doubleValue()*1000);
 						}catch(Exception e){							
 						}
 						if(addmillis>-1){
@@ -193,17 +193,31 @@ public class util_batch {
 			String newTime=currentTime;
 			if(addmillis>-1){
 				try{
-					long deltaWithlastExec = 0;
+					
 					addmillis = addmillis-increased;
+/*					
+					long deltaWithlastExec = 0;
 					if(batch!=null && batch.getTm_last()!=null){
-						deltaWithlastExec = util_format.stringToData(newTime, "yyyy-MM-dd-HH-mm").getTime()-batch.getTm_last().getTime();
+						deltaWithlastExec = util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm").getTime()-batch.getTm_last().getTime();
 						if(deltaWithlastExec>0 && deltaWithlastExec<addmillis)
 							addmillis = addmillis - deltaWithlastExec;
 					}
-					newTime = util_format.dataToString(new Date(util_format.stringToData(newTime, "yyyy-MM-dd-HH-mm").getTime()+addmillis), "yyyy-MM-dd-HH-mm");
+*/					
+					newTime = util_format.dataToString(new Date(util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm").getTime()+addmillis), "yyyy-MM-dd-HH-mm");
 				}catch(Exception e){					
 				}
 			}
+			try{
+				if(	
+					batch!=null &&	
+					batch.getTm_next()!=null &&
+					batch.getState().shortValue()==i_batch.STATE_NORMAL &&					
+					(util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm").getTime()-increased+100)<batch.getTm_next().getTime() &&
+					batch.getTm_next().getTime()<(util_format.stringToData(newTime, "yyyy-MM-dd-HH-mm").getTime()-100)
+				) 
+					return util_format.dataToString(batch.getTm_next(),"yyyy-MM-dd-HH-mm");
+			}catch(Exception e){					
+			}	
 			return newTime;
 		}else{
 
