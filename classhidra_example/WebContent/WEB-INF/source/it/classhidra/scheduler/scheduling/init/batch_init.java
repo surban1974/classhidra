@@ -56,6 +56,9 @@ public class batch_init implements Serializable{
 	private String _stub="";
 	private String loadedFrom="";
 	
+	public static final String CONST_STUB_EMPTY = 					"empty";
+	public static final String CONST_STUB_EXTERNAL = 				"external";
+	
 
 public batch_init() {
 	super();
@@ -181,8 +184,10 @@ public String getLoadedFrom() {
 
 public i_4Batch get4BatchManager(){
 //Modified 20161005	
-	if(	DriverScheduling.getBatchManager()!=null &&
-		(_stub!=null && !_stub.equalsIgnoreCase("empty") && DriverScheduling.getBatchManager().getClass().getName().equalsIgnoreCase(_stub))
+	if(	DriverScheduling.getBatchManager()!=null && _stub!=null && !_stub.equalsIgnoreCase(CONST_STUB_EXTERNAL))
+		return DriverScheduling.getBatchManager();
+	else if( DriverScheduling.getBatchManager()!=null &&
+			(_stub!=null && !_stub.equalsIgnoreCase(CONST_STUB_EMPTY) && DriverScheduling.getBatchManager().getClass().getName().equalsIgnoreCase(_stub))
 	)
 		return DriverScheduling.getBatchManager();
 //--	

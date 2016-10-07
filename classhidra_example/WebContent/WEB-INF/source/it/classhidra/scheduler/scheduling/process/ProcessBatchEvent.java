@@ -113,8 +113,11 @@ public class ProcessBatchEvent  {
 			else
 				initialBatchState = batch.getInitialState();
 			
-			if(!recalc && batch.getTm_next()!=null){
+//			if(!recalc && batch.getTm_next()!=null){
+			if(recalc && batch.getTm_next()!=null){
+
 				Calendar nextTime = Calendar.getInstance();
+				nextTime.setTimeInMillis(batch.getTm_next().getTime());
 				nextTime.set(Calendar.SECOND,0);
 				nextTime.set(Calendar.MILLISECOND,0);
 				long deltaPrecision = nextTime.getTimeInMillis() - new Date().getTime();
@@ -124,7 +127,8 @@ public class ProcessBatchEvent  {
 			}
 			log.setTm_start(new Timestamp(new Date().getTime()));
 			
-
+			Date rec = log.getTm_start();
+//System.out.println(rec);
 			String output = "";
 			SortedMap h_common_area = new TreeMap();
 			try{
@@ -221,7 +225,7 @@ public class ProcessBatchEvent  {
 				if(batch.getState().shortValue()==i_batch.STATE_NORMAL && batch.getPeriod()!=null && !batch.getPeriod().equals("")){
 					try{
 						if(recalc){
-							Date rec = new java.util.Date();
+//							Date rec = new java.util.Date();
 							long currentTimeL=rec.getTime();
 							long recT = rec.getTime()+60*1000;
 							util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000);

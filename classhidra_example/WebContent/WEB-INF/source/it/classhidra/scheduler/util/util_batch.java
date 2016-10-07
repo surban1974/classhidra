@@ -22,7 +22,9 @@ import java.util.Vector;
 
 public class util_batch {
 
-	private final static String CONST_EVERY = "every";
+	public final static String CONST_EVERY = "every";
+	public final static int CONST_APPLICANT_DEF = 0;
+	public final static int CONST_APPLICANT_SCANNER = 1;
 	
 	public static HashMap readInput(String xml){
 		HashMap result = new HashMap();
@@ -142,6 +144,7 @@ public class util_batch {
 		try{
 			newTime = util_format.dataToString(util_format.stringToData(newTime, "yyyy-MM-dd-HH-mm"), "yyyy-MM-dd-HH-mm");
 		}catch(Exception e){
+			new bsException(e,iStub.log_ERROR);
 		}
 
 		return newTime;
@@ -149,10 +152,13 @@ public class util_batch {
 
 	
 	public static String calcolatePeriod(String currentTime, String periodTime){
-		return calcolatePeriod(currentTime, periodTime, 0, null);
+		return calcolatePeriod(currentTime, periodTime, 0, null, CONST_APPLICANT_DEF);
 	}
 	
 	public static String calcolatePeriod(String currentTime, String periodTime, long increased, db_batch batch){
+		return calcolatePeriod(currentTime, periodTime, 0, null, CONST_APPLICANT_DEF);
+	}
+	public static String calcolatePeriod(String currentTime, String periodTime, long increased, db_batch batch, int applicant){
 
 //currentTime = "2011-12-11-09-51";
 		if(periodTime.toLowerCase().indexOf(CONST_EVERY)==0){
@@ -190,25 +196,37 @@ public class util_batch {
 					}
 				}
 			}
+			try{
+				if(	applicant==CONST_APPLICANT_SCANNER &&
+					batch!=null &&
+					batch.getTm_next()!=null &&
+					batch.getState().shortValue()==i_batch.STATE_NORMAL &&	
+					util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm").getTime()<batch.getTm_next().getTime() &&
+					(util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm").getTime()+addmillis+100)>batch.getTm_next().getTime()
+				)
+					return util_format.dataToString(batch.getTm_next(),"yyyy-MM-dd-HH-mm");
+			}catch(Exception e){
+				new bsException("BatchEngine: batch->"+((batch!=null)?batch.getCd_btch():"null")+" ERROR->"+e.toString(),iStub.log_ERROR);
+			}
 			String newTime=currentTime;
 			if(addmillis>-1){
 				try{
 					
 					addmillis = addmillis-increased;
-/*					
+					
 					long deltaWithlastExec = 0;
 					if(batch!=null && batch.getTm_last()!=null){
 						deltaWithlastExec = util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm").getTime()-batch.getTm_last().getTime();
 						if(deltaWithlastExec>0 && deltaWithlastExec<addmillis)
 							addmillis = addmillis - deltaWithlastExec;
 					}
-*/					
 					newTime = util_format.dataToString(new Date(util_format.stringToData(currentTime, "yyyy-MM-dd-HH-mm").getTime()+addmillis), "yyyy-MM-dd-HH-mm");
-				}catch(Exception e){					
+				}catch(Exception e){	
+					new bsException("BatchEngine: batch->"+((batch!=null)?batch.getCd_btch():"null")+" ERROR->"+e.toString(),iStub.log_ERROR);
 				}
 			}
 			try{
-				if(	
+				if(	applicant==CONST_APPLICANT_SCANNER &&
 					batch!=null &&	
 					batch.getTm_next()!=null &&
 					batch.getState().shortValue()==i_batch.STATE_NORMAL &&					
@@ -216,7 +234,8 @@ public class util_batch {
 					batch.getTm_next().getTime()<(util_format.stringToData(newTime, "yyyy-MM-dd-HH-mm").getTime()-100)
 				) 
 					return util_format.dataToString(batch.getTm_next(),"yyyy-MM-dd-HH-mm");
-			}catch(Exception e){					
+			}catch(Exception e){	
+				new bsException("BatchEngine: batch->"+((batch!=null)?batch.getCd_btch():"null")+" ERROR->"+e.toString(),iStub.log_ERROR);
 			}	
 			return newTime;
 		}else{
@@ -272,9 +291,13 @@ public class util_batch {
 		return reCalcNextTime(el, currentTime, 0);
 	}
 
+	
 	public static boolean reCalcNextTime(db_batch el, String currentTime, long increased) throws Exception{
+		return reCalcNextTime(el, currentTime, increased, CONST_APPLICANT_DEF);
+	}
+	public static boolean reCalcNextTime(db_batch el, String currentTime, long increased, int applicant) throws Exception{
 
-		String newNextTime=calcolatePeriod(currentTime, el.getPeriod().trim(),increased, el);
+		String newNextTime=calcolatePeriod(currentTime, el.getPeriod().trim(),increased, el, applicant);
 		newNextTime = util_format.dataToString(util_format.stringToData(newNextTime, "yyyy-MM-dd-HH-mm"), "yyyy-MM-dd-HH-mm");
 		String oldNextTime=null;
 		if(el.getTm_next()!=null)

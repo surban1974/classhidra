@@ -130,7 +130,7 @@ public class ProcessBatchEngine  {
 			try{
 				Date rec = new java.util.Date();
 				long recT = rec.getTime()+60*1000;
-				if(util_batch.reCalcNextTime(el, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000)){
+				if(util_batch.reCalcNextTime(el, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000, util_batch.CONST_APPLICANT_SCANNER)){
 					updated=true;
 				}
 					
