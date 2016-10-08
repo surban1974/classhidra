@@ -179,6 +179,8 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 								<td  width="1%" align="right"><script>ObjectDraw("page1","button",17,"&nbsp;neoHort 5.2.5.3&nbsp;&nbsp;","location.replace('neohort?')","page_section_active_","","images/menu/","",true,24);</script></td>
 								<td width="1%">&nbsp;</td>
 								<td  width="1%" align="right"><script>ObjectDraw("page1","button",19,"&nbsp;<b>REST</b> examples&nbsp;&nbsp;","location.replace('rest?')","page_section_active_","","images/menu/","",true,24);</script></td>
+								<td width="1%">&nbsp;</td>
+								<td  width="1%" align="right"><script>ObjectDraw("page1","button",20,"&nbsp;<b>Scheduling</b> examples&nbsp;&nbsp;","location.replace('processBatch?')","page_section_active_","","images/menu/","",true,24);</script></td>
 
 								<td width="100%" align="center">&nbsp;</td>
 							

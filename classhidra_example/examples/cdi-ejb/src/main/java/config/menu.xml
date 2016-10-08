@@ -5,6 +5,7 @@
 			<element id="ProgectMenu_action2" action="sendMail" descr="Send message" mess_id="menu_1_2" img="images/menu/special/mail.gif"/>				
 			<element id="ProgectMenu_action3" action="builder" descr="Builder actions.xml (BETA)" mess_id="menu_1_3" img="images/menu/special/builder.gif"/>				
 			<element id="ProgectMenu_action4" action="amanager" descr="Users/Groups/Authentications" mess_id="menu_1_4" img="images/menu/special/builder.gif"/>				
+			<element id="ProgectMenu_action5" action="processBatch" descr="Scheduling" mess_id="menu_1_5" img="images/menu/special/batch.gif"/>				
 
 		</element>			
 	

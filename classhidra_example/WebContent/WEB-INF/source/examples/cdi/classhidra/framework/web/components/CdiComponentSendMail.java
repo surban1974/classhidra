@@ -4,7 +4,7 @@ package examples.cdi.classhidra.framework.web.components;
 
 import java.io.Serializable;
 
-import javax.inject.Inject;
+
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;

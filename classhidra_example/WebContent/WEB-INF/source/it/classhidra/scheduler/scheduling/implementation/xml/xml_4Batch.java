@@ -38,19 +38,37 @@ public class xml_4Batch implements i_4Batch  {
 		super();
 		try{
 			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(new batch_init().get_db_prefix()+"batch.xml"));
-			if(obj instanceof List<?>)
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+new batch_init().get_db_prefix()+"batch.xml"));
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("batch.xml"));
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/batch.xml"));			
+			if(obj!=null && obj instanceof List<?>)
 				xml_batch = (List<db_batch>)obj;
 		}catch(Exception e){
 		}
 		try{
 			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(new batch_init().get_db_prefix()+"batch_property.xml"));
-			if(obj instanceof List<?>)
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+new batch_init().get_db_prefix()+"batch_property.xml"));
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("batch_property.xml"));
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/batch_property.xml"));			
+			if(obj!=null && obj instanceof List<?>)
 				xml_batch_property = (List<db_batch_property>)obj;
 		}catch(Exception e){
 		}	
 		try{
 			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(new batch_init().get_db_prefix()+"batch_log.xml"));
-			if(obj instanceof List<?>)
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+new batch_init().get_db_prefix()+"batch_log.xml"));
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("batch_log.xml"));
+			if(obj==null)
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/batch_log.xml"));			
+			if(obj!=null && obj instanceof List<?>)
 				xml_batch_log = (List<db_batch_log>)obj;
 			for(db_batch_log log:xml_batch_log){
 				db_batch_log h_log = last_batch_log.get(log.getCd_btch());

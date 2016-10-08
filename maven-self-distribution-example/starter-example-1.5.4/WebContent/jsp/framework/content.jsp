@@ -103,6 +103,27 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						</li>
 </bs:equal>	
 
+
+<bs:notEqual bean="actions_forbidden" name="processBatch">	
+						<li><a href="javascript:void(goAction('processBatch'))"><img src="images/decor/96_batch.gif"  /></a><br>
+						<nobr>
+						<table  cellspacing="0" cellpadding="0" border="0" onclick="goAction('processBatch')">
+							<tr>							
+								<td  width="0%"  height="20"><img src="images/corners/vb_left.gif" border="0"/></td>
+								<td style="background-image:url('images/corners/vb_center.gif')" align="center" width="0%" ><nobr><span class="title_section"><b>Scheduler</b></span></nobr></td>
+								<td  width="0%"  height="20"><img src="images/corners/vb_right.gif" border="0"/></td>
+								
+							</tr>
+						</table>				
+						</nobr>
+						</li>
+</bs:notEqual>			
+
+<bs:equal bean="actions_forbidden" name="processBatch">	
+						<li><img src="images/decor/96_batch.gif" style="filter: alpha(opacity=30);opacity: 0.3; cursor: auto" />
+						</li>
+</bs:equal>
+
 <bs:notEqual bean="actions_forbidden" name="builder">	
 						<li><a href="javascript:void(goAction('builder?middleAction=reload'))"><img src="images/decor/96_builder.gif"  /></a><br>
 						<nobr>
@@ -182,6 +203,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 						<li><img src="images/decor/96_resources.gif" style="filter: alpha(opacity=30);opacity: 0.3; cursor: auto" />
 						</li>
 </bs:equal>
+
 				</ul>			
 
 			</div>	

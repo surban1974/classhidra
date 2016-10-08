@@ -50,6 +50,11 @@
 	<message cd_mess="title_fw_amanager" cd_lang="EN" desc_mess="Users/Groups/Authentications"/>
 	<message cd_mess="title_fw_amanager" cd_lang="DC" desc_mess="???"/>
 	<message cd_mess="title_fw_amanager" cd_lang="FR" desc_mess="???"/>
+	
+	<message cd_mess="title_fw_Batch" cd_lang="IT" desc_mess="Schedulatore"/>
+	<message cd_mess="title_fw_Batch" cd_lang="EN" desc_mess="Scheduling"/>
+	<message cd_mess="title_fw_Batch" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="title_fw_Batch" cd_lang="FR" desc_mess="???"/>	
 
 
 </messages>

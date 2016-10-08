@@ -30,6 +30,11 @@
 	<message cd_mess="menu_1_4" cd_lang="DC" desc_mess="???"/>
 	<message cd_mess="menu_1_4" cd_lang="FR" desc_mess="???"/>
 	
+	<message cd_mess="menu_1_5" cd_lang="IT" desc_mess="Schedulatore"/>
+	<message cd_mess="menu_1_5" cd_lang="EN" desc_mess="Scheduler"/>
+	<message cd_mess="menu_1_5" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="menu_1_5" cd_lang="FR" desc_mess="???"/>	
+	
 
 
 	<message cd_mess="menu_2" cd_lang="IT" desc_mess="Accessori"/>

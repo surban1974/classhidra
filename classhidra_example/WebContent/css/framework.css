@@ -91,6 +91,18 @@ TD.labelLeft{
 	font-size: 14px;	
 }
 
+TD.labelCenter{
+
+	vertical-align: middle;
+	text-align: ;
+	display: inline-block;
+	height: 24px;
+	color: #666667;
+	margin: 0;
+	padding-top: 3px;
+	font-size: 14px;	
+}
+
 TD.labelContent{
 	
 	vertical-align: middle;
@@ -107,7 +119,7 @@ TD.labelContent{
 
 TD.colTab{
 	padding:2px;
-	background-color:#7ECA70;
+	background-color:#666667;
 	vertical-align: middle;
 	text-align: right;
 	color: white;
@@ -118,7 +130,7 @@ TD.colTab{
 
 TD.colTab_left{
 	padding:2px;
-	background-color:#7ECA70;
+	background-color:#666667;
 	vertical-align: middle;
 	text-align: left;
 	color: white;
@@ -127,7 +139,7 @@ TD.colTab_left{
 }
 TD.colTab_center{
 	padding:2px;
-	background-color:#7ECA70;
+	background-color:#666667;
 	vertical-align: middle;
 	text-align: center;
 	color: white;
@@ -393,6 +405,24 @@ TD.buttonAsJsSmall{
 	
 }
 TD.buttonAsJsSmall:hover{
+	background-image: url(../images/menu/button_center_o.gif);
+}
+
+TD.buttonAsJs{
+	background-image: url(../images/menu/button_center_n.gif);
+	cursor:pointer;
+	width:50px;
+	height: 30px;
+	border: solid 1px silver;
+	vertical-align: middle;
+	text-align: center;
+	color: black;	
+	font-family: monospace;
+	font-style: normal;	
+	border-color: silver;
+	border-radius: 4px;
+}
+TD.buttonAsJs:hover{
 	background-image: url(../images/menu/button_center_o.gif);
 }
 
