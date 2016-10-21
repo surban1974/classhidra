@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 
 import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.core.controller.action;
@@ -73,6 +74,21 @@ public class SpringComponentLogin extends action implements i_action, Serializab
 	private String module_integration;
 
 	private Vector groups;
+	private int panelstatus = 0;
+	@ActionCall(name="panelmax")
+	public void panelmax(){
+		panelstatus=1;
+	}
+	@ActionCall(name="panelmin")
+	public void panelmin(){
+		panelstatus=0;
+	}
+	public int getPanelstatus() {
+		return panelstatus;
+	}
+	public void setPanelstatus(int panelstatus) {
+		this.panelstatus = panelstatus;
+	}
 	
 
 	@Autowired

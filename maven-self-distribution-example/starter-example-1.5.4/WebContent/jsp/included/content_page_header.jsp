@@ -88,11 +88,11 @@ div#footer_fixedbox{
 </bs:equal>
 			<td id="page_img_minimize" align="right" valign="middle" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');display:none;">
 				<img src="images/corners/minimize.gif" border="0" 
-				onclick="showAsPanelNormal('page');try{afterShowAsPanelNormal('page');}catch(e){};try{document.getElementById('top_menu').style.display='block';}catch(e){}">
+				onclick="showAsPanelNormal('page');ajax_makeRequest('login-panelmin','','','',false);try{afterShowAsPanelNormal('page');}catch(e){};try{document.getElementById('top_menu').style.display='block';}catch(e){}">
 			</td>
 			<td id="page_img_maximize" align="right" valign="middle" width="1%" style="cursor: pointer; background-image:url('images/corners/panel_t.gif');">
 				<img src="images/corners/maximize.gif" border="0" 
-				onclick="showAsPanelMax('page');try{afterShowAsPanelMax('page');}catch(e){};try{document.getElementById('top_menu').style.display='none';}catch(e){}">
+				onclick="showAsPanelMax('page');ajax_makeRequest('login-panelmax','','','',false);try{afterShowAsPanelMax('page');}catch(e){};try{document.getElementById('top_menu').style.display='none';}catch(e){}">
 			</td>
 
 						<td background="images/menu/page_center_n.gif"><script>ObjectDraw("page4","button",45,"","goAction('login?middleAction=reload')","page_section","close.gif","images/menu/","","false", 24);</script></td>
@@ -126,13 +126,19 @@ div#footer_fixedbox{
 
 
 <script>
-ajax_makeRequest("menuCreator?menu_id=","menu_operation_0","JSAfter_showAsPopup","",false);
-//window.setTimeout("ajustPage1()", 500);
+//	ajax_makeRequest("menuCreator?menu_id=","menu_operation_0","JSAfter_showAsPopup","",false);
 </script>
 
+<bs:equal bean="login" name="panelstatus" value="1">
+	<script>
+		showAsPanelMax('page');
+		document.getElementById('top_menu').style.display='none';
+	</script>
+</bs:equal>
+
 <bs:equal bean="REQUEST.PARAMETER" name="refreshMenu" value="true">
-<script>
-menu();
-</script>
+	<script>
+//		menu();
+	</script>
 </bs:equal>
 

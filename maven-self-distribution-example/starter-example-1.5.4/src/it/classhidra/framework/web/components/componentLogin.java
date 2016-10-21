@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.ActionMapping;
 import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Redirect;
@@ -84,8 +85,23 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 	private String module_integration;
 
 	private Vector groups;
-
-
+	
+	private int panelstatus = 0;
+	@ActionCall(name="panelmax")
+	public void panelmax(){
+		panelstatus=1;
+	}
+	@ActionCall(name="panelmin")
+	public void panelmin(){
+		panelstatus=0;
+	}
+	public int getPanelstatus() {
+		return panelstatus;
+	}
+	public void setPanelstatus(int panelstatus) {
+		this.panelstatus = panelstatus;
+	}
+	
 	public void reimposta(){
 		group="";
 		target="";
@@ -419,5 +435,6 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 	public void setModule_integration(String moduleIntegration) {
 		module_integration = moduleIntegration;
 	}
+
 
 }

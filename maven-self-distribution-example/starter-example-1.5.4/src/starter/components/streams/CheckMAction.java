@@ -23,13 +23,13 @@ public class CheckMAction extends def_control_middleaction implements i_stream{
 
 
 	public redirects streamservice_enter(HttpServletRequest request,HttpServletResponse response) throws bsControllerException {
-//		return super.streamservice_enter(request, response);
-		return null;
+		return super.streamservice_enter(request, response);
+//		return null;
 	}
 
 	public redirects streamservice_exit(HttpServletRequest request, HttpServletResponse response) throws bsControllerException {
-//		return super.streamservice_enter(request, response);
-		return null;
+		return super.streamservice_enter(request, response);
+//		return null;
 	}
 
 	

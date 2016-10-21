@@ -10,7 +10,7 @@ path - root of java folder (same place where is classhidra_app.properties)
           <item name="Cd_p_btch" type="java.lang.String"></item>
           <item name="Cd_btch" type="java.lang.String">Check</item>
           <item name="Tm_next" type="java.sql.Timestamp">2016-10-05-22.55.00.000000</item>
-          <item name="Dsc_btch" type="java.lang.String">GIORNALIERO Check</item>
+          <item name="Dsc_btch" type="java.lang.String">2 hours Check</item>
           <item name="Tm_last" type="java.sql.Timestamp">2016-10-05-20.55.00.000000</item>
           <item name="Ord" type="java.lang.Integer">0.000000</item>
           <item name="Cls_btch" type="java.lang.String">application.batch.Check</item>

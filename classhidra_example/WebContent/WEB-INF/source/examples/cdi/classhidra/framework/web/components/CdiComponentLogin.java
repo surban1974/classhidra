@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import it.classhidra.annotation.elements.Action;
+import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.core.controller.action;
@@ -69,6 +70,21 @@ public class CdiComponentLogin extends action implements i_action, Serializable{
 	private String module_integration;
 
 	private Vector groups;
+	private int panelstatus = 0;
+	@ActionCall(name="panelmax")
+	public void panelmax(){
+		panelstatus=1;
+	}
+	@ActionCall(name="panelmin")
+	public void panelmin(){
+		panelstatus=0;
+	}
+	public int getPanelstatus() {
+		return panelstatus;
+	}
+	public void setPanelstatus(int panelstatus) {
+		this.panelstatus = panelstatus;
+	}
 	
 
 

@@ -35,9 +35,9 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 		<bs:input type="hidden" name="lang"/>
 	
 	
-<table border="0" width="100%" height="430" >
+<table border="0" width="100%" height="90%" >
 <tr>
-<td align="center" style="border-bottom-style: solid 1px;" valign="middle">
+<td align="center" style="border-bottom-style: solid 1px; height: 49%" valign="middle">
 <br></br>	
 	
 
@@ -47,7 +47,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 	
 <jsp:include page="/jsp/included/panel_top.jsp"/>	
 			
-			<table  >
+			<table >
 	
 				<tr>
 					<td 
@@ -130,7 +130,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 
 </tr>
 <tr>
-	<td align="center">
+	<td align="center" style="height: 49%">
 
 
 <jsp:include page="/jsp/included/panel_top.jsp"/>	
@@ -163,7 +163,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 	</td>
 </tr>
 <tr>
-	<td style=" height: 30px" valign="bottom">
+	<td style=" height: 2%" valign="bottom">
 
 						<table cellpadding="0" cellspacing="0" width="100%">
 							<tr>

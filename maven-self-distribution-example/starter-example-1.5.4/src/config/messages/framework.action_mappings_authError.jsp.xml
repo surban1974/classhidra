@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<messages view="action_mappings_authError.jsp"> 
+	<message cd_mess="ajax_carrello_60" cd_lang="IT" desc_mess="Authentication Controller ERROR."/>
+	<message cd_mess="ajax_carrello_60" cd_lang="EN" desc_mess="Authentication Controller ERROR."/>
+	<message cd_mess="ajax_carrello_60" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="ajax_carrello_60" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="ajax_carrello_61" cd_lang="IT" desc_mess="Access for requested resource is forbidden or the credential is not sufficient."/>
+	<message cd_mess="ajax_carrello_61" cd_lang="EN" desc_mess="Access for requested resource is forbidden or the credential is not sufficient."/>
+	<message cd_mess="ajax_carrello_61" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="ajax_carrello_61" cd_lang="FR" desc_mess="???"/>
+
+	<message cd_mess="ajax_carrello_62" cd_lang="IT" desc_mess="ReLogon"/>
+	<message cd_mess="ajax_carrello_62" cd_lang="EN" desc_mess="ReLogon"/>
+	<message cd_mess="ajax_carrello_62" cd_lang="DC" desc_mess="???"/>
+	<message cd_mess="ajax_carrello_62" cd_lang="FR" desc_mess="???"/>
+
+</messages>

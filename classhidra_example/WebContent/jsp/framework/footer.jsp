@@ -122,14 +122,33 @@ try{
 }
 %>
 
-<div id="footer_fixedbox">
-<jsp:include page="minimizer?middleAction=view"/>
-</div>
+<div id="footer_fixedbox"></div>
 
 <script>
-ajustPanel();
+//ajax_makeRequest("minimizer?middleAction=view","footer_fixedbox","","",false);
+//ajustPanel();
 
-window.onresize = function() { ajustPanel();}
+window.onresize = function() { 
+	
+	ajustPanel();
+	try{
+		if(document.getElementById("page_img_minimize") && document.getElementById("page_img_minimize").style.display=="block"){
+			resizeAsPanelMax('page');
+		}
+	}catch(e){		
+	}
+	
+}
+
+document.onreadystatechange = function () {
+	ajax_makeRequest("minimizer?middleAction=view","footer_fixedbox","","",false);
+	ajustPanel();
+	ajax_makeRequest("menuCreator?menu_id=","menu_operation_0","JSAfter_showAsPopup","",false);
+	<bs:equal bean="REQUEST.PARAMETER" name="refreshMenu" value="true">
+		menu();
+	</bs:equal>		
+
+}
 
 function ajustPage1(){
 	try{
@@ -151,8 +170,14 @@ function ajustPage1(){
 	}	
 }
 ajustPage1();
-
+/*
+try{
+	document.getElementById('content_Panel_canvas').style.top = '51px';
+}catch(e){
+}
+*/
 </script>
-
+	
+	
 
 
