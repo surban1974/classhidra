@@ -61,6 +61,14 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 
 	}
 	protected String createTagBody() {
+		Object[] arg = null;
+		if(arguments!=null && arguments.size()>0){
+			arg = new Object[arguments.size()];
+			for(int i=0;i<arguments.size();i++)
+				arg[i]=arguments.get(i);
+		}
+		if(arguments!=null)
+			arguments.clear();
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action formAction=null;
 		i_bean formBean=null;
@@ -132,7 +140,7 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 					}
 					else{
 						try{
-							writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);
+							writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,arg);
 							if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
 						}catch(Exception e){}
 					}

@@ -26,6 +26,7 @@ package it.classhidra.core.controller.tags;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,10 +98,15 @@ public class tagOptions extends TagSupport implements DynamicAttributes {
 	protected String ignoreCase =null;
 	
 	protected Map tagAttributes = new HashMap();
-
+	protected List arguments=null;
 
 
 	public int doStartTag() throws JspException {
+		arguments = new ArrayList();
+		return EVAL_BODY_INCLUDE;
+	}
+
+	public int doEndTag() throws JspException {
 
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action formAction=null;
@@ -118,7 +124,7 @@ public class tagOptions extends TagSupport implements DynamicAttributes {
 				formBean=formBean.asBean();
 		}
 
-		List				iterator = null;
+		List iterator = null;
 
 		StringBuffer results = new StringBuffer();
 		try{
@@ -157,7 +163,7 @@ public class tagOptions extends TagSupport implements DynamicAttributes {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
-		return EVAL_BODY_INCLUDE;
+		return super.doEndTag();
 	}
 
 	public void release() {
@@ -208,11 +214,20 @@ public class tagOptions extends TagSupport implements DynamicAttributes {
 		additionalAttr= null;
 		
 		tagAttributes = new HashMap();
+		arguments=null;
 
 	}
 
 	protected String createTagBody(Object current) {
-
+		Object[] arg = null;
+		if(arguments!=null && arguments.size()>0){
+			arg = new Object[arguments.size()];
+			for(int i=0;i<arguments.size();i++)
+				arg[i]=arguments.get(i);
+		}
+		if(arguments!=null)
+			arguments.clear();
+		
 		StringBuffer results = new StringBuffer("<option ");
 
 		Object currentValue=null;
@@ -221,13 +236,13 @@ public class tagOptions extends TagSupport implements DynamicAttributes {
 			if(value==null) currentValue = current;
 			else{
 				try{
-					currentValue = util_reflect.prepareWriteValueForTag(current,"get",value,null);
+					currentValue = util_reflect.prepareWriteValueForTag(current,"get",value,arg);
 				}catch(Exception e){}
 			}
 			if(label==null) currentLabel = current;
 			else{
 				try{
-					currentLabel = util_reflect.prepareWriteValueForTag(current,"get",label,null);
+					currentLabel = util_reflect.prepareWriteValueForTag(current,"get",label,arg);
 				}catch(Exception e){}
 			}
 		}
@@ -745,6 +760,14 @@ public class tagOptions extends TagSupport implements DynamicAttributes {
 
 	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
 		tagAttributes.put(localName, value);
+	}
+
+	public List getArguments() {
+		return arguments;
+	}
+
+	public void setArguments(List arguments) {
+		this.arguments = arguments;
 	}
 
 }

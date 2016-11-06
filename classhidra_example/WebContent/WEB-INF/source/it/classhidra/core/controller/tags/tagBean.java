@@ -25,6 +25,7 @@
 package it.classhidra.core.controller.tags;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -52,9 +53,23 @@ public class tagBean extends TagSupport{
 	protected String method_prefix=null;
 	
 	protected String prefixName=null;
+	protected List arguments=null;
 
 	public int doStartTag() throws JspException {
+		arguments = new ArrayList();
+		return EVAL_BODY_INCLUDE;
+	}
+	
+	public int doEndTag() throws JspException {
 		try{
+			Object[] arg = null;
+			if(arguments!=null && arguments.size()>0){
+				arg = new Object[arguments.size()];
+				for(int i=0;i<arguments.size();i++)
+					arg[i]=arguments.get(i);
+			}
+			if(arguments!=null)
+				arguments.clear();
 			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 			i_action formAction=null;
 			i_bean formBean=null;
@@ -125,12 +140,14 @@ public class tagBean extends TagSupport{
 					}
 				}
 				
-				return EVAL_BODY_INCLUDE;
+				return super.doEndTag();
 			}
 
 			Object obj = null;
 			if(property!=null){
-				obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,null);
+				obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,arg);
+				if(obj==null && arg!=null)
+					obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,null);
 				if(prefixName!=null)
 					prefixName+=property;
 				else prefixName=property;
@@ -179,7 +196,7 @@ public class tagBean extends TagSupport{
 			prefixName=null;
 		}catch(Exception e){
 		}
-		return EVAL_BODY_INCLUDE;
+		return super.doEndTag();
 
 
 	}
@@ -192,6 +209,7 @@ public class tagBean extends TagSupport{
 		method_prefix=null;
 		
 		prefixName=null;
+		arguments=null;
 	}
 	public String getName() {
 		return name;
@@ -232,6 +250,14 @@ public class tagBean extends TagSupport{
 
 	public void setPrefixName(String prefixName) {
 		this.prefixName = prefixName;
+	}
+
+	public List getArguments() {
+		return arguments;
+	}
+
+	public void setArguments(List arguments) {
+		this.arguments = arguments;
 	}
 
 }

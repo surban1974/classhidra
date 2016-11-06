@@ -25,7 +25,10 @@
 package it.classhidra.core.controller.tags;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -47,9 +50,24 @@ public class tagParameter extends TagSupport{
 	protected String property=null;
 	protected String method_prefix=null;
 	protected String value=null;
+	protected List arguments=null;
 
+	
 	public int doStartTag() throws JspException {
+		arguments = new ArrayList();
+		return EVAL_BODY_INCLUDE;
+	}
+	
+	public int doEndTag() throws JspException {
 		try{
+			Object[] arg = null;
+			if(arguments!=null && arguments.size()>0){
+				arg = new Object[arguments.size()];
+				for(int i=0;i<arguments.size();i++)
+					arg[i]=arguments.get(i);
+			}
+			if(arguments!=null)
+				arguments.clear();
 			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 			i_action formAction=null;
 			i_bean formBean=null;
@@ -92,34 +110,41 @@ public class tagParameter extends TagSupport{
 					
 				}
 				
-				if(anotherBean==null) return EVAL_BODY_INCLUDE;
+				if(anotherBean==null) return super.doEndTag();
 				
 				Object obj = null;
 				if(property!=null){
-					obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,null);
+					obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,arg);
 				}else obj = anotherBean;	
 				if(obj!=null) value=obj.toString();
 			}
 			try{
 				Object obj = getParent();
 				if(obj!=null){
-					HashMap parameters = (HashMap)util_reflect.prepareWriteValueForTag(obj,"get","parameters",null);
+					Map parameters = (Map)util_reflect.prepareWriteValueForTag(obj,"get","parameters",null);
 					if(value!=null) parameters.put(name,value);
 					else  parameters.put(name,"");
+				}
+			}catch(Exception e){
+			}
+			try{
+				Object obj = getParent();
+				if(obj!=null){
+					List arguments = (List)util_reflect.prepareWriteValueForTag(obj,"get","arguments",null);
+					if(value!=null) arguments.add(value);
+					else  arguments.add(null);
 				}
 			}catch(Exception e){
 			}
 
 		}catch(Exception e){		
 		}		
-		return EVAL_BODY_INCLUDE; 
+		value=null;
+		return super.doEndTag(); 
 		
 
 	}
-	public int doEndTag() throws JspException {
-		value=null;
-		return super.doEndTag();
-	}
+
 	public void release() {
 		super.release();
 		name=null;
@@ -127,6 +152,7 @@ public class tagParameter extends TagSupport{
 		property=null;
 		method_prefix=null;
 		value=null;
+		arguments=null;
 	}
 	public String getName() {
 		return name;
@@ -161,6 +187,12 @@ public class tagParameter extends TagSupport{
 
 	public void setMethod_prefix(String method_prefix) {
 		this.method_prefix = method_prefix;
+	}
+	public List getArguments() {
+		return arguments;
+	}
+	public void setArguments(List arguments) {
+		this.arguments = arguments;
 	}
 
 

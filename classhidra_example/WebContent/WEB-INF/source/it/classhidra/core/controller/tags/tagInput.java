@@ -26,7 +26,9 @@ package it.classhidra.core.controller.tags;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -150,9 +152,14 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 	protected String asyncUpdateJsFunction=null;
 	
 	protected Map tagAttributes = new HashMap();
-
+	protected List arguments=null;
 
 	public int doStartTag() throws JspException {
+		arguments = new ArrayList();
+		return EVAL_BODY_INCLUDE;
+	}
+	
+	public int doEndTag() throws JspException {
 		StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
@@ -162,7 +169,7 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 			throw new JspException(e.toString());
 		}
 		value=null;
-		return EVAL_BODY_INCLUDE;
+		return super.doEndTag();
 	}
 
 	public void release() {
@@ -263,9 +270,18 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 		asyncUpdateJsFunction=null;
 		
 		tagAttributes = new HashMap();
+		arguments=null;
 	}
 
 	protected String createTagBody() {
+		Object[] arg = null;
+		if(arguments!=null && arguments.size()>0){
+			arg = new Object[arguments.size()];
+			for(int i=0;i<arguments.size();i++)
+				arg[i]=arguments.get(i);
+		}
+		if(arguments!=null)
+			arguments.clear();
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action formAction=null;
 		i_bean formBean=null;
@@ -340,7 +356,7 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 					}
 				}else{
 					try{
-						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);
+						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,arg);
 						if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
 					}catch(Exception e){}
 				}
@@ -1513,6 +1529,14 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 
 	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
 		tagAttributes.put(localName, value);
+	}
+
+	public List getArguments() {
+		return arguments;
+	}
+
+	public void setArguments(List arguments) {
+		this.arguments = arguments;
 	}	
 
 }

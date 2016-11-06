@@ -59,7 +59,7 @@ public class tagMessage extends TagSupport implements DynamicAttributes {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
-		return EVAL_BODY_INCLUDE; 
+		return super.doEndTag(); 
 	}
 
 	public int doStartTag() throws JspException {

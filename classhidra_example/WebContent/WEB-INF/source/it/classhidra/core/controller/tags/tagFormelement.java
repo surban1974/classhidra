@@ -26,7 +26,9 @@ package it.classhidra.core.controller.tags;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,11 +64,15 @@ public class tagFormelement extends TagSupport implements DynamicAttributes {
 	protected String additionalAttr=null;
 	
 	protected Map tagAttributes = new HashMap();
-
-
+	protected List arguments=null;
 
 
 	public int doStartTag() throws JspException {
+		arguments = new ArrayList();
+		return EVAL_BODY_INCLUDE;
+	}
+
+	public int doEndTag() throws JspException {
 		StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
@@ -75,7 +81,7 @@ public class tagFormelement extends TagSupport implements DynamicAttributes {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
-		return EVAL_BODY_INCLUDE;
+		return super.doEndTag();
 	}
 
 	public void release() {
@@ -93,94 +99,107 @@ public class tagFormelement extends TagSupport implements DynamicAttributes {
 		normalHTML=null;
 		additionalAttr=null;
 		tagAttributes = new HashMap();
+		arguments=null;
 	}
   
 	protected String createTagBody() {
-		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-		i_action formAction=null;
-		i_bean formBean=null;
-		if(bean!=null){
-			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
-			if(pool!=null) formAction = (i_action)pool.get(bean);
-		}
-		if(formAction!=null) bean = null;
-		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
-		if(formAction==null) formAction = new action(); 
-		if(bean==null){
-			formBean = formAction.get_bean();
-			if(formBean!=null)
-				formBean=formBean.asBean();
-		}
-
-		
-		
-		if(method_prefix==null) method_prefix="get";
-		
-
-		Object writeValue=null;
-		Object anotherBean=null;
-		if(bean==null){
-			if(formBean!=null){
-				writeValue = util_reflect.prepareWriteValueForTag(formBean,method_prefix,name,null);
+		try{
+			Object[] arg = null;
+			if(arguments!=null && arguments.size()>0){
+				arg = new Object[arguments.size()];
+				for(int i=0;i<arguments.size();i++)
+					arg[i]=arguments.get(i);
 			}
-		}else{
-			if(name!=null){
-				if(bean.equals(bsConstants.CONST_TAG_REQUESTPARAMETER)) anotherBean = request.getParameter(name);
-				if(bean.equals(bsConstants.CONST_TAG_SYSTEMPROPERTY)) anotherBean = System.getProperty(name);
+			if(arguments!=null)
+				arguments.clear();
+			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+			i_action formAction=null;
+			i_bean formBean=null;
+			if(bean!=null){
+				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+				if(pool!=null) formAction = (i_action)pool.get(bean);
 			}
-			if(anotherBean==null) anotherBean = request.getAttribute(bean);
-			if(anotherBean==null) anotherBean = request.getSession().getAttribute(bean);
-			if(anotherBean==null) anotherBean = request.getSession().getServletContext().getAttribute(bean);
-			if(name!=null){
-				if(anotherBean==null) anotherBean = request.getAttribute(name);
-				if(anotherBean==null) anotherBean = request.getSession().getAttribute(name);
-				if(anotherBean==null) anotherBean = request.getSession().getServletContext().getAttribute(name);
+			if(formAction!=null) bean = null;
+			else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+			if(formAction==null) formAction = new action(); 
+			if(bean==null){
+				formBean = formAction.get_bean();
+				if(formBean!=null)
+					formBean=formBean.asBean();
 			}
-
-			if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
-			try{
-				if(anotherBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(bean).get_content();
-			}catch(Exception e){
-			}
-			if(anotherBean==null) anotherBean = bsController.getFromOnlySession(bean, request);
-			if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
+	
 			
-			if(anotherBean==null){
+			
+			if(method_prefix==null) method_prefix="get";
+			
+	
+			Object writeValue=null;
+			Object anotherBean=null;
+			if(bean==null){
+				if(formBean!=null){
+					writeValue = util_reflect.prepareWriteValueForTag(formBean,method_prefix,name,arg);
+				}
+			}else{
+				if(name!=null){
+					if(bean.equals(bsConstants.CONST_TAG_REQUESTPARAMETER)) anotherBean = request.getParameter(name);
+					if(bean.equals(bsConstants.CONST_TAG_SYSTEMPROPERTY)) anotherBean = System.getProperty(name);
+				}
+				if(anotherBean==null) anotherBean = request.getAttribute(bean);
+				if(anotherBean==null) anotherBean = request.getSession().getAttribute(bean);
+				if(anotherBean==null) anotherBean = request.getSession().getServletContext().getAttribute(bean);
+				if(name!=null){
+					if(anotherBean==null) anotherBean = request.getAttribute(name);
+					if(anotherBean==null) anotherBean = request.getSession().getAttribute(name);
+					if(anotherBean==null) anotherBean = request.getSession().getServletContext().getAttribute(name);
+				}
+	
+				if(anotherBean==null) anotherBean = util_tag.getBeanAsBSTag(bean,this);
 				try{
-					Object obj = getParent();
-					String bean_name = (String)util_reflect.getValue(anotherBean,method_prefix+"bean",null);
-					if(bean.equals(bean_name)) anotherBean = obj;
-				}catch(Exception e){					
+					if(anotherBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(bean).get_content();
+				}catch(Exception e){
 				}
-			}
-			
-			if(anotherBean!=null){
-				if(name==null){
-					writeValue = anotherBean;
-				}
-				else{
+				if(anotherBean==null) anotherBean = bsController.getFromOnlySession(bean, request);
+				if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
+				
+				if(anotherBean==null){
 					try{
-						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);					 
-					}catch(Exception e){
+						Object obj = getParent();
+						String bean_name = (String)util_reflect.getValue(anotherBean,method_prefix+"bean",arg);
+						if(bean.equals(bean_name)) anotherBean = obj;
+					}catch(Exception e){					
 					}
-				}	
-			}		 		
-		}		
-		
-		String prefixName=null;
-		
-		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null && ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean)!=null){
-			prefixName = ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean).toString();
-		}
-		if(prefixName==null)
-			prefixName=name;
-		else prefixName+="."+name;
-		
-		
-		String html = drawTagBody(writeValue, prefixName);
+				}
+				
+				if(anotherBean!=null){
+					if(name==null){
+						writeValue = anotherBean;
+					}
+					else{
+						try{
+							writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,arg);					 
+						}catch(Exception e){
+						}
+					}	
+				}		 		
+			}	
+			String prefixName=null;
+			
+			if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null && ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean)!=null){
+				prefixName = ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean).toString();
+			}
+			if(prefixName==null)
+				prefixName=name;
+			else prefixName+="."+name;
 
-		prefixName=null;
-		return html;
+		
+			String html = drawTagBody(writeValue, prefixName);
+	
+			prefixName=null;
+			return html;
+		}catch(Exception e){
+		}			
+
+		return "";
 	}	
 	
 	protected String drawTagBody(Object writeValue, String prefixName){
@@ -325,6 +344,14 @@ public class tagFormelement extends TagSupport implements DynamicAttributes {
 
 	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
 		tagAttributes.put(localName, value);
+	}
+
+	public List getArguments() {
+		return arguments;
+	}
+
+	public void setArguments(List arguments) {
+		this.arguments = arguments;
 	}
 
 
