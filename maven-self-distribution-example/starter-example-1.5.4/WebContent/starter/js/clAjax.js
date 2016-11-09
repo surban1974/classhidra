@@ -1,7 +1,7 @@
 /**
 * Name: clAjax.js
-* Version: 1.0.4 
-* Creation date: (08/06/2016)
+* Version: 1.0.5 
+* Creation date: (08/11/2016)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -952,7 +952,7 @@
 				    		http_request.setRequestHeader('Content-type', 'application/json');
 				    	else if(this.asXml)
 				    		http_request.setRequestHeader('Content-type', 'application/xml');
-				    	else	
+				    	else if(!this.asMpart)	
 				    		http_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 				    }
 				    
@@ -986,9 +986,19 @@
 		
 			},
 
-	
+
+			prepareUrl : function(frm,_url) {
+				this.url = this.getParametersAsUrl(frm,_url);
+				return this;
+			},			
+			
 			getParametersAsUrl : function(frm,_url) {
-		
+				
+				if(!frm)
+					frm = this.form;
+				if(!_url)
+					_url = this.url;
+				
 			    var getstr = '?';
 			    if(_url.indexOf('?')>-1) getstr='&';
 			    if(this.base64){
@@ -1073,9 +1083,19 @@
 			    return getstr;
 			 },
 
+			prepareJson : function(frm,_url) {
+				this.json = this.getParametersAsJson(frm,_url);
+				return this;
+			},			 
+			 
 			getParametersAsJson : function(frm,_url) {
 			    var issue;
 			    
+				if(!frm)
+					frm = this.form;
+				if(!_url)
+					_url = this.url;
+				
 			    if(this.json){
 			    	if(typeof this.json === 'object')
 			    		issue = this.json;
@@ -1176,9 +1196,19 @@
 			    return JSON.stringify(issue);
 			},
 	
+			prepareMpart : function(frm,_url) {
+				this.mpart = this.getParametersAsMpart(frm,_url);
+				return this;
+			},
+			
 			getParametersAsMpart : function(frm,_url) {
 		
 				if(window.FormData){
+					if(!frm)
+						frm = this.form;
+					if(!_url)
+						_url = this.url;
+					
 					var formdata;
 					if(this.mpart)
 						formdata = this.mpart;

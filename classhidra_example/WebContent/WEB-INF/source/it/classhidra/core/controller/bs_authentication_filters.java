@@ -270,6 +270,9 @@ public class bs_authentication_filters implements i_authentication_filter {
 	}
 	public boolean check_redirectIsPermitted(auth_init auth, i_action _action){	
 		
+		if(_action!=null)
+			_action = _action.asAction();
+		
 		if(bsController.getAppInit().get_avoid_permission_chech()!=null && bsController.getAppInit().get_avoid_permission_chech().equalsIgnoreCase("true"))
 			return true;
 		

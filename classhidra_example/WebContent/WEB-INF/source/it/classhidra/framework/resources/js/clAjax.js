@@ -1,7 +1,7 @@
 /**
 * Name: clAjax.js
-* Version: 1.0.4 
-* Creation date: (08/06/2016)
+* Version: 1.0.5
+* Creation date: (08/11/2016)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -24,7 +24,7 @@
 })(function(root){
 
 	var clajax = function(prot){
-		
+
 		this.id =					-1;
 		this.form = 				(prot)?prot.form:null;
 		this.action = 				(prot)?prot.action:null;
@@ -42,17 +42,17 @@
 		this.contentType = 			(prot)?prot.contentType:null;
 		this.progressWait = 		(prot)?prot.progressWait:null;
 		this.mimeType = 			(prot)?prot.mimeType:null;
-		
+
 		this.start = 				(prot)?prot.start:null;
-		
+
 		this.success = 				(prot)?prot.success:null;
 		this.ready = 				(prot)?prot.ready:null;
 		this.fail = 				(prot)?prot.fail:null;
 		this.error =				(prot)?prot.error:null;
 		this.finish = 				(prot)?prot.finish:null;
 		this.timeout = 				(prot)?prot.timeout:null;
-		
-		
+
+
 		this.base64 = 				(prot)?((prot.base64)?prot.base64:false):false;
 		this.asJson = 				(prot)?((prot.asJson)?prot.asJson:false):false;
 		this.asXml = 				(prot)?((prot.asXml)?prot.asXml:false):false;
@@ -61,13 +61,13 @@
 		this.asCss = 				(prot)?((prot.asCss)?prot.asCss:false):false;
 		this.opened = 				(prot)?((prot.opened)?prot.opened:false):false;
 		this.http = 				null;
-		
+
 		this.acceptableStatus = 	(prot)
 									?
 										prot.acceptableStatus
 									:
 										[
-/*										 
+/*
 										{
 											status:		200,
 										 	success:	null,
@@ -75,13 +75,13 @@
 										}
 */
 										];
-		
+
 		this.acceptableReadyState = (prot)
 									?
 										prot.acceptableReadyState
 									:
 										[
-/*										 
+/*
 										{
 											readyState:			3,
 											acceptableStatus: 	[
@@ -92,15 +92,15 @@
 															 	}
 															 	]
 										}
-*/										
+*/
 										];
-		
+
 		this.requestHeaders	=		(prot)
 									?
 										prot.requestHeaders
 									:
 										[
-/*										 
+/*
 										{
 											name:	'Content-Encoding',
 											value:	'iso-8859-1'
@@ -109,13 +109,13 @@
 */
 										];
 		this.extention =			(prot)?((prot.extention)?prot.extention:{}):{};
-		
+
 	}
-	
+
 	clajax.prototype = {
-	
+
 			clear : function(){
-		
+
 				this.form=null;
 				this.action=null;
 				this.method=null;
@@ -132,7 +132,7 @@
 				this.contentType=null;
 				this.progressWait=null;
 				this.mimeType=null;
-				
+
 				this.start=null;
 				this.success=null;
 				this.ready=null;
@@ -140,7 +140,7 @@
 				this.error=null;
 				this.finish=null;
 				this.timeout=null;
-				
+
 				this.base64 = false;
 				this.asJson = false;
 				this.asXml = false;
@@ -154,177 +154,177 @@
 				this.extention = {};
 				return this;
 			},
-	
+
 			setForm : function(_form){
 				this.form = _form;
 				return this;
 			},
-	
+
 			setMethod : function(_method){
 				this.method = _method;
 				return this;
 			},
-	
+
 			setAction : function(_action){
 				this.action = _action;
 				return this;
 			},
-	
+
 			setUrl : function(_url){
 				this.url = _url;
 				return this;
 			},
-	
+
 			setJson : function(_json){
 				this.json = _json;
 				return this;
 			},
-	
+
 			setXml : function(_xml){
 				this.xml = _xml;
 				return this;
-			},	
-	
+			},
+
 			setMpart : function(_mpart){
 				this.mpart = _mpart;
 				return this;
-			},	
-	
+			},
+
 			setTarget : function(_target){
 				this.target = _target;
 				return this;
 			},
-			
+
 			setRel : function(_rel){
 				this.rel = _rel;
 				return this;
 			},
-			
+
 			setMedia : function(_media){
 				this.media = _media;
 				return this;
-			},	
-			
+			},
+
 			setResponseType : function(_responseType){
 				this.responseType = _responseType;
 				return this;
 			},
-			
+
 			setAsynchronous : function(_asynchronous){
 				this.asynchronous = _asynchronous;
 				return this;
 			},
-			
+
 			setContentEncoding : function(_contentEncoding){
 				this.contentEncoding = _contentEncoding;
 				return this;
 			},
-			
+
 			setContentType : function(_contentType){
 				this.contentType = _contentType;
 				return this;
 			},
-			
+
 			setMimeType : function(_mimeType){
 				this.mimeType = _mimeType;
 				return this;
 			},
-			
+
 			setStart : function(_start){
 				this.start = _start;
 				return this;
 			},
-			
+
 			setSuccess : function(_success){
 				this.success = _success;
 				return this;
 			},
-			
+
 			setRedy : function(_ready){
 				this.ready = _ready;
 				return this;
-			},	
-			
+			},
+
 			setFail : function(_fail){
 				this.fail = _fail;
 				return this;
-			},	
-			
+			},
+
 			setError : function(_error){
 				this.error = _error;
 				return this;
 			},
-			
+
 			setFinish : function(_finish){
 				this.finish = _finish;
 				return this;
-			},	
-			
+			},
+
 			setTimeout : function(_timeout){
 				this.timeout = _timeout;
 				return this;
-			},			
-			
+			},
+
 			setBase64 : function(_base64){
 				this.base64 = _base64;
 				return this;
 			},
-			
+
 			setAsJson : function(_asJson){
 				this.asJson = _asJson;
 				return this;
 			},
-			
+
 			setAsXml : function(_asXml){
 				this.asXml = _asXml;
 				return this;
-			},	
-		
+			},
+
 			setAsMpart : function(_asMpart){
 				this.asMpart = _asMpart;
 				return this;
-			},	
-			
+			},
+
 			setAsScript : function(_asScript){
 				this.asScript = _asScript;
 				return this;
-			},	
-			
+			},
+
 			setAsCss : function(_asCss){
 				this.asCss = _asCss;
 				return this;
 			},
-			
+
 			setOpened : function(_opened){
 				this.opened = _opened;
 				return this;
 			},
-			
+
 			setAcceptableStatus : function(_acceptableStatus){
 				this.acceptableStatus = _acceptableStatus;
 				return this;
 			},
-			
+
 			setAcceptableReadyState : function(_acceptableReadyState){
 				this.acceptableReadyState = _acceptableReadyState;
 				return this;
 			},
-			
+
 			setRequestHeaders : function(_requestHeaders){
 				this.requestHeaders = _requestHeaders;
 				return this;
 			},
-			
+
 			setExtention : function(_extention){
 				this.extention = _extention;
 				return this;
 			},
-			
+
 			setId : function(_id){
 				this.id = _id;
 				return this;
 			},
-	
+
 			extend: function(props) {
 			    for(var prop in props) {
 			        if(props.hasOwnProperty(prop)) {
@@ -332,8 +332,8 @@
 			        }
 			    }
 			    return this;
-			},	
-			
+			},
+
 			instance: function(){
 				if(this.extention){
 					var inst = Object.create(this).extend(this.extention);
@@ -350,9 +350,9 @@
 				}
 				return this._clone().setId(new Date().getTime());;
 			},
-			
+
 			_clone : function(){
-				
+
 				var result = new clajax()
 				.setForm(this.form)
 				.setMethod(this.method)
@@ -388,11 +388,11 @@
 				.setRequestHeaders(this.requestHeaders)
 				.setExtention(this.extention)
 				;
-				
+
 				return result;
-		
+
 			},
-	
+
 			exception : function(e){
 				  var stack = e.stack.replace(/^[^\(]+?[\n$]/gm, '')
 			      .replace(/^\s+at\s+/gm, '')
@@ -401,7 +401,7 @@
 			  console.log(stack);
 //				console.log(e);
 			},
-			
+
 			load : function(_url){
 				if(_url){
 					this.url = _url;
@@ -414,7 +414,7 @@
 				}
 				if(this.url && this.asScript){
 					var e = document.createElement('script');
-			
+
 					if(this.base64){
 						var parameters = this.getParametersAsUrl(null,this.url);
 						if(this.url.indexOf('?')>-1)
@@ -423,18 +423,18 @@
 							e.src = this.url+parameters;
 					}else
 						e.src = this.url;
-			
+
 					if(this.type && this.type!='')
 						e.type=this.type;
 					else
 						e.type='text/javascript';
-			
+
 					if(this.rel && this.rel!='')
 						e.rel=this.rel;
-					
+
 					if(this.contentEncoding && this.contentEncoding!='')
 						e.charset=this.contentEncoding;
-					
+
 					var instance  = this.clone();
 					try{
 						if(instance.success && instance.success!=''){
@@ -447,7 +447,7 @@
 							        	instance.success();
 							        }
 							    }
-			
+
 							}else{
 								//real browsers
 							    	e.onload=eval(instance.success + '()');
@@ -470,7 +470,7 @@
 				}
 				if(this.url && this.asCss){
 					var e = document.createElement('link');
-		
+
 					if(this.base64){
 						var parameters = this.getParametersAsUrl(null,this.url);
 						if(href.indexOf('?')>-1)
@@ -479,24 +479,24 @@
 							e.href = this.url+parameters;
 					}else
 						e.href = this.url;
-		
+
 					if(this.type && this.type!='')
 						e.type=this.type;
 					else
 						e.type='text/css';
-		
-		
+
+
 					if(this.rel && this.rel!='')
 						e.rel=rel;
 					else
 						e.rel='stylesheet';
-		
+
 					if(this.media && this.media!='')
 						e.media=this.media;
-					
-					if(this.contentEncoding && this.contentEncoding!='') 
+
+					if(this.contentEncoding && this.contentEncoding!='')
 						e.charset=this.contentEncoding;
-					
+
 					var instance  = this.clone();
 					try{
 						if(instance.success && instance.success!=''){
@@ -509,7 +509,7 @@
 							        	instance.success();
 							        }
 							    }
-		
+
 							}else{
 								//real browsers
 							    	e.onload=eval(instance.success + '()');
@@ -528,25 +528,25 @@
 						document.getElementsByTagName('head')[0].appendChild(e);
 					}catch(e){
 						this.exception(e);
-					}			
+					}
 				}
-				
+
 				return this;
-		
-			},	
+
+			},
 
 
 			submit : function(_form, _action){
 				if(_form)
 					this.form = _form;
-		
+
 				if(this.form){
 					if(_action)
 						this.action = _action;
 					else
 						this.action = this.form.action;
-		
-						
+
+
 					if(this.asJson){
 						this
 							.setUrl(this.action)
@@ -561,33 +561,33 @@
 						this
 							.setUrl(this.action)
 							.setMpart(this.getParametersAsMpart(this.form, this.action))
-							.request(this.form.method);					
+							.request(this.form.method);
 					}else
 						this
 							.setUrl(this.action+this.getParametersAsUrl(this.form, this.action))
 							.request(this.form.method);
 				}
 				return this;
-				
+
 			},
-	
-			request : function(_method){	
+
+			request : function(_method){
 				if(_method && _method!='')
 					this.method = _method;
-				
+
 				var urlOnly='';
 				var parametersOnly='';
 				var sendJson;
-		
+
 				if(this.asJson==false && this.json && (this.json.length>0 || typeof this.json === 'object'))
 					this.asJson=true;
 				else if(this.asXml==false && this.xml && this.xml.length>0)
 					this.asXml=true;
 				else if(this.asMpart==false && this.mpart)
-					this.asMpart=true;		
-		
+					this.asMpart=true;
+
 				if(this.asJson==false && this.asXml==false && this.asMpart==false){
-					
+
 					if(this.url){
 						if(this.url.indexOf('?')>-1){
 							var pos = this.url.indexOf('?');
@@ -597,18 +597,18 @@
 							urlOnly=this.url;
 						}
 					}
-					if(parametersOnly=='') 
+					if(parametersOnly=='')
 						parametersOnly+='js4ajax=true';
-					else 
+					else
 						parametersOnly+='&js4ajax=true';
-					
-				}else if(this.asJson){	
+
+				}else if(this.asJson){
 					if(typeof this.json === 'object')
 						sendJson = this.json;
 					else
 						sendJson = JSON.parse(this.json);
 					if(this.url){
-						if(this.url.indexOf('?')>-1){		
+						if(this.url.indexOf('?')>-1){
 							var pos = this.url.indexOf('?');
 							urlOnly = this.url.substring(0,pos);
 					    	var urlParameters=this.url.substring(pos+1,this.url.length);
@@ -625,13 +625,13 @@
 						}
 					}
 					sendJson['js4ajax'] = 'true';
-				
-				}else if(this.asXml){	
-					
+
+				}else if(this.asXml){
+
 					urlOnly=this.url;
-					
+
 				}else if(this.asMpart){
-					
+
 					if(this.url){
 						if(this.url.indexOf('?')>-1){
 							var pos = this.url.indexOf('?');
@@ -649,10 +649,10 @@
 							urlOnly=this.url;
 						}
 					}
-					this.mpart.append('js4ajax','true');			
+					this.mpart.append('js4ajax','true');
 				}
-				
-		
+
+
 				if(this.start && this.start!=''){
 		    		if (typeof this.start === 'function') {
 		    			this.start(this);
@@ -660,7 +660,7 @@
 		    			eval(this.start + '(this)');
 		    		}
 		    	}
-		
+
 				if(this.target){
 					try{
 						if(this.progressWait && this.progressWait!='')
@@ -669,30 +669,30 @@
 						this.exception(e);
 					}
 				}
-		
+
 				var http_request = false;
 				var setResponseType=false;
-		
-		
-		
+
+
+
 				if(this.http){
 					http_request = this.http;
 					this.opened = true;
 				}else{
 				    if (window.ActiveXObject) { // IE
 				       try {
-			
+
 				          http_request = new ActiveXObject('Msxml2.XMLHTTP');
 				       } catch (e) {
 				          try {
 				             http_request = new ActiveXObject('Microsoft.XMLHTTP');
-			
+
 				          } catch (e) {}
 				       }
 				    }
-				    if (window.XMLHttpRequest) { 
+				    if (window.XMLHttpRequest) {
 					       http_request = new XMLHttpRequest();
-					       
+
 					       if(this.responseType && this.responseType!=''){
 					    	   try{
 					    		   http_request.responseType = this.responseType;
@@ -700,7 +700,7 @@
 					    	   }catch(e){
 					    		   this.exception(e);
 					    	   }
-					       }else{   
+					       }else{
 						       if (http_request.overrideMimeType) {
 						    	   if(this.mimeType && this.mimeType!='')
 						    		   http_request.overrideMimeType(this.mimeType);
@@ -708,7 +708,7 @@
 						    		   http_request.overrideMimeType('text/html');
 						       }
 					       }
-			
+
 				    }
 				    this.http = http_request;
 				}
@@ -723,12 +723,12 @@
 		        		alert('Cannot create XMLHTTP instance');
 			       return;
 			    }
-			    
-			    
-		
+
+
+
 			    var instance  = this.clone();
-		    
-//onreadystatechange			    
+
+//onreadystatechange
 			    http_request.onreadystatechange = function() {
 				    	try{
 				    		var readyStateAccepted = false;
@@ -742,32 +742,32 @@
 			            		while(!acceptable && i<instance.acceptableReadyState.length){
 			            			if(instance.acceptableReadyState[i].readyState == http_request.readyState)
 			            				acceptable = instance.acceptableReadyState[i];
-			            			i++;				            			
+			            			i++;
 			            		}
 			            		if(!acceptable){
 				            		i=0;
 				            		while(!acceptable && i<instance.acceptableReadyState.length){
 				            			if(instance.acceptableReadyState[i].readyState == -1)
 				            				acceptable = instance.acceptableReadyState[i];
-				            			i++;				            			
+				            			i++;
 				            		}
 			            		}
 			            		if(acceptable){
 			            			readyStateAccepted = true;
 			            			_facceptableStatus = acceptable.acceptableStatus;
-			            		}		            		
+			            		}
 				    		}
-				    		
-				    		
+
+
 					    	if (readyStateAccepted) {
-					    		
-					    		var statusAccepted = false;				    		
+
+					    		var statusAccepted = false;
 					    		var _fready;
 					    		var _fsuccess;
 					    		var _ffail;
 					    		var _ffinish;
 					    		var _ferror;
-					    		
+
 					    		if (http_request.status == 200 ) {
 					    			statusAccepted = true;
 					    			if(instance.ready && instance.ready!='')
@@ -780,10 +780,10 @@
 				            			_ffinish = instance.finish;
 					    			if(instance.error && instance.error!='')
 				            			_ferror = instance.error;
-					    			
+
 					    		}
 					    		if(_facceptableStatus && _facceptableStatus.length>0){
-					    			
+
 					    		}else if(instance.acceptableStatus && instance.acceptableStatus.length>0){
 					    			_facceptableStatus = instance.acceptableStatus;
 					    		}
@@ -793,15 +793,15 @@
 				            		while(!acceptable && i<_facceptableStatus.length){
 				            			if(_facceptableStatus[i].status == http_request.status)
 				            				acceptable = _facceptableStatus[i];
-				            			i++;				            			
+				            			i++;
 				            		}
 				            		if(!acceptable){
 					            		i=0;
 					            		while(!acceptable && i<_facceptableStatus.length){
 					            			if(_facceptableStatus[i].status == -1)
 					            				acceptable = _facceptableStatus[i];
-					            			i++;				            			
-					            		}				            			
+					            			i++;
+					            		}
 				            		}
 					            	if(acceptable){
 					            		statusAccepted = true;
@@ -825,8 +825,8 @@
 					            			_ferror = acceptable.finish;
 					            		else if(instance.error && instance.error!='')
 					            			_ferror = instance.error;
-					            	
-					            	}				            	
+
+					            	}
 					    		}
 					    		try{
 						    		if(statusAccepted==true){
@@ -845,8 +845,8 @@
 						            			_fsuccess(http_request,instance);
 						            		}
 						            		else
-						            			eval(_fsuccess + '(http_request,instance)');				            		
-						            	}				    			
+						            			eval(_fsuccess + '(http_request,instance)');
+						            	}
 						    		}else{
 						            	if(_ffail){
 						            		if (typeof _ffail === 'function') {
@@ -854,7 +854,7 @@
 						            		}else{
 						            			eval(_ffail + '(http_request,instance)');
 						            		}
-						            	}		            	
+						            	}
 						            }
 					    		}catch(e){
 						    		instance.exception(e);
@@ -867,8 +867,8 @@
 						    		}else
 					            		alert('There was a generic problem with callback_function():'+e.toString());
 					    		}
-					    		
-					    		
+
+
 						    	if(_ffinish){
 					        		if (typeof _ffinish === 'function') {
 					        			_ffinish(http_request,instance);
@@ -876,8 +876,8 @@
 					        			eval(_ffinish + '(http_request,instance)');
 					        		}
 					        	}
-					    		
-					    		
+
+
 /*
 					    		if(!instance.opened){
 						            try{
@@ -886,7 +886,7 @@
 						            	this.exception(e);
 						            }
 					    		}
-*/				    		
+*/
 					        }
 				    	}catch(e){
 				    		instance.exception(e);
@@ -899,7 +899,7 @@
 			            	}else
 			            		alert('There was a generic problem with callback_function():'+e.toString());
 				    	}
-/*				    	
+/*
 				    	if(instance.finish && instance.finish!=''){
 			        		if (typeof instance.finish === 'function') {
 			        			instance.finish(http_request,instance);
@@ -907,14 +907,14 @@
 			        			eval(instance.finish + '(http_request,instance)');
 			        		}
 			        	}
-*/			
+*/
 		        };
 //------
-		        
+
 //ontimeout
 		    	if(this.timeout && this.timeout!=''){
-		    		
-		    		http_request.ontimeout = function() {		    		
+
+		    		http_request.ontimeout = function() {
 			        		if (typeof instance.timeout === 'function') {
 			        			instance.timeout(http_request,this);
 			        		}else{
@@ -922,21 +922,21 @@
 			        		}
 		    		}
 	        	}
-//------		        
-		        
-		        
+//------
+
+
 		        if(!this.asynchronous)
 		        	this.asynchronous = true;
-		        
+
 		        if(!this.opened){
 			        if(this.method && this.method!=''){
 			        	if(this.method == 'GET')
 			        		http_request.open(this.method, this.url, this.asynchronous);
-			        	else	
+			        	else
 			        		http_request.open(this.method, urlOnly, this.asynchronous);
 			        }else
 			        	http_request.open('POST', urlOnly, this.asynchronous);
-			        
+
 				    if(this.responseType && this.responseType!='' && setResponseType==false){
 				    	try{
 				    		http_request.responseType = this.responseType;
@@ -944,7 +944,7 @@
 				    		this.exception(e);
 				    	}
 				    }
-	
+
 				    if(this.contentType && this.contentType!='')
 				    	http_request.setRequestHeader('Content-type', this.contentType);
 				    else{
@@ -952,26 +952,26 @@
 				    		http_request.setRequestHeader('Content-type', 'application/json');
 				    	else if(this.asXml)
 				    		http_request.setRequestHeader('Content-type', 'application/xml');
-				    	else	
+				    	else if(!this.asMpart)
 				    		http_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 				    }
-				    
+
 				    if(this.contentEncoding && this.contentEncoding!='')
 				    	http_request.setRequestHeader('Content-Encoding', this.contentEncoding);
 				    else
 				    	http_request.setRequestHeader('Content-Encoding', 'iso-8859-1');
-				    
+
 				    if(this.requestHeaders && this.requestHeaders.length>0){
 				    	for(var i=0;i<this.requestHeaders.length;i++){
 				    		try{
 				    			http_request.setRequestHeader(this.requestHeaders[i].name, this.requestHeaders[i].value);
-				    		}catch(e){	
+				    		}catch(e){
 				    			this.exception(e);
 				    		}
 				    	}
 				    }
 		        }
-		
+
 			    if(this.asJson==false && this.asXml==false && this.asMpart==false){
 			    	http_request.send(parametersOnly);
 			    }else if(this.asJson){
@@ -981,14 +981,24 @@
 			    }else if(this.asMpart){
 			    	http_request.send(this.mpart);
 			    }
-			    
+
 			    return instance;
-		
+
 			},
 
-	
+
+			prepareUrl : function(frm,_url) {
+				this.url = this.getParametersAsUrl(frm,_url);
+				return this;
+			},
+
 			getParametersAsUrl : function(frm,_url) {
-		
+
+				if(!frm)
+					frm = this.form;
+				if(!_url)
+					_url = this.url;
+
 			    var getstr = '?';
 			    if(_url.indexOf('?')>-1) getstr='&';
 			    if(this.base64){
@@ -1005,7 +1015,7 @@
 			        	}
 			        }
 			    }
-		
+
 			    if(frm){
 				    for (i=0; i<frm.elements.length; i++) {
 						var element = frm.elements[i];
@@ -1014,36 +1024,36 @@
 							element_name=element.name;
 						else if(element.id && element.id!='')
 							element_name=element.id;
-						
+
 						if(	element_name &&
 							_url.indexOf('?'+element_name+'=')==-1 &&
 							_url.indexOf('&'+element_name+'=')==-1){
-							
+
 								if	(element.type.toUpperCase() == 'TEXT' ||
 							         element.type.toUpperCase() == 'HIDDEN' ||
 							         element.type.toUpperCase() == 'PASSWORD') {
 									if(this.base64)
 										getstr += element_name + '=' + encodeURIComponent(base64_encode(element.value)) + '&';
-									else	
+									else
 										getstr += element_name + '=' + encodeURIComponent(element.value) + '&';
 							    }
 								if	(element.type.toUpperCase() == 'TEXTAREA') {
 									if(this.base64)
 										getstr += element_name + '=' + encodeURIComponent(base64_encode(element.value)) + '&';
-									else	
+									else
 							        	getstr += element_name + '=' + encodeURIComponent(element.value) + '&';
 								}
-		
+
 							    if (element.type.toUpperCase() == 'CHECKBOX') {
 							    	if (element.checked) {
 							    		if(this.base64)
 							    			getstr += element_name + '=' + encodeURIComponent(base64_encode(element.value)) + '&';
-							    		else	
+							    		else
 							    			getstr += element_name + '=' + encodeURIComponent(element.value) + '&';
 							        } else {
 							        	if(this.base64)
 							        		getstr += element_name + '=&';
-							        	else	
+							        	else
 							        		getstr += element_name + '=&';
 							        }
 							    }
@@ -1055,7 +1065,7 @@
 							    			getstr += element_name + '=' + encodeURIComponent(element.value) + '&';
 							        }
 							    }
-		
+
 								if (element.type.toUpperCase().indexOf('SELECT')==0) {
 							    	var sel = element;
 							    	try{
@@ -1073,9 +1083,19 @@
 			    return getstr;
 			 },
 
+			prepareJson : function(frm,_url) {
+				this.json = this.getParametersAsJson(frm,_url);
+				return this;
+			},
+
 			getParametersAsJson : function(frm,_url) {
 			    var issue;
-			    
+
+				if(!frm)
+					frm = this.form;
+				if(!_url)
+					_url = this.url;
+
 			    if(this.json){
 			    	if(typeof this.json === 'object')
 			    		issue = this.json;
@@ -1083,10 +1103,10 @@
 			    		issue = JSON.parse(this.json);
 			    }else
 			    	issue = {};
-		
+
 			    if(this.base64)
 			    	issue[$inputBase64]='true';
-		
+
 			    if(_url.indexOf('?')>-1){
 			    	var urlParameters=_url.substring(_url.indexOf('?')+1,_url.length);
 			    	if(urlParameters.length>0){
@@ -1101,23 +1121,23 @@
 			    		}
 			    	}
 			    }
-		
+
 			    try{
 				    for (i=0; i<frm.elements.length; i++) {
 				 		var element = frm.elements[i];
-				 		
+
 						var element_name;
-						
+
 						if(element.name && element.name!='')
 							element_name=element.name;
 						else if(element.id && element.id!='')
 							element_name=element.id;
-				 		
+
 						if(	element_name &&
 							_url.indexOf('?'+element_name+'=')==-1 &&
 							_url.indexOf('&'+element_name+'=')==-1){
-							
-		
+
+
 								if	(element.type.toUpperCase() == 'TEXT' ||
 							         element.type.toUpperCase() == 'HIDDEN' ||
 							         element.type.toUpperCase() == 'PASSWORD') {
@@ -1132,7 +1152,7 @@
 									else
 										issue[element_name ] = element.value;
 								}
-		
+
 							    if (element.type.toUpperCase() == 'CHECKBOX') {
 							    	if (element.checked) {
 							    		if(this.base64)
@@ -1141,7 +1161,7 @@
 							    			issue[element_name ] = element.value;
 							        } else {
 										issue[element_name ] = '';
-		
+
 							        }
 							    }
 							    if (element.type.toUpperCase() == 'RADIO') {
@@ -1152,7 +1172,7 @@
 							    			issue[element_name ] = element.value;
 							        }
 							    }
-		
+
 								if (element.type.toUpperCase().indexOf('SELECT')==0) {
 							    	var sel = element;
 							    	try{
@@ -1164,30 +1184,40 @@
 							    		this.exception(e);
 							    	}
 							    }
-		
+
 						}
-		
+
 				    }
 			    }catch(e){
 			    	this.exception(e);
 			    }
-		
-		
+
+
 			    return JSON.stringify(issue);
 			},
-	
+
+			prepareMpart : function(frm,_url) {
+				this.mpart = this.getParametersAsMpart(frm,_url);
+				return this;
+			},
+
 			getParametersAsMpart : function(frm,_url) {
-		
+
 				if(window.FormData){
+					if(!frm)
+						frm = this.form;
+					if(!_url)
+						_url = this.url;
+
 					var formdata;
 					if(this.mpart)
 						formdata = this.mpart;
 					else
 						formdata = new FormData();
-		
+
 					if(this.base64)
 						formdata.append('$inputBase64','true');
-					
+
 				    if(_url.indexOf('?')>-1){
 				    	var urlParameters=_url.substring(_url.indexOf('?')+1,_url.length);
 				    	if(urlParameters.length>0){
@@ -1202,24 +1232,24 @@
 				    		}
 				    	}
 				    }
-		
+
 				    try{
 					    for (i=0; i<frm.elements.length; i++) {
 					 		var element = frm.elements[i];
-					 		
+
 							var element_name;
-							
+
 							if(element.name && element.name!='')
 								element_name=element.name;
 							else if(element.id && element.id!='')
 								element_name=element.id;
-					 		
+
 							if(	element_name &&
 								_url.indexOf('?'+element_name+'=')==-1 &&
 								_url.indexOf('&'+element_name+'=')==-1){
-		
-		
-		
+
+
+
 									if	(element.type.toUpperCase() == 'TEXT' ||
 								         element.type.toUpperCase() == 'HIDDEN' ||
 								         element.type.toUpperCase() == 'PASSWORD') {
@@ -1234,7 +1264,7 @@
 										else
 											formdata.append(element_name, element.value);
 									}
-		
+
 								    if (element.type.toUpperCase() == 'CHECKBOX') {
 								    	if (element.checked) {
 								    		if(this.base64)
@@ -1253,7 +1283,7 @@
 								    			formdata.append(element_name, element.value);
 								        }
 								    }
-		
+
 									if (element.type.toUpperCase().indexOf('SELECT')==0) {
 								    	var sel = element;
 								    	try{
@@ -1268,15 +1298,15 @@
 								    if (element.type.toUpperCase() == 'FILE') {
 							    		formdata.append(element_name, element.files[0]);
 								    }
-		
+
 							}
-		
+
 					    }
 				    }catch(e){
 				    	this.exception(e);
 				    }
-		
-		
+
+
 				    return formdata;
 				}else{
 					alert('Features supported for object FormData (). Available in Chrome, FireFox, Safari, IE9...');
