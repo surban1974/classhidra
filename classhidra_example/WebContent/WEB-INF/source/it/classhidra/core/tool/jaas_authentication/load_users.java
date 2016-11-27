@@ -406,21 +406,26 @@ private void readFormElements(Node node) throws Exception{
 
 public void reInit(i_externalloader _externalloader){
 	if(_externalloader==null) return;
+	boolean loaded = false;
 	if(	_externalloader.getProperty(i_externalloader.USERS_users)!=null &&
 		_externalloader.getProperty(i_externalloader.USERS_users) instanceof HashMap){
 		_users.putAll((HashMap)_externalloader.getProperty(i_externalloader.USERS_users));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.USERS_groups)!=null &&
 		_externalloader.getProperty(i_externalloader.USERS_groups) instanceof HashMap){
 		_groups.putAll((HashMap)_externalloader.getProperty(i_externalloader.USERS_groups));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.USERS_targets)!=null &&
 		_externalloader.getProperty(i_externalloader.USERS_targets) instanceof HashMap){
 		_targets.putAll((HashMap)_externalloader.getProperty(i_externalloader.USERS_targets));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.USERS_matriculations)!=null &&
 		_externalloader.getProperty(i_externalloader.USERS_matriculations) instanceof HashMap){
 		_matriculation.putAll((HashMap)_externalloader.getProperty(i_externalloader.USERS_matriculations));
+		loaded=true;
 	}
 
 	v_info_users = (new Vector(_users.values()));
@@ -431,8 +436,9 @@ public void reInit(i_externalloader _externalloader){
 
 	v_info_targets = (new Vector(_targets.values()));
 	v_info_targets = new util_sort().sort(v_info_targets,"name");
-	
-	loadedFrom+=" "+_externalloader.getClass().getName();
+
+	if(loaded)
+		loadedFrom+=" "+_externalloader.getClass().getName();
 //	readOk_ExtLoader=true;
 
 }

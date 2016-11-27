@@ -205,89 +205,109 @@ public void init() throws bsControllerException{
 
 public void reInit(i_externalloader _externalloader){
 	if(_externalloader==null) return;
+	boolean loaded = false;
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_actions)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_actions) instanceof HashMap){
 		_actions.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_actions));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_actioncalls)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_actioncalls) instanceof HashMap){
 		_actioncalls.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_actioncalls));
+		loaded=true;
 	}	
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_restmapping)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_restmapping) instanceof HashMap){
 		_actioncalls.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_restmapping));
+		loaded=true;
 	}		
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_streams)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_streams) instanceof HashMap){
 		_streams.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_streams));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_streams_apply_to_actions)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_streams_apply_to_actions) instanceof HashMap){
 		_streams_apply_to_actions.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_streams_apply_to_actions));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_beans)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_beans) instanceof HashMap){
 		_beans.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_beans));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_redirects)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_redirects) instanceof HashMap){
 		_redirects.putAll((HashMap)_externalloader.getProperty(i_externalloader.ACTIONS_redirects));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_error)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_error) instanceof String){
 		error=(String)_externalloader.getProperty(i_externalloader.ACTIONS_error);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_auth_error)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_auth_error) instanceof String){
 		auth_error=(String)_externalloader.getProperty(i_externalloader.ACTIONS_auth_error);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_session_error)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_session_error) instanceof String){
 		session_error=(String)_externalloader.getProperty(i_externalloader.ACTIONS_session_error);
+		loaded=true;
 	}
 	
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_listener_actions)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_listener_actions) instanceof String){
 		listener_actions=(String)_externalloader.getProperty(i_externalloader.ACTIONS_listener_actions);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_listener_beans)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_listener_beans) instanceof String){
 		listener_beans=(String)_externalloader.getProperty(i_externalloader.ACTIONS_listener_beans);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_listener_streams)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_listener_streams) instanceof String){
 		listener_streams=(String)_externalloader.getProperty(i_externalloader.ACTIONS_listener_streams);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_memoryInContainer_streams)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_memoryInContainer_streams) instanceof String){
 		memoryInContainer_streams=(String)_externalloader.getProperty(i_externalloader.ACTIONS_memoryInContainer_streams);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_provider)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_provider) instanceof String){
 		provider=(String)_externalloader.getProperty(i_externalloader.ACTIONS_provider);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_instance_navigated)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_instance_navigated) instanceof String){
 		instance_navigated=(String)_externalloader.getProperty(i_externalloader.ACTIONS_instance_navigated);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_instance_local_container)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_instance_local_container) instanceof String){
 		instance_local_container=(String)_externalloader.getProperty(i_externalloader.ACTIONS_instance_local_container);
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_instance_scheduler_container)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_instance_scheduler_container) instanceof String){
 		instance_scheduler_container=(String)_externalloader.getProperty(i_externalloader.ACTIONS_instance_scheduler_container);
+		loaded=true;
 	}	
 	if(	_externalloader.getProperty(i_externalloader.ACTIONS_instance_onlysession)!=null &&
 		_externalloader.getProperty(i_externalloader.ACTIONS_instance_onlysession) instanceof String){
 		instance_onlysession=(String)_externalloader.getProperty(i_externalloader.ACTIONS_instance_onlysession);
+		loaded=true;
 	}
 	
 	
 	
 	
-	
-	loadedFrom+=" "+_externalloader.getClass().getName();
+	if(loaded)
+		loadedFrom+=" "+_externalloader.getClass().getName();
 	
 	v_info_streams = (new Vector(_streams.values()));
 	v_info_streams = new util_sort().sort(v_info_streams,"int_order");

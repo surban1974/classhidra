@@ -43,6 +43,11 @@ public class load_menu  extends elementBase{
 		reimposta(mn);
 	}
 
+	public load_menu reInit(i_menu_element mn) {
+		reimposta(mn);
+		return this;
+	}
+	
 	public info_menu_element find(String _id_node){
 		if(_menu==null) return null;
 		return _menu.getInfo_menu().find(_id_node);
@@ -105,11 +110,14 @@ public class load_menu  extends elementBase{
 
 	public void reInit(i_externalloader _externalloader){
 		if(_externalloader==null) return;
+		boolean loaded = false;
 		if(	_externalloader.getProperty(i_externalloader.MENU_menu)!=null &&
 			_externalloader.getProperty(i_externalloader.MENU_menu) instanceof i_menu_element){
 			_menu=((i_menu_element)_externalloader.getProperty(i_externalloader.MENU_menu));
+			loaded=true;
 		}
-		loadedFrom+=" "+_externalloader.getClass().getName();
+		if(loaded)
+			loadedFrom+=" "+_externalloader.getClass().getName();
 //		readOk_ExtLoader=true;
 
 	}

@@ -80,11 +80,14 @@ public load_message(){
 
 public void reInit(i_externalloader _externalloader){ 
 	if(_externalloader==null) return;
+	boolean loaded = false;
 	if(	_externalloader.getProperty(i_externalloader.MESSAGES_messages)!=null &&
 		_externalloader.getProperty(i_externalloader.MESSAGES_messages) instanceof HashMap){
 		_messages.putAll((HashMap)_externalloader.getProperty(i_externalloader.MESSAGES_messages));
+		loaded=true;
 	}
-	loadedFrom+=" "+_externalloader.getClass().getName();
+	if(loaded)
+		loadedFrom+=" "+_externalloader.getClass().getName();
 //	readOk_ExtLoader=true;
 
 }

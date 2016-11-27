@@ -98,35 +98,42 @@ public void reimposta(){
 
 public void reInit(i_externalloader _externalloader){
 	if(_externalloader==null) return;
+	boolean loaded=false;
 	if(	_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_targets)!=null &&
 		_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_targets) instanceof HashMap){
 		_targets.putAll((HashMap)_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_targets));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_targets_allowed)!=null &&
 		_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_targets_allowed) instanceof HashMap){
 		_targets_allowed.putAll((HashMap)_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_targets_allowed));
+		loaded=true;
 	}
 	
 	if(	_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_mtargets)!=null &&
 		_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_mtargets) instanceof HashMap){
 		_mtargets.putAll((HashMap)_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_mtargets));
+		loaded=true;
 	}
 	if(	_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_mtargets_allowed)!=null &&
 		_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_mtargets_allowed) instanceof HashMap){
 		_mtargets_allowed.putAll((HashMap)_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_mtargets_allowed));
+		loaded=true;
 	}
 	
 	if(	_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_area)!=null &&
 		_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_area) instanceof HashMap){
 		_area.putAll((HashMap)_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_area));
+		loaded=true;
 	}
 	
 	if(	_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_info_relations)!=null &&
 		_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_info_relations) instanceof Vector){
 		v_info_relations.addAll((Vector)_externalloader.getProperty(i_externalloader.AUTHENTICATIONS_info_relations));
+		loaded=true;
 	}
-
-	loadedFrom+=" "+_externalloader.getClass().getName();
+	if(loaded)
+		loadedFrom+=" "+_externalloader.getClass().getName();
 //	readOk_ExtLoader=true;
 }
 

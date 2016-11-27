@@ -84,7 +84,8 @@ private i_menu_element prepareElement(HttpServletRequest request){
 
 		i_menu_element element = fc.getElement_menu_html();
 		if(element==null){
-			load_menu menu_config = new load_menu(new menu_element());
+//			load_menu menu_config = new load_menu(new menu_element());
+			load_menu menu_config = bsController.getMenu_config().reInit(new menu_element());
 			try{
 				menu_config.load_from_resources();
 			}catch (Exception e) {

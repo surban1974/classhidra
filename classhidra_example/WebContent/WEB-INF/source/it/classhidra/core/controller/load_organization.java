@@ -119,12 +119,15 @@ public class load_organization extends elementBase{
 
 	public void reInit(i_externalloader _externalloader){
 		if(_externalloader==null) return;
+		boolean loaded = false;
 		if(	_externalloader.getProperty(i_externalloader.ORGANIZATIONS_nodes)!=null &&
 			_externalloader.getProperty(i_externalloader.ORGANIZATIONS_nodes) instanceof HashMap){
 			_nodes.putAll((HashMap)_externalloader.getProperty(i_externalloader.ORGANIZATIONS_nodes));
 			nodes = new Vector(_nodes.values());			
+			loaded=true;
 		}
-		loadedFrom+=" "+_externalloader.getClass().getName();
+		if(loaded)
+			loadedFrom+=" "+_externalloader.getClass().getName();
 //		readOk_ExtLoader=true;
 	}
 

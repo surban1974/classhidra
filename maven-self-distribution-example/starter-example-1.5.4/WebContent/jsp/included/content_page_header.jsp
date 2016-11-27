@@ -18,6 +18,7 @@ div#footer_fixedbox{
 
 
 <bs:bean name="actions_forbidden" source="$authentication" property="_actions_forbidden"/>
+<bs:bean name="infoaction" source="$instanceaction" property="_infoaction"/>
 <bs:bean name="navigationPrev" source="$navigation" property="prevIRedirect"/>
 <bs:bean name="navigationLast" source="$navigation" property="lastIRedirect"/>
 <bs:bean name="navigationAll" source="navigationLast" property="allChildIRedirect"/>
@@ -29,9 +30,11 @@ div#footer_fixedbox{
 		<tr>
 		
 <bs:equal bean="$authentication" method_prefix="" name="is_logged" value="true">
+	<bs:notEqual bean="infoaction" name="path" value="login">
 			<td width="0%" background="images/corners/panel_t.gif" onclick="menu()" valign="middle" style="cursor: pointer">
 				<img id="menu_img" src="images/menu/16_close.gif" border="0" height="13"></img>&nbsp;
 			</td>
+	</bs:notEqual>		
 </bs:equal>
 	
 			<td  width="100%" background="images/corners/panel_t.gif" valign="middle">
