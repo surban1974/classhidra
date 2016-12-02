@@ -399,7 +399,10 @@ public class annotation_scanner implements i_annotation_scanner {
 				}
 			}catch(Exception e){
 				
+			}catch(Throwable t){
+			
 			}
+				
 		}
 
 	}
@@ -408,7 +411,13 @@ public class annotation_scanner implements i_annotation_scanner {
 	
 
 	public void checkClassAnnotation(String class_path) {
-		checkClassAnnotation(null, class_path, null);
+		try{
+			checkClassAnnotation(null, class_path, null);
+		}catch(Exception e){
+			new bsException("Load_actions Loader Annotation scann "+class_path+" Error: "+e.toString(), iStub.log_ERROR);
+		}catch(Throwable t){
+			new bsException("Load_actions Loader Annotation scann "+class_path+" Error: "+t.toString(), iStub.log_ERROR);
+		}
 	}
 	
 	public void checkClassAnnotation(Class classType, String class_path, Class checkClassType) {
