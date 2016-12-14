@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Format {
+	String name() default "";
 	String format() default "";
 	String language() default "";
 	String country() default "";
