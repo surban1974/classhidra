@@ -83,23 +83,26 @@ public class JsonWriter {
 			}
 		}
 		if(goAhead){
-			result+=generateJsonItemTag_Start(sub_obj, name,level, notFirst);
-			result+=generateJsonItemTag_Content(sub_obj, name,level,avoidCyclicPointers, annotation, serializeChildren, serializeDepth, subTreeFilters);
+			result+=generateJsonItemTag_Start(sub_obj, name, level, annotation, notFirst);
+			result+=generateJsonItemTag_Content(sub_obj, name, level, avoidCyclicPointers, annotation, serializeChildren, serializeDepth, subTreeFilters);
 			result+=generateJsonItemTag_Finish(sub_obj, name, level, notFirst);		
 		}
 		return result;
 	}
 
-	private static String generateJsonItemTag_Start(Object sub_obj, String name, int level, boolean notFirst){
+	private static String generateJsonItemTag_Start(Object sub_obj, String name, int level, Serialized annotation, boolean notFirst){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
+		String map_name = name;
+		if(annotation!=null && annotation.output()!=null && annotation.output().name()!=null && !annotation.output().name().equals(""))
+			map_name = annotation.output().name();
 		String space=spaceLevel(level);
 		String result="";
 		
 		if(sub_obj.getClass().isArray()){
 			if(notFirst) result+=",\n";
 			result+=space;
-			if(name!=null && !name.equals(""))
-				result+="\""+util_reflect.revAdaptMethodName(name)+"\":";
+			if(map_name!=null && !map_name.equals(""))
+				result+="\""+util_reflect.revAdaptMethodName(map_name)+"\":";
 			if(notFirst){
 				result+="\n";
 				result+=space+"[\n";
@@ -111,8 +114,8 @@ public class JsonWriter {
 		if(sub_obj instanceof List ){
 			if(notFirst) result+=",\n";
 			result+=space;
-			if(name!=null && !name.equals(""))
-				result+="\""+util_reflect.revAdaptMethodName(name)+"\":";
+			if(map_name!=null && !map_name.equals(""))
+				result+="\""+util_reflect.revAdaptMethodName(map_name)+"\":";
 			if(notFirst){
 				result+="\n";
 				result+=space+"[\n";
@@ -125,8 +128,8 @@ public class JsonWriter {
 		if(sub_obj instanceof Map){
 			if(notFirst) result+=",\n";
 			result+=space;
-			if(name!=null && !name.equals(""))
-				result+="\""+util_reflect.revAdaptMethodName(name)+"\":";
+			if(map_name!=null && !map_name.equals(""))
+				result+="\""+util_reflect.revAdaptMethodName(map_name)+"\":";
 			if(notFirst){
 				result+="\n";
 				result+=space+"{\n";
@@ -145,7 +148,7 @@ public class JsonWriter {
 			simple = true;
 		
 		if(	!simple){
-			if(name==null){
+			if(map_name==null){
 				if(notFirst) result+=",\n";
 				result+=space+"{\n";
 			}else{
@@ -156,8 +159,8 @@ public class JsonWriter {
 			result+="";
 		}
 
-		if(name!=null){
-			result+=space+"\""+util_reflect.revAdaptMethodName(name)+"\":";
+		if(map_name!=null){
+			result+=space+"\""+util_reflect.revAdaptMethodName(map_name)+"\":";
 			if(	!simple)
 				result+="{\n";				
 			
@@ -217,9 +220,9 @@ public class JsonWriter {
 						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 
 							if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-								result_tmp+=generateJsonItemTag_Start(new Object(), null,level+1, nFirst);
+								result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
 								result_tmp+="\"WARNING\":\"cyclic pointer\"";
-								result_tmp+=generateJsonItemTag_Finish(new Object(), null,level+1, nFirst);
+								result_tmp+=generateJsonItemTag_Finish(new Object(), null, level+1, nFirst);
 							}else{
 								avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 								result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,sub_annotation,
@@ -256,7 +259,7 @@ public class JsonWriter {
 						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){							
 						
 							if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-								result_tmp+=generateJsonItemTag_Start(new Object(), null,level+1, nFirst);
+								result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
 								result_tmp+="\"WARNING\":\"cyclic pointer\"";
 								result_tmp+=generateJsonItemTag_Finish(new Object(), null,level+1, nFirst);
 							}else{
@@ -299,9 +302,9 @@ public class JsonWriter {
 					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 					
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-							result_tmp+=generateJsonItemTag_Start(new Object(), null,level+1, nFirst);
+							result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
 							result_tmp+="\"WARNING\":\"cyclic pointer\"";
-							result_tmp+=generateJsonItemTag_Finish(new Object(), null,level+1, nFirst);
+							result_tmp+=generateJsonItemTag_Finish(new Object(), null, level+1, nFirst);
 						}else{
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result_tmp+=generateJsonItem(
@@ -340,9 +343,9 @@ public class JsonWriter {
 					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 					
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-							result_tmp+=generateJsonItemTag_Start(new Object(), pair.getKey().toString(),level+1, nFirst);
+							result_tmp+=generateJsonItemTag_Start(new Object(), pair.getKey().toString(), level+1, sub_annotation, nFirst);
 							result_tmp+="\"WARNING\":\"cyclic pointer\"";
-							result_tmp+=generateJsonItemTag_Finish(new Object(), pair.getKey().toString(),level+1, nFirst);
+							result_tmp+=generateJsonItemTag_Finish(new Object(), pair.getKey().toString(), level+1, nFirst);
 						}else{
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers,sub_annotation,
@@ -473,9 +476,9 @@ public class JsonWriter {
 										
 									
 											if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-												result_tmp+=generateJsonItemTag_Start(new Object(), methodName,level+1, nFirst);
+												result_tmp+=generateJsonItemTag_Start(new Object(), methodName, level+1, sub_annotation, nFirst);
 												result_tmp+="\"WARNING\":\"cyclic pointer\"";
-												result_tmp+=generateJsonItemTag_Finish(new Object(), methodName,level+1, nFirst);
+												result_tmp+=generateJsonItemTag_Finish(new Object(), methodName, level+1, nFirst);
 											}else{
 												avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 												result_tmp+=generateJsonItem(

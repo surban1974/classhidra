@@ -948,9 +948,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-				request2map = (HashMap)action_instance.asAction().getClass()
-									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-									.invoke(null, new Object[]{request});
+//				request2map = (HashMap)action_instance.asAction().getClass()
+//									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//									.invoke(null, new Object[]{request});
+				request2map = (HashMap)
+						util_reflect.findDeclaredMethod(
+							action_instance.asAction().getClass(),
+							"convertRequest2Map", new Class[]{HttpServletRequest.class})
+						.invoke(null, new Object[]{request});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {
@@ -1451,8 +1456,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(isRemoteEjb){
 			bsController.checkAuth_init(request).reInit(action_instance.getCurrent_auth());
 			try{
-				action_instance.asAction().getClass()
-					.getDeclaredMethod("convertMap2Request", new Class[]{HttpServletRequest.class,HttpServletResponse.class})
+//				action_instance.asAction().getClass()
+//					.getDeclaredMethod("convertMap2Request", new Class[]{HttpServletRequest.class,HttpServletResponse.class})
+//					.invoke(null, new Object[]{request,response});
+				util_reflect.findDeclaredMethod(
+						action_instance.asAction().getClass(),
+						"convertMap2Request", new Class[]{HttpServletRequest.class,HttpServletResponse.class})
 					.invoke(null, new Object[]{request,response});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
@@ -1522,8 +1531,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(bean_instance.getInfo_context()!=null && bean_instance.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)bean_instance.asBean().getClass()
-								.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//						request2map = (HashMap)bean_instance.asBean().getClass()
+//								.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//								.invoke(null, new Object[]{request});
+						request2map = (HashMap)
+								util_reflect.findDeclaredMethod(
+										bean_instance.asBean().getClass(),
+									"convertRequest2Map", new Class[]{HttpServletRequest.class})
 								.invoke(null, new Object[]{request});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
@@ -1643,9 +1657,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(bean_instance_clone.getInfo_context()!=null && bean_instance_clone.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)bean_instance_clone.asBean().getClass()
-											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-											.invoke(null, new Object[]{request});
+//						request2map = (HashMap)bean_instance_clone.asBean().getClass()
+//											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//											.invoke(null, new Object[]{request});
+						request2map = (HashMap)
+								util_reflect.findDeclaredMethod(
+										bean_instance_clone.asBean().getClass(),
+									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+								.invoke(null, new Object[]{request});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch (Throwable e) {
@@ -1788,9 +1807,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 							isRemoteEjb=true;
 							try{
-								request2map = (HashMap)action_instance.asAction().getClass()
-													.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-													.invoke(null, new Object[]{request});
+//								request2map = (HashMap)action_instance.asAction().getClass()
+//													.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//													.invoke(null, new Object[]{request});
+								request2map = (HashMap)
+										util_reflect.findDeclaredMethod(
+												action_instance.asAction().getClass(),
+											"convertRequest2Map", new Class[]{HttpServletRequest.class})
+										.invoke(null, new Object[]{request});
 							}catch (Exception e) {
 								new bsControllerException(e, iStub.log_ERROR);
 							}catch (Throwable e) {
@@ -2318,9 +2342,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-				request2map = (HashMap)action_instance.asAction().getClass()
-									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-									.invoke(null, new Object[]{request});
+//				request2map = (HashMap)action_instance.asAction().getClass()
+//									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//									.invoke(null, new Object[]{request});
+				request2map = (HashMap)
+						util_reflect.findDeclaredMethod(
+								action_instance.asAction().getClass(),
+							"convertRequest2Map", new Class[]{HttpServletRequest.class})
+						.invoke(null, new Object[]{request});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {
@@ -2457,9 +2486,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-				request2map = (HashMap)currentStream.asStream().getClass()
-									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-									.invoke(null, new Object[]{request});
+//				request2map = (HashMap)currentStream.asStream().getClass()
+//									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//									.invoke(null, new Object[]{request});
+				request2map = (HashMap)
+						util_reflect.findDeclaredMethod(
+								currentStream.asStream().getClass(),
+							"convertRequest2Map", new Class[]{HttpServletRequest.class})
+						.invoke(null, new Object[]{request});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {
@@ -2911,9 +2945,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)currentStream.asStream().getClass()
-											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-											.invoke(null, new Object[]{request});
+//						request2map = (HashMap)currentStream.asStream().getClass()
+//											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//											.invoke(null, new Object[]{request});
+						request2map = (HashMap)
+								util_reflect.findDeclaredMethod(
+										currentStream.asStream().getClass(),
+									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+								.invoke(null, new Object[]{request});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch (Throwable e) {
@@ -2977,9 +3016,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)currentStream.asStream().getClass()
-											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-											.invoke(null, new Object[]{request});
+//						request2map = (HashMap)currentStream.asStream().getClass()
+//											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//											.invoke(null, new Object[]{request});
+						request2map = (HashMap)
+								util_reflect.findDeclaredMethod(
+										currentStream.asStream().getClass(),
+									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+								.invoke(null, new Object[]{request});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch (Throwable e) {

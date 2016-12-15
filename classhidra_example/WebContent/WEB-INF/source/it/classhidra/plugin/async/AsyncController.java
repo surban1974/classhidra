@@ -29,6 +29,7 @@ import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_reflect;
 
 
 @WebServlet(urlPatterns = "/AsyncController", asyncSupported=true)
@@ -415,9 +416,14 @@ public class AsyncController extends HttpServlet {
 		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-				request2map = (HashMap)action_instance.asAction().getClass()
-									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-									.invoke(null, new Object[]{request});
+//				request2map = (HashMap)action_instance.asAction().getClass()
+//									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//									.invoke(null, new Object[]{request});
+				request2map = (HashMap)
+						util_reflect.findDeclaredMethod(
+							action_instance.asAction().getClass(),
+							"convertRequest2Map", new Class[]{HttpServletRequest.class})
+						.invoke(null, new Object[]{request});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {

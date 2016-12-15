@@ -7,6 +7,8 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import it.classhidra.serialize.Serialized;
+
 public class util_makeValue {
 
 
@@ -43,6 +45,52 @@ public class util_makeValue {
 		if(fld!=null) ret_class = fld.getType();
 		if(fld==null && ret_fld!=null) ret_class = ret_fld.getReturnType();
 
+		
+		if(ret_class==null){
+			final String fkey = key;
+			Field[] alldf = util_reflect.getAllDeclaredFields(
+					req.getClass(),
+					new Comparable() {
+						public int compareTo(Object field) {
+							if(field instanceof Field){
+								Serialized annotation = ((Field)field).getAnnotation(Serialized.class);
+								if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(fkey))
+									return 0;
+							}
+								return -1;
+						}
+					}
+					);
+			for(Field field: alldf){
+//				Serialized annotation = field.getAnnotation(Serialized.class);
+//				if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(key)){
+					ret_class = field.getType();
+					break;
+			}
+		}
+		if(ret_class==null){
+			final String fkey = key;
+			Method[] alldm = util_reflect.getAllDeclaredMethods(
+					req.getClass(),
+					new Comparable() {
+						public int compareTo(Object method) {
+							if(method instanceof Method){
+								Serialized annotation = ((Method)method).getAnnotation(Serialized.class);
+								if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(fkey))
+									return 0;
+							}
+								return -1;
+						}
+					}
+					);
+			for(Method method: alldm){
+//				Serialized annotation = method.getAnnotation(Serialized.class);
+//				if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(key)){
+					ret_class =  method.getReturnType();
+					break;
+			}
+		}
+		
 		if(ret_class==null) return null;
 
 		if(ret_class.isPrimitive()){
@@ -216,6 +264,50 @@ public class util_makeValue {
 		if(ret_class==null && req instanceof HashMap){
 			ret_class = ((HashMap)req).get(key).getClass();
 		}
+		
+		if(ret_class==null){
+			final String fkey = key;
+			Field[] alldf = util_reflect.getAllDeclaredFields(
+					req.getClass(),
+					new Comparable() {
+						public int compareTo(Object field) {
+							if(field instanceof Field){
+								Serialized annotation = ((Field)field).getAnnotation(Serialized.class);
+								if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(fkey))
+									return 0;
+							}
+								return -1;
+						}
+					}
+					);
+			for(Field field: alldf){
+					ret_class = field.getType();
+					break;
+			}
+		}
+		if(ret_class==null){
+			final String fkey = key;
+			Method[] alldm = util_reflect.getAllDeclaredMethods(
+					req.getClass(),
+					new Comparable() {
+						public int compareTo(Object method) {
+							if(method instanceof Method){
+								Serialized annotation = ((Method)method).getAnnotation(Serialized.class);
+								if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(fkey))
+									return 0;
+							}
+								return -1;
+						}
+					}
+					);
+			for(Method method: alldm){
+					ret_class =  method.getReturnType();
+					break;
+			}
+		}
+		
+		if(ret_class==null) return null;
+		
 
 		if(ret_class.isPrimitive()){
 			try{

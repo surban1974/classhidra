@@ -25,11 +25,14 @@
 package it.classhidra.core.tool.elements;
 
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.*;
+import it.classhidra.serialize.Serialized;
 
 
 public abstract class elementBase implements i_elementBase, java.io.Serializable, Cloneable {
@@ -201,5 +204,52 @@ public boolean setValue(Object requested, String nome, Object[] value) throws Ex
 }
 public boolean setValue(Object requested, String nome, Object[] value, boolean log) throws Exception{
 	return util_reflect.setValue(requested, nome, value,log);
+}
+public boolean setValueMapped(Object requested, String prefix, String nome, Object[] value, boolean log) throws Exception{
+	String mapName = null;
+	if(mapName==null){
+		final String fkey = nome;
+		Field[] alldf = util_reflect.getAllDeclaredFields(
+				requested.getClass(),
+				new Comparable() {
+					public int compareTo(Object field) {
+						if(field instanceof Field){
+							Serialized annotation = ((Field)field).getAnnotation(Serialized.class);
+							if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(fkey))
+								return 0;
+						}
+							return -1;
+					}
+				}
+				);
+		for(Field field: alldf){
+			mapName = prefix + util_reflect.adaptMethodName(field.getName());
+			break;
+		}
+	}
+	if(mapName==null){
+		final String fkey = nome;
+		Method[] alldm = util_reflect.getAllDeclaredMethods(
+				requested.getClass(),
+				new Comparable() {
+					public int compareTo(Object method) {
+						if(method instanceof Method){
+							Serialized annotation = ((Method)method).getAnnotation(Serialized.class);
+							if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(fkey))
+								return 0;
+						}
+							return -1;
+					}
+				}
+				);
+		for(Method method: alldm){
+			mapName =  method.getName();
+			break;
+		}
+		
+	}
+	if(mapName==null)
+		return false;
+	return util_reflect.setValue(requested, mapName, value,log);
 }
 }

@@ -26,6 +26,7 @@ package it.classhidra.core.tool.util;
 
 
 import java.io.DataInputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
@@ -788,6 +789,8 @@ public class util_supportbean  {
 								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
 								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 
+								if(writeValue==null)
+									writeValue = util_reflect.getValueIfIsInputAnnotation(current_requested, current_field_name, null);
 							}catch(Exception e){
 							}
 							current_requested = writeValue;
@@ -1171,9 +1174,9 @@ public class util_supportbean  {
 		if(req instanceof Map){
 			((Map)req).put(nome, value);
 		}else{
-			Object[] par = new Object[1];
-			par[0]=value;
-			setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),par,log);
+			boolean res = setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),new Object[]{value},log);
+			if(!res)
+				res = setValueMapped(req, "set", nome.trim(),new Object[]{value},false);
 		}
 	}
 	
@@ -1182,6 +1185,8 @@ public class util_supportbean  {
 			if(name.indexOf('.')==-1){
 				try{
 					boolean res = setValue(req, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
+					if(!res)
+						res = setValueMapped(req, "set", name.trim(),new Object[]{value},false);
 					return res;
 				}catch(Exception e){
 					return false;
@@ -1222,6 +1227,54 @@ public class util_supportbean  {
 //		return true;
 	}	
 	
+	
+	public static boolean setValueMapped(Object requested, String prefix, String nome, Object[] value, boolean log) throws Exception{
+		String mapName = null;
+		if(mapName==null){
+			final String fkey = nome;
+			Field[] alldf = util_reflect.getAllDeclaredFields(
+					requested.getClass(),
+					new Comparable() {
+						public int compareTo(Object field) {
+							if(field instanceof Field){
+								Serialized annotation = ((Field)field).getAnnotation(Serialized.class);
+								if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(fkey))
+									return 0;
+							}
+								return -1;
+						}
+					}
+					);
+			for(Field field: alldf){
+				mapName = prefix + util_reflect.adaptMethodName(field.getName());
+				break;
+			}
+		}
+		if(mapName==null){
+			final String fkey = nome;
+			Method[] alldm = util_reflect.getAllDeclaredMethods(
+					requested.getClass(),
+					new Comparable() {
+						public int compareTo(Object method) {
+							if(method instanceof Method){
+								Serialized annotation = ((Method)method).getAnnotation(Serialized.class);
+								if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(fkey))
+									return 0;
+							}
+								return -1;
+						}
+					}
+					);
+			for(Method method: alldm){
+				mapName =  method.getName();
+				break;
+			}
+			
+		}
+		if(mapName==null)
+			return false;
+		return util_reflect.setValue(requested, mapName, value,log);
+	}
 	
 	public static boolean setValue(Object requested, String nome, Object[] value) throws Exception{
 		return util_reflect.setValue(requested, nome, value);
@@ -1265,4 +1318,6 @@ public class util_supportbean  {
 		
 		}
 	}
+	
+
 }

@@ -88,18 +88,21 @@ public class XmlWriter {
 			}
 		}
 		if(goAhead){		
-			result+=generateXmlItemTag_Start(sub_obj, name,level);
-			result+=generateXmlItemTag_Content(sub_obj, name,level,avoidCyclicPointer,annotation,serializeChildren,serializeDepth,subTreeFilters);
-			result+=generateXmlItemTag_Finish(sub_obj, name, level);
+			result+=generateXmlItemTag_Start(sub_obj, name, level, annotation);
+			result+=generateXmlItemTag_Content(sub_obj, name, level,avoidCyclicPointer,annotation,serializeChildren,serializeDepth,subTreeFilters);
+			result+=generateXmlItemTag_Finish(sub_obj, name, level, annotation);
 		}
 		return result;
 	}
 
-	private static String generateXmlItemTag_Start(Object sub_obj, String name, int level){
+	private static String generateXmlItemTag_Start(Object sub_obj, String name, int level, Serialized annotation){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
+		String map_name = name;
+		if(annotation!=null && annotation.output()!=null && annotation.output().name()!=null && !annotation.output().name().equals(""))
+			map_name = annotation.output().name();
 		String result=spaceLevel(level);
 		
-		if(name!=null) result+="<"+util_reflect.revAdaptMethodName(name);
+		if(map_name!=null) result+="<"+util_reflect.revAdaptMethodName(map_name);
 		else{
 			if(sub_obj instanceof List || sub_obj.getClass().isArray())
 				result+="<items";
@@ -171,9 +174,9 @@ public class XmlWriter {
 						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 
 							if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-								result+=generateXmlItemTag_Start(new Object(), null,level+1);
+								result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation);
 								result+="\"WARNING: cyclic pointer\"";
-								result+=generateXmlItemTag_Finish(new Object(), null,level+1);
+								result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation);
 							}else{
 								avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 								result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,sub_annotation,
@@ -203,9 +206,9 @@ public class XmlWriter {
 						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){							
 
 							if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-								result+=generateXmlItemTag_Start(new Object(), null,level+1);
+								result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation);
 								result+="\"WARNING: cyclic pointer\"";
-								result+=generateXmlItemTag_Finish(new Object(), null,level+1);
+								result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation);
 							}else{
 								avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 								result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,sub_annotation,
@@ -239,9 +242,9 @@ public class XmlWriter {
 					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-							result+=generateXmlItemTag_Start(new Object(), null,level+1);
+							result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation);
 							result+="\"WARNING: cyclic pointer\"";
-							result+=generateXmlItemTag_Finish(new Object(), null,level+1);
+							result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation);
 						}else{
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,sub_annotation,
@@ -276,9 +279,9 @@ public class XmlWriter {
 					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-							result+=generateXmlItemTag_Start(new Object(), pair.getKey().toString(),level+1);
+							result+=generateXmlItemTag_Start(new Object(), pair.getKey().toString(), level+1, sub_annotation);
 							result+="\"WARNING: cyclic pointer\"";
-							result+=generateXmlItemTag_Finish(new Object(), pair.getKey().toString(),level+1);
+							result+=generateXmlItemTag_Finish(new Object(), pair.getKey().toString(), level+1, sub_annotation);
 						}else{
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,avoidCyclicPointers,sub_annotation,
@@ -396,9 +399,9 @@ public class XmlWriter {
 									if(!sub_obj2.equals(sub_obj)){
 							
 										if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-											result+=generateXmlItemTag_Start(new Object(), methodName,level+1);
+											result+=generateXmlItemTag_Start(new Object(), methodName, level+1, sub_annotation);
 											result+="\"WARNING: cyclic pointer\"";
-											result+=generateXmlItemTag_Finish(new Object(), methodName,level+1);
+											result+=generateXmlItemTag_Finish(new Object(), methodName, level+1, sub_annotation);
 										}else{
 											avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 											result+=generateXmlItem(
@@ -433,16 +436,19 @@ public class XmlWriter {
 		return result;
 	}
 
-	private static String generateXmlItemTag_Finish(Object sub_obj, String name, int level){
+	private static String generateXmlItemTag_Finish(Object sub_obj, String name, int level, Serialized annotation){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
+		String map_name = name;
+		if(annotation!=null && annotation.output()!=null && annotation.output().name()!=null && !annotation.output().name().equals(""))
+			map_name = annotation.output().name();
 
 		String result="";
 
-		if(name!=null){
+		if(map_name!=null){
 			if(sub_obj instanceof List || sub_obj.getClass().isArray() || sub_obj instanceof Map)
-				result+="\n"+spaceLevel(level)+"</"+util_reflect.revAdaptMethodName(name)+">\n";
+				result+="\n"+spaceLevel(level)+"</"+util_reflect.revAdaptMethodName(map_name)+">\n";
 			else
-				result+="</"+util_reflect.revAdaptMethodName(name)+">\n";
+				result+="</"+util_reflect.revAdaptMethodName(map_name)+">\n";
 			
 		}else{
 			if(sub_obj instanceof List || sub_obj.getClass().isArray()){

@@ -8,6 +8,7 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.info_navigation;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.serialize.Serialized;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -15,6 +16,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -1225,7 +1228,86 @@ public void setField(Field fld, Object obj, Object value) throws Exception {
 	}
 }
 
+public static Object getValueIfIsInputAnnotation(Object requested, String name, Object[] value){
+	try{
+		if(requested==null || name==null || name.equals(""))
+			return null;
+		for(Method method: requested.getClass().getDeclaredMethods()){
+			Serialized annotation = method.getAnnotation(Serialized.class);
+			if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(name))
+				return method.invoke(requested, value);
+		}
+		for(Field field: requested.getClass().getDeclaredFields()){
+			Serialized annotation = field.getAnnotation(Serialized.class);
+			if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(name)){
+				if(!field.isAccessible()){
+					field.setAccessible(true);
+					Object ret = field.get(requested);
+					field.setAccessible(false);
+					return ret;
+				}else
+					return field.get(requested);
 
+				
+			}
+		}
+		return null;
+	}catch(Exception e){
+		return null;
+	}
+}
+
+public static Field[] getAllDeclaredFields(Class clazz, Comparable comp){
+	if(clazz==null) return new Field[0];
+	List all = new ArrayList();
+	while(clazz!=null && !clazz.equals(Object.class)){
+		for(Field field:clazz.getDeclaredFields()){
+			if(comp!=null){
+				if(comp.compareTo(field)==0)
+					all.add(field);
+			}else				
+				all.add(field);
+		}
+		clazz=clazz.getSuperclass();
+	}
+	Field[] ret = new Field[all.size()];
+	for(int i=0;i<all.size();i++)
+		ret[i] = (Field)all.get(i);
+	return ret;
+}
+
+public static Method[] getAllDeclaredMethods(Class clazz, Comparable comp){
+	if(clazz==null) return new Method[0];
+	List all = new ArrayList();
+	while(clazz!=null && !clazz.equals(Object.class)){
+		for(Method method:clazz.getDeclaredMethods()){
+			if(comp!=null){
+				if(comp.compareTo(method)==0)
+					all.add(method);
+			}else				
+				all.add(method);
+		}
+		clazz=clazz.getSuperclass();
+	}
+	Method[] ret = new Method[all.size()];
+	for(int i=0;i<all.size();i++)
+		ret[i] = (Method)all.get(i);
+	return ret;
+}
+
+public static Method findDeclaredMethod(Class clazz, String name, Class[] parameterTypes){
+	if(clazz==null) return null;
+	List all = new ArrayList();
+	
+	while(clazz!=null && !clazz.equals(Object.class)){
+		try{
+			return clazz.getDeclaredMethod(name, parameterTypes);
+		}catch(Exception e){			
+		}
+		clazz=clazz.getSuperclass();
+	}
+	return null;
+}
 
 //TODO @Deprecated
 public void setIndexOfList(int newValue) {

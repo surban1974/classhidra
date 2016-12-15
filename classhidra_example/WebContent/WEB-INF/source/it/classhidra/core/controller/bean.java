@@ -626,6 +626,9 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
 								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 
+								if(writeValue==null)
+									writeValue = util_reflect.getValueIfIsInputAnnotation(current_requested, current_field_name, null);
+								
 							}catch(Exception e){
 							}
 							current_requested = writeValue;
@@ -913,9 +916,9 @@ public void setCampoValuePoint(Object req, String nome, Object value) throws Exc
 	if(req instanceof Map){
 		((Map)req).put(nome, value);
 	}else{
-		Object[] par = new Object[1];
-		par[0]=value;
-		setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),par);
+		boolean res = setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),new Object[]{value});
+		if(!res)
+			res = setValueMapped(req, "set", nome.trim(),new Object[]{value},false);
 	}
 }
 
@@ -923,9 +926,9 @@ public void setCampoValuePoint(Object req, String nome, Object value, boolean lo
 	if(req instanceof Map){
 		((Map)req).put(nome, value);
 	}else{
-		Object[] par = new Object[1];
-		par[0]=value;
-		setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),par,log);
+		boolean res = setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),new Object[]{value},log);
+		if(!res)
+			res = setValueMapped(req, "set", nome.trim(),new Object[]{value},log);
 	}
 }
 
@@ -1271,11 +1274,20 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 			try{
 				if(delegated!=null){
 					boolean res = setValue(delegated, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
-					if(!res) res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
+					if(!res)
+						res = setValueMapped(delegated, "set", name.trim(),new Object[]{value},false);
+					
+					if(!res)
+						res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
+					if(!res)
+						res = setValueMapped(this, "set", name.trim(),new Object[]{value},false);
 					return res;
 				}
 				else{
 					boolean res = setValue(this, "set"+util_reflect.adaptMethodName(name.trim()),new Object[]{value},false);
+					if(!res)
+						res = setValueMapped(this, "set", name.trim(),new Object[]{value},false);
+					
 					if(!res){
 						if(parametersFly==null) 
 							parametersFly = new HashMap();

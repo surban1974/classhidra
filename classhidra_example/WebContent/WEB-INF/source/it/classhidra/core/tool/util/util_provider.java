@@ -24,7 +24,8 @@ public class util_provider {
 		try{
 			Class c_provider = Class.forName("it.classhidra.plugin.provider.DependencyInjectionProvider");
 			try{
-				Method m_getInstance = c_provider.getDeclaredMethod("checkInitialContext", new Class[]{String.class, ServletContext.class});
+//				Method m_getInstance = c_provider.getDeclaredMethod("checkInitialContext", new Class[]{String.class, ServletContext.class});
+				Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInitialContext", new Class[]{String.class, ServletContext.class});
 				Object instance = m_getInstance.invoke(null, new Object[]{cdi_jndi_name, servletContext});
 				if(instance instanceof Boolean && ((Boolean)instance).booleanValue())
 					return (i_provider)c_provider.newInstance();
@@ -43,7 +44,9 @@ public class util_provider {
 		try{
 			Class c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
 			try{
-				Method m_getInstance = c_provider.getDeclaredMethod("checkInitialContext", new Class[]{String.class, ServletContext.class});
+//				Method m_getInstance = c_provider.getDeclaredMethod("checkInitialContext", new Class[]{String.class, ServletContext.class});
+				Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInitialContext", new Class[]{String.class, ServletContext.class});
+
 				Object instance = m_getInstance.invoke(null, new Object[]{ejb_jndi_name, servletContext});
 				if(instance instanceof Boolean && ((Boolean)instance).booleanValue())
 					return (i_provider)c_provider.newInstance();
@@ -62,7 +65,9 @@ public class util_provider {
 		try{
 			Class c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
 			try{
-				Method m_getInstance = c_provider.getDeclaredMethod("clearNamingMap", new Class[]{});
+//				Method m_getInstance = c_provider.getDeclaredMethod("clearNamingMap", new Class[]{});
+				Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "clearNamingMap", new Class[]{});
+
 				Object instance = m_getInstance.invoke(null, new Object[]{});
 				if(instance instanceof Boolean && ((Boolean)instance).booleanValue())
 					return ((Boolean)instance).booleanValue();
@@ -139,7 +144,9 @@ public class util_provider {
 			try{
 				Class c_provider = Class.forName(id_provider);
 				try{
-					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{String.class,String.class,ServletContext.class});
+//					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{String.class,String.class,ServletContext.class});
+					Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "getInstance", new Class[]{String.class,String.class,ServletContext.class});
+
 					Object instance = m_getInstance.invoke(null, new Object[]{id_bean,class_bean,servletContext});
 					return instance;
 				}catch(Exception e){				
@@ -169,7 +176,9 @@ public class util_provider {
 			try{
 				Class c_provider = _provider.getClass();
 				try{
-					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{String.class,String.class,ServletContext.class});
+//					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{String.class,String.class,ServletContext.class});
+					Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "getInstance", new Class[]{String.class,String.class,ServletContext.class});
+
 					Object instance = m_getInstance.invoke(null, new Object[]{id_bean,class_bean,servletContext});
 					return instance;
 				}catch(Exception e){				
@@ -449,7 +458,9 @@ public class util_provider {
 			try{
 				Class c_provider = Class.forName(id_provider);
 				try{
-					Method m_destroyInstance = c_provider.getDeclaredMethod("destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
+//					Method m_destroyInstance = c_provider.getDeclaredMethod("destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
+					Method m_destroyInstance = util_reflect.findDeclaredMethod(c_provider, "destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
+
 					Object instance = m_destroyInstance.invoke(null, new Object[]{id_bean,class_bean,servletContext});
 					return ((Boolean)instance).booleanValue();
 				}catch(Exception e){				
@@ -470,7 +481,9 @@ public class util_provider {
 			try{
 				Class c_provider = _provider.getClass();
 				try{
-					Method m_destroyInstance = c_provider.getDeclaredMethod("destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
+//					Method m_destroyInstance = c_provider.getDeclaredMethod("destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
+					Method m_destroyInstance = util_reflect.findDeclaredMethod(c_provider, "destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
+
 					Object instance = m_destroyInstance.invoke(null, new Object[]{id_bean,class_bean,servletContext});
 					return ((Boolean)instance).booleanValue();
 				}catch(Exception e){				
@@ -494,7 +507,9 @@ public class util_provider {
 			try{
 				Class c_provider = _provider.getClass();
 				try{
-					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{Object.class, String.class, String.class,ServletContext.class});
+//					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{Object.class, String.class, String.class,ServletContext.class});
+					Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "getInstance", new Class[]{Object.class, String.class, String.class,ServletContext.class});
+
 					Object instance = m_getInstance.invoke(null, new Object[]{obj, id_bean,class_bean,servletContext});
 					return instance;
 				}catch(Exception e){				
@@ -519,7 +534,9 @@ public class util_provider {
 			return info;
 		try{		
 			Class c_provider = _provider.getClass();
-			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoEjb", new Class[]{info_context.class, i_bean.class});
+//			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoEjb", new Class[]{info_context.class, i_bean.class});
+			Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInfoEjb", new Class[]{info_context.class, i_bean.class});
+
 			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
 			return info;
 		}catch(Exception e){
@@ -538,7 +555,9 @@ public class util_provider {
 
 		try{		
 			Class c_provider = Class.forName(id_provider);
-			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoCdi", new Class[]{info_context.class, i_bean.class});
+//			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoCdi", new Class[]{info_context.class, i_bean.class});
+			Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInfoCdi", new Class[]{info_context.class, i_bean.class});
+
 			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
 			return info;
 		}catch(Exception e){
@@ -557,7 +576,9 @@ public class util_provider {
 
 		try{		
 			Class c_provider = _provider.getClass();
-			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoCdi", new Class[]{info_context.class, i_bean.class});
+//			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoCdi", new Class[]{info_context.class, i_bean.class});
+			Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInfoCdi", new Class[]{info_context.class, i_bean.class});
+
 			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
 			return info;
 		}catch(Exception e){

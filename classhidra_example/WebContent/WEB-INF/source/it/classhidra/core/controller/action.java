@@ -27,6 +27,7 @@
 package it.classhidra.core.controller;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,7 @@ import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
+import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_supportbean;
 import it.classhidra.serialize.JsonWriter;
 import it.classhidra.serialize.XmlWriter;
@@ -80,9 +82,15 @@ public class action extends bean implements i_action, Serializable{
 			if(bean4init.getInfo_context()!=null && bean4init.getInfo_context().isRemote()){
 				isRemoteEjb=true;
 				try{
-					request2map = (HashMap)bean4init.asBean().getClass()
-							.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//					request2map = (HashMap)bean4init.asBean().getClass()
+//							.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
+//							.invoke(null, new Object[]{request});
+					request2map = (HashMap)
+							util_reflect.findDeclaredMethod(
+								bean4init.asBean().getClass(),
+								"convertRequest2Map", new Class[]{HttpServletRequest.class})
 							.invoke(null, new Object[]{request});
+
 				}catch (Exception e) {
 					new bsControllerException(e, iStub.log_ERROR);
 				}catch (Throwable e) {
