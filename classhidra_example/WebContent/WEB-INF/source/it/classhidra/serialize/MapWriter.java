@@ -95,6 +95,8 @@ public class MapWriter {
 	private static Object generateMapContent(Map<String,Object> map, Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters){
 
 		String map_name = name;
+		if(name!=null)
+			map_name = util_reflect.revAdaptMethodName(name);
 		if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
 			map_name = annotation.output().name();
 		
@@ -342,7 +344,10 @@ public class MapWriter {
 								if(sub_annotation==null)
 									sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
 									
-								if(sub_annotation!=null || serializeChildren || serializeDepth>0){
+								if(	(sub_annotation==null && (serializeChildren || serializeDepth>0))
+									||
+									(sub_annotation!=null && sub_annotation.value())
+									){
 									
 									if(!sub_obj2.equals(sub_obj)){
 										boolean nFirst = true;
@@ -376,9 +381,63 @@ public class MapWriter {
 						}
 					}
 				}
+				
+				Field[] fields = sub_obj.getClass().getDeclaredFields();
+				for(int j=0;j<fields.length;j++){
+					if(!Modifier.isStatic(fields[j].getModifiers())){
+						String fieldName = fields[j].getName();
+						Serialized sub_annotation = fields[j].getAnnotation(Serialized.class);
+						
+						if(sub_annotation!=null && sub_annotation.value()){
+							String sub_map_name2 = fields[j].getName();
+							if(sub_annotation.output()!=null && sub_annotation.output().name()!=null && !sub_annotation.output().name().equals(""))
+								sub_map_name2 = sub_annotation.output().name();
+							if(sub_map_name2!=null && result_tmp.get(sub_map_name2)==null){
+								Object sub_obj2 = null;
+								if(!fields[j].isAccessible()){
+									fields[j].setAccessible(true);
+									sub_obj2 = fields[j].get(sub_obj);
+									fields[j].setAccessible(false);
+								}else
+									sub_obj2 = fields[j].get(sub_obj);
+									
+								if(sub_obj2!=null && !sub_obj2.equals(sub_obj)){
+									boolean nFirst = true;
+									if(result_tmp.size()==0) nFirst=false;
+									
+									if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
+
+//										result_tmp+="\"WARNING\":\"cyclic pointer\"";
+									}else{
+										avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
+										 
+											generateMap(
+												result_tmp,
+												sub_obj2, fieldName,level+1,nFirst,avoidCyclicPointers,sub_annotation,
+												(sub_annotation!=null)?sub_annotation.children():false,
+												(sub_annotation!=null && sub_annotation.depth()>0)
+												?
+													sub_annotation.depth()
+												:
+													(serializeDepth-1>=0)?serializeDepth-1:0
+												,
+												treeFilters);
+											
+										avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
+									}
+							
+								}
+							}
+							
+						}
+						
+					}	
+				}					
+				
 			    map.put(map_name, result_tmp);
 			    return result_tmp;
-			}catch(Exception e){				
+			}catch(Exception e){	
+				e.toString();
 			}
 
 		return null;

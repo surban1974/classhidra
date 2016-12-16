@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Serialized {
+	boolean value() default true;
 	Format output() default @Format;
 	Format input() default @Format;
 	boolean children() default false;
