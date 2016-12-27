@@ -404,13 +404,21 @@ public class XmlWriter {
 						if(!Modifier.isStatic(methods[i].getModifiers())){
 							String methodName = methods[i].getName().substring(prefixes[p].length());
 							Serialized sub_annotation = methods[i].getAnnotation(Serialized.class);
+							Object sub_obj2 = null;
 							if(sub_annotation==null){
 								Field sub_field = util_reflect.getFieldRecursive(sub_obj.getClass(), util_reflect.revAdaptMethodName(methodName));
-								if(sub_field!=null)
+								if(sub_field!=null){
 									sub_annotation = sub_field.getAnnotation(Serialized.class);
+									if(!sub_field.isAccessible()){
+										sub_field.setAccessible(true);
+										sub_obj2 = sub_field.get(sub_obj);
+										sub_field.setAccessible(false);
+									}else
+										sub_obj2 = sub_field.get(sub_obj);
+								}
 							}
-							
-							Object sub_obj2 = util_reflect.getValue(sub_obj, prefixes[p]+util_reflect.adaptMethodName(methodName), null);
+							if(sub_obj2==null)
+								sub_obj2 = util_reflect.getValue(sub_obj, prefixes[p]+util_reflect.adaptMethodName(methodName), null);
 							if(sub_obj2!=null){
 								if(sub_annotation==null)
 									sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
