@@ -37,8 +37,15 @@ public class JsonWriter {
 		if(obj==null)
 			result+="\"error\":  \"Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL\"";
 		else{
-			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);		
-			result+=generateJsonItem(obj,name,0,false,new HashMap(),null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
+			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);
+			String map_name = name;
+			if(name==null && annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+			else if(name==null && obj!=null && (obj instanceof List || obj.getClass().isArray()))
+				map_name = "items";
+			else if(name==null)
+				map_name = "item";
+			result+=generateJsonItem(obj,map_name,0,false,new HashMap(),null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
 		}
 		return result+"\n}";
 	}	
@@ -49,10 +56,18 @@ public class JsonWriter {
 		if(obj==null)
 			result+="\"error\":  \"Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL\"";
 		else{
-			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);		
+			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);
+			String map_name = name;
+			if(name==null && annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+			else if(name==null && obj!=null && (obj instanceof List || obj.getClass().isArray()))
+				map_name = "items";
+			else if(name==null)
+				map_name = "item";
+
 			result+=generateJsonItem(
 					obj,
-					name,
+					map_name,
 					0,
 					false,
 					new HashMap(),
@@ -93,10 +108,11 @@ public class JsonWriter {
 	private static String generateJsonItemTag_Start(Object sub_obj, String name, int level, Serialized annotation, boolean notFirst){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String map_name = name;
-		if(name!=null)
+		if(name!=null){
 			map_name = util_reflect.revAdaptMethodName(name);
-		if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
-			map_name = annotation.output().name();
+			if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+		}
 		
 		String space=spaceLevel(level);
 		String result="";

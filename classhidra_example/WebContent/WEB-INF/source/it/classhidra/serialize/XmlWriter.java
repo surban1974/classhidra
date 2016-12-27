@@ -42,7 +42,15 @@ public class XmlWriter {
 			result+="<error>Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL</error>";
 		else{
 			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);	
-			result+=generateXmlItem(obj,name,0,avoidCyclicPointers,null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
+			String map_name = name;
+			if(name==null && annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+			else if(name==null && obj!=null && (obj instanceof List || obj.getClass().isArray()))
+				map_name = "items";
+			else if(name==null)
+				map_name = "item";
+
+			result+=generateXmlItem(obj,map_name,0,avoidCyclicPointers,null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
 		}
 		return result;
 	}
@@ -55,9 +63,17 @@ public class XmlWriter {
 			result+="<error>Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL</error>";
 		else{
 			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);	
+			String map_name = name;
+			if(name==null && annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+			else if(name==null && obj!=null && (obj instanceof List || obj.getClass().isArray()))
+				map_name = "items";
+			else if(name==null)
+				map_name = "item";
+
 			result+=generateXmlItem(
 					obj,
-					name,
+					map_name,
 					0,
 					avoidCyclicPointers,
 					null,
@@ -101,7 +117,8 @@ public class XmlWriter {
 		if(name!=null)
 			map_name = util_reflect.revAdaptMethodName(name);
 		if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
-			map_name = annotation.output().name();
+				map_name = annotation.output().name();
+		
 		
 		String result=spaceLevel(level);
 		
@@ -512,14 +529,28 @@ public class XmlWriter {
 			map_name = util_reflect.revAdaptMethodName(name);
 		if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
 			map_name = annotation.output().name();
+		
 
 		String result="";
 
 		if(map_name!=null){
-			if(sub_obj instanceof List || sub_obj.getClass().isArray() || sub_obj instanceof Map)
+			if(sub_obj instanceof List || sub_obj.getClass().isArray() || sub_obj instanceof Map){
 				result+="\n"+spaceLevel(level)+"</"+(map_name)+">\n";
-			else
-				result+="</"+(map_name)+">\n";
+				return result;
+			}
+			boolean simple = false;
+			if(	sub_obj.getClass().isPrimitive() ||
+					sub_obj instanceof String ||
+					sub_obj instanceof Number ||
+					sub_obj instanceof Date ||
+					sub_obj instanceof Boolean)
+				simple = true;
+			if(!simple){
+				result+=spaceLevel(level)+"</"+(map_name)+">\n";
+				return result;
+			}
+			result+="</"+(map_name)+">\n";
+//			result+="</"+(map_name)+">\n";
 			
 		}else{
 			if(sub_obj instanceof List || sub_obj.getClass().isArray()){
@@ -537,7 +568,8 @@ public class XmlWriter {
 				result+=spaceLevel(level)+"</item>\n";
 				return result;
 			}
-			result+=spaceLevel(level)+"</item>\n";
+			result+="</item>\n";
+//			result+=spaceLevel(level)+"</item>\n";
 		}
 		
 

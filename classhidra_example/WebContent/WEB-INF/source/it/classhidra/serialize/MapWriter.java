@@ -32,14 +32,22 @@ public class MapWriter {
 		Map<String,Object> map= new HashMap<String,Object>();
 		if(obj!=null){
 			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);		
-					generateMap(map,obj,name,0,false,new HashMap(),null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
+			String map_name = name;
+			if(name==null && annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+			else if(name==null && obj!=null && (obj instanceof List || obj.getClass().isArray()))
+				map_name = "items";
+			else if(name==null)
+				map_name = "item";
+
+			generateMap(map,obj,map_name,0,false,new HashMap(),null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
 
 		}
-		if(name==null){
-			Map<String,Object> rmap = (Map<String,Object>)map.get(null);
-			if(rmap!=null)
-				return rmap;
-		}
+//		if(name==null){
+//			Map<String,Object> rmap = (Map<String,Object>)map.get(null);
+//			if(rmap!=null)
+//				return rmap;
+//		}
 		return map;
 	}	
 
@@ -48,11 +56,18 @@ public class MapWriter {
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(obj!=null){
 			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);		
+			String map_name = name;
+			if(name==null && annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+			else if(name==null && obj!=null && (obj instanceof List || obj.getClass().isArray()))
+				map_name = "items";
+			else if(name==null)
+				map_name = "item";
 
-						generateMap(
+			generateMap(
 							map,
 							obj,
-							name,
+							map_name,
 							0,
 							false,
 							new HashMap(),
@@ -95,10 +110,11 @@ public class MapWriter {
 	private static Object generateMapContent(Map<String,Object> map, Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters){
 
 		String map_name = name;
-		if(name!=null)
+		if(name!=null){
 			map_name = util_reflect.revAdaptMethodName(name);
-		if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
-			map_name = annotation.output().name();
+			if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+		}
 		
 		if(sub_obj==null || (name!=null && name.equals("Class")))
 			return null;
