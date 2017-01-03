@@ -197,7 +197,7 @@ public class app_init implements Serializable{
 				application_path_config=(application_path_config==null)?System.getProperty(bsConstants.CONST_ID_PATHCONFIG):application_path_config;
 
 			_enterpoint=(_enterpoint==null)?System.getProperty(id_enterpoint):_enterpoint;
-			_load_res_mode=(_load_res_mode==null)?System.getProperty(id_load_res_mode):_load_res_mode;
+			_load_res_mode=(_load_res_mode==null || _load_res_mode.equalsIgnoreCase("normal"))?System.getProperty(id_load_res_mode):_load_res_mode;
 			_nav_excluded=(_nav_excluded==null)?System.getProperty(id_nav_excluded):_nav_excluded;
 			_external_loader=(_external_loader==null)?System.getProperty(id_external_loader):_external_loader;
 			_init_loader=(_init_loader==null)?System.getProperty(id_init_loader):_init_loader;
@@ -213,14 +213,14 @@ public class app_init implements Serializable{
 			
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
 			_db_name=(_db_name==null)?System.getProperty(id_db_name):_db_name;
-			_extention_do=(_extention_do==null)?System.getProperty(id_extention_do):_extention_do;
+			_extention_do=(_extention_do==null || _extention_do.equalsIgnoreCase(bsConstants.CONST_EXTENTION_DO))?System.getProperty(id_extention_do):_extention_do;
 			_actioncall_separator=(_actioncall_separator==null)?System.getProperty(id_actioncall_separator):_actioncall_separator;
 			_avoid_permission_chech=(_avoid_permission_chech==null)?System.getProperty(id_avoid_permission_chech):_avoid_permission_chech;
 
 			
-			_debug=(_debug==null)?System.getProperty(id_debug):_debug;
-			_permit_redirect_resource=(_permit_redirect_resource==null)?System.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
-			_statistic=(_statistic==null)?System.getProperty(id_statistic):_statistic;
+			_debug=(_debug==null || _debug.equalsIgnoreCase("false"))?System.getProperty(id_debug):_debug;
+			_permit_redirect_resource=(_permit_redirect_resource==null || _permit_redirect_resource.equalsIgnoreCase("false"))?System.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
+			_statistic=(_statistic==null || _statistic.equalsIgnoreCase("false"))?System.getProperty(id_statistic):_statistic;
 			_statistic_provider=(_statistic_provider==null)?System.getProperty(id_statistic_provider):_statistic_provider;
 			_statistic_stacklength=(_statistic_stacklength==null)?System.getProperty(id_statistic_stacklength):_statistic_stacklength;
 			
@@ -285,7 +285,7 @@ public class app_init implements Serializable{
 			application_path_config=(application_path_config==null)?System.getProperty(bsConstants.CONST_ID_PATHCONFIG):application_path_config;
 		
 		_enterpoint=(_enterpoint==null)?property.getProperty(id_enterpoint):_enterpoint;
-		_load_res_mode=(_load_res_mode==null)?property.getProperty(id_load_res_mode):_load_res_mode;
+		_load_res_mode=(_load_res_mode==null || _load_res_mode.equalsIgnoreCase("normal"))?property.getProperty(id_load_res_mode):_load_res_mode;
 		_nav_excluded=(_nav_excluded==null)?property.getProperty(id_nav_excluded):_nav_excluded;
 		_external_loader=(_external_loader==null)?property.getProperty(id_external_loader):_external_loader;
 		_init_loader=(_init_loader==null)?property.getProperty(id_init_loader):_init_loader;
@@ -304,14 +304,14 @@ public class app_init implements Serializable{
 		_annotation_scanner=(_annotation_scanner==null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
 		_annotation_scanner_asjar=(_annotation_scanner_asjar==null)?property.getProperty(id_annotation_scanner_asjar):_annotation_scanner_asjar;
 		_vfs_plugin=(_vfs_plugin==null)?property.getProperty(id_vfs_plugin):_vfs_plugin;
-		_extention_do=(_extention_do==null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
+		_extention_do=(_extention_do==null || _extention_do.equalsIgnoreCase(bsConstants.CONST_EXTENTION_DO))?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
 		_actioncall_separator=(_actioncall_separator==null)?property.getProperty(id_actioncall_separator):_actioncall_separator;
 		_avoid_permission_chech=(_avoid_permission_chech==null)?property.getProperty(id_avoid_permission_chech):_avoid_permission_chech;
 
-		_debug=(_debug==null)?property.getProperty(id_debug):_debug;
-		_permit_redirect_resource=(_permit_redirect_resource==null)?property.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
+		_debug=(_debug==null || _debug.equalsIgnoreCase("false"))?property.getProperty(id_debug):_debug;
+		_permit_redirect_resource=(_permit_redirect_resource==null || _permit_redirect_resource.equalsIgnoreCase("false"))?property.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
 
-		_statistic=(_statistic==null)?property.getProperty(id_statistic):_statistic;
+		_statistic=(_statistic==null || _statistic.equalsIgnoreCase("false"))?property.getProperty(id_statistic):_statistic;
 		_statistic_provider=(_statistic_provider==null)?property.getProperty(id_statistic_provider):_statistic_provider;
 		_statistic_stacklength=(_statistic_stacklength==null)?property.getProperty(id_statistic_stacklength):_statistic_stacklength;
 
