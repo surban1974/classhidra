@@ -188,7 +188,7 @@ public class action extends bean implements i_action, Serializable{
 		try{
 			if(value!=null)
 				response.getOutputStream().write(new String("document.getElementById('"+target+"').value='"+value+"';").getBytes());
-			else response.getOutputStream().write(new String("void();").getBytes());
+			else response.getOutputStream().write(new String("void(0);").getBytes());
 		}catch(Exception ex){
 		}
 		return null;
