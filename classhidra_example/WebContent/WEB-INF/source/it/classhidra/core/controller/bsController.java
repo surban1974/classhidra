@@ -4304,58 +4304,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 		I_StatisticProvider sProvider = checkStatisticProvider();
 		if(sProvider!=null)
 			sProvider.addStatictic(stat);
-/*
-		if(statisticProvider==null)
-			statisticProvider = checkStatisticProvider();
-		if(statisticProvider!=null)
-			statisticProvider.addStatictic(stat);
-
-		if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true")){
-			I_StatisticProvider statProvider = (I_StatisticProvider) getFromLocalContainer(CONST_ID_STATISTIC_PROVIDER);
-			if(statProvider==null){
-				if(getAppInit().get_statistic_provider()==null || getAppInit().get_statistic_provider().equals(""))
-					statProvider = new StatisticProvider_Simple();
-				else{
-					if(getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("")){
-						try{
-							statProvider = (I_StatisticProvider)util_reflect.providerObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_statistic_provider,getAppInit().get_statistic_provider(), null);
-						}catch(Exception e){
-						}
-					}
-					if(statProvider==null){
-						try{
-							statProvider = (I_StatisticProvider)Class.forName(getAppInit().get_statistic_provider()).newInstance();
-						}catch(Exception e){
-							writeLog("ERROR instance Statistic Provider:"+getAppInit().get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
-						}
-					}
-				}
-				if(statProvider==null) statProvider = new StatisticProvider_Simple();
-				putToLocalContainer(CONST_ID_STATISTIC_PROVIDER,statProvider);
-			}
-			statProvider.addStatictic(stat);
-		}
-*/
 	}
 
 	public static I_StatisticProvider getStatisticProvider(){
-		
 		return checkStatisticProvider();
-/*		
-		if(statisticProvider==null)
-			statisticProvider = checkStatisticProvider();
-		return statisticProvider;
-*/
-/*
-		I_StatisticProvider statProvider = null;
-		if(getAppInit().get_statistic()!=null && getAppInit().get_statistic().equalsIgnoreCase("true"))
-			statProvider = (I_StatisticProvider) getFromLocalContainer(CONST_ID_STATISTIC_PROVIDER);
-		if(statProvider==null){
-			statProvider = checkStatisticProvider();
-			putToLocalContainer(CONST_ID_STATISTIC_PROVIDER,statProvider);
-		}
-		return statProvider;
-*/
 	}
 
 

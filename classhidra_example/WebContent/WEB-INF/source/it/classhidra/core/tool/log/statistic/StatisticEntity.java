@@ -19,6 +19,7 @@ public class StatisticEntity implements Serializable{
 	private Date st;
 	private Date ft;
 	private String bi;
+	private String agent;
 	HttpServletRequest request;
 	
 	public StatisticEntity(){
@@ -38,6 +39,7 @@ public class StatisticEntity implements Serializable{
 		request=_request;
 		if(request!=null){
 			bi = getBrowserInfo(request.getHeader("User-Agent"));
+			agent = request.getHeader("User-Agent");
 		}
 		
 	}
@@ -100,6 +102,17 @@ public class StatisticEntity implements Serializable{
 		      String Info[] = (subsString.split(";")[0]).split(" ");
 		      browsername = Info[0];
 		      browserversion = Info[1];
+		      
+		    } else if (browser.contains("Trident/7.0")){
+
+		      browsername = "MSIE";
+			  browserversion = "11.0";
+		    } else if (browser.contains("Edge")){
+		    	
+		      String subsString = browser.substring(browser.indexOf("Edge"));
+		      String Info[] = (subsString.split(" ")[0]).split("/");
+		      browsername = Info[0];
+		      browserversion = Info[1];
 		    } else if (browser.contains("Firefox")){
 	
 		      String subsString = browser.substring(browser.indexOf("Firefox"));
@@ -149,6 +162,9 @@ public class StatisticEntity implements Serializable{
 //		if(ft!=null) result+="ft=\""+util_format.dataToString(ft, "yyyyMMddHHmmssSSS")+"\" ";
 		if(getDelta()>0) result+="d=\""+getDelta()+"\" ";
 		if(bi!=null) result+="bi=\""+util_xml.normalXML(bi, null)+"\" ";
+		if(bi!=null && (bi.equals("-") || bi.equals("--mobile"))){
+			if(agent!=null) result+="agent=\""+util_xml.normalXML(agent, null)+"\" ";
+		}
 		result+="/>"; 
 		return result;		
 	}
@@ -175,5 +191,13 @@ public class StatisticEntity implements Serializable{
 
 	public void setBi(String bi) {
 		this.bi = bi;
+	}
+
+	public String getAgent() {
+		return agent;
+	}
+
+	public void setAgent(String agent) {
+		this.agent = agent;
 	}
 }
