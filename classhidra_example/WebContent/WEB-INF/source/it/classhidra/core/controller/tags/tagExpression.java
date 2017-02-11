@@ -61,7 +61,7 @@ public class tagExpression extends TagSupport{
 
 	private Object calculation(){
 		try{
-			boolean isFinish=false;
+
 			int i=0;
 			while(i<elements.size()){
 				if(elements.get(i) instanceof tagOperation){
