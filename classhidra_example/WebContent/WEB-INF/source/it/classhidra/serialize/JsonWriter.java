@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+import java.util.Set;
 
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
@@ -157,6 +157,18 @@ public class JsonWriter {
 			return result;
 		}
 
+		if(sub_obj instanceof Set ){
+			if(notFirst) result+=",\n";
+			result+=space;
+			if(map_name!=null && !map_name.equals(""))
+				result+="\""+(map_name)+"\":";
+			if(notFirst){
+				result+="\n";
+				result+=space+"[\n";
+			}else result+="[\n";
+			
+			return result;
+		}		
 
 		boolean simple = false;
 		if(	sub_obj.getClass().isPrimitive() ||
@@ -351,6 +363,50 @@ public class JsonWriter {
 			}
 			return result+result_tmp;
 		}
+		
+		if(sub_obj instanceof Set){
+
+			Iterator it = Arrays.asList(((Set)sub_obj).toArray()).iterator(); 
+			String result_tmp="";
+
+
+		    while (it.hasNext()) {
+
+				boolean nFirst = true;
+				if(result_tmp.length()==0) nFirst=false;
+				
+				Object sub_obj2=it.next();
+				if(sub_obj2!=null){			
+					
+					Serialized sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
+					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){							
+					
+						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
+							result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
+							result_tmp+="\"WARNING\":\"cyclic pointer\"";
+							result_tmp+=generateJsonItemTag_Finish(new Object(), null,level+1, nFirst);
+						}else{
+							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
+							result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,sub_annotation,
+									(sub_annotation!=null)?sub_annotation.children():false,
+											(sub_annotation!=null && sub_annotation.depth()>0)
+											?
+												sub_annotation.depth()
+											:
+												(serializeDepth-1>=0)?serializeDepth-1:0
+											,
+											treeFilters);
+							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
+						}
+					}
+				}else
+					result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters);
+							        
+		    }
+		    return result+result_tmp;
+
+		}
+		
 
 		if(sub_obj instanceof Map){
 			String result_tmp="";
@@ -626,6 +682,11 @@ public class JsonWriter {
 		if(sub_obj instanceof Map){
 			return  "\n"+space+"}";
 		}
+		if(sub_obj instanceof Set ){
+			return "\n"+space+"]";
+		}
+		
+		
 		
 		if(	sub_obj.getClass().isPrimitive() ||
 				sub_obj instanceof String ||

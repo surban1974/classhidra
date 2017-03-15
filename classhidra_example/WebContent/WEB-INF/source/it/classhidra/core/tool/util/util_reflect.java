@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -145,7 +146,7 @@ public static java.lang.reflect.Method[] getMethods(Object obj) throws Exception
 	try {
 		mtd = obj.getClass().getMethods();	//prelevo tutti i metodi della classe corrente obj
 	} catch(SecurityException e) {
-		errorMsg("getMethod","L'accesso alle informazioni della classe "+obj.getClass().getName()+" è negato.",e);
+		errorMsg("getMethod","L'accesso alle informazioni della classe "+obj.getClass().getName()+" ï¿½ negato.",e);
 	}
 	return mtd;
 }
@@ -155,7 +156,7 @@ public static java.lang.reflect.Method[] getMethods(Object obj, String s) throws
 	try {
 		mtd = obj.getClass().getMethods(); //prelevo tutti i metodi della classe corrente obj
 	} catch (SecurityException e) {
-		errorMsg("getMethod", "L'accesso alle informazioni della classe " + obj.getClass().getName() + " è negato.", e);
+		errorMsg("getMethod", "L'accesso alle informazioni della classe " + obj.getClass().getName() + " ï¿½ negato.", e);
 	}
 	int count = 0;
 	for (int i = 0; i < mtd.length; i++) {
@@ -728,13 +729,44 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 				}catch(Exception ex){
 					isException=true;
 				}
-			}else if(current_requested!=null && current_requested instanceof List && int4list>-1){
+			}else  if(current_requested!=null && current_requested instanceof List && int4list>-1){
 				try{
 					writeValue = ((List)current_requested).get(int4list);
 				}catch(Exception ex){
 					isException=true;
 				}
-	
+			}else  if(current_requested!=null && current_requested instanceof Set && int4list>-1){
+				try{
+					writeValue = Arrays.asList(((Set)current_requested)).toArray()[int4list];
+				}catch(Exception ex){
+					isException=true;
+				}
+			}else if(current_requested!=null && current_requested.getClass().isArray() && int4list>-1){
+				try{
+					Class componentType = current_requested.getClass().getComponentType();
+					if(!componentType.isPrimitive())
+						writeValue = ((Object[])current_requested)[int4list];
+					else{
+						if (boolean.class.isAssignableFrom(componentType))
+							writeValue = ((boolean[])current_requested)[int4list]; 
+						else if (byte.class.isAssignableFrom(componentType))
+							writeValue = ((byte[])current_requested)[int4list]; 
+						else if (char.class.isAssignableFrom(componentType))
+							writeValue = ((char[])current_requested)[int4list]; 
+						else if (double.class.isAssignableFrom(componentType))
+							writeValue = ((double[])current_requested)[int4list]; 
+						else if (float.class.isAssignableFrom(componentType))
+							writeValue = ((float[])current_requested)[int4list]; 
+						else if (int.class.isAssignableFrom(componentType))
+							writeValue = ((int[])current_requested)[int4list]; 
+						else if (long.class.isAssignableFrom(componentType))
+							writeValue = ((long[])current_requested)[int4list]; 
+						else if (short.class.isAssignableFrom(componentType))
+							writeValue = ((short[])current_requested)[int4list]; 
+					}
+				}catch(Exception ex){
+					isException=true;
+				}
 			}else if(current_requested!=null && current_requested instanceof info_navigation){
 				try{
 					writeValue = util_reflect.getValue(current_requested,method_prefix+util_reflect.adaptMethodName(current_field_name),parameters);
@@ -938,7 +970,7 @@ public static Object convertType(Class CTarget, Object source, String format) th
 	try {
 		if ( classNameSource.equals(classNameTarget) ) {
 			if (format==null || format.equals("") ) return source;
-			// Questa condizione per il momento è prevista solo per le date!
+			// Questa condizione per il momento ï¿½ prevista solo per le date!
 			return util_format.dataToString( util_format.stringToData((String)source,0), format );
 		}
 		// Inizio gestione da e verso tipi Date
@@ -1012,9 +1044,9 @@ public Field findField(String name, Object obj) throws Exception {
 	try {
 		allFld = obj.getClass().getFields();
 	} catch (SecurityException e) {
-		errorMsg("findField","Il campo: "+name+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon è accessibile.",e);
+		errorMsg("findField","Il campo: "+name+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon ï¿½ accessibile.",e);
 	} catch(NullPointerException e) {
-		errorMsg("findField","Il campo: "+name+" è invocato su un oggetto nullo.",e);
+		errorMsg("findField","Il campo: "+name+" ï¿½ invocato su un oggetto nullo.",e);
 	}
 	for (int i=0;i<allFld.length;i++) {
 		Class tipo = allFld[i].getType();
@@ -1035,9 +1067,9 @@ public Field findFieldArray(String name, Object obj) throws Exception {
 	try {
 		allFld = obj.getClass().getFields();
 	} catch (SecurityException e) {
-		errorMsg("findFieldArray","Il campo: "+name+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon è accessibile.",e);
+		errorMsg("findFieldArray","Il campo: "+name+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon ï¿½ accessibile.",e);
 	} catch(NullPointerException e) {
-		errorMsg("findFieldArray","Il campo: "+name+" è invocato su un oggetto nullo",e);
+		errorMsg("findFieldArray","Il campo: "+name+" ï¿½ invocato su un oggetto nullo",e);
 	}
 	for (int i=0;i<allFld.length;i++) {
 		Class tipo = allFld[i].getType();
@@ -1062,12 +1094,12 @@ public Field findFieldList(String name, Object obj) throws Exception {
 	try {
 		allFld = obj.getClass().getFields();
 	} catch (SecurityException e) {
-		errorMsg("findFieldArray","Il campo: "+name+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon è accessibile.",e);
+		errorMsg("findFieldArray","Il campo: "+name+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon ï¿½ accessibile.",e);
 	} catch(NullPointerException e) {
-		errorMsg("findFieldArray","Il campo: "+name+" è invocato su un oggetto nullo.",e);
+		errorMsg("findFieldArray","Il campo: "+name+" ï¿½ invocato su un oggetto nullo.",e);
 	}
 	for (int i=0;i<allFld.length;i++) {	// Inizia la ricerca in tutti i campi trovati
-		if ( allFld[i].getName().equals(name) ) { // verifica se il nome è quello cercato
+		if ( allFld[i].getName().equals(name) ) { // verifica se il nome ï¿½ quello cercato
 			if ( allFld[i].getType().isArray() ) { // e un array?
 				setLeng( Array.getLength( getFieldOnly(allFld[i],obj) ) );
 				return allFld[i];
@@ -1083,7 +1115,7 @@ public Field findFieldList(String name, Object obj) throws Exception {
 			campo = Array.get(campo,indexOfList); // altrimenti ne calcola il valore
 			if (campo != null) fld = findFieldList(name,campo); // verifica che sia diverso da null
 		} else fld = findFieldList(name,campo);
-		// verifica se il campo calcolato appartiene a una classe che può contenere, a sua volta, il vettore cercato
+		// verifica se il campo calcolato appartiene a una classe che puï¿½ contenere, a sua volta, il vettore cercato
 		if ( fld != null) return fld;
 	}
 	return fld; // nel caso in cui non venga trovato il campo viene restituito null
@@ -1093,15 +1125,15 @@ public Field findFieldList(String name, Object obj) throws Exception {
 public Object getField(Field fld, Object obj) throws Exception {
 	Object result = null;
 	result = getFieldOnly(fld, obj);
-	if ( fld.getType().isArray() ) { // se è un array
+	if ( fld.getType().isArray() ) { // se ï¿½ un array
 		try {
 			result = Array.get( result, indexOfList); // ritorna il valore dell'array di indice i-esimo
 		} catch(ArrayIndexOutOfBoundsException e) {
-			errorMsg("setField","Il campo: "+fld+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon è accessibile.",e);
+			errorMsg("setField","Il campo: "+fld+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon ï¿½ accessibile.",e);
 		} catch(IllegalArgumentException e) {
-			errorMsg("setField","Il campo: "+fld+"\nnon è un'istanza dell'oggetto tipo: "+obj.getClass().getName()+".",e);
+			errorMsg("setField","Il campo: "+fld+"\nnon ï¿½ un'istanza dell'oggetto tipo: "+obj.getClass().getName()+".",e);
 		} catch(NullPointerException e) {
-			errorMsg("setField","Il campo: "+fld+" è invocato su un oggetto nullo.",e);
+			errorMsg("setField","Il campo: "+fld+" ï¿½ invocato su un oggetto nullo.",e);
 		}
 	}
 
@@ -1114,11 +1146,11 @@ public static Object getFieldOnly(Field fld, Object obj) throws Exception {
 	try {
 		result = fld.get(obj);
 	} catch(IllegalAccessException e) {
-		errorMsg("getField","Il campo: "+fld+"\ninvocato per l'oggetto: "+obj.getClass().getName()+"\nnon è accessibile.",e);
+		errorMsg("getField","Il campo: "+fld+"\ninvocato per l'oggetto: "+obj.getClass().getName()+"\nnon ï¿½ accessibile.",e);
 	} catch(IllegalArgumentException e) {
-		errorMsg("getField","Il campo: "+fld+"\nnon è un'istanza dell'oggetto: "+obj.getClass().getName()+".",e);
+		errorMsg("getField","Il campo: "+fld+"\nnon ï¿½ un'istanza dell'oggetto: "+obj.getClass().getName()+".",e);
 	} catch(NullPointerException e) {
-		errorMsg("getField","Il campo: "+fld+"\nè invocato su un oggetto nullo.",e);
+		errorMsg("getField","Il campo: "+fld+"\nï¿½ invocato su un oggetto nullo.",e);
 	}
 	return result;
 }
@@ -1140,7 +1172,7 @@ protected Object getObject() {
 }
 //TODO @Deprecated
 public Class getType(Field fld) throws Exception {
-	if ( fld.getType().isArray() ) { // se è un array
+	if ( fld.getType().isArray() ) { // se ï¿½ un array
 		Object campo = getFieldOnly(fld,getObject()); // calcola il valore
 		return Array.get( campo, indexOfList).getClass(); // gli copia il valore dell'array di indice i-esimo
 	}
@@ -1153,13 +1185,13 @@ public static Object invocaGet(Method mtd, Object obj) throws Exception {
 	try {
 		value = mtd.invoke(obj,prm); // invoco il metodo che mi restituisce il valore
 	} catch(IllegalAccessException e) {
-		errorMsg("invocaGet","Il methodo: "+mtd+" non è accessibile.",e);
+		errorMsg("invocaGet","Il methodo: "+mtd+" non ï¿½ accessibile.",e);
 	} catch(IllegalArgumentException e) {
-		errorMsg("invocaGet","Il methodo: "+mtd+"\nè invocato con un numero o con tipi di argomenti errati.",e);
+		errorMsg("invocaGet","Il methodo: "+mtd+"\nï¿½ invocato con un numero o con tipi di argomenti errati.",e);
 	} catch(java.lang.reflect.InvocationTargetException e) {
 		errorMsg("invocaGet","Il methodo: "+mtd+" ha generato un errore.",e);
 	} catch(NullPointerException e) {
-		errorMsg("invocaGet","Il methodo: "+mtd+" è invocato su un oggetto nullo.",e);
+		errorMsg("invocaGet","Il methodo: "+mtd+" ï¿½ invocato su un oggetto nullo.",e);
 	}
 	return value;
 }
@@ -1171,13 +1203,13 @@ public static Object invocaMetodo(Method mtd, Object obj, Object dato) throws Ex
 	try {
 		value = mtd.invoke(obj, prm); // invoco il metodo che mi setta il valore
 	} catch (IllegalAccessException e) {
-		errorMsg("invocaMetodo","Il methodo: "+mtd+"\ninvocato con parametro tipo: "+dato.getClass().getName()+"\nnon è accessibile.",e);
+		errorMsg("invocaMetodo","Il methodo: "+mtd+"\ninvocato con parametro tipo: "+dato.getClass().getName()+"\nnon ï¿½ accessibile.",e);
 	} catch (IllegalArgumentException e) {
 		errorMsg("invocaMetodo","Il methodo: "+mtd+"\ninvocato con parametro tipo: "+dato.getClass().getName()+"\nha numero o tipi di argomenti errati.",e);
 	} catch (InvocationTargetException e) {
 		errorMsg("invocaMetodo","Il methodo: "+mtd+"\ninvocato con parametro tipo: "+dato.getClass().getName()+"\nha generato un errore.",e);
 	} catch (NullPointerException e) {
-		errorMsg("invocaMetodo","Il methodo: "+mtd+"\nè invocato su un oggetto nullo.",e);
+		errorMsg("invocaMetodo","Il methodo: "+mtd+"\nï¿½ invocato su un oggetto nullo.",e);
 	}
 	return value;
 }
@@ -1188,13 +1220,13 @@ public static void invocaSet(Method mtd, Object obj, Object dato) throws Excepti
 	try {
 		mtd.invoke(obj, prm); // invoco il metodo che mi setta il valore
 	} catch (IllegalAccessException e) {
-		errorMsg("invocaSet", "Il methodo: " + mtd + "\ninvocato con parametro tipo: " + dato.getClass().getName() + "\nnon è accessibile.", e);
+		errorMsg("invocaSet", "Il methodo: " + mtd + "\ninvocato con parametro tipo: " + dato.getClass().getName() + "\nnon ï¿½ accessibile.", e);
 	} catch (IllegalArgumentException e) {
 		errorMsg("invocaSet", "Il methodo: " + mtd + "\ninvocato con parametro tipo: " + dato.getClass().getName() + "\nha numero o tipi di argomenti errati.", e);
 	} catch (InvocationTargetException e) {
 		errorMsg("invocaSet", "Il methodo: " + mtd + "\ninvocato con parametro tipo: " + dato.getClass().getName() + "\nha generato un errore.", e);
 	} catch (NullPointerException e) {
-		errorMsg("invocaSet", "Il methodo: " + mtd + " è invocato su un oggetto nullo.", e);
+		errorMsg("invocaSet", "Il methodo: " + mtd + " ï¿½ invocato su un oggetto nullo.", e);
 	}
 }
 //TODO @Deprecated
@@ -1203,27 +1235,27 @@ public boolean isError() {
 }
 //TODO @Deprecated
 public void setField(Field fld, Object obj, Object value) throws Exception {
-	if ( fld.getType().isArray() ) { // se è un array
+	if ( fld.getType().isArray() ) { // se ï¿½ un array
 		Object campo = getFieldOnly(fld,obj); // calcola il valore
 		try {
 			Array.set( campo, indexOfList, value); // gli copia il valore dell'array di indice i-esimo
 		} catch(ArrayIndexOutOfBoundsException e) {
-			errorMsg("setField","Il campo: "+fld+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon è accessibile.",e);
+			errorMsg("setField","Il campo: "+fld+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+"\nnon ï¿½ accessibile.",e);
 		} catch(IllegalArgumentException e) {
-			errorMsg("setField","Il campo: "+fld+"\nnon è un'istanza dell'oggetto "+obj.getClass().getName()+".",e);
+			errorMsg("setField","Il campo: "+fld+"\nnon ï¿½ un'istanza dell'oggetto "+obj.getClass().getName()+".",e);
 		} catch(NullPointerException e) {
-			errorMsg("setField","Il campo: "+fld+" è invocato su un oggetto nullo.",e);
+			errorMsg("setField","Il campo: "+fld+" ï¿½ invocato su un oggetto nullo.",e);
 		}
 	} else {
 		try {
 //			obj.getClass().isArray();
 			fld.set(obj,value);
 		} catch(IllegalAccessException e) {
-			errorMsg("setField","Il campo: "+fld+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+" non è accessibile.",e);
+			errorMsg("setField","Il campo: "+fld+"\ninvocato per l'oggetto tipo: "+obj.getClass().getName()+" non ï¿½ accessibile.",e);
 		} catch(IllegalArgumentException e) {
-			errorMsg("setField","Il campo: "+fld+"\nnon è un'istanza dell'oggetto "+obj.getClass().getName()+".",e);
+			errorMsg("setField","Il campo: "+fld+"\nnon ï¿½ un'istanza dell'oggetto "+obj.getClass().getName()+".",e);
 		} catch(NullPointerException e) {
-			errorMsg("setField","Il campo: "+fld+" è invocato su un oggetto nullo.",e);
+			errorMsg("setField","Il campo: "+fld+" ï¿½ invocato su un oggetto nullo.",e);
 		}
 	}
 }

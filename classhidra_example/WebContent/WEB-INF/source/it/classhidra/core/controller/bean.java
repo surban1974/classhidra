@@ -29,10 +29,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -625,6 +627,30 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
 								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
 								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
+								if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
+								if(writeValue==null && current_requested.getClass().isArray()){
+									Class componentType = current_requested.getClass().getComponentType();
+									if(!componentType.isPrimitive())
+										writeValue = ((Object[])current_requested)[Integer.valueOf(current_field_name).intValue()];
+									else{
+										if (boolean.class.isAssignableFrom(componentType))
+											writeValue = ((boolean[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+										else if (byte.class.isAssignableFrom(componentType))
+											writeValue = ((byte[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+										else if (char.class.isAssignableFrom(componentType))
+											writeValue = ((char[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+										else if (double.class.isAssignableFrom(componentType))
+											writeValue = ((double[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+										else if (float.class.isAssignableFrom(componentType))
+											writeValue = ((float[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+										else if (int.class.isAssignableFrom(componentType))
+											writeValue = ((int[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+										else if (long.class.isAssignableFrom(componentType))
+											writeValue = ((long[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+										else if (short.class.isAssignableFrom(componentType))
+											writeValue = ((short[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+									}
+								}
 
 								if(writeValue==null)
 									writeValue = util_reflect.getValueIfIsInputAnnotation(current_requested, current_field_name, null);
