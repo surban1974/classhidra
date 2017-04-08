@@ -2026,6 +2026,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(annotationParameter!=null){
 				try{
 					Object ret = action_instance.get_bean().asBean().get(annotationParameter.name());
+					if(ret!=null && action_instance.get_bean().asBean().getParametersFly().get(annotationParameter.name())!=null && action_instance.get_bean().asBean().getParametersFly().get(annotationParameter.name()).equals(ret))
+						ret=null;
 					if(ret!=null && (ret.getClass().isAssignableFrom(current) || current.isAssignableFrom(ret.getClass())))
 						result[i] = ret;
 					else if(ret!=null){
