@@ -807,10 +807,52 @@ public class util_supportbean  {
 						if(format!=null){
 							makedValue=util_makeValue.makeFormatedValue1(bean,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 						}else{
-								makedValue=util_makeValue.makeValue1(bean,value,key);
+							Object current_requested = bean;
+
+							Serialized serialized_annotation = null;
+							Object checkForDes = parameters.get(JsonMapper.CONST_ID_CHECKFORDESERIALIZE);								
+							if(checkForDes!=null && checkForDes.toString().equalsIgnoreCase("true")){
+								Method ret_method = util_reflect.getSetMethod(current_requested, key);
+								if(ret_method!=null)
+									serialized_annotation =ret_method.getAnnotation(Serialized.class);
+								if(serialized_annotation==null){
+									Field ret_field = util_reflect.getField(current_requested, key);
+									if(ret_field!=null)
+										serialized_annotation =ret_field.getAnnotation(Serialized.class);
+								}
+							}
+							if(	serialized_annotation!=null &&
+								serialized_annotation.input()!=null &&
+								serialized_annotation.input().format()!=null &&
+								!serialized_annotation.input().format().equals(""))
+								setCampoValuePoint(
+										current_requested,
+										key,
+										util_makeValue.makeFormatedValue1(
+													current_requested,
+													serialized_annotation.input().format(),
+													value,
+													key,
+													serialized_annotation.input().replaceOnBlank(),
+													serialized_annotation.input().replaceOnErrorFormat()
+													
+										),
+										false
+								);
+							else{	
+									makedValue=util_makeValue.makeValue1(bean,value,key);
+								
+									if(!setCampoValueWithPoint(bean,key,makedValue))
+										throw new Exception();
+							}
+							
+							
+							
+							
+//							makedValue=util_makeValue.makeValue1(bean,value,key);
 						}
-						if(!setCampoValueWithPoint(bean,key,makedValue))
-							throw new Exception();
+//						if(!setCampoValueWithPoint(bean,key,makedValue))
+//							throw new Exception();
 					}catch(Exception e){
 						try{
 							Object makedValue=null;

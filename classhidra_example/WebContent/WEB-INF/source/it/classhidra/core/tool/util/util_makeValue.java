@@ -86,8 +86,15 @@ public class util_makeValue {
 			for(Method method: alldm){
 //				Serialized annotation = method.getAnnotation(Serialized.class);
 //				if(annotation!=null && annotation.input()!=null && annotation.input().name()!=null && annotation.input().name().equals(key)){
-					ret_class =  method.getReturnType();
-					break;
+					if(!method.getReturnType().equals(Void.TYPE)){
+						ret_class =  method.getReturnType();
+						break;
+					}else{
+						if(method.getParameterTypes().length>0){
+							ret_class =  method.getParameterTypes()[0];
+							break;
+						}
+					}
 			}
 		}
 		
@@ -95,10 +102,34 @@ public class util_makeValue {
 
 		if(ret_class.isPrimitive()){
 			try{
-				if(ret_class.getName().equals("int")) resultObject = Integer.valueOf(value);
-				if(ret_class.getName().equals("short")) resultObject = Short.valueOf(value);
-				if(ret_class.getName().equals("long")) resultObject = Long.valueOf(value);
-				if(ret_class.getName().equals("float")) resultObject = Float.valueOf(value);
+				if(ret_class.getName().equals("int")){
+					try{
+						resultObject = Integer.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).intValue();
+					}
+				}
+				if(ret_class.getName().equals("short")){
+					try{
+						resultObject = Short.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).shortValue();
+					}						
+				}
+				if(ret_class.getName().equals("long")){
+					try{
+						resultObject = Long.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).longValue();
+					}						
+				}
+				if(ret_class.getName().equals("float")){
+					try{
+						resultObject = Float.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).floatValue();
+					}							
+				}
 				if(ret_class.getName().equals("double")) resultObject = Double.valueOf(value);
 				if(ret_class.getName().equals("byte")) resultObject = Byte.valueOf(value);
 				if(ret_class.getName().equals("boolean")) resultObject = Boolean.valueOf(value);
@@ -301,8 +332,15 @@ public class util_makeValue {
 					}
 					);
 			for(Method method: alldm){
+				if(!method.getReturnType().equals(Void.TYPE)){
 					ret_class =  method.getReturnType();
 					break;
+				}else{
+					if(method.getParameterTypes().length>0){
+						ret_class =  method.getParameterTypes()[0];
+						break;
+					}
+				}
 			}
 		}
 		
@@ -319,10 +357,35 @@ public class util_makeValue {
 					}
 				}
 
-				if(ret_class.getName().equals("int")) resultObject = Integer.valueOf(value);
-				if(ret_class.getName().equals("short")) resultObject = Short.valueOf(value);
-				if(ret_class.getName().equals("long")) resultObject = Long.valueOf(value);
-				if(ret_class.getName().equals("float")) resultObject = Float.valueOf(value);
+				if(ret_class.getName().equals("int")){
+					try{
+						resultObject = Integer.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).intValue();
+					}
+				}
+				if(ret_class.getName().equals("short")){
+					try{
+						resultObject = Short.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).shortValue();
+					}						
+				}
+				if(ret_class.getName().equals("long")){
+					try{
+						resultObject = Long.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).longValue();
+					}						
+				}
+				if(ret_class.getName().equals("float")){
+					try{
+						resultObject = Float.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).floatValue();
+					}							
+				}
+
 				if(ret_class.getName().equals("double")) resultObject = Double.valueOf(value);
 				if(ret_class.getName().equals("byte")) resultObject = Byte.valueOf(value);
 				if(ret_class.getName().equals("boolean")) resultObject = Boolean.valueOf(value);
@@ -445,10 +508,35 @@ public class util_makeValue {
 					}
 				}
 
-				if(ret_class.getName().equals("int")) resultObject = Integer.valueOf(value);
-				if(ret_class.getName().equals("short")) resultObject = Short.valueOf(value);
-				if(ret_class.getName().equals("long")) resultObject = Long.valueOf(value);
-				if(ret_class.getName().equals("float")) resultObject = Float.valueOf(value);
+				if(ret_class.getName().equals("int")){
+					try{
+						resultObject = Integer.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).intValue();
+					}
+				}
+				if(ret_class.getName().equals("short")){
+					try{
+						resultObject = Short.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).shortValue();
+					}						
+				}
+				if(ret_class.getName().equals("long")){
+					try{
+						resultObject = Long.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).longValue();
+					}						
+				}
+				if(ret_class.getName().equals("float")){
+					try{
+						resultObject = Float.valueOf(value);
+					}catch(Exception e){
+						resultObject = Double.valueOf(value).floatValue();
+					}							
+				}
+
 				if(ret_class.getName().equals("double")) resultObject = Double.valueOf(value);
 				if(ret_class.getName().equals("byte")) resultObject = Byte.valueOf(value);
 				if(ret_class.getName().equals("boolean")) resultObject = Boolean.valueOf(value);

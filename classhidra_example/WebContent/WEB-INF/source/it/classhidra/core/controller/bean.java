@@ -577,15 +577,58 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
 							}
 						}else{
+							Object current_requested = null;
 							if(delegated!=null){
-								makedValue=util_makeValue.makeValue1(delegated,value,key);
-								if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
+								current_requested=delegated;
 							}else{
-								makedValue=util_makeValue.makeValue1(this,value,key);
+								current_requested=this;
 							}
+							Serialized serialized_annotation = null;
+							Object checkForDes = parameters.get(JsonMapper.CONST_ID_CHECKFORDESERIALIZE);								
+							if(checkForDes!=null && checkForDes.toString().equalsIgnoreCase("true")){
+								Method ret_method = util_reflect.getSetMethod(current_requested, key);
+								if(ret_method!=null)
+									serialized_annotation =ret_method.getAnnotation(Serialized.class);
+								if(serialized_annotation==null){
+									Field ret_field = util_reflect.getField(current_requested, key);
+									if(ret_field!=null)
+										serialized_annotation =ret_field.getAnnotation(Serialized.class);
+								}
+							}
+							if(	serialized_annotation!=null &&
+								serialized_annotation.input()!=null &&
+								serialized_annotation.input().format()!=null &&
+								!serialized_annotation.input().format().equals(""))
+								setCampoValuePoint(
+										current_requested,
+										key,
+										util_makeValue.makeFormatedValue1(
+													current_requested,
+													serialized_annotation.input().format(),
+													value,
+													key,
+													serialized_annotation.input().replaceOnBlank(),
+													serialized_annotation.input().replaceOnErrorFormat()
+													
+										),
+										false
+								);
+							else{	
+								if(delegated!=null){
+									makedValue=util_makeValue.makeValue1(delegated,value,key);
+									if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
+								}else{
+									makedValue=util_makeValue.makeValue1(this,value,key);
+								}
+								if(!setCampoValueWithPoint(key,makedValue))
+									throw new Exception();
+							}
+							
 						}
-						if(!setCampoValueWithPoint(key,makedValue))
-							throw new Exception();
+
+						
+						
+
 					}catch(Exception e){
 						try{
 							Object makedValue=null;
