@@ -48,7 +48,6 @@ import java.util.regex.Pattern;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -266,6 +265,9 @@ public class bsFilter implements Filter {
 				}
 				if(elaborate_neoHort(id_bs.id_action,id_bs.id_call,id_bs.id_complete,chain,request,response))
 					return;
+				if(elaborate_wrapper(id_bs.id_action,id_bs.id_call,id_bs.id_complete,chain,request,response))
+					return;
+				
 				if(id_bs.id_action==null || id_bs.id_action.equals("")){
 					try{
 						chain.doFilter(req, resp);
@@ -460,16 +462,6 @@ public class bsFilter implements Filter {
 								request.setAttribute("$source_stream",xmlSource);
 								request.getSession().getServletContext().getRequestDispatcher("/report_creator").include(request,response);
 	
-	//							response.getOutputStream().print("<center><img src=\"../images/wait.gif\"><form action=\"report_creator.bs\" method=\"POST\"><div style='visibility:hidden'><textarea name=\"$source_stream\" type=\"hidden\">"+normalXML(xmlSource)+"</textarea></div></form><script>document.forms[0].submit();</script>");
-		/*
-		  						iHort report = new iHort();
-		 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-								report.transformXMLtoReport(xmlSource,baos);
-	
-								prepResponseContent(report.get_tagLibrery(),response);
-								baos.writeTo(response.getOutputStream());
-								baos.close();
-		*/
 							}
 						}else{
 							request.setAttribute("$source_stream",xmlSource);
@@ -495,31 +487,73 @@ public class bsFilter implements Filter {
 			return result;
 		}
 
-	/*
-		private void prepResponseContent(Hashtable _tags, HttpServletResponse response) throws Exception{
-			if(_tags==null) return;
-			Enumeration enum = _tags.keys();
-			Object gen = null;
-			while(enum.hasMoreElements() && gen==null){
-				String key = (String)enum.nextElement();
-				if(key.toUpperCase().indexOf("GENERAL:")==0) gen = _tags.get(key);
-			}
-			if(gen!=null){
+		public boolean elaborate_wrapper(String id_current, String id_call, String id_complete, FilterChain chain, HttpServletRequest request, HttpServletResponse response) throws ServletException{
+			boolean result=false;
+			String wrappedSource=null;
+			String url = request.getRequestURI();
+			if(	request.getParameter("WrapperProvider")!=null){
+				String urlPattern = request.getParameter("WrapperProvider");
+				if(	url.lastIndexOf("/"+urlPattern)==-1){
+					StatisticEntity stat = null;
+					if(
+							(request.getParameter("$log")==null || request.getParameter("$log").equals(""))	&&
+							(System.getProperty("application.log.stub")==null || System.getProperty("application.log.stub").equals(""))
+						)
+						System.setProperty("application.log.stub","it.classhidra.core.tool.log.stubs.stub_log");
+					try{
+						
+						try{
+							auth_init auth = bsController.checkAuth_init(request);
+							if(auth==null) auth = new auth_init();
 
-				String TYPE_DOCUMENT = (String) util_reflect.getValue(gen,"getTYPE_DOCUMENT",null);
-				String LIB = (String) util_reflect.getValue(gen,"getLIB",null);
-				String ID = (String) util_reflect.getValue(gen,"getID",null);
-				if (TYPE_DOCUMENT!=null && TYPE_DOCUMENT.trim().equalsIgnoreCase("ATTACHMENT")){
-					response.setHeader("Content-Disposition","attachment; filename="+ID+"."+LIB);
-					response.setHeader("Content-Transfer-Encoding","base64");
-					response.setContentType("Application/"+LIB);
-				}
-				if (TYPE_DOCUMENT!=null && TYPE_DOCUMENT.trim().equalsIgnoreCase("STREAM")){
-					response.setHeader("Content-Type","Application/"+LIB);
+							stat = new StatisticEntity(
+									String.valueOf(request.getSession().getId()),
+									auth.get_user_ip(),
+									auth.get_matricola(),
+									auth.get_language(),
+									"WRAPPERPROVIDER="+urlPattern,
+									null,
+									new Date(),
+									null,
+									request);
+						}catch(Exception e){
+						}
+						
+						a_ResponseWrapper responseWrapper =  responseWrapperFactory.getWrapper(response);
+						if(id_current!=null)
+							bsController.service(id_current, id_call, id_complete, request.getSession().getServletContext(), request,responseWrapper);
+						else chain.doFilter(request, responseWrapper);
+						wrappedSource = responseWrapper.toString();
+
+						if(response.isCommitted()){
+							if(wrappedSource!=null){
+							}else{
+								request.setAttribute("$source_stream",wrappedSource);
+								request.getSession().getServletContext().getRequestDispatcher("/"+urlPattern).include(request,response);
+	
+							}
+						}else{
+							request.setAttribute("$source_stream",wrappedSource);
+							request.getSession().getServletContext().getRequestDispatcher("/"+urlPattern).forward(request,response);
+						}
+						return true;
+					}catch(Exception ex){
+						new bsException("neoHort Elaborate: "+ex.toString(),iStub.log_ERROR);
+						stat.setException(ex);
+						try{
+							response.getWriter().write(ex.toString());
+						}catch(Exception exp){
+							new bsException("neoHort Elaborate: "+exp.toString(),iStub.log_ERROR);
+						}
+					}
+					if(stat!=null){
+						stat.setFt(new Date());
+						bsController.putToStatisticProvider(stat);
+					}
 				}
 			}
+			return result;
 		}
-	*/
 		
 		public String analizeXML4neoHort(String input){
 			if(	input!=null && input.toUpperCase().indexOf("<?XML")!=0 && input.toUpperCase().indexOf("<?XML")>-1){
