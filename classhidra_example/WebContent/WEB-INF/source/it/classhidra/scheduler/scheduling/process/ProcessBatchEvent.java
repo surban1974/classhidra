@@ -45,15 +45,35 @@ public class ProcessBatchEvent  {
 		}
 	}
 	
-	public void launch(Integer cd_ist, String cd_btch){
+	public void launch(Integer cd_ist, String cd_btch, boolean recalc, boolean sequence, String common_area){
 		try {
-			executeBatch(cd_ist,cd_btch, "",true,false,true);
+			executeBatch(cd_ist,cd_btch, common_area,recalc,sequence,recalc);
 		}catch(Exception ex){
 			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
 		}catch(Throwable th){
 			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
 		}
 	}
+	
+	public void launch(Integer cd_ist, String cd_btch){
+		try {
+			executeBatch(cd_ist,cd_btch, "", true, false, true);
+		}catch(Exception ex){
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
+		}catch(Throwable th){
+			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
+		}
+	}
+	
+	public void launch(Integer cd_ist, String cd_btch, String common_area){
+		try {
+			executeBatch(cd_ist,cd_btch, common_area, true, false, true);
+		}catch(Exception ex){
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
+		}catch(Throwable th){
+			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
+		}
+	}	
 	
 	public String[] launchR(Integer cd_ist, String cd_btch, boolean recalc, boolean sequence){
 		String[] result_eb = null;
@@ -89,7 +109,19 @@ public class ProcessBatchEvent  {
 			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
 		}
 		return result_eb;
-	}		
+	}
+	
+	public String[] single(db_batch batch, db_batch_log log, i_batch worker, String common_area){
+		String[] result_eb = null;
+		try {
+			result_eb = executeSingle(batch,log, worker, common_area);
+		}catch(Exception ex){
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
+		}catch(Throwable th){
+			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
+		}
+		return result_eb;
+	}
 
 
 	private String[] executeBatch(Integer cd_ist, String cd_btch, String common_area, boolean recalc, boolean sequence, boolean parent_recalc){
@@ -303,11 +335,13 @@ public class ProcessBatchEvent  {
 	
 	private String[] executeSingle(db_batch batch, db_batch_log log, i_batch worker, String common_area){
 		
-		batch_init binit = DriverScheduling.getConfiguration();
+
 		String[] result_eb = new String[]{common_area,"1"};
-		if(batch==null || log==null) 
+		if(batch==null) 
 			return result_eb;
 
+		if(log==null)
+			log = new db_batch_log();
 
 		log.setTm_start(new Timestamp(new Date().getTime()));
 

@@ -56,6 +56,13 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 		pbe=_pbe;
 	}	
 
+	public schedulingThreadEvent() {
+		super();
+		delta_time = -1;
+		threadDone=false;
+		state=0;
+	}		
+
 	public void run() {
 		
 		if(pbe!=null){
@@ -144,4 +151,22 @@ public class schedulingThreadEvent extends Thread implements Runnable{
 	public Date getRealExec_time() {
 		return realExec_time;
 	}
+
+	public schedulingThreadEvent setDelta_time(long delta_time) {
+		this.delta_time = delta_time;
+		return this;
+	}
+	
+	public schedulingThreadEvent setBatch(db_batch _batch) {
+		try{
+			batch = (db_batch)util_cloner.clone(_batch);
+		}catch(Exception e){
+		}
+		return this;
+	}
+
+	public schedulingThreadEvent setPbe(ProcessBatchEngine pbe) {
+		this.pbe = pbe;
+		return this;
+	}	
 }

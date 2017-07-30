@@ -80,7 +80,8 @@ public void reInit(java.sql.ResultSet rs) {
 		java.sql.ResultSetMetaData rsmd = rs.getMetaData();
 		HashMap rsmdH = new HashMap();
 		for(int i=1;i<=rsmd.getColumnCount();i++) rsmdH.put(rsmd.getColumnLabel(i).toLowerCase(),rsmd.getColumnLabel(i));
-		if(rsmdH.get("cd_ist")!=null) this.setOrd(new Integer(rs.getInt("cd_ist")));
+		if(rsmdH.get("cd_ist")!=null) this.setCd_ist(new Integer(rs.getInt("cd_ist")));
+//		if(rsmdH.get("cd_ist")!=null) this.setOrd(new Integer(rs.getInt("cd_ist")));
 		if(rsmdH.get("cd_btch")!=null) this.setCd_btch(new String(rs.getString("cd_btch")));
 		if(rsmdH.get("cd_p_btch")!=null) this.setCd_p_btch(new String(rs.getString("cd_p_btch")));
 		if(rsmdH.get("cls_btch")!=null) this.setCls_btch(new String(rs.getString("cls_btch")));
