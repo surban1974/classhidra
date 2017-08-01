@@ -291,25 +291,27 @@ if(oper.equals(o_WRITE_LOG))
 				break;
 			}
 		}
+		
+		if(original==null)
+			return false;
 
 
 
+		batch.setState(state);
 
-			batch.setState(state);
-
-			if(
+		if(
 				(batch.getPeriod()!=null && !batch.getPeriod().equals("")) ||
 				(batch.getCd_p_btch()!=null && !batch.getCd_p_btch().equals("")) ||
 				(batch.getCls_btch()!=null && !batch.getCls_btch().equals(""))
 			)
 				original.reInit(batch);
 
-			else{
+		else{
 				original.setState(batch.getState());
 				original.setTm_next(null);
 				original.setSt_exec(0);
 
-			}
+		}
 		return new Boolean(true);
 
 

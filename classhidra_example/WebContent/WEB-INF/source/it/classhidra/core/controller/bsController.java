@@ -2093,36 +2093,40 @@ public class bsController extends HttpServlet implements bsConstants  {
 				else if(response_wrapper.class.isAssignableFrom(method.getReturnType())){
 					if(retVal!=null){
 						response_wrapper rWrapper = (response_wrapper)retVal;
-						info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
-						if(iCall!=null && iCall.getIRedirect()!=null){
-							if(iCall.getIRedirect().getContentType()!=null && !iCall.getIRedirect().getContentType().equals(""))
-								fake.setContentType(iCall.getIRedirect().getContentType());
-							if(iCall.getIRedirect().getContentName()!=null && !iCall.getIRedirect().getContentName().equals(""))
-								fake.setContentName(iCall.getIRedirect().getContentName());		
-							if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
-								fake.setContentEncoding(iCall.getIRedirect().getContentEncoding());								
-						}
-						updateResponseContentType(fake, response, rWrapper.getResponseStatus());
-						if(rWrapper.getContent()!=null){
-							if(response!=null){
-								if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
-									response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
-								else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
-									response.getOutputStream().write(((byte[])rWrapper.getContent()));
-								else 
-									response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
-								
-								if(fake!=null && fake.getFlushBuffer()!=null && fake.getFlushBuffer().equalsIgnoreCase("true")){
-									try{
-										response.getOutputStream().flush();
-									}catch(Exception e){
-										bsController.writeLog(e.toString(), iStub.log_ERROR);
+						if(rWrapper.getRedirect()!=null)
+							current_redirect = rWrapper.getRedirect();
+						else{
+							info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
+							if(iCall!=null && iCall.getIRedirect()!=null){
+								if(iCall.getIRedirect().getContentType()!=null && !iCall.getIRedirect().getContentType().equals(""))
+									fake.setContentType(iCall.getIRedirect().getContentType());
+								if(iCall.getIRedirect().getContentName()!=null && !iCall.getIRedirect().getContentName().equals(""))
+									fake.setContentName(iCall.getIRedirect().getContentName());		
+								if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
+									fake.setContentEncoding(iCall.getIRedirect().getContentEncoding());								
+							}
+							updateResponseContentType(fake, response, rWrapper.getResponseStatus());
+							if(rWrapper.getContent()!=null){
+								if(response!=null){
+									if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
+										response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
+									else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
+										response.getOutputStream().write(((byte[])rWrapper.getContent()));
+									else 
+										response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+									
+									if(fake!=null && fake.getFlushBuffer()!=null && fake.getFlushBuffer().equalsIgnoreCase("true")){
+										try{
+											response.getOutputStream().flush();
+										}catch(Exception e){
+											bsController.writeLog(e.toString(), iStub.log_ERROR);
+										}
 									}
-								}
-
-								
-							}else
-								current_redirect = new redirects(rWrapper);
+	
+									
+								}else
+									current_redirect = new redirects(rWrapper);
+							}
 						}
 					}
 				}else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
@@ -2185,34 +2189,38 @@ public class bsController extends HttpServlet implements bsConstants  {
 				else if(response_wrapper.class.isAssignableFrom(method.getReturnType())){
 					if(retVal!=null){
 						response_wrapper rWrapper = (response_wrapper)retVal;
-						info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
-						if(iAction!=null && iAction.getIRedirect()!=null){
-							if(iAction.getIRedirect().getContentType()!=null && !iAction.getIRedirect().getContentType().equals(""))
-								fake.setContentType(iAction.getIRedirect().getContentType());
-							if(iAction.getIRedirect().getContentName()!=null && !iAction.getIRedirect().getContentName().equals(""))
-								fake.setContentName(iAction.getIRedirect().getContentName());		
-							if(iAction.getIRedirect().getContentEncoding()!=null && !iAction.getIRedirect().getContentEncoding().equals(""))
-								fake.setContentEncoding(iAction.getIRedirect().getContentEncoding());								
-						}
-						updateResponseContentType(fake, response, rWrapper.getResponseStatus());
-						if(rWrapper.getContent()!=null){
-							if(response!=null){
-								if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
-									response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
-								else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
-									response.getOutputStream().write(((byte[])rWrapper.getContent()));
-								else 
-									response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
-								
-								if(fake!=null && fake.getFlushBuffer()!=null && fake.getFlushBuffer().equalsIgnoreCase("true")){
-									try{
-										response.getOutputStream().flush();
-									}catch(Exception e){
-										bsController.writeLog(e.toString(), iStub.log_ERROR);
+						if(rWrapper.getRedirect()!=null)
+							current_redirect = rWrapper.getRedirect();
+						else{
+							info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
+							if(iAction!=null && iAction.getIRedirect()!=null){
+								if(iAction.getIRedirect().getContentType()!=null && !iAction.getIRedirect().getContentType().equals(""))
+									fake.setContentType(iAction.getIRedirect().getContentType());
+								if(iAction.getIRedirect().getContentName()!=null && !iAction.getIRedirect().getContentName().equals(""))
+									fake.setContentName(iAction.getIRedirect().getContentName());		
+								if(iAction.getIRedirect().getContentEncoding()!=null && !iAction.getIRedirect().getContentEncoding().equals(""))
+									fake.setContentEncoding(iAction.getIRedirect().getContentEncoding());								
+							}
+							updateResponseContentType(fake, response, rWrapper.getResponseStatus());
+							if(rWrapper.getContent()!=null){
+								if(response!=null){
+									if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
+										response.getOutputStream().write(((String)rWrapper.getContent()).getBytes());
+									else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
+										response.getOutputStream().write(((byte[])rWrapper.getContent()));
+									else 
+										response.getOutputStream().write((rWrapper.getContent().toString()).getBytes());
+									
+									if(fake!=null && fake.getFlushBuffer()!=null && fake.getFlushBuffer().equalsIgnoreCase("true")){
+										try{
+											response.getOutputStream().flush();
+										}catch(Exception e){
+											bsController.writeLog(e.toString(), iStub.log_ERROR);
+										}
 									}
-								}
-							}else
-								current_redirect = new redirects(rWrapper);
+								}else
+									current_redirect = new redirects(rWrapper);
+							}
 						}
 					}
 				

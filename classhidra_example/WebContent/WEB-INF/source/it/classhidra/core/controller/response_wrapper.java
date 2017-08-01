@@ -10,6 +10,7 @@ public class response_wrapper implements Serializable{
 	private String contentName;
 	private String contentEncoding;
 	private Object content;
+	private redirects redirect;
 	
 	public int getResponseStatus() {
 		return responseStatus;
@@ -47,6 +48,15 @@ public class response_wrapper implements Serializable{
 
 	public response_wrapper setContent(Object content) {
 		this.content = content;
+		return this;
+	}
+
+	public redirects getRedirect() {
+		return redirect;
+	}
+
+	public response_wrapper setRedirect(redirects redirect) {
+		this.redirect = redirect;
 		return this;
 	}	
 	

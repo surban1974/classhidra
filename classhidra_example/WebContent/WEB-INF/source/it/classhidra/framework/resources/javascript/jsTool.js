@@ -1327,7 +1327,7 @@ function ajustPopupOnScroll(){
 }
 
 
-function downloadAsPopupSimple(action,img_wait){
+function downloadAsPopupSimple(action,img_wait,onErrorFunction){
 	try{
 		if(Blob && isIE()!=8 && isIE()!=9 && Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor')==-1){
 			downloadAsPopup(action, 400,300,false,
@@ -1337,7 +1337,8 @@ function downloadAsPopupSimple(action,img_wait){
 						document.getElementById('content_Panel_Popup').style.display='none';
 					}catch(e){};
 				},
-				img_wait
+				img_wait,
+				onErrorFunction
 			);
 		}else{
 			location.replace(action, "report");
@@ -1349,7 +1350,7 @@ function downloadAsPopupSimple(action,img_wait){
 	return;	
 }
 
-function downloadAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,img_wait){
+function downloadAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,img_wait,onErrorFunction){
 	showAsPopup(action, panel_width,panel_height,scroll,
 			afterJSFunction,
 			function(http_request,target){
@@ -1371,9 +1372,33 @@ function downloadAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,
 				        else 
 				        	blob = new Blob([http_request.responseText], { type: type });
 				        
+				        if(onErrorFunction){
+				        	try{
+				        		var reader = new FileReader();
+				        		reader.onloadend = function(evt){
+				        		    if (evt.target.readyState == FileReader.DONE){
+				        		        if(evt.target.result=='$CLASSHIDRA_ERROR$' || evt.target.result=='$NEOHORT_ERROR$'){
+						            		if (typeof onErrorFunction === 'function') {
+						            			onErrorFunction(blob);
+						            		}else{
+						            			eval(onErrorFunction + '(blob)');
+						            		}
+						        			return;
+						        		}else
+						        			processBlobSaveAs(blob, filename);
+				        		    }
+				        		};
+
+				        		reader.readAsBinaryString(blob.slice(0,18));
+				        		
+				        	}catch(e){
+				        		processBlobSaveAs(blob, filename);
+				        	}
+				        }else
+				        	processBlobSaveAs(blob, filename);
+/*				        
 				        if (typeof window.navigator.msSaveOrOpenBlob !== 'undefined') {
 				            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-	//			            window.navigator.msSaveBlob(blob, filename);
 				            window.navigator.msSaveOrOpenBlob(blob, filename);
 				        }else if (typeof window.navigator.msSaveBlob !== 'undefined') {
 				        	window.navigator.msSaveBlob(blob, filename);
@@ -1399,6 +1424,8 @@ function downloadAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,
 		
 				            setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
 				        }
+*/				        
+				        
 					}catch(e){
 						location.replace(action);
 						try{
@@ -1430,6 +1457,36 @@ function downloadAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,
 				1000
 			);		
 	}
+}
+
+function processBlobSaveAs(blob, filename){
+    if (typeof window.navigator.msSaveOrOpenBlob !== 'undefined') {
+        // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+        window.navigator.msSaveOrOpenBlob(blob, filename);
+    }else if (typeof window.navigator.msSaveBlob !== 'undefined') {
+    	window.navigator.msSaveBlob(blob, filename);
+    } else {
+        var URL = window.URL || window.webkitURL;
+        var downloadUrl = URL.createObjectURL(blob);
+
+        if (filename) {
+            // use HTML5 a[download] attribute to specify filename
+            var a = document.createElement("a");
+            // safari doesn't support this yet
+            if (typeof a.download === 'undefined') {
+                window.location = downloadUrl;
+            } else {
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+            }
+        } else {
+            window.location = downloadUrl;
+        }
+
+        setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+    }
 }
 
 function showAsPopup(action,panel_width,panel_height,scroll,afterJSFunction,redrawTargetJSFunction,responseType){

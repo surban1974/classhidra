@@ -95,6 +95,8 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 	super(decode(cd_mess,request,exc,null).get_log_mess(),request,level);
 	native_Exception = exc;
 	mess = decode(cd_mess,request,exc,null);
+	if(mess!=null && mess.getTYPE()!=null && mess.getTYPE().equals("?") && level!=null && level.length()>0)
+		mess.setTYPE(String.valueOf(level.charAt(0)));
 	if(request!=null){
 		try{
 			Vector list = null;
@@ -110,7 +112,8 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 	super(decode(cd_mess,request,exc,parameters).get_log_mess(),request,level);
 	native_Exception = exc;
 	mess = decode(cd_mess,request,exc,parameters);
-
+	if(mess!=null && mess.getTYPE()!=null && mess.getTYPE().equals("?") && level!=null && level.length()>0)
+		mess.setTYPE(String.valueOf(level.charAt(0)));
 	if(request!=null){
 		try{
 			Vector list = null;
@@ -126,7 +129,8 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 	super(decode(cd_mess,request,exc,prepare_hm_parameters(o_parameters)).get_log_mess(),request,level);
 	native_Exception = exc;
 	mess = decode(cd_mess,request,exc,prepare_hm_parameters(o_parameters));
-
+	if(mess!=null && mess.getTYPE()!=null && mess.getTYPE().equals("?") && level!=null && level.length()>0)
+		mess.setTYPE(String.valueOf(level.charAt(0)));
 	if(request!=null){
 		try{
 			Vector list = null;
@@ -144,6 +148,8 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 	super(decode(cd_mess,request,exc,null).get_log_mess(),request,level);
 	native_Throwable = exc;
 	mess = decode(cd_mess,request,exc,null);
+	if(mess!=null && mess.getTYPE()!=null && mess.getTYPE().equals("?") && level!=null && level.length()>0)
+		mess.setTYPE(String.valueOf(level.charAt(0)));	
 	if(request!=null){
 		try{
 			Vector list = null;
@@ -159,6 +165,8 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 	super(decode(cd_mess,request,exc,parameters).get_log_mess(),request,level);
 	native_Throwable = exc;
 	mess = decode(cd_mess,request,exc,parameters);
+	if(mess!=null && mess.getTYPE()!=null && mess.getTYPE().equals("?") && level!=null && level.length()>0)
+		mess.setTYPE(String.valueOf(level.charAt(0)));	
 	if(request!=null){
 		try{
 			Vector list = null;
@@ -174,6 +182,8 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 	super(decode(cd_mess,request,exc,prepare_hm_parameters(o_parameters)).get_log_mess(),request,level);
 	native_Throwable = exc;
 	mess = decode(cd_mess,request,exc,prepare_hm_parameters(o_parameters));
+	if(mess!=null && mess.getTYPE()!=null && mess.getTYPE().equals("?") && level!=null && level.length()>0)
+		mess.setTYPE(String.valueOf(level.charAt(0)));	
 	if(request!=null){
 		try{
 			Vector list = null;
