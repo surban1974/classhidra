@@ -351,7 +351,10 @@ public class ProcessBatchEvent  {
 			
 			log.setCd_btch(batch.getCd_btch());
 			batch.setInitialState(batch.getState());
-			batch.setState(Integer.valueOf(i_batch.STATE_INEXEC));	
+			batch.setState(Integer.valueOf(i_batch.STATE_INEXEC));
+			
+			changeState(batch, batch.getState());
+			
 			Integer initialBatchState = batch.getInitialState();
 
 
