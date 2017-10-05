@@ -910,6 +910,7 @@ function ajax_makeMPARTParameters64(frm,url) {
 	if(window.FormData){
 		var formdata = new FormData();
 
+		formdata.append("$inputBase64","true");
 
 	    if(url.indexOf("?")>-1){
 	    	var urlParameters=url.substring(url.indexOf("?")+1,url.length);
