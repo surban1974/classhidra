@@ -148,9 +148,14 @@ public class tagBean extends TagSupport{
 				obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,arg);
 				if(obj==null && arg!=null)
 					obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,null);
-				if(prefixName!=null)
+				if(prefixName==null || prefixName.equals(""))
+					prefixName=property;
+				else if(prefixName.lastIndexOf('.')==prefixName.length()-1)
 					prefixName+=property;
-				else prefixName=property;
+				else		
+					prefixName+="."+property;
+				
+
 			}else obj = anotherBean;
 			if(obj!=null && index!=null){
 				if(index.equalsIgnoreCase("SEQUENCE")){
