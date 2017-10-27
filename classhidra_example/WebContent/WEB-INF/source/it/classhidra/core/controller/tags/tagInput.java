@@ -416,7 +416,7 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 			}catch(Exception e){
 			}
 		}
-		
+		boolean isChecked = false;
 		StringBuffer results = new StringBuffer("<input ");
 		if(name!=null){
 			results.append(" name=\"");
@@ -493,25 +493,42 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 			results.append(checked);
 			results.append('"');
 		}else{
-			
+		
 			if ( formBean != null &&
 					 type != null && (
 					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
 					 checkedvalue !=null &&
-					 (solveBeanName==null || !solveBeanName.equalsIgnoreCase("true")) &&
-					 checkedvalue.equalsIgnoreCase(formBean.get(name).toString()))
-				
+					 (solveBeanName==null || !solveBeanName.equalsIgnoreCase("true")) && formBean.get(name)!=null &&
+					 checkedvalue.equalsIgnoreCase(formBean.get(name).toString())){				
 					results.append(" checked=\"checked\"");
+					isChecked=true;
+			}
 
-			if ( formBean != null &&
+			if ( !isChecked && formBean != null &&
 					 type != null && (
 					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
 					 checkedvalue !=null &&
-					 (solveBeanName!=null && solveBeanName.equalsIgnoreCase("true")) &&
-					 checkedvalue.equalsIgnoreCase(formBean.get(prefixName).toString()))
-				
+					 (solveBeanName!=null && solveBeanName.equalsIgnoreCase("true")) && formBean.get(prefixName)!=null &&
+					 checkedvalue.equalsIgnoreCase(formBean.get(prefixName).toString())){				
 					results.append(" checked=\"checked\"");
+					isChecked=true;
+			}
 			
+			if ( !isChecked && value != null &&
+					 type != null && (
+					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 checkedvalue !=null && checkedvalue.equalsIgnoreCase(value.toString())){				
+					results.append(" checked=\"checked\"");					
+					isChecked=true;
+			}
+			
+			if ( !isChecked && writeValue != null &&
+					 type != null && (
+					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+					 checkedvalue !=null && checkedvalue.equalsIgnoreCase(writeValue.toString())){				
+					results.append(" checked=\"checked\"");					
+					isChecked=true;
+			}			
 
 		}
 		if (disabled != null) {
@@ -638,21 +655,42 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 
 				results.append(util_xml.normalHTML((value==null)?"":value.toString(),null));
 				results.append('"');
-				if ( formBean != null &&
-					 type != null && (
-					 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
-					 (solveBeanName==null || !solveBeanName.equalsIgnoreCase("true")) &&
-					 checkedvalue.equalsIgnoreCase(formBean.get(name).toString()))
-
-					results.append(" checked=\"checked\"");
-
-				if ( formBean != null &&
+				
+				if ( !isChecked && formBean != null &&
 						 type != null && (
 						 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
-						 (solveBeanName!=null && solveBeanName.equalsIgnoreCase("true")) &&
-						 checkedvalue.equalsIgnoreCase(formBean.get(prefixName).toString()))
-
+						 checkedvalue !=null &&
+						 (solveBeanName==null || !solveBeanName.equalsIgnoreCase("true")) && formBean.get(name)!=null &&
+						 checkedvalue.equalsIgnoreCase(formBean.get(name).toString())){				
 						results.append(" checked=\"checked\"");
+						isChecked=true;
+				}
+
+				if ( !isChecked && formBean != null &&
+						 type != null && (
+						 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+						 checkedvalue !=null &&
+						 (solveBeanName!=null && solveBeanName.equalsIgnoreCase("true")) && formBean.get(prefixName)!=null &&
+						 checkedvalue.equalsIgnoreCase(formBean.get(prefixName).toString())){				
+						results.append(" checked=\"checked\"");
+						isChecked=true;
+				}
+				
+				if ( !isChecked && value != null &&
+						 type != null && (
+						 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+						 checkedvalue !=null && checkedvalue.equalsIgnoreCase(value.toString())){				
+						results.append(" checked=\"checked\"");					
+						isChecked=true;
+				}
+				
+				if ( !isChecked && writeValue != null &&
+						 type != null && (
+						 type.equalsIgnoreCase("radio") || type.equalsIgnoreCase("checkbox")) &&
+						 checkedvalue !=null && checkedvalue.equalsIgnoreCase(writeValue.toString())){				
+						results.append(" checked=\"checked\"");					
+						isChecked=true;
+				}
 				
 				
 
@@ -775,12 +813,12 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 
 		if (onchange != null) {
 			results.append(" onchange=\"");
+			results.append(onchange);
 			if(asyncUpdateUrl!=null){
 				if(asyncUpdateJsFunction!=null)
 					results.append(asyncUpdateJsFunction+"('"+asyncUpdateUrl+"',this.name);");
 				else results.append("dhtmlLoadScript('"+asyncUpdateUrl+"');");
-			}
-			results.append(onchange);
+			}			
 			results.append('"');
 		}else{
 			if(asyncUpdateUrl!=null){
