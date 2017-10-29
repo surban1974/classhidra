@@ -33,7 +33,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 
-public class tagExpression extends TagSupport{
+public class tagExpression extends ClTagSupport{
 	private static final long serialVersionUID = -1L;
 	protected String name = null;
 	protected List elements = null;
@@ -52,6 +52,8 @@ public class tagExpression extends TagSupport{
 			
 			obj = calculation();
 			
+			if(name!=null)
+				name=checkParametersIfDynamic(name, null);
 			request.setAttribute(name,obj);
 		}catch(Exception e){
 		}

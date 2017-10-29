@@ -37,11 +37,10 @@ import it.classhidra.core.init.auth_init;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class tagForbidSection extends  TagSupport {
+public class tagForbidSection extends  ClTagSupport {
 	private static final long serialVersionUID = -1L;
 	protected String bean=null;
 	protected String name=null;
@@ -98,7 +97,9 @@ public class tagForbidSection extends  TagSupport {
 			info_redirect i_r = (info_redirect)i_a.get_auth_redirects().get(formRedirect.get_inforedirect().getAuth_id());
 
 
-
+			if(name!=null)
+				name=checkParametersIfDynamic(name, null);
+			
 			if(name!=null &&
 				i_r!=null &&
 				i_r.get_sections()!=null &&

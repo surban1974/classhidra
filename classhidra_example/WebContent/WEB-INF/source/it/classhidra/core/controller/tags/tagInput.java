@@ -34,7 +34,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import it.classhidra.core.controller.action;
@@ -47,7 +46,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 import it.classhidra.core.tool.util.util_xml;
 
-public class tagInput extends BodyTagSupport implements DynamicAttributes {
+public class tagInput extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
 	protected String bean = null;
 	protected String objId = null;// id
@@ -297,7 +296,8 @@ public class tagInput extends BodyTagSupport implements DynamicAttributes {
 			if(formBean!=null)
 				formBean=formBean.asBean();
 		}
-
+		if(name!=null)
+			name=checkParametersIfDynamic(name, null);
 		if(method_prefix==null) method_prefix="get";
 		Object anotherBean = null;
 		Object writeValue=null;

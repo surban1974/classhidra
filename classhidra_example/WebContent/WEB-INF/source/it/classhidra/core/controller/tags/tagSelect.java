@@ -84,7 +84,8 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			if(formBean!=null)
 				formBean=formBean.asBean();
 		}
-
+		if(name!=null)
+			name=checkParametersIfDynamic(name, null);
 		if(method_prefix==null) method_prefix="get";
 
 		Object writeValue=null;

@@ -34,7 +34,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -44,7 +43,7 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
-public class tagSequence extends  TagSupport {
+public class tagSequence extends  ClTagSupport {
 	private static final long serialVersionUID = 1L;
 	protected String bean=null;
 	protected String name=null;
@@ -92,7 +91,8 @@ public class tagSequence extends  TagSupport {
 					formBean=formBean.asBean();
 			}
 			
-			
+			if(name!=null)
+				name=checkParametersIfDynamic(name, null);			
 			if(method_prefix==null) method_prefix="get";
 			
 			Object anotherBean=null;

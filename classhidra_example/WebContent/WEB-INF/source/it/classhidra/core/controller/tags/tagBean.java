@@ -32,7 +32,6 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -43,7 +42,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 
-public class tagBean extends TagSupport{
+public class tagBean extends ClTagSupport{
 	private static final long serialVersionUID = 1L;
 	public static final String CONST_HEAP_BEANS = "HEAP_BEANS";
 	protected String name = null;
@@ -87,6 +86,13 @@ public class tagBean extends TagSupport{
 			}
 			Object anotherBean=null;
 
+			if(name!=null)
+				name=checkParametersIfDynamic(name, null);
+			if(source!=null)
+				source=checkParametersIfDynamic(source, null);
+			if(property!=null)
+				property=checkParametersIfDynamic(property, null);
+			
 			if(method_prefix==null) method_prefix="get";
 
 			if(source==null)

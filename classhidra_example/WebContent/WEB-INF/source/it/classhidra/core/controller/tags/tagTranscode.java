@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.DynamicAttributes;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
@@ -49,7 +48,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_xml;
 
 
-public class tagTranscode extends TagSupport implements DynamicAttributes {
+public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -6037366698116086666L;
 	protected String source = null;
 	protected String inputField = null;
@@ -127,7 +126,8 @@ public class tagTranscode extends TagSupport implements DynamicAttributes {
 
 
 		
-		
+		if(source!=null)
+			source=checkParametersIfDynamic(source, null);		
 		if(method_prefix==null) method_prefix="get";
 		
 		StringBuffer results = new StringBuffer("");

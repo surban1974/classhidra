@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -42,7 +42,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag; 
 
 
-public class tagInto extends  TagSupport {
+public class tagInto extends  ClTagSupport {
 	private static final long serialVersionUID = 1L;
 	protected String bean=null;
 	protected String name=null;
@@ -97,7 +97,8 @@ public class tagInto extends  TagSupport {
 			if(formBean!=null)
 				formBean=formBean.asBean();
 		}
-
+		if(name!=null)
+			name=checkParametersIfDynamic(name, null);
 		if(method_prefix==null) method_prefix="get";
 		Object writeValue=null;
 		Object anotherBean = null;
