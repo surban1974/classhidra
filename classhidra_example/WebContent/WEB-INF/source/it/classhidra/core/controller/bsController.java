@@ -85,16 +85,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-
-
-
-
-
-
-
-
-
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 
@@ -2014,6 +2005,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(method==null || method.getParameterTypes()==null || method.getParameterTypes().length==0)
 			return new Object[0];
 		Object[] result = new Object[method.getParameterTypes().length];
+		boolean inputBase64 = false;
+		String charset = "UTF-8";
+
+		if(request!=null){
+			inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
+					(
+							request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
+							request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+					)
+				);
+			charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
+		}
 		for(int i=0;i<method.getParameterTypes().length;i++){
 			Class current = method.getParameterTypes()[i];
 			Parameter annotationParameter = null;
@@ -2034,6 +2037,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 						result[i] = util_makeValue.makeFormatedValue1(current,ret.toString(),null);
 					}else if(request.getParameter(annotationParameter.name())!=null){
 						ret = request.getParameter(annotationParameter.name());
+						if(ret!=null && ret instanceof String && inputBase64){
+							try{
+								ret=new String(new BASE64Decoder().decodeBuffer((String)ret),charset);
+							}catch(Exception e){}
+						}
 						result[i] = util_makeValue.makeFormatedValue1(current,(ret!=null)?ret.toString():"",null);
 					}else if(ret==null){
 						try{
