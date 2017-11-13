@@ -26,6 +26,7 @@ package it.classhidra.core.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -82,7 +83,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private Vector  vm_streams;
 	
 	private boolean R_R = true;
-
+	private Map restParametersMapped;
 
 	public info_action(){
 		super();
@@ -710,6 +711,19 @@ public class info_action extends info_entity implements i_elementBase{
 				exposed.add(st.nextToken().toUpperCase());
 		}
 		
+	}
+	
+	public Map getRestParametersMapped(){
+		if(restParametersMapped==null){
+			restParametersMapped = new HashMap();
+			if(restmapping!=null && restmapping.size()>0){
+				for(int i=0;i<restmapping.size();i++){
+					info_rest iRest = (info_rest)restmapping.get(i);
+					restParametersMapped.putAll(iRest.getRestParametersMapped());
+				}
+			}
+		}
+		return restParametersMapped;
 	}
 
 	public List getRestmapping() {

@@ -35,6 +35,8 @@ import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.elements.i_elementBeanBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.serialize.JsonMapper;
+import it.classhidra.serialize.XmlMapper;
 
 
 
@@ -147,4 +149,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	
 	boolean isAsyncInterrupt();
 	void setAsyncInterrupt(boolean asyncInterrupt);
+	
+	JsonMapper getJsonMapper();
+	XmlMapper getXmlMapper();
 }

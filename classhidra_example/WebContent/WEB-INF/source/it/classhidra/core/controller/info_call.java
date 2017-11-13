@@ -28,6 +28,7 @@ package it.classhidra.core.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.w3c.dom.NamedNodeMap;
@@ -52,6 +53,7 @@ public class info_call extends info_entity implements i_elementBase{
 	private info_async iAsync;
 	private List exposed;
 	private List restmapping;
+	private Map restParametersMapped;
 
 	private boolean R_R = true;
 	
@@ -314,6 +316,19 @@ public class info_call extends info_entity implements i_elementBase{
 				exposed.add(st.nextToken().toUpperCase());
 		}
 		
+	}
+	
+	public Map getRestParametersMapped(){
+		if(restParametersMapped==null){
+			restParametersMapped = new HashMap();
+			if(restmapping!=null && restmapping.size()>0){
+				for(int i=0;i<restmapping.size();i++){
+					info_rest iRest = (info_rest)restmapping.get(i);
+					restParametersMapped.putAll(iRest.getRestParametersMapped());
+				}
+			}
+		}
+		return restParametersMapped;
 	}
 
 	public List getRestmapping() {

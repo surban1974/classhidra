@@ -1728,5 +1728,13 @@ public void setAsyncInterrupt(boolean asyncInterrupt) {
 	this.asyncInterrupt = asyncInterrupt;
 }
 
+public JsonMapper getJsonMapper() {
+	return null;
+}
+
+public XmlMapper getXmlMapper() {
+	return null;
+}
+
 
 }

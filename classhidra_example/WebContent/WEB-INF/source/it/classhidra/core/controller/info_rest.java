@@ -26,6 +26,7 @@ package it.classhidra.core.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.w3c.dom.NamedNodeMap;
@@ -231,6 +232,14 @@ public class info_rest extends info_entity implements i_elementBase{
 		
 	}
 
-
+	public Map getRestParametersMapped(){
+		Map result = new HashMap();
+		if(parameters!=null && parameters.size()>0){
+			for(int i=0;i<parameters.size();i++)
+				result.put(parameters.get(i).toString(), "");
+			
+		}
+		return result;
+	}
 
 }

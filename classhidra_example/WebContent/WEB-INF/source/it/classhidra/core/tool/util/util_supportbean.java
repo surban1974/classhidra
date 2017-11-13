@@ -477,8 +477,11 @@ public class util_supportbean  {
 	
 //******************************************************************
 	
-	
 	public static void init(Object bean, String prefix, HttpServletRequest request) throws bsControllerException{
+		init(bean, prefix, request, null);
+	}
+	
+	public static void init(Object bean, String prefix, HttpServletRequest request, i_bean instance) throws bsControllerException{
 		if(request==null) return;
 
 		if(request.getContentType()!=null && request.getContentType().indexOf("multipart")>-1){
@@ -487,12 +490,12 @@ public class util_supportbean  {
 		}
 	
 		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
-			if(initJsonPart(bean,prefix,request,null)) 
+			if(initJsonPart(bean,prefix,request,(instance!=null)?instance.getJsonMapper():null)) 
 				return;
 		}
 		
 		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
-			if(initXmlPart(bean,prefix,request,null))
+			if(initXmlPart(bean,prefix,request,(instance!=null)?instance.getXmlMapper():null))
 				return;
 		}
 		
@@ -1015,8 +1018,11 @@ public class util_supportbean  {
 			return null;
 		}
 	
-	
 		public static Object init(Class ret_class, String name, HttpServletRequest request) throws bsControllerException{
+			return init(ret_class, name, request, null);
+		}
+		
+		public static Object init(Class ret_class, String name, HttpServletRequest request, i_bean instance) throws bsControllerException{
 			if(request==null) return 
 				null;
 
@@ -1027,12 +1033,12 @@ public class util_supportbean  {
 		
 			if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
 				return 
-					initJsonPart(ret_class,name,request,null);
+					initJsonPart(ret_class,name,request,(instance!=null)?instance.getJsonMapper():null);
 			}
 			
 			if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
 				return 
-					initXmlPart(ret_class,name,request,null);
+					initXmlPart(ret_class,name,request,(instance!=null)?instance.getXmlMapper():null);
 			}
 			
 		

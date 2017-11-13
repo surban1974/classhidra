@@ -1,5 +1,6 @@
 package it.classhidra.serialize;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -88,7 +89,7 @@ public class JsonReader2Map implements JsonMapper{
 		}
 		return table;
 	}
-	
+/*	
 	private static Map recursive(String key, Map original, Map result, String prefix){
 		if(original.get(key) instanceof Map){
 			Map<String, Object> sub = (Map)original.get(key);
@@ -99,6 +100,25 @@ public class JsonReader2Map implements JsonMapper{
 			
 		return result;
 	}
-	
-	
+*/	
+	private Map recursive(String key, Map original, Map result, String prefix){
+		if(original.get(key) instanceof Map){
+			Map<String, Object> sub = (Map)original.get(key);
+			for(Object elem : sub.keySet())
+				result = recursive((String)elem, sub, result, ((prefix.equals(""))?"":prefix+".")+key);
+		}else if(original.get(key) instanceof Collection){
+			Collection list = (Collection)original.get(key);
+			int i=0;
+			for(Object sub: list){
+				if(sub instanceof Map){
+					for(Object elem : ((Map)sub).keySet())
+						result = recursive((String)elem, (Map)sub, result, ((prefix.equals(""))?"":prefix+".")+key+"."+i);
+				}
+				i++;
+			}
+		}else
+			result.put(((prefix.equals(""))?"":prefix+".")+key, original.get(key).toString());
+			
+		return result;
+	}	
 }
