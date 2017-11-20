@@ -14,10 +14,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_xml;
+
 
 
 
@@ -36,6 +39,9 @@ public class XmlWriter {
 	}	
 	
 	public static String object2xml(Object obj, String name, List filters){
+		return object2xml(obj, name, null, null);
+	}
+	public static String object2xml(Object obj, String name, List filters, Map namespaces){
 		Map avoidCyclicPointers = new HashMap();
 
 		String result="";
@@ -51,12 +57,26 @@ public class XmlWriter {
 			else if(name==null)
 				map_name = "item";
 
-			result+=generateXmlItem(obj,map_name,0,avoidCyclicPointers,null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
+			result+=generateXmlItem(
+					obj,
+					map_name,
+					0,
+					avoidCyclicPointers,
+					null,
+					(annotation!=null)?annotation.children():false,
+					(annotation!=null)?annotation.depth():0,
+					util_xml.convertFilters(filters),
+					namespaces,
+					true);
 		}
 		return result;
 	}
 	
 	public static String object2xml(Object obj, String name, List filters, boolean children, int depth){
+		return object2xml(obj, name, filters, children, depth, null);
+	}
+	
+	public static String object2xml(Object obj, String name, List filters, boolean children, int depth, Map namespaces){
 		Map avoidCyclicPointers = new HashMap();
 
 		String result="";
@@ -84,14 +104,16 @@ public class XmlWriter {
 					(depth>annotation.depth())?depth:annotation.depth()
 					:
 					depth,
-					util_xml.convertFilters(filters));
+					util_xml.convertFilters(filters),
+					namespaces,
+					true);
 		}
 		return result;
 	}
 
 
 	
-	private static String generateXmlItem(Object sub_obj, String name, int level, Map avoidCyclicPointer, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters){
+	private static String generateXmlItem(Object sub_obj, String name, int level, Map avoidCyclicPointer, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, Map namespaces, boolean fixedName){
 		String result="";
 		boolean goAhead = true;
 		Map subTreeFilters = null;
@@ -105,17 +127,17 @@ public class XmlWriter {
 			}
 		}
 		if(goAhead){		
-			result+=generateXmlItemTag_Start(sub_obj, name, level, annotation);
+			result+=generateXmlItemTag_Start(sub_obj, name, level, annotation, namespaces, fixedName);
 			result+=generateXmlItemTag_Content(sub_obj, name, level,avoidCyclicPointer,annotation,serializeChildren,serializeDepth,subTreeFilters);
-			result+=generateXmlItemTag_Finish(sub_obj, name, level, annotation);
+			result+=generateXmlItemTag_Finish(sub_obj, name, level, annotation, fixedName);
 		}
 		return result;
 	}
 
-	private static String generateXmlItemTag_Start(Object sub_obj, String name, int level, Serialized annotation){
+	private static String generateXmlItemTag_Start(Object sub_obj, String name, int level, Serialized annotation, Map namespaces, boolean fixedName){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String map_name = name;
-		if(name!=null)
+		if(name!=null && !fixedName)
 			map_name = util_reflect.revAdaptMethodName(name);
 		if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
 				map_name = annotation.output().name();
@@ -129,6 +151,16 @@ public class XmlWriter {
 				result+="<items";
 			else result+="<item";
 		}
+		
+		if(namespaces!=null && namespaces.size()>0) {
+
+			Iterator it = namespaces.entrySet().iterator();
+			while (it.hasNext()) {
+			    Map.Entry pair = (Map.Entry)it.next();
+			    result+=" "+pair.getKey()+"=\""+pair.getValue()+"\"";
+			}
+		}
+		
 		result+=">";
 		
 		if(sub_obj instanceof List || sub_obj.getClass().isArray() || sub_obj instanceof Map || sub_obj instanceof Set){
@@ -195,9 +227,9 @@ public class XmlWriter {
 						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 
 							if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-								result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation);
+								result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation, null, false);
 								result+="\"WARNING: cyclic pointer\"";
-								result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation);
+								result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation, false);
 							}else{
 								avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 								result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,sub_annotation,
@@ -208,12 +240,14 @@ public class XmlWriter {
 												:
 													(serializeDepth-1>=0)?serializeDepth-1:0
 												,
-												treeFilters);
+												treeFilters,
+												null,
+												false);
 								avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 							}
 						}
 					}else
-						result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters);				
+						result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false);				
 			    }
 			    return result;
 			}else{
@@ -227,9 +261,9 @@ public class XmlWriter {
 						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){							
 
 							if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-								result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation);
+								result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation, null, false);
 								result+="\"WARNING: cyclic pointer\"";
-								result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation);
+								result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation, false);
 							}else{
 								avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 								result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,sub_annotation,
@@ -240,12 +274,14 @@ public class XmlWriter {
 												:
 													(serializeDepth-1>=0)?serializeDepth-1:0
 												,
-												treeFilters);
+												treeFilters,
+												null,
+												false);
 								avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 							}
 						}
 					}else
-						result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters);				
+						result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false);				
 								        
 			    }
 			    return result+result_tmp;
@@ -263,9 +299,9 @@ public class XmlWriter {
 					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-							result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation);
+							result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation, null, false);
 							result+="\"WARNING: cyclic pointer\"";
-							result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation);
+							result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation, false);
 						}else{
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,sub_annotation,
@@ -276,12 +312,14 @@ public class XmlWriter {
 									:
 										(serializeDepth-1>=0)?serializeDepth-1:0
 									,
-									treeFilters);
+									treeFilters,
+									null,
+									false);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters);				
+					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false);				
 				
 			}
 			return result;
@@ -299,9 +337,9 @@ public class XmlWriter {
 					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){							
 
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-							result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation);
+							result+=generateXmlItemTag_Start(new Object(), null, level+1, sub_annotation, null, false);
 							result+="\"WARNING: cyclic pointer\"";
-							result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation);
+							result+=generateXmlItemTag_Finish(new Object(), null, level+1, sub_annotation, false);
 						}else{
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,sub_annotation,
@@ -312,12 +350,14 @@ public class XmlWriter {
 											:
 												(serializeDepth-1>=0)?serializeDepth-1:0
 											,
-											treeFilters);
+											treeFilters,
+											null,
+											false);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters);				
+					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false);				
 							        
 		    }
 		    return result+result_tmp;
@@ -336,9 +376,9 @@ public class XmlWriter {
 					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
 
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-							result+=generateXmlItemTag_Start(new Object(), pair.getKey().toString(), level+1, sub_annotation);
+							result+=generateXmlItemTag_Start(new Object(), pair.getKey().toString(), level+1, sub_annotation, null, false);
 							result+="\"WARNING: cyclic pointer\"";
-							result+=generateXmlItemTag_Finish(new Object(), pair.getKey().toString(), level+1, sub_annotation);
+							result+=generateXmlItemTag_Finish(new Object(), pair.getKey().toString(), level+1, sub_annotation, false);
 						}else{
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,avoidCyclicPointers,sub_annotation,
@@ -349,12 +389,14 @@ public class XmlWriter {
 									:
 										(serializeDepth-1>=0)?serializeDepth-1:0
 									,
-									treeFilters);
+									treeFilters,
+									null,
+									false);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters);
+					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false);
 		        
         
 		    }
@@ -435,6 +477,9 @@ public class XmlWriter {
 		Map name_tmp = new HashMap();
 			try{
 				String[] prefixes = new String[]{"get","is"};
+				StringBuffer stringBuffer = new StringBuffer();
+				SortedMap ordered = new TreeMap();
+				
 				for(int p=0;p<prefixes.length;p++){
 					Method[] methods = util_reflect.getMethods(sub_obj,prefixes[p]);
 					for(int i=0;i<methods.length;i++){
@@ -468,9 +513,15 @@ public class XmlWriter {
 									if(!sub_obj2.equals(sub_obj)){
 							
 										if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-											result+=generateXmlItemTag_Start(new Object(), methodName, level+1, sub_annotation);
-											result+="\"WARNING: cyclic pointer\"";
-											result+=generateXmlItemTag_Finish(new Object(), methodName, level+1, sub_annotation);
+											String tag="";
+											tag+=generateXmlItemTag_Start(new Object(), methodName, level+1, sub_annotation, null, false);
+											tag+="\"WARNING: cyclic pointer\"";
+											tag+=generateXmlItemTag_Finish(new Object(), methodName, level+1, sub_annotation, false);
+											
+											if(sub_annotation!=null && sub_annotation.order()>-1)
+												ordered.put(sub_annotation.order(), tag);
+											else
+												stringBuffer.append(tag);
 										}else{
 											avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 											
@@ -480,7 +531,7 @@ public class XmlWriter {
 											
 											name_tmp.put(map_name, map_name);
 											
-											result+=generateXmlItem(
+											String tag = generateXmlItem(
 													sub_obj2,
 													methodName,
 													level+1,
@@ -493,8 +544,16 @@ public class XmlWriter {
 													:
 														(serializeDepth-1>=0)?serializeDepth-1:0
 													,
-													treeFilters
+													treeFilters,
+													null,
+													false
 											);
+											
+											if(sub_annotation!=null && sub_annotation.order()>-1)
+												ordered.put(sub_annotation.order(), tag);
+											else
+												stringBuffer.append(tag);
+											
 											avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 										}
 									}
@@ -506,6 +565,7 @@ public class XmlWriter {
 				
 
 				Field[] fields = sub_obj.getClass().getDeclaredFields();
+
 				for(int j=0;j<fields.length;j++){
 					if(!Modifier.isStatic(fields[j].getModifiers())){
 						String fieldName = fields[j].getName();
@@ -528,14 +588,20 @@ public class XmlWriter {
 
 									
 									if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-
-										result+=generateXmlItemTag_Start(new Object(), fieldName, level+1, sub_annotation);
-										result+="\"WARNING: cyclic pointer\"";
-										result+=generateXmlItemTag_Finish(new Object(), fieldName, level+1, sub_annotation);
+										String tag = "";
+										tag+=generateXmlItemTag_Start(new Object(), fieldName, level+1, sub_annotation, null, false);
+										tag+="\"WARNING: cyclic pointer\"";
+										tag+=generateXmlItemTag_Finish(new Object(), fieldName, level+1, sub_annotation, false);
+										
+										if(sub_annotation!=null && sub_annotation.order()>-1)
+											ordered.put(sub_annotation.order(), tag);
+										else
+											stringBuffer.append(tag);
 									}else{
 										avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 										 
-										result+=generateXmlItem(
+										
+										String tag = generateXmlItem(
 												sub_obj2, fieldName,level+1,avoidCyclicPointers,sub_annotation,
 												(sub_annotation!=null)?sub_annotation.children():false,
 												(sub_annotation!=null && sub_annotation.depth()>0)
@@ -544,7 +610,14 @@ public class XmlWriter {
 												:
 													(serializeDepth-1>=0)?serializeDepth-1:0
 												,
-												treeFilters);
+												treeFilters,
+												null,
+												false);
+										
+										if(sub_annotation!=null && sub_annotation.order()>-1)
+											ordered.put(sub_annotation.order(), tag);
+										else
+											stringBuffer.append(tag);
 											
 										avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 									}
@@ -555,7 +628,14 @@ public class XmlWriter {
 						}
 						
 					}	
-				}					
+				}	
+				
+				if(ordered.size()>0) {
+					Iterator it = ordered.values().iterator();
+					while (it.hasNext()) 
+						result+=it.next();
+				}
+				result+=stringBuffer.toString();
 				
 				
 			}catch(Exception e){
@@ -567,10 +647,10 @@ public class XmlWriter {
 		return result;
 	}
 
-	private static String generateXmlItemTag_Finish(Object sub_obj, String name, int level, Serialized annotation){
+	private static String generateXmlItemTag_Finish(Object sub_obj, String name, int level, Serialized annotation, boolean fixedName){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String map_name = name;
-		if(name!=null)
+		if(name!=null && !fixedName)
 			map_name = util_reflect.revAdaptMethodName(name);
 		if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
 			map_name = annotation.output().name();
