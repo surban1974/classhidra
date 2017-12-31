@@ -17,4 +17,7 @@ public @interface Format {
 	String characterset() default "";
 	String replaceOnBlank() default "";
 	String replaceOnErrorFormat() default "";
+	boolean xml_cdata() default false;
+	boolean xml_escape10() default false;
+	boolean xml_escape11() default false;
 }

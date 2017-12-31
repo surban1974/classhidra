@@ -417,7 +417,18 @@ public class XmlWriter {
 				if(annotation!=null && annotation.output()!=null){
 					try{					
 						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
-						result+=util_xml.normalXML(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						if(annotation.output().xml_cdata()) {
+							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
+							if(charset==null)
+								result+="<![CDATA["+value+"]]>";
+							else
+								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+						}else if(annotation.output().xml_escape10()) 
+							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else if(annotation.output().xml_escape11()) 
+							result+=util_xml.escapeXML11(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else
+							result+=util_xml.normalXML(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 					}catch(Exception e){	
 						result+=util_xml.normalXML(value,null);
 					}	
@@ -429,7 +440,28 @@ public class XmlWriter {
 			}
 			if(sub_obj instanceof Boolean){
 				check=true;
-				result+=util_xml.normalXML(value,null);
+				if(annotation!=null && annotation.output()!=null){
+					try{					
+						value=String.valueOf(((Boolean)sub_obj));
+						if(annotation.output().xml_cdata()) {
+							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
+							if(charset==null)
+								result+="<![CDATA["+value+"]]>";
+							else
+								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+						}else if(annotation.output().xml_escape10()) 
+							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else if(annotation.output().xml_escape11()) 
+							result+=util_xml.escapeXML11(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else
+							result+=util_xml.normalXML(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+
+					}catch(Exception e){	
+						result+=util_xml.normalXML(value,null);
+					}	
+				}else				
+					result+=util_xml.normalXML(value,null);
+				
 				return result;
 			}			
 			if(sub_obj instanceof Number){
@@ -437,7 +469,19 @@ public class XmlWriter {
 				if(annotation!=null && annotation.output()!=null){
 					try{					
 						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
-						result+=util_xml.normalXML(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						if(annotation.output().xml_cdata()) {
+							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
+							if(charset==null)
+								result+="<![CDATA["+value+"]]>";
+							else
+								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+						}else if(annotation.output().xml_escape10()) 
+							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else if(annotation.output().xml_escape11()) 
+							result+=util_xml.escapeXML11(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else
+							result+=util_xml.normalXML(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+
 					}catch(Exception e){	
 						result+=util_xml.normalXML(value,null);
 					}	
@@ -452,7 +496,19 @@ public class XmlWriter {
 				if(annotation!=null && annotation.output()!=null){
 					try{					
 						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
-						result+=util_xml.normalXML(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						if(annotation.output().xml_cdata()) {
+							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
+							if(charset==null)
+								result+="<![CDATA["+value+"]]>";
+							else
+								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+						}else if(annotation.output().xml_escape10()) 
+							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else if(annotation.output().xml_escape11()) 
+							result+=util_xml.escapeXML11(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else
+							result+=util_xml.normalXML(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+
 					}catch(Exception e){	
 						result+=util_xml.normalXML(value,null);
 					}	
@@ -462,14 +518,31 @@ public class XmlWriter {
 				return result;
 			}
 			if(!check){
-				try{
-					java.text.DecimalFormat df = new java.text.DecimalFormat("##0.000000", new DecimalFormatSymbols(new Locale("en")));
-					result+= df.format(new java.math.BigDecimal(value.trim()).doubleValue());
-					return result;
-				}catch(Exception e){
+				if(annotation!=null && annotation.output()!=null){
+					try{
+						java.text.DecimalFormat df = new java.text.DecimalFormat("##0.000000", new DecimalFormatSymbols(new Locale("en")));
+						value = df.format(new java.math.BigDecimal(value.trim()).doubleValue());
+						if(annotation.output().xml_cdata()) {
+							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
+							if(charset==null)
+								result+="<![CDATA["+value+"]]>";
+							else
+								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+						}else if(annotation.output().xml_escape10()) 
+							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else if(annotation.output().xml_escape11()) 
+							result+=util_xml.escapeXML11(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+						else
+							result+=util_xml.normalXML(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
+	
+					}catch(Exception e){
+						result+=util_xml.normalXML(value,null);
+						return result;
+					}
+				}else				
 					result+=util_xml.normalXML(value,null);
-					return result;
-				}
+
+				return result;
 			}
 
 		}

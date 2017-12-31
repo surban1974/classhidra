@@ -123,7 +123,15 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action 	formAction 		= (request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION)==null)?new action():(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
-
+		i_bean formBean=null;
+		if(formAction==null) 
+			formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
+		if(formAction==null) formAction = new action(); 
+		if(formAction!=null){
+			formBean = formAction.get_bean();
+			if(formBean!=null)
+				formBean=formBean.asBean();
+		}
 
 		
 		if(source!=null)
@@ -132,7 +140,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		
 		StringBuffer results = new StringBuffer("");
 		Object writeValue=null;
-		Object anotherBean=null;
+
 		
 		Object valueKey=null;
 		Object valueSource=null;
@@ -160,14 +168,19 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 				if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
 				if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
 				try{
-					if(rightBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(nameRightBean).get_content();
+					if(rightBean==null) rightBean = (bsController.getFromInfoNavigation(null, request)).find(nameRightBean).get_content();
 				}catch(Exception e){
 				}
-				if(anotherBean==null) anotherBean = bsController.getFromOnlySession(nameRightBean, request);
-				if(rightBean==null) anotherBean = bsController.getProperty(nameRightBean,request);
+				if(rightBean==null) rightBean = bsController.getFromOnlySession(nameRightBean, request);
+				if(rightBean==null) rightBean = bsController.getProperty(nameRightBean,request);
+				if(rightBean==null && formBean!=null) {
+					rightBean = util_reflect.prepareWriteValueForTag(formBean,method_prefix,nameRightBean,arg);
+					if(rightBean==null && arg!=null && arg.length>0)
+						rightBean = util_reflect.prepareWriteValueForTag(formBean,method_prefix,nameRightBean,null);
+				}
 				
 				if(rightBean!=null){
-					if(methodRightBean==null || methodRightBean.equals("")) valueKey = rightBean;
+					if(methodRightBean==null || methodRightBean.equals("")) valueSource = rightBean;
 					else{
 						try{
 							valueSource = util_reflect.prepareWriteValueForTag(rightBean,"get",methodRightBean,arg);					 
@@ -207,11 +220,16 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 				if(rightBean==null) rightBean = request.getAttribute(nameRightBean);
 				if(rightBean==null) rightBean = request.getSession().getAttribute(nameRightBean);
 				try{
-					if(rightBean==null) anotherBean = (bsController.getFromInfoNavigation(null, request)).find(nameRightBean).get_content();
+					if(rightBean==null) rightBean = (bsController.getFromInfoNavigation(null, request)).find(nameRightBean).get_content();
 				}catch(Exception e){
 				}
-				if(anotherBean==null) anotherBean = bsController.getFromOnlySession(nameRightBean, request);
-				if(rightBean==null) anotherBean = bsController.getProperty(nameRightBean,request);
+				if(rightBean==null) rightBean = bsController.getFromOnlySession(nameRightBean, request);
+				if(rightBean==null) rightBean = bsController.getProperty(nameRightBean,request);
+				if(rightBean==null && formBean!=null) {
+					rightBean = util_reflect.prepareWriteValueForTag(formBean,method_prefix,nameRightBean,arg);
+					if(rightBean==null && arg!=null && arg.length>0)
+						rightBean = util_reflect.prepareWriteValueForTag(formBean,method_prefix,nameRightBean,null);
+				}
 				
 				if(rightBean!=null){
 					if(methodRightBean==null || methodRightBean.equals("")) valueKey = rightBean.toString();
@@ -220,7 +238,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 							valueKey = util_reflect.prepareWriteValueForTag(rightBean,"get",methodRightBean,arg).toString();					 
 						}catch(Exception e){
 						}
-						if(valueSource==null && arg!=null){
+						if(valueKey==null && arg!=null){
 							try{
 								valueKey = util_reflect.prepareWriteValueForTag(rightBean,"get",methodRightBean,null).toString();					 
 							}catch(Exception e){
