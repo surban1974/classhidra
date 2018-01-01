@@ -24,18 +24,22 @@
 
 package it.classhidra.core.tool.util;
 
-import javax.xml.parsers.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 
-import java.io.*;
+import java.io.File;
+import java.io.StringReader;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class util_xml {
 	
@@ -109,8 +113,10 @@ public static Document readXML(String uriXML, boolean valid) throws Exception{
 }
 public static Document readXMLData(String dataXML, boolean valid) throws Exception{
 	if(dataXML==null) return null;
-	ByteArrayInputStream xmlSrcStream = new	ByteArrayInputStream(dataXML.getBytes());
-	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//	ByteArrayInputStream xmlSrcStream = new	ByteArrayInputStream(dataXML.getBytes());
+    InputSource xmlSrcStream = new InputSource();
+    xmlSrcStream.setCharacterStream(new StringReader(dataXML));
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(valid);
 	return dbf.newDocumentBuilder().parse(xmlSrcStream);
 }
@@ -124,7 +130,9 @@ public static Document readXML(String uriXML) throws Exception{
 }
 public static Document readXMLData(String dataXML) throws Exception{
 	if(dataXML==null) return null;
-	ByteArrayInputStream xmlSrcStream = new	ByteArrayInputStream(dataXML.getBytes());
+//	ByteArrayInputStream xmlSrcStream = new	ByteArrayInputStream(dataXML.getBytes());
+    InputSource xmlSrcStream = new InputSource();
+    xmlSrcStream.setCharacterStream(new StringReader(dataXML));
 	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 	return  dbf.newDocumentBuilder().parse(xmlSrcStream);

@@ -52,7 +52,11 @@ public class tagOperand extends ClTagSupport{
 	protected String method_prefix=null;
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
-	
+	protected String normalXML10=null;
+	protected String normalXML11=null;
+	protected String charset;
+	protected String normalASCII=null;
+	protected String normalHTML=null;	
 	protected String value=null;
 
 
@@ -89,6 +93,11 @@ public class tagOperand extends ClTagSupport{
 		formatLanguage=null;
 		formatCountry=null;
 		normalXML=null;
+		normalXML10=null;
+		normalXML11=null;
+		charset=null;
+		normalASCII=null;
+		normalHTML=null;
 		value=null;
 	}
   
@@ -169,12 +178,27 @@ public class tagOperand extends ClTagSupport{
 				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
+				if(normalXML!=null && normalXML.toLowerCase().equals("true"))
+					results.append(util_xml.normalXML((writeValue==null)?"":writeValue.toString(),charset));	
+				else if(normalXML10!=null && normalXML10.toLowerCase().equals("true"))
+					results.append(util_xml.escapeXML10((writeValue==null)?"":writeValue.toString(),charset));		
+				else if(normalXML11!=null && normalXML11.toLowerCase().equals("true"))
+					results.append(util_xml.escapeXML11((writeValue==null)?"":writeValue.toString(),charset));		
+				else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
+					results.append(util_xml.normalASCII((writeValue==null)?"":writeValue.toString()));	
+				else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
+					results.append(util_xml.normalHTML((writeValue==null)?"":writeValue.toString(), null));	
+				else 
+					results.append(writeValue);
+				
+				
 			}catch(Exception e){}	
-			results.append(writeValue);			
+//			results.append(writeValue);			
 		}
-		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
-			return util_xml.normalXML(results.toString(),null);
-		else return results.toString();
+//		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
+//			return util_xml.normalXML(results.toString(),null);
+//		else 
+			return results.toString();
 	}		
 	
 
@@ -241,6 +265,46 @@ public class tagOperand extends ClTagSupport{
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public String getNormalXML10() {
+		return normalXML10;
+	}
+
+	public void setNormalXML10(String normalXML10) {
+		this.normalXML10 = normalXML10;
+	}
+
+	public String getNormalXML11() {
+		return normalXML11;
+	}
+
+	public void setNormalXML11(String normalXML11) {
+		this.normalXML11 = normalXML11;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
+
+	public String getNormalASCII() {
+		return normalASCII;
+	}
+
+	public void setNormalASCII(String normalASCII) {
+		this.normalASCII = normalASCII;
+	}
+
+	public String getNormalHTML() {
+		return normalHTML;
+	}
+
+	public void setNormalHTML(String normalHTML) {
+		this.normalHTML = normalHTML;
 	}
 
 

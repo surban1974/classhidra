@@ -58,8 +58,11 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	protected String method_prefix=null;
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
+	protected String normalXML10=null;
+	protected String normalXML11=null;
+	protected String charset;
 	protected String normalASCII=null;
-	protected String normalHTML=null;
+	protected String normalHTML=null;	
 	protected String additionalAttr=null;
 	
 	protected Map tagAttributes = new HashMap();
@@ -94,6 +97,9 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 		formatLanguage=null;
 		formatCountry=null;
 		normalXML=null;
+		normalXML10=null;
+		normalXML11=null;
+		charset=null;
 		normalASCII=null;
 		normalHTML=null;
 		additionalAttr=null;
@@ -241,7 +247,11 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 			
 
 			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
-				results.append(util_xml.normalXML((writeValue==null)?"":writeValue.toString(),null));	
+				results.append(util_xml.normalXML((writeValue==null)?"":writeValue.toString(),charset));	
+			else if(normalXML10!=null && normalXML10.toLowerCase().equals("true"))
+				results.append(util_xml.escapeXML10((writeValue==null)?"":writeValue.toString(),charset));		
+			else if(normalXML11!=null && normalXML11.toLowerCase().equals("true"))
+				results.append(util_xml.escapeXML11((writeValue==null)?"":writeValue.toString(),charset));		
 			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
 				results.append(util_xml.normalASCII((writeValue==null)?"":writeValue.toString()));	
 			else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
@@ -353,6 +363,30 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 
 	public void setArguments(List arguments) {
 		this.arguments = arguments;
+	}
+
+	public String getNormalXML10() {
+		return normalXML10;
+	}
+
+	public void setNormalXML10(String normalXML10) {
+		this.normalXML10 = normalXML10;
+	}
+
+	public String getNormalXML11() {
+		return normalXML11;
+	}
+
+	public void setNormalXML11(String normalXML11) {
+		this.normalXML11 = normalXML11;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 
 
