@@ -10,6 +10,7 @@
   <jsp-version>1.3</jsp-version>
   <short-name>bs</short-name>
   <description> Tag library for classHidra   </description>
+  <uri>http://classhidra/jsp/tags/bs</uri>
   
   <tag>
     <name>form</name>
