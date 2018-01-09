@@ -2,7 +2,11 @@ package it.classhidra.plugin.async;
 
 
 import javax.servlet.AsyncContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import it.classhidra.core.controller.bsContext;
+import it.classhidra.core.controller.iContext;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.info_async;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -10,8 +14,9 @@ import it.classhidra.core.tool.log.stubs.iStub;
 
 
 
-public class AsyncContainer implements Runnable{ 
-	
+public class AsyncContainer extends bsContext implements Runnable, iContext{ 
+
+	private static final long serialVersionUID = 1L;
 	private AsyncContext asyncContext;
 	protected info_async iAsync;
 	protected boolean beCompleted=false;
@@ -24,21 +29,25 @@ public class AsyncContainer implements Runnable{
 	}
 	
 	public void run() {
-		long loopEvery = 0;
-		try{
-			loopEvery = Long.valueOf(iAsync.getLoopEvery());
-		}catch(Exception e){
-		}
-		if(loopEvery==0)
-			runSingle();
-		else if(loopEvery>0){
-			boolean reInitBeenEveryLoop = false;
+		try {
+			long loopEvery = 0;
 			try{
-				reInitBeenEveryLoop = Boolean.valueOf(iAsync.getReInitBeenEveryLoop());
+				loopEvery = Long.valueOf(iAsync.getLoopEvery());
 			}catch(Exception e){
 			}
-			runLoop(loopEvery, reInitBeenEveryLoop);
-		}
+			if(loopEvery==0)
+				runSingle();
+			else if(loopEvery>0){
+				boolean reInitBeenEveryLoop = false;
+				try{
+					reInitBeenEveryLoop = Boolean.valueOf(iAsync.getReInitBeenEveryLoop());
+				}catch(Exception e){
+				}
+				runLoop(loopEvery, reInitBeenEveryLoop);
+			}
+		} catch (Exception e) {
+			new bsControllerException(e, iStub.log_ERROR);
+        }
 	}
 	
 	private void runSingle(){
@@ -55,6 +64,8 @@ public class AsyncContainer implements Runnable{
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch(Throwable t){
 				new bsControllerException(t, iStub.log_ERROR);
+			}finally{
+
 			}
 		}
 		if(beCompleted && !checkRequestCompletedProcessing()){
@@ -109,7 +120,8 @@ public class AsyncContainer implements Runnable{
 					new bsControllerException(t, iStub.log_ERROR);
 				}
 
-			}
+			}else
+				beCompleted=true;
 		}
 		if(beCompleted && !checkRequestCompletedProcessing()){
 			if(asyncContext!=null && !asyncDispatched){
@@ -162,6 +174,50 @@ public class AsyncContainer implements Runnable{
 
 	public void setAsyncDispatched(boolean asyncDispatched) {
 		this.asyncDispatched = asyncDispatched;
+	}
+
+
+	public HttpServletRequest getRequest() {
+		try{
+			if(this.asyncContext!=null)
+				return (HttpServletRequest)this.asyncContext.getRequest();
+			else return null;
+		}catch(Exception e){
+			return null;
+		}
+	}
+
+
+	public HttpServletResponse getResponse() {
+		try{
+			if(this.asyncContext!=null)
+				return (HttpServletResponse)this.asyncContext.getResponse();
+			else 
+				return null;
+		}catch(Exception e){
+			return null;
+		}
+	}
+
+	public void setResponse(HttpServletResponse response) {
+	}
+
+
+	public void flushBuffer() throws Exception {
+		if(this.asyncContext!=null)
+			this.asyncContext.getResponse().flushBuffer();		
+	}
+
+
+	public void flush() throws Exception {
+		if(this.asyncContext!=null)
+			this.asyncContext.getResponse().flushBuffer();	}
+
+	@Override
+	public void write(byte[] bytes) throws Exception {
+		if(this.asyncContext!=null)
+			this.asyncContext.getResponse().getOutputStream().write(bytes);
+		
 	}
 
 

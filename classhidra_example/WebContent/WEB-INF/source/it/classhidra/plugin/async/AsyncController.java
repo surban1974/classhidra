@@ -56,12 +56,6 @@ public class AsyncController extends HttpServlet {
 	
 		
 		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
-//		response.setContentType("text/event-stream");
-//		response.setHeader("Cache-Control", "no-cache");
-//		response.setHeader("Connection", "keep-alive");
-//		response.setCharacterEncoding("UTF-8");		
-		
-
 		
 		
 		final AsyncContext ac = request.startAsync(request,response);
@@ -105,37 +99,6 @@ public class AsyncController extends HttpServlet {
 					;
 
 			ac.start(acc);
-
-/*
-			ac.start(new Runnable() {
-				private int current = 0;
-			    public void run() {
-			    	while(current<100){
-			    		System.out.println("Current: "+current+" tmp:"+ac.getRequest().getParameter("tmp"));
-				        try {
-				        	
-				        	
-				          ac.getResponse().resetBuffer();	
-				          ac.getResponse().getWriter().write(
-				              "tmp = "+ac.getRequest().getParameter("tmp")
-				              );
-				          ac.getResponse().flushBuffer();
-				        }
-				        catch (IOException e) {
-				        	System.out.println("Problem processing task ERROR: "+e);
-				        }
-				        try{
-				        	Thread.sleep(5000);
-				        }catch(Exception e){
-				        	
-				        }
-				        current++;
-			    	}
-
-			        ac.complete();
-			      }
-			});
-*/			
 
 	}
 	
@@ -196,20 +159,19 @@ public class AsyncController extends HttpServlet {
 		
 		
 		
-		HttpServletRequest request = (HttpServletRequest)asyncContainer.getAsyncContext().getRequest();
-		HttpServletResponse response = (HttpServletResponse)asyncContainer.getAsyncContext().getResponse();
-		ServletContext servletContext = request.getServletContext();
+
+
+		asyncContainer.getRequest().setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
+		asyncContainer.getRequest().setAttribute(bsConstants.CONST_ID_COMPLETE,id_complete);
 		
-		request.setAttribute(bsConstants.CONST_ID_COMPLETE,id_complete);
-		
-		auth_init auth = bsController.checkAuth_init(request);
+		auth_init auth = bsController.checkAuth_init(asyncContainer.getRequest());
 
 		if(auth==null) auth = new auth_init();
 
 		StatisticEntity stat = null;
 		try{
 			stat = new StatisticEntity(
-					String.valueOf(request.getSession().getId()),
+					String.valueOf(asyncContainer.getRequest().getSession().getId()),
 					auth.get_user_ip(),
 					auth.get_matricola(),
 					auth.get_language(),
@@ -217,14 +179,14 @@ public class AsyncController extends HttpServlet {
 					null,
 					new Date(),
 					null,
-					request);
+					asyncContainer.getRequest());
 		}catch(Exception e){
 		}
 
 
 
-		request.setAttribute(bsConstants.CONST_ID_CALL,id_call);
-		request.setAttribute(bsConstants.CONST_ID,id_action);
+		asyncContainer.getRequest().setAttribute(bsConstants.CONST_ID_CALL,id_call);
+		asyncContainer.getRequest().setAttribute(bsConstants.CONST_ID,id_action);
 
 		if(id_action!=null){
 
@@ -233,9 +195,9 @@ public class AsyncController extends HttpServlet {
 			try{
 				Vector _streams = bsController.getActionStreams_(id_action);
 
-				info_stream blockStreamEnter = bsController.performStream_EnterRS(_streams, id_action,action_instance, servletContext, request, response);
+				info_stream blockStreamEnter = bsController.performStream_EnterRS(_streams, id_action,action_instance, asyncContainer.getRequest().getServletContext(), asyncContainer.getRequest(), asyncContainer.getResponse());
 				if(blockStreamEnter!=null){
-					bsController.isException(action_instance, request);
+					bsController.isException(action_instance, asyncContainer.getRequest());
 					if(stat!=null){
 						stat.setFt(new Date());
 						stat.setException(new Exception("Blocked by STREAM ENTER:["+blockStreamEnter.getName()+"]"));
@@ -245,10 +207,10 @@ public class AsyncController extends HttpServlet {
 				}
 
 
-				action_instance = bsController.performAction(id_action, id_call, servletContext, request, response, initBean);
+				action_instance = bsController.performAction(id_action, id_call, asyncContainer.getRequest().getServletContext(), asyncContainer, initBean);
 
 				if(action_instance==null){
-					bsController.isException(action_instance, request);
+					bsController.isException(action_instance, asyncContainer.getRequest());
 					if(stat!=null){
 						stat.setFt(new Date());
 						stat.setException(new Exception("ACTION INSTANCE is NULL"));
@@ -264,26 +226,26 @@ public class AsyncController extends HttpServlet {
 
 
 
-				if(request.getAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL)==null)
-					request.setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
-				HashMap included_pool = (HashMap)request.getAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL);
+				if(asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL)==null)
+					asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
+				HashMap included_pool = (HashMap)asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL);
 				if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getName()!=null)
 					included_pool.put(action_instance.get_infoaction().getName(),action_instance);
 				else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getPath()!=null)
 					included_pool.put(action_instance.get_infoaction().getPath(),action_instance);
 
-				request.setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTION,action_instance);
+				asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTION,action_instance);
 
-				if(request.getParameter(bsConstants.CONST_ID_JS4AJAX)==null && action_instance!=null && action_instance.get_bean()!=null)
-					request.setAttribute(bsConstants.CONST_ID_JS4AJAX,action_instance.get_bean().getJs4ajax());
+				if(asyncContainer.getRequest().getParameter(bsConstants.CONST_ID_JS4AJAX)==null && action_instance!=null && action_instance.get_bean()!=null)
+					asyncContainer.getRequest().setAttribute(bsConstants.CONST_ID_JS4AJAX,action_instance.get_bean().getJs4ajax());
 
 
 
 //				if(action_instance.getCurrent_redirect()!=null){
 //					if( !action_instance.getCurrent_redirect().is_avoidPermissionCheck()){
-						info_stream blockStreamExit = bsController.performStream_ExitRS(_streams, id_action,action_instance, servletContext, request, response);
+						info_stream blockStreamExit = bsController.performStream_ExitRS(_streams, id_action,action_instance, asyncContainer.getRequest().getServletContext(), asyncContainer.getRequest(), asyncContainer.getResponse());
 						if(blockStreamExit!=null){
-							bsController.isException(action_instance, request);
+							bsController.isException(action_instance, asyncContainer.getRequest());
 							if(stat!=null){
 								stat.setFt(new Date());
 								stat.setException(new Exception("Blocked by STREAM EXIT:["+blockStreamExit.getName()+"]"));
@@ -294,40 +256,40 @@ public class AsyncController extends HttpServlet {
 //					}
 //				}
 				if(action_instance.getCurrent_redirect()!=null){
-					response = dispatchAsyncContext(asyncContainer,action_instance,true);
+					asyncContainer.setResponse(dispatchAsyncContext(asyncContainer,action_instance,true));
 				}else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getIRedirect()!=null){
-					bsController.updateResponseContentType(action_instance.get_infoaction().getIRedirect(),response,0);
+					bsController.updateResponseContentType(action_instance.get_infoaction().getIRedirect(),asyncContainer.getResponse(),0);
 				}
 
 				return action_instance;
 
 				
 			}catch(bsControllerException e){
-				if(request.getAttribute(bsConstants.CONST_BEAN_$ERRORACTION)==null) request.setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, e.toString());
-				else request.setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, request.getAttribute(bsConstants.CONST_BEAN_$ERRORACTION) + ";" +e.toString());
+				if(asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$ERRORACTION)==null) asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, e.toString());
+				else asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$ERRORACTION) + ";" +e.toString());
 				new bsControllerException(e,iStub.log_ERROR);
-				bsController.isException(action_instance, request);
-				bsController.addAsMessage(e,request);
-				if(request.getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)!=null) request.getSession().removeAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE);
+				bsController.isException(action_instance, asyncContainer.getRequest());
+				bsController.addAsMessage(e,asyncContainer.getRequest());
+				if(asyncContainer.getRequest().getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)!=null) asyncContainer.getRequest().getSession().removeAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE);
 				service_ErrorDispatch(id_action,asyncContainer);
 				stat.setException(e);
 			}catch(Exception ex){
-				if(request.getAttribute(bsConstants.CONST_BEAN_$ERRORACTION)==null) request.setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, ex.toString());
-				else request.setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, request.getAttribute(bsConstants.CONST_BEAN_$ERRORACTION) + ";" +ex.toString());
+				if(asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$ERRORACTION)==null) asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, ex.toString());
+				else asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$ERRORACTION) + ";" +ex.toString());
 
 				new bsControllerException(ex,iStub.log_ERROR);
-				bsController.isException(action_instance, request);
-				bsController.addAsMessage(ex,request);
+				bsController.isException(action_instance, asyncContainer.getRequest());
+				bsController.addAsMessage(ex,asyncContainer.getRequest());
 
 				service_ErrorDispatch(id_action,asyncContainer);
 				stat.setException(ex);
 			}catch(Throwable t){
-				if(request.getAttribute(bsConstants.CONST_BEAN_$ERRORACTION)==null) request.setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, t.toString());
-				else request.setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, request.getAttribute(bsConstants.CONST_BEAN_$ERRORACTION) + ";" +t.toString());
+				if(asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$ERRORACTION)==null) asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, t.toString());
+				else asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$ERRORACTION, asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$ERRORACTION) + ";" +t.toString());
 
 				new bsControllerException(t,iStub.log_ERROR);
-				bsController.isException(action_instance, request);
-				bsController.addAsMessage(t,request);
+				bsController.isException(action_instance, asyncContainer.getRequest());
+				bsController.addAsMessage(t,asyncContainer.getRequest());
 				service_ErrorDispatch(id_action,asyncContainer);
 				stat.setException(t);
 			}finally{
@@ -344,22 +306,19 @@ public class AsyncController extends HttpServlet {
 
 
 	public static HttpServletResponse dispatchAsyncContext(AsyncContainer asyncContainer, i_action action_instance,boolean allowAnotherOutput) throws Exception, bsControllerException,ServletException, UnavailableException{
-		HttpServletRequest request = (HttpServletRequest)asyncContainer.getAsyncContext().getRequest();
-		HttpServletResponse response = (HttpServletResponse)asyncContainer.getAsyncContext().getResponse();
-		ServletContext servletContext = request.getServletContext();
 
 		
 		if(action_instance==null || action_instance.get_infoaction()==null) 
-			return response;
+			return asyncContainer.getResponse();
 		boolean intoWrapper=false;
-		Object[] resultC4AOutputMode = bsController.chech4AnotherOutputMode(action_instance, servletContext, request, response, allowAnotherOutput);
+		Object[] resultC4AOutputMode = bsController.chech4AnotherOutputMode(action_instance, asyncContainer.getRequest().getServletContext(), asyncContainer.getRequest(), asyncContainer.getResponse(), allowAnotherOutput);
 
 		if(((Boolean)resultC4AOutputMode[1]).booleanValue()){
-			return response;
+			return asyncContainer.getResponse();
 		}
 
 		if(resultC4AOutputMode[0] instanceof a_ResponseWrapper){
-			response = (a_ResponseWrapper)resultC4AOutputMode[0];
+			asyncContainer.setResponse((a_ResponseWrapper)resultC4AOutputMode[0]);
 			intoWrapper=true;
 		}
 
@@ -378,7 +337,7 @@ public class AsyncController extends HttpServlet {
 						fake.setContentName(current.get_inforedirect().getContentName());		
 					if(current.get_inforedirect().getContentEncoding()!=null && !current.get_inforedirect().getContentEncoding().equals(""))
 						fake.setContentEncoding(current.get_inforedirect().getContentEncoding());				
-					bsController.updateResponseContentType(fake,response,current.getResponseStatus());
+					bsController.updateResponseContentType(fake,asyncContainer.getResponse(),current.getResponseStatus());
 				}
 			}
 			
@@ -390,16 +349,16 @@ public class AsyncController extends HttpServlet {
 					redirects current = action_instance.getCurrent_redirect();
 					i_transformation resource2response = null;
 					if(current.get_inforedirect().getTransformationName()!=null && !current.get_inforedirect().getTransformationName().equals(""))
-						resource2response =  bsController.getAction_config().transformationFactory(current.get_inforedirect().getTransformationName(), servletContext);
+						resource2response =  bsController.getAction_config().transformationFactory(current.get_inforedirect().getTransformationName(), asyncContainer.getRequest().getServletContext());
 					else	
-						resource2response =  bsController.getAction_config().transformationFactory("resource2response", servletContext);
+						resource2response =  bsController.getAction_config().transformationFactory("resource2response", asyncContainer.getRequest().getServletContext());
 					if(resource2response!=null){
-						if(resource2response.transform(action_instance, request, response)!=null){
+						if(resource2response.transform(action_instance, asyncContainer.getRequest(), asyncContainer.getResponse())!=null){
 							try{
 								action_instance.onPostRedirect(null);
 							}catch(Exception e){							
 							}
-				    		return response;
+				    		return asyncContainer.getResponse();
 						}
 					}
 				}catch(Exception ex1){
@@ -423,7 +382,7 @@ public class AsyncController extends HttpServlet {
 						util_reflect.findDeclaredMethod(
 							action_instance.asAction().getClass(),
 							"convertRequest2Map", new Class[]{HttpServletRequest.class})
-						.invoke(null, new Object[]{request});
+						.invoke(null, new Object[]{asyncContainer.getRequest()});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {
@@ -463,24 +422,24 @@ public class AsyncController extends HttpServlet {
 
 		if(rd==null){
 			if(action_instance.getCurrent_redirect().get_uri()!=null && !action_instance.getCurrent_redirect().get_uri().trim().equals(""))
-				throw new bsControllerException("Controller generic redirect error. Action: ["+action_instance.get_infoaction().getPath()+"] " +action_instance.getCurrent_redirect(),request,iStub.log_ERROR);
+				throw new bsControllerException("Controller generic redirect error. Action: ["+action_instance.get_infoaction().getPath()+"] " +action_instance.getCurrent_redirect(),asyncContainer.getRequest(),iStub.log_ERROR);
 		}else{
 			try{
 				try{
 					try{
 						if(!isRemoteEjb)
-							action_instance.actionBeforeRedirect(request,response);
+							action_instance.actionBeforeRedirect(asyncContainer.getRequest(),asyncContainer.getResponse());
 						else
 							action_instance.actionBeforeRedirect(request2map);
 					}catch(Exception e){
 						action_instance.actionBeforeRedirect(null,null);
 					}
 				}catch(Exception e){
-					throw new bsControllerException("Controller generic actionBeforeRedirect error. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
+					throw new bsControllerException("Controller generic actionBeforeRedirect error. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),asyncContainer.getRequest(),iStub.log_ERROR);
 				}
 
-
-				asyncContainer.getAsyncContext().dispatch(servletContext, rd);
+				
+				asyncContainer.getAsyncContext().dispatch(asyncContainer.getRequest().getServletContext(), rd);
 				asyncContainer.setAsyncDispatched(true);
 				
 
@@ -490,10 +449,10 @@ public class AsyncController extends HttpServlet {
 				if(intoWrapper){
 					throw new bsControllerException("Controller generic wrapped redirect error. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),iStub.log_ERROR);
 				}else
-					throw new bsControllerException("Controller generic redirect error. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),request,iStub.log_ERROR);
+					throw new bsControllerException("Controller generic redirect error. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),asyncContainer.getRequest(),iStub.log_ERROR);
 			}
 		}
-		return response;
+		return asyncContainer.getResponse();
 	}
 	
 	public static void service_ErrorDispatch(String id_action,AsyncContainer asyncContainer){
