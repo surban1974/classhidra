@@ -69,7 +69,8 @@
 		               			java/it/**/*.*,
 		               			java/config/**/*.*,
 		               			java/external_loaders/**/*.*,
-			            		java/pool/**/*.*
+			            		java/pool/**/*.*,
+			            		resources/META-INF/*.*
 		               		</includes>
 		              		<overWriteReleases>true</overWriteReleases>
 		               		<overWriteSnapshots>true</overWriteSnapshots>
@@ -113,6 +114,12 @@
 					 					<include>it/classhidra/scheduler/**/*.properties</include>
 					 					<include>it/classhidra/scheduler/**/*.sql</include>
 					 				</includes>
+			                	</resource>
+								<resource>
+									<directory>src/main/resources</directory>
+									<includes>
+					 					<include>META-INF/**/*.tld</include>
+					 				</includes>									
 			                	</resource>
 			              	</resources>
 						</configuration>

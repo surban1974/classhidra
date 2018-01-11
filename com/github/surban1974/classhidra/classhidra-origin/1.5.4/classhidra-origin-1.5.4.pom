@@ -43,7 +43,11 @@
 			        	<fileset>
 			          		<directory>src/main/rar/webapp</directory>		          
 			          		<followSymlinks>false</followSymlinks>
-			        	</fileset>			        	
+			        	</fileset>
+			        	<fileset>
+			          		<directory>src/main/rar/resources</directory>		          
+			          		<followSymlinks>false</followSymlinks>
+			        	</fileset>			        				        	
 			      	</filesets>
 				</configuration>
 			</plugin>      
@@ -89,6 +93,14 @@
 		                  			<targetPath>webapp/WEB-INF/tlds</targetPath>
 		                		</resource>
 		                		<resource>
+		                  			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/WebContent/WEB-INF/source/it/classhidra/core/controller/resources</directory>
+		                  			<filtering>false</filtering>
+		                  			<includes>
+		                  				<include>bsController.tld</include>
+		                  			</includes>
+		                  			<targetPath>resources/META-INF</targetPath>
+		                		</resource>		                		
+		                		<resource>
 		                  			<directory>C:/svyatoslav.urbanovych/workspace.GITHUB.copy/classhidra/classhidra/classhidra_example/examples</directory>
 		                  			<filtering>false</filtering>
 		                  			<targetPath>examples</targetPath>
@@ -98,6 +110,25 @@
 					</execution>
 				</executions>
 			</plugin>	  
+			
+<plugin>
+    <groupId>com.coderplus.maven.plugins</groupId>
+    <artifactId>copy-rename-maven-plugin</artifactId>
+    <version>1.0.1</version>
+    <executions>
+      <execution>
+        <id>rename-file</id>
+        <phase>clean</phase>
+        <goals>
+          <goal>rename</goal>
+        </goals>
+        <configuration>
+          <sourceFile>src/main/rar/resources/META-INF/bsController.tld</sourceFile>
+          <destinationFile>src/main/rar/resources/META-INF/classhidra.tld</destinationFile>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>			
 	           	
 	      	<plugin>
 	        	<groupId>org.apache.maven.plugins</groupId>
