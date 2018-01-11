@@ -10,11 +10,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.Stack;
 import java.util.TreeMap;
 
 import it.classhidra.core.tool.util.util_format;
@@ -59,7 +61,8 @@ public class XmlWriter {
 				map_name = "items";
 			else if(name==null)
 				map_name = "item";
-
+			Stack objList = new Stack();
+			
 			result+=generateXmlItem(
 					obj,
 					map_name,
@@ -71,7 +74,11 @@ public class XmlWriter {
 					util_xml.convertFilters(filters),
 					namespaces,
 					true,
-					validator);
+					validator,
+					objList);
+			
+			objList.clear();
+			objList=null;
 		}
 		return result;
 	}
@@ -98,6 +105,7 @@ public class XmlWriter {
 			else if(name==null)
 				map_name = "item";
 
+			Stack objList = new Stack();
 			result+=generateXmlItem(
 					obj,
 					map_name,
@@ -113,14 +121,18 @@ public class XmlWriter {
 					util_xml.convertFilters(filters),
 					namespaces,
 					true,
-					validator);
+					validator,
+					objList);
+			
+			objList.clear();
+			objList=null;
 		}
 		return result;
 	}
 
 
 	
-	private static String generateXmlItem(Object sub_obj, String name, int level, Map avoidCyclicPointer, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, Map namespaces, boolean fixedName, WriteValidator validator){
+	private static String generateXmlItem(Object sub_obj, String name, int level, Map avoidCyclicPointer, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, Map namespaces, boolean fixedName, WriteValidator validator, Stack objList){
 		String result="";
 		boolean goAhead = true;
 		Map subTreeFilters = null;
@@ -134,11 +146,15 @@ public class XmlWriter {
 			}
 		}
 		if(goAhead && validator!=null)
-			goAhead = validator.isWritable(sub_obj);
-		if(goAhead){		
+			goAhead = validator.isWritable(sub_obj, objList, getOutputName(name, annotation, fixedName));
+		if(goAhead){
+			if(objList !=null && sub_obj!=null)
+				objList.push(sub_obj);
 			result+=generateXmlItemTag_Start(sub_obj, name, level, annotation, namespaces, fixedName);
-			result+=generateXmlItemTag_Content(sub_obj, name, level,avoidCyclicPointer,annotation,serializeChildren,serializeDepth,subTreeFilters, validator);
+			result+=generateXmlItemTag_Content(sub_obj, name, level,avoidCyclicPointer,annotation,serializeChildren,serializeDepth,subTreeFilters, validator, objList);
 			result+=generateXmlItemTag_Finish(sub_obj, name, level, annotation, fixedName);
+			if(objList !=null && sub_obj!=null)
+				objList.remove(sub_obj);
 		}
 		return result;
 	}
@@ -193,7 +209,7 @@ public class XmlWriter {
 		return result;
 	}
 
-	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator){
+	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator, Stack objList){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String result="";
 		if(sub_obj==null) return result;
@@ -252,12 +268,13 @@ public class XmlWriter {
 												treeFilters,
 												null,
 												false,
-												validator);
+												validator,
+												objList);
 								avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 							}
 						}
 					}else
-						result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator);				
+						result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);				
 			    }
 			    return result;
 			}else{
@@ -287,12 +304,13 @@ public class XmlWriter {
 												treeFilters,
 												null,
 												false,
-												validator);
+												validator,
+												objList);
 								avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 							}
 						}
 					}else
-						result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator);				
+						result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);				
 								        
 			    }
 			    return result+result_tmp;
@@ -326,12 +344,13 @@ public class XmlWriter {
 									treeFilters,
 									null,
 									false,
-									validator);
+									validator,
+									objList);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator);				
+					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);				
 				
 			}
 			return result;
@@ -365,12 +384,13 @@ public class XmlWriter {
 											treeFilters,
 											null,
 											false,
-											validator);
+											validator,
+											objList);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator);				
+					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);				
 							        
 		    }
 		    return result+result_tmp;
@@ -405,12 +425,13 @@ public class XmlWriter {
 									treeFilters,
 									null,
 									false,
-									validator);
+									validator,
+									objList);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator);
+					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);
 		        
         
 		    }
@@ -634,7 +655,8 @@ public class XmlWriter {
 													treeFilters,
 													null,
 													false,
-													validator
+													validator,
+													objList
 											);
 											
 											if(sub_annotation!=null && sub_annotation.order()>-1)
@@ -701,7 +723,8 @@ public class XmlWriter {
 												treeFilters,
 												null,
 												false,
-												validator);
+												validator,
+												objList);
 										
 										if(sub_annotation!=null && sub_annotation.order()>-1)
 											ordered.put(sub_annotation.order(), tag);
@@ -796,6 +819,14 @@ public class XmlWriter {
 		return result;
 	}
 
+	private static String getOutputName(String name, Serialized annotation, boolean fixedName) {
+		String map_name = name;
+		if(name!=null && !fixedName)
+			map_name = util_reflect.revAdaptMethodName(name);
+		if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+		return map_name;
+	}
 
 
 }

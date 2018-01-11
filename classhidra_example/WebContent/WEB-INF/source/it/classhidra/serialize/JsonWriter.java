@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
@@ -45,7 +46,22 @@ public class JsonWriter {
 				map_name = "items";
 			else if(name==null)
 				map_name = "item";
-			result+=generateJsonItem(obj,map_name,0,false,new HashMap(),null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters), null);
+			
+			Stack objList = new Stack();
+			result+=generateJsonItem(
+					obj,
+					map_name,
+					0,
+					false,
+					new HashMap(),
+					null,
+					(annotation!=null)?annotation.children():false,
+					(annotation!=null)?annotation.depth():0,
+					util_xml.convertFilters(filters),
+					null,
+					objList);			
+			objList.clear();
+			objList=null;
 		}
 		return result+"\n}";
 	}	
@@ -67,7 +83,7 @@ public class JsonWriter {
 				map_name = "items";
 			else if(name==null)
 				map_name = "item";
-
+			Stack objList = new Stack();
 			result+=generateJsonItem(
 					obj,
 					map_name,
@@ -82,13 +98,16 @@ public class JsonWriter {
 					:
 					depth,
 					util_xml.convertFilters(filters),
-					validator);
+					validator,
+					objList);
+			objList.clear();
+			objList=null;
 		}
 		return result+"\n}";
 	}	
 	
 
-	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator){
+	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator, Stack objList){
 		String result="";
 		boolean goAhead = true;
 		Map subTreeFilters = null;
@@ -102,10 +121,10 @@ public class JsonWriter {
 			}
 		}
 		if(goAhead && validator!=null)
-			goAhead = validator.isWritable(sub_obj);
+			goAhead = validator.isWritable(sub_obj, objList, getOutputName(name, annotation));
 		if(goAhead){
 			result+=generateJsonItemTag_Start(sub_obj, name, level, annotation, notFirst);
-			result+=generateJsonItemTag_Content(sub_obj, name, level, avoidCyclicPointers, annotation, serializeChildren, serializeDepth, subTreeFilters, validator);
+			result+=generateJsonItemTag_Content(sub_obj, name, level, avoidCyclicPointers, annotation, serializeChildren, serializeDepth, subTreeFilters, validator, objList);
 			result+=generateJsonItemTag_Finish(sub_obj, name, level, notFirst);		
 		}
 		return result;
@@ -214,7 +233,7 @@ public class JsonWriter {
 	}
 	
 	
-	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator){
+	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator, Stack objList){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String space=spaceLevel(level);
 		String result="";
@@ -277,13 +296,14 @@ public class JsonWriter {
 													(serializeDepth-1>=0)?serializeDepth-1:0
 												,
 												treeFilters,
-												validator
+												validator,
+												objList
 											);
 								avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 							}
 						}
 					}else
-						result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator);
+						result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator, objList);
 									        
 			    }
 			    return result+result_tmp;
@@ -318,12 +338,13 @@ public class JsonWriter {
 													(serializeDepth-1>=0)?serializeDepth-1:0
 												,
 												treeFilters,
-												validator);
+												validator,
+												objList);
 								avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 							}
 						}
 					}else
-						result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator);
+						result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator, objList);
 					i++;
 			    }
 			    return result+result_tmp;
@@ -363,12 +384,13 @@ public class JsonWriter {
 										(serializeDepth-1>=0)?serializeDepth-1:0
 									,
 									treeFilters,
-									validator);
+									validator,
+									objList);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 					}
 				}else
-					result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator);
+					result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator, objList);
 				
 			}
 			return result+result_tmp;
@@ -406,12 +428,13 @@ public class JsonWriter {
 												(serializeDepth-1>=0)?serializeDepth-1:0
 											,
 											treeFilters,
-											validator);
+											validator,
+											objList);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 					}
 				}else
-					result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator);
+					result_tmp+=generateJsonItem(sub_obj2, null,level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator, objList);
 				i++;			        
 		    }
 		    return result+result_tmp;
@@ -449,13 +472,14 @@ public class JsonWriter {
 										(serializeDepth-1>=0)?serializeDepth-1:0
 									,
 									treeFilters,
-									validator);
+									validator,
+									objList);
 							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 						}
 						
 					}
 				}else
-					result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator);
+					result_tmp+=generateJsonItem(sub_obj2, pair.getKey().toString(),level+1,nFirst,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, validator, objList);
 							        
 		    }
 			return result+result_tmp;
@@ -604,7 +628,8 @@ public class JsonWriter {
 															(serializeDepth-1>=0)?serializeDepth-1:0
 														,
 														treeFilters,
-														validator);
+														validator,
+														objList);
 												avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 											}
 											
@@ -656,7 +681,8 @@ public class JsonWriter {
 													(serializeDepth-1>=0)?serializeDepth-1:0
 												,
 												treeFilters,
-												validator);
+												validator,
+												objList);
 											
 										avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 									}
@@ -760,6 +786,16 @@ public class JsonWriter {
 		}
 		
 		return result;
+	}
+	
+	private static String getOutputName(String name, Serialized annotation) {
+		String map_name = name;
+		if(name!=null){
+			map_name = util_reflect.revAdaptMethodName(name);
+			if(annotation!=null && annotation.output()!=null && !annotation.output().name().equals(""))
+				map_name = annotation.output().name();
+		}
+		return map_name;
 	}
 
 }
