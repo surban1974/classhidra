@@ -37,6 +37,8 @@ public class bs_authentication_filters implements i_authentication_filter {
 		 	
 		String _targets = auth.get_target();		
 		String _roles=auth.get_ruolo();
+
+
 		StringTokenizer st_t = new StringTokenizer(_targets, bsController.CONST_ROLE_SEPARATOR);
 		while(st_t.hasMoreTokens()){
 			String _target = st_t.nextToken().trim();
@@ -44,21 +46,73 @@ public class bs_authentication_filters implements i_authentication_filter {
 			HashMap permited_current = new HashMap();
 						
 			while(st.hasMoreTokens()){				
-				String _role = st.nextToken().trim();	
-				
-				
+				String _role = st.nextToken().trim();					
 				
 				HashMap hActions = null;
 				try{
 					hActions = (HashMap)((HashMap)bsController.getAuth_config().get_targets().get(_target)).get(_role);
 				}catch(Exception e){
 				}
+				
+//	Change 2018-01-16 for wildcard - FORBIDDEN					
+				try {
+					if(	bsController.getAuth_config().get_targets().get("*")!=null &&
+						((HashMap)bsController.getAuth_config().get_targets().get("*")).get(_role)!=null) {
+						if(hActions==null)
+							hActions = (HashMap)((HashMap)bsController.getAuth_config().get_targets().get("*")).get(_role);
+						else
+							hActions.putAll(
+									(HashMap)((HashMap)bsController.getAuth_config().get_targets().get("*")).get(_role)
+									);
+					}
+				}catch(Exception e){
+				}
+				try {
+					if(	bsController.getAuth_config().get_targets().get(_target)!=null &&
+						((HashMap)bsController.getAuth_config().get_targets().get(_target)).get("*")!=null) {
+						if(hActions==null)
+							hActions = (HashMap)((HashMap)bsController.getAuth_config().get_targets().get(_target)).get("*");
+						else
+							hActions.putAll(
+									(HashMap)((HashMap)bsController.getAuth_config().get_targets().get(_target)).get("*")
+									);
+						}					
+				}catch(Exception e){
+				}					
+//	***	
+				
 				HashMap hAllowedActions = null;
 				try{
 					hAllowedActions = (HashMap)((HashMap)bsController.getAuth_config().get_targets_allowed().get(_target)).get(_role);
 				}catch(Exception e){
 				}
 				
+//				Change 2018-01-16 for wildcard - ALLOWED				
+				try {
+					if(	bsController.getAuth_config().get_targets_allowed().get("*")!=null &&
+						((HashMap)bsController.getAuth_config().get_targets_allowed().get("*")).get(_role)!=null) {
+						if(hAllowedActions==null)
+							hAllowedActions = (HashMap)((HashMap)bsController.getAuth_config().get_targets_allowed().get("*")).get(_role);
+						else
+							hAllowedActions.putAll(
+									(HashMap)((HashMap)bsController.getAuth_config().get_targets_allowed().get("*")).get(_role)
+									);
+					}
+				}catch(Exception e){
+				}
+				try {
+					if(	bsController.getAuth_config().get_targets_allowed().get(_target)!=null &&
+						((HashMap)bsController.getAuth_config().get_targets_allowed().get(_target)).get("*")!=null) {
+						if(hAllowedActions==null)
+							hAllowedActions = (HashMap)((HashMap)bsController.getAuth_config().get_targets_allowed().get(_target)).get("*");
+						else
+							hAllowedActions.putAll(
+									(HashMap)((HashMap)bsController.getAuth_config().get_targets_allowed().get(_target)).get("*")
+									);
+						}					
+				}catch(Exception e){
+				}					
+//	***					
 
 
 				try{

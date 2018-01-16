@@ -152,4 +152,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	
 	JsonMapper getJsonMapper();
 	XmlMapper getXmlMapper();
+	
+	String get$csrf();
+//	void set$csrf(String csrf);
 }

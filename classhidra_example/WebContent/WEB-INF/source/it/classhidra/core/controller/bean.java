@@ -38,20 +38,23 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.elements.elementBeanBase;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_makeValue;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_supportbean;
+import it.classhidra.core.tool.util.util_xml;
 import it.classhidra.serialize.JsonMapper;
 import it.classhidra.serialize.Serialized;
 import it.classhidra.serialize.XmlMapper;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 
 
@@ -65,6 +68,7 @@ public class bean extends elementBeanBase implements i_bean  {
 	protected HashMap parametersFly;
 	protected String $id_returnPointOfService;
 	protected String middleAction;
+	protected String _saltid;
 	protected String js4ajax="false";
 	protected boolean refresh=false;
 	
@@ -99,6 +103,7 @@ public class bean extends elementBeanBase implements i_bean  {
 
 
 
+
 public void reimposta(){
 	if(parametersFly==null)
 		parametersFly = new HashMap();
@@ -122,8 +127,17 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		try{
 			current_auth = bsController.checkAuth_init(request);
 		}catch(Exception ex){
+			new bsException(ex, iStub.log_ERROR);
 		}
 	}
+	if(_saltid==null){
+		try{
+			_saltid = util_xml.normalHTML(bsController.encrypt(request.getSession().getId()+"$"+System.currentTimeMillis()),null);
+		}catch(Exception ex){
+			new bsException(ex, iStub.log_ERROR);
+		}
+	}
+	
 	getInitErrors().clear();
 	
 //	if(parametersFly!=null)
@@ -165,155 +179,15 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 	public void initNormal(HttpServletRequest request) throws bsControllerException{
 		util_supportbean.initNormal(this, request);
-/*		
-		xmloutput=false;
-		xmloutput_encoding="";
-		jsonoutput=false;
-		jsonoutput_encoding="";
-		binaryoutput=false;
-		binaryoutput_encoding="";		
-		outputappliedfor=null;
-		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
-				(
-						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
-						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
-				)
-			);
-
-		Enumeration en = request.getParameterNames();
-		while(en.hasMoreElements()){
-			String key = (String)en.nextElement();
-			String value = request.getParameter(key);
-			String format = request.getParameter("$format_"+key);
-			String replaceOnBlank = request.getParameter("$replaceOnBlank_"+key);
-			String replaceOnErrorFormat = request.getParameter("$replaceOnErrorFormat_"+key);
-
-			if(inputBase64){
-				String charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
-				try{
-					if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
-				}catch(Exception e){}
-				try{
-					if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
-				}catch(Exception e){}
-				try{
-					if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
-				}catch(Exception e){}
-				try{
-					if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
-				}catch(Exception e){
-				}
-			}
-
-			if(key.indexOf(".")==-1){
-				try{
-					Object makedValue=null;
-					if(format!=null){
-						if(delegated!=null){
-							makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-						}else{
-							makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-						}
-					}else{
-						if(delegated!=null){
-							makedValue=util_makeValue.makeValue1(delegated,value,key);
-							if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
-						}else{
-							makedValue=util_makeValue.makeValue1(this,value,key);
-						}
-					}
-					if(!setCampoValueWithPoint(key,makedValue))
-						throw new Exception();
-				}catch(Exception e){
-					try{
-						Object makedValue=null;
-						if(format!=null){
-							if(delegated!=null){
-								makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-								if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-							}else{
-								makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-							}
-						}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
-						if(!setCampoValueWithPoint(key,makedValue))
-							throw new Exception();
-					}catch(Exception ex){
-						if(parametersFly==null) parametersFly = new HashMap();
-						if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
-					}
-				}
-			}else{
-
-				Object writeValue=null;
-				Object current_requested = (delegated==null)?this:delegated;
-
-				String last_field_name = null;
-				StringTokenizer st = new StringTokenizer(key,".");
-				while(st.hasMoreTokens()){
-					if(st.countTokens()>1){
-						String current_field_name = st.nextToken();
-						try{
-							if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
-							if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
-							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
-							if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-							if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
-						}catch(Exception e){
-						}
-						current_requested = writeValue;
-					}else{
-						last_field_name = st.nextToken();
-					}
-					writeValue = null;
-				}
-
-				if(current_requested!=null){
-					try{
-						if(format!=null)
-							setCampoValuePoint(
-									current_requested,
-									last_field_name,
-									util_makeValue.makeFormatedValue1(
-												current_requested,
-												format,
-												value,
-												last_field_name,
-												replaceOnBlank,
-												replaceOnErrorFormat
-									)
-							);
-						else setCampoValuePoint(
-									current_requested,
-									last_field_name,
-									util_makeValue.makeValue1(current_requested,value,last_field_name)
-								);
-					}catch(Exception e){
-						try{
-							if(format!=null)
-								setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
-							else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
-						}catch(Exception ex){
-						}
-					}
-				}
-
-
-			}
-		}
-*/		
 	}
 
 
 	public void initMultiPart(HttpServletRequest request) throws bsControllerException{
 		util_supportbean.initMultiPart(this, request);
-//		HashMap parameters = util_multipart.popolateHashMap(request);
-//		initPartFromMap(parameters);
 	}
 
 	public boolean initJsonPart(HttpServletRequest request) throws bsControllerException{
 		return util_supportbean.initJsonPart(this,request,null);
-//		return initJsonPart(request,null);
 	}
 	
 	public boolean initJsonPart(HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
@@ -339,184 +213,6 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		
 		initFromMap(parameters,true);
 		
-/*
-
-		xmloutput=false;
-		jsonoutput=false;
-		boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
-				(
-						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
-						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
-				)
-			);
-
-
-		
-		for (Object elem : parameters.keySet()) {
-			String key = (String)elem;
-
-			if(parameters.get(key) instanceof String ){
-				
-				if(parametersList!=null)
-					parametersList.add(key);
-				
-				String value = (String)parameters.get(key);
-				String format = (String)parameters.get("$format_"+key);
-				String replaceOnBlank = (String)parameters.get("$replaceOnBlank_"+key);
-				String replaceOnErrorFormat = (String)parameters.get("$replaceOnErrorFormat_"+key);
-
-				if(inputBase64){
-					String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
-
-					try{
-						if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
-					}catch(Exception e){}
-					try{
-						if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
-					}catch(Exception e){}
-					try{
-						if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
-					}catch(Exception e){}
-					try{
-						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
-					}catch(Exception e){
-					}
-				}
-
-
-				if(key.indexOf(".")==-1){
-					try{
-						Object makedValue=null;
-						if(format!=null){
-							if(delegated!=null){
-								makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-								if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-							}else{
-								makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-							}
-						}else{
-							if(delegated!=null){
-								makedValue=util_makeValue.makeValue1(delegated,value,key);
-								if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
-							}else{
-								makedValue=util_makeValue.makeValue1(this,value,key);
-							}
-						}
-						if(!setCampoValueWithPoint(key,makedValue))
-							throw new Exception();
-					}catch(Exception e){
-						try{
-							Object makedValue=null;
-
-							if(format!=null){
-								if(delegated!=null){
-									makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-									if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-								}else{
-									makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-								}
-							}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
-
-							if(!setCampoValueWithPoint(key,makedValue))
-								throw new Exception();
-						}catch(Exception ex){
-							if(parametersFly==null) parametersFly = new HashMap();
-							if(key!=null && key.length()>0 && key.indexOf(0)!='$') parametersFly.put(key, value);
-						}
-					}
-
-				}else{
-					Object writeValue=null;
-					Object current_requested = (delegated==null)?this:delegated;
-
-					String last_field_name = null;
-					StringTokenizer st = new StringTokenizer(key,".");
-					while(st.hasMoreTokens()){
-						if(st.countTokens()>1){
-							String current_field_name = st.nextToken();
-							try{
-								writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
-								if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
-								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
-								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
-
-							}catch(Exception e){
-							}
-							current_requested = writeValue;
-						}else{
-							last_field_name = st.nextToken();
-						}
-						writeValue = null;
-					}
-
-					if(current_requested!=null){
-						try{
-							if(format!=null)
-								setCampoValuePoint(
-										current_requested,
-										last_field_name,
-										util_makeValue.makeFormatedValue1(
-													current_requested,
-													format,
-													value,
-													last_field_name,
-													replaceOnBlank,
-													replaceOnErrorFormat
-										)
-								);
-							else{
-								Serialized serialized_annotation = null;
-								Object checkForDes = parameters.get(JsonMapper.CONST_ID_CHECKFORDESERIALIZE);								
-								if(checkForDes!=null && checkForDes.toString().equalsIgnoreCase("true")){
-									Method ret_method = util_reflect.getSetMethod(current_requested, last_field_name);
-									if(ret_method!=null)
-										serialized_annotation =ret_method.getAnnotation(Serialized.class);
-									if(serialized_annotation==null){
-										Field ret_field = util_reflect.getField(current_requested, last_field_name);
-										if(ret_field!=null)
-											serialized_annotation =ret_field.getAnnotation(Serialized.class);
-									}
-								}
-								if(	serialized_annotation!=null &&
-									serialized_annotation.input()!=null &&
-									serialized_annotation.input().format()!=null &&
-									!serialized_annotation.input().format().equals(""))
-									setCampoValuePoint(
-											current_requested,
-											last_field_name,
-											util_makeValue.makeFormatedValue1(
-														current_requested,
-														serialized_annotation.input().format(),
-														value,
-														last_field_name,
-														serialized_annotation.input().replaceOnBlank(),
-														serialized_annotation.input().replaceOnErrorFormat()
-											)
-									);
-								else	
-									setCampoValuePoint(
-											current_requested,
-											last_field_name,
-											util_makeValue.makeValue1(current_requested,value,last_field_name)
-										);
-								
-							}
-						}catch(Exception e){
-							try{
-								if(format!=null)
-									setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
-								else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
-							}catch(Exception ex){
-							}
-						}
-					}
-
-
-				}
-			}
-		}
-*/
 	}
 	
 	public void initFromMap(HashMap parameters, boolean add2fly) throws bsControllerException{
@@ -530,7 +226,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
-						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
 				)
 			);
 
@@ -551,16 +247,16 @@ public void init(HttpServletRequest request) throws bsControllerException{
 					String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
 
 					try{
-						if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+						if(value!=null) value=new String(DatatypeConverter.parseBase64Binary(value),charset);
 					}catch(Exception e){}
 					try{
-						if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+						if(format!=null) format=new String(DatatypeConverter.parseBase64Binary(format),charset);
 					}catch(Exception e){}
 					try{
-						if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+						if(replaceOnBlank!=null) replaceOnBlank=new String(DatatypeConverter.parseBase64Binary(replaceOnBlank),charset);
 					}catch(Exception e){}
 					try{
-						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(DatatypeConverter.parseBase64Binary(replaceOnErrorFormat),charset);
 					}catch(Exception e){
 					}
 				}
@@ -790,143 +486,6 @@ public void init(HashMap _content) throws bsControllerException{
 public void init_(HashMap _content) throws bsControllerException{
 	if(_content==null) return;
 	initFromMap(_content,true);
-/*
-	xmloutput=false;
-	jsonoutput=false;
-	boolean inputBase64 = (_content.get(bsController.CONST_ID_INPUTBASE64)!=null &&
-			(
-					_content.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
-					_content.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
-			)
-		);
-
-
-	for (Object elem :  _content.keySet()) {
-		String key = (String)elem;
-		String value = (String)_content.get(key);
-		String format = (String)_content.get("$format_"+key);
-		String replaceOnBlank = (String)_content.get("$replaceOnBlank_"+key);
-		String replaceOnErrorFormat = (String)_content.get("$replaceOnErrorFormat_"+key);
-
-		if(inputBase64){
-			String charset = (_content.get("$REQUEST_CHARSET")==null || _content.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":_content.get("$REQUEST_CHARSET").toString();
-
-			try{
-				if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
-			}catch(Exception e){}
-			try{
-				if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
-			}catch(Exception e){}
-			try{
-				if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
-			}catch(Exception e){}
-			try{
-				if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
-			}catch(Exception e){
-			}
-		}
-
-
-		if(key.indexOf(".")==-1){
-			try{
-
-				Object makedValue=null;
-				if(format!=null){
-					if(delegated!=null){
-						makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-						if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-					}else{
-						makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-					}
-				}else{
-					if(delegated!=null){
-						makedValue=util_makeValue.makeValue1(delegated,value,key);
-						if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
-					}else{
-						makedValue=util_makeValue.makeValue1(this,value,key);
-					}
-				}
-				if(!setCampoValueWithPoint(key,makedValue))
-					throw new Exception();
-			}catch(Exception e){
-				try{
-					Object makedValue=null;
-
-					if(format!=null){
-						if(delegated!=null){
-							makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-							if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-						}else{
-							makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-						}
-					}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
-
-					if(!setCampoValueWithPoint(key,makedValue))
-						throw new Exception();
-				}catch(Exception ex){
-					if(parametersFly==null) 
-						parametersFly = new HashMap();
-					if(key!=null && key.length()>0 && key.indexOf(0)!='$') 
-						parametersFly.put(key, value);
-				}
-			}
-		}else{
-			Object writeValue=null;
-			Object current_requested = (delegated==null)?this:delegated;
-
-
-			String last_field_name = null;
-			StringTokenizer st = new StringTokenizer(key,".");
-			while(st.hasMoreTokens()){
-				if(st.countTokens()>1){
-					String current_field_name = st.nextToken();
-					try{
-						writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
-						if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-						if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
-						if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
-					}catch(Exception e){
-					}
-					current_requested = writeValue;
-				}else{
-					last_field_name = st.nextToken();
-				}
-				writeValue = null;
-			}
-
-			if(current_requested!=null){
-				try{
-					if(format!=null)
-						setCampoValuePoint(
-								current_requested,
-								last_field_name,
-								util_makeValue.makeFormatedValue1(
-											current_requested,
-											format,
-											value,
-											last_field_name,
-											replaceOnBlank,
-											replaceOnErrorFormat
-								)
-						);
-					else setCampoValuePoint(
-								current_requested,
-								last_field_name,
-								util_makeValue.makeValue1(current_requested,value,last_field_name)
-							);
-				}catch(Exception e){
-					try{
-						if(format!=null)
-							setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat));
-						else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)));
-					}catch(Exception ex){
-					}
-				}
-			}
-		}
-
-	}
-*/	
 }
 
 public void init(i_bean another_bean) throws bsControllerException{
@@ -1734,6 +1293,10 @@ public JsonMapper getJsonMapper() {
 
 public XmlMapper getXmlMapper() {
 	return null;
+}
+
+public String get$csrf() {
+	return _saltid;
 }
 
 

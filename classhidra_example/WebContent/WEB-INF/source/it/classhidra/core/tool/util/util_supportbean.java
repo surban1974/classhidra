@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
@@ -49,8 +50,8 @@ import it.classhidra.serialize.JsonReader2Map;
 import it.classhidra.serialize.Serialized;
 import it.classhidra.serialize.XmlMapper;
 import it.classhidra.serialize.XmlReader2Map;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 
 
@@ -162,7 +163,7 @@ public class util_supportbean  {
 		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
-						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
 				)
 			);
 		
@@ -179,16 +180,16 @@ public class util_supportbean  {
 			if(inputBase64){
 				String charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
 				try{
-					if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+					if(value!=null) value=new String(DatatypeConverter.parseBase64Binary(value),charset);
 				}catch(Exception e){}
 				try{
-					if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+					if(format!=null) format=new String(DatatypeConverter.parseBase64Binary(format),charset);
 				}catch(Exception e){}
 				try{
-					if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+					if(replaceOnBlank!=null) replaceOnBlank=new String(DatatypeConverter.parseBase64Binary(replaceOnBlank),charset);
 				}catch(Exception e){}
 				try{
-					if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+					if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(DatatypeConverter.parseBase64Binary(replaceOnErrorFormat),charset);
 				}catch(Exception e){
 				}
 			}
@@ -616,7 +617,7 @@ public class util_supportbean  {
 		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
-						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+						request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
 				)
 			);
 		
@@ -634,16 +635,16 @@ public class util_supportbean  {
 				if(inputBase64){
 					String charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
 					try{
-						if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+						if(value!=null) value=new String(DatatypeConverter.parseBase64Binary(value),charset);
 					}catch(Exception e){}
 					try{
-						if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+						if(format!=null) format=new String(DatatypeConverter.parseBase64Binary(format),charset);
 					}catch(Exception e){}
 					try{
-						if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+						if(replaceOnBlank!=null) replaceOnBlank=new String(DatatypeConverter.parseBase64Binary(replaceOnBlank),charset);
 					}catch(Exception e){}
 					try{
-						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(DatatypeConverter.parseBase64Binary(replaceOnErrorFormat),charset);
 					}catch(Exception e){
 					}
 				}
@@ -767,7 +768,7 @@ public class util_supportbean  {
 		boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
-						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
 				)
 			);
 
@@ -789,16 +790,16 @@ public class util_supportbean  {
 					String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
 
 					try{
-						if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+						if(value!=null) value=new String(DatatypeConverter.parseBase64Binary(value),charset);
 					}catch(Exception e){}
 					try{
-						if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+						if(format!=null) format=new String(DatatypeConverter.parseBase64Binary(format),charset);
 					}catch(Exception e){}
 					try{
-						if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+						if(replaceOnBlank!=null) replaceOnBlank=new String(DatatypeConverter.parseBase64Binary(replaceOnBlank),charset);
 					}catch(Exception e){}
 					try{
-						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(DatatypeConverter.parseBase64Binary(replaceOnErrorFormat),charset);
 					}catch(Exception e){
 					}
 				}
@@ -1166,7 +1167,7 @@ public class util_supportbean  {
 			boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 					(
 							request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
-							request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+							request.getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
 					)
 				);
 			
@@ -1184,16 +1185,16 @@ public class util_supportbean  {
 					if(inputBase64){
 						String charset = (request.getCharacterEncoding()==null || request.getCharacterEncoding().equals(""))?"UTF-8":request.getCharacterEncoding();
 						try{
-							if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+							if(value!=null) value=new String(DatatypeConverter.parseBase64Binary(value),charset);
 						}catch(Exception e){}
 						try{
-							if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+							if(format!=null) format=new String(DatatypeConverter.parseBase64Binary(format),charset);
 						}catch(Exception e){}
 						try{
-							if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+							if(replaceOnBlank!=null) replaceOnBlank=new String(DatatypeConverter.parseBase64Binary(replaceOnBlank),charset);
 						}catch(Exception e){}
 						try{
-							if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+							if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(DatatypeConverter.parseBase64Binary(replaceOnErrorFormat),charset);
 						}catch(Exception e){
 						}
 					}
@@ -1222,7 +1223,7 @@ public class util_supportbean  {
 			boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
 					(
 							parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
-							parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+							parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
 					)
 				);
 
@@ -1244,16 +1245,16 @@ public class util_supportbean  {
 						String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
 
 						try{
-							if(value!=null) value=new String(new BASE64Decoder().decodeBuffer(value),charset);
+							if(value!=null) value=new String(DatatypeConverter.parseBase64Binary(value),charset);
 						}catch(Exception e){}
 						try{
-							if(format!=null) format=new String(new BASE64Decoder().decodeBuffer(format),charset);
+							if(format!=null) format=new String(DatatypeConverter.parseBase64Binary(format),charset);
 						}catch(Exception e){}
 						try{
-							if(replaceOnBlank!=null) replaceOnBlank=new String(new BASE64Decoder().decodeBuffer(replaceOnBlank),charset);
+							if(replaceOnBlank!=null) replaceOnBlank=new String(DatatypeConverter.parseBase64Binary(replaceOnBlank),charset);
 						}catch(Exception e){}
 						try{
-							if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(new BASE64Decoder().decodeBuffer(replaceOnErrorFormat),charset);
+							if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(DatatypeConverter.parseBase64Binary(replaceOnErrorFormat),charset);
 						}catch(Exception e){
 						}
 					}

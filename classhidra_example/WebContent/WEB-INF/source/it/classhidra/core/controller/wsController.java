@@ -39,9 +39,10 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
+import javax.xml.bind.DatatypeConverter;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 
 
@@ -51,13 +52,13 @@ public class wsController   {
 	public String getId_UserSOAP(String user, String password,String isCodedInput){
 
 		if(isCodedInput!=null && isCodedInput.toUpperCase().equals("TRUE")){
-			BASE64Decoder decoder = new BASE64Decoder();
+//			BASE64Decoder decoder = new BASE64Decoder();
 			try{
-				user = new String(decoder.decodeBuffer(user));
+				user = new String(DatatypeConverter.parseBase64Binary(user));
 			}catch(Exception e){
 			}
 			try{
-				password = new String(decoder.decodeBuffer(password));
+				password = new String(DatatypeConverter.parseBase64Binary(password));
 			}catch(Exception e){
 			}
 
@@ -128,9 +129,9 @@ public class wsController   {
 
 
 		if(isCodedInput!=null && isCodedInput.toUpperCase().equals("TRUE")){
-			BASE64Decoder decoder = new BASE64Decoder();
+//			BASE64Decoder decoder = new BASE64Decoder();
 			try{
-				inputXML = new String(decoder.decodeBuffer(inputXML));
+				inputXML = new String(DatatypeConverter.parseBase64Binary(inputXML));
 			}catch(Exception e){
 			}
 		}
@@ -231,9 +232,9 @@ public class wsController   {
 		}
 
 		if(isCodedOutput!=null && isCodedOutput.toUpperCase().equals("TRUE")){
-			BASE64Encoder encoder = new BASE64Encoder();
+//			BASE64Encoder encoder = new BASE64Encoder();
 			try{
-				outputXML = new String(encoder.encode(outputXML.getBytes()));
+				outputXML = new String(DatatypeConverter.printBase64Binary(outputXML.getBytes()));
 			}catch(Exception e){
 			}
 		}

@@ -547,6 +547,7 @@ public class auth_init implements Serializable{
 	public String toString(){
 		String result="";
 		result+=(_user!=null)?_user+"|":"|";
+		result+=(_target!=null)?_target+"|":"|";
 		result+=(_ruolo!=null)?_ruolo+"|":"|";
 		result+=(_matricola!=null)?_matricola+"|":"|";
 		result+=(_user_ip!=null)?_user_ip+"|":"|";

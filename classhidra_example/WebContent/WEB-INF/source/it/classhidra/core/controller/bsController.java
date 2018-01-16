@@ -85,8 +85,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
+import javax.xml.bind.DatatypeConverter;
 
 
 
@@ -2090,7 +2091,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			inputBase64 = (context.getRequest().getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 					(
 							context.getRequest().getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
-							context.getRequest().getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(new BASE64Encoder().encode("true".getBytes()))
+							context.getRequest().getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
 					)
 				);
 			charset = (context.getRequest().getCharacterEncoding()==null || context.getRequest().getCharacterEncoding().equals(""))?"UTF-8":context.getRequest().getCharacterEncoding();
@@ -2119,7 +2120,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						ret = context.getRequest().getParameter(annotationParameter.name());
 						if(ret!=null && ret instanceof String && inputBase64){
 							try{
-								ret=new String(new BASE64Decoder().decodeBuffer((String)ret),charset);
+								ret=new String(DatatypeConverter.parseBase64Binary((String)ret),charset);
 							}catch(Exception e){}
 						}
 						result[i] = util_makeValue.makeFormatedValue1(current,(ret!=null)?ret.toString():"",null);
@@ -4284,9 +4285,9 @@ public class bsController extends HttpServlet implements bsConstants  {
         md = MessageDigest.getInstance("SHA");
         md.update(plaintext.getBytes("UTF-8"));
         byte raw[] = md.digest();
-		BASE64Encoder encoder = new BASE64Encoder();
-        String hash = encoder.encode(raw);
-		encoder = null;
+//		BASE64Encoder encoder = new BASE64Encoder();
+        String hash = DatatypeConverter.printBase64Binary(raw);
+//		encoder = null;
         return hash;
     }
 
@@ -4296,9 +4297,9 @@ public class bsController extends HttpServlet implements bsConstants  {
         md = MessageDigest.getInstance(algorithm);
         md.update(plaintext.getBytes("UTF-8"));
         byte raw[] = md.digest();
-		BASE64Encoder encoder = new BASE64Encoder();
-        String hash = encoder.encode(raw);
-		encoder = null;
+//		BASE64Encoder encoder = new BASE64Encoder();
+        String hash = DatatypeConverter.printBase64Binary(raw);
+//		encoder = null;
         return hash;
     }
 
@@ -4308,9 +4309,9 @@ public class bsController extends HttpServlet implements bsConstants  {
         md = MessageDigest.getInstance(algorithm,provider);
         md.update(plaintext.getBytes("UTF-8"));
         byte raw[] = md.digest();
-		BASE64Encoder encoder = new BASE64Encoder();
-        String hash = encoder.encode(raw);
-		encoder = null;
+//		BASE64Encoder encoder = new BASE64Encoder();
+        String hash = DatatypeConverter.printBase64Binary(raw);
+//		encoder = null;
         return hash;
     }
 

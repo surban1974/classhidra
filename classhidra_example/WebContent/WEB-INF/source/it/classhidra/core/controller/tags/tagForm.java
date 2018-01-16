@@ -505,7 +505,12 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 		}catch(Exception e){
 		}
 		results.append("\">"+System.getProperty("line.separator"));
-
+//		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$CSRF+"\" name=\""+bsController.CONST_ID_$CSRF+"\" value= \"");
+//		try{
+//			results.append(formAction.get_bean().asBean().get$csrf());
+//		}catch(Exception e){
+//		}
+//		results.append("\">"+System.getProperty("line.separator"));
 		return results.toString();
 	}
 	public String getAccept() {

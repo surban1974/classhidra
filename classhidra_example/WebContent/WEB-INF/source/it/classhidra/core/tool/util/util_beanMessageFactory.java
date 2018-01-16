@@ -19,8 +19,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.Locale;
 
-
-
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
@@ -28,8 +27,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 
 
@@ -316,7 +315,7 @@ public class util_beanMessageFactory {
 					if (node.getChildNodes().item(i).getNodeType() == Node.CDATA_SECTION_NODE){
 						String valueB64 = ((Text)node.getFirstChild()).getData();
 						try{
-							byte[] byteAsObj = new BASE64Decoder().decodeBuffer(valueB64);
+							byte[] byteAsObj = DatatypeConverter.parseBase64Binary(valueB64);
 							itemObj = bytes2object(byteAsObj);
 						}catch(Exception e){
 						}
@@ -829,7 +828,7 @@ public class util_beanMessageFactory {
 				result+="<![CDATA[";
 				try{
 					byte[] objAsByte = object2bytes(sub_obj);
-					result+=new BASE64Encoder().encode(objAsByte);
+					result+=DatatypeConverter.printBase64Binary(objAsByte);
 				}catch(Exception ex){
 
 				}
