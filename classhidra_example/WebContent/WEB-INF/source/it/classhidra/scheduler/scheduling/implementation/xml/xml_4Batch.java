@@ -2,6 +2,7 @@ package it.classhidra.scheduler.scheduling.implementation.xml;
 
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,12 +12,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
+import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_sort;
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
+import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
 import it.classhidra.scheduler.scheduling.db.db_batch_property;
@@ -28,18 +33,83 @@ import it.classhidra.scheduler.util.util_batch;
 
 public class xml_4Batch implements i_4Batch  {
 	
-	private static List<db_batch> xml_batch = new ArrayList<db_batch>();
-	private static List<db_batch_log> xml_batch_log = new ArrayList<db_batch_log>();
-	private static List<db_batch_property> xml_batch_property = new ArrayList<db_batch_property>();
-	private static Map<String,db_batch_log> last_batch_log = new HashMap<String, db_batch_log>();
-	private static final int max_log_size = 20;
+	protected static List<db_batch> xml_batch = new ArrayList<db_batch>();
+	protected static List<db_batch_log> xml_batch_log = new ArrayList<db_batch_log>();
+	protected static List<db_batch_property> xml_batch_property = new ArrayList<db_batch_property>();
+	protected static Map<String,db_batch_log> last_batch_log = new HashMap<String, db_batch_log>();
+	protected static final int max_log_size = 20;
+	protected static final String CONST_XML_FOLDER = "xml.data.folder";
 	
 	public xml_4Batch(){
 		super();
+		batch_init bInit = DriverScheduling.getConfiguration();
+		if(bInit==null)
+			bInit = new batch_init();
+		boolean loadedFromPath=false;
+		try {
+			if(bInit.getCurrentProperties().get(CONST_XML_FOLDER)!=null) {
+				try{
+					Object obj = null;
+					File xml_file = new File(bInit.getCurrentProperties().get(CONST_XML_FOLDER)+bInit.get_db_prefix()+"batch.xml");
+					if(xml_file.exists())
+						obj = util_beanMessageFactory.message2bean(util_file.getBytesFromFile(xml_file));
+					if(obj==null) {
+						xml_file = new File(bInit.getCurrentProperties().get(CONST_XML_FOLDER)+"batch.xml");
+						if(xml_file.exists())
+							obj = util_beanMessageFactory.message2bean(util_file.getBytesFromFile(xml_file));
+					}
+					if(obj!=null && obj instanceof List<?>) {
+						xml_batch = (List<db_batch>)obj;
+						loadedFromPath=true;
+					}
+				}catch(Exception e){
+				}
+				try{
+					Object obj = null;
+					File xml_file = new File(bInit.getCurrentProperties().get(CONST_XML_FOLDER)+bInit.get_db_prefix()+"batch_property.xml");
+					if(xml_file.exists())
+						obj = util_beanMessageFactory.message2bean(util_file.getBytesFromFile(xml_file));
+					if(obj==null) {
+						xml_file = new File(bInit.getCurrentProperties().get(CONST_XML_FOLDER)+"batch_property.xml");
+						if(xml_file.exists())
+							obj = util_beanMessageFactory.message2bean(util_file.getBytesFromFile(xml_file));
+					}
+					if(obj!=null && obj instanceof List<?>)
+						xml_batch_property = (List<db_batch_property>)obj;
+				}catch(Exception e){
+				}	
+				try{
+					Object obj = null;
+					File xml_file = new File(bInit.getCurrentProperties().get(CONST_XML_FOLDER)+bInit.get_db_prefix()+"batch_log.xml");
+					if(xml_file.exists())
+						obj = util_beanMessageFactory.message2bean(util_file.getBytesFromFile(xml_file));
+					if(obj==null) {
+						xml_file = new File(bInit.getCurrentProperties().get(CONST_XML_FOLDER)+"batch_log.xml");
+						if(xml_file.exists())
+							obj = util_beanMessageFactory.message2bean(util_file.getBytesFromFile(xml_file));
+					}
+					if(obj!=null && obj instanceof List<?>)
+						xml_batch_log = (List<db_batch_log>)obj;
+					for(db_batch_log log:xml_batch_log){
+						db_batch_log h_log = last_batch_log.get(log.getCd_btch());
+						if(h_log==null || (h_log!=null && h_log.getTm_fin().getTime()<log.getTm_fin().getTime()))
+							last_batch_log.put(log.getCd_btch(),log);	
+					}
+				}catch(Exception e){
+				}		
+				
+			}
+		}catch(Exception e) {
+			new bsException(e, iStub.log_ERROR);
+		}
+
+		if(loadedFromPath)
+			return;
+		
 		try{
-			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(new batch_init().get_db_prefix()+"batch.xml"));
+			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(bInit.get_db_prefix()+"batch.xml"));
 			if(obj==null)
-				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+new batch_init().get_db_prefix()+"batch.xml"));
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+bInit.get_db_prefix()+"batch.xml"));
 			if(obj==null)
 				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("batch.xml"));
 			if(obj==null)
@@ -49,9 +119,9 @@ public class xml_4Batch implements i_4Batch  {
 		}catch(Exception e){
 		}
 		try{
-			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(new batch_init().get_db_prefix()+"batch_property.xml"));
+			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(bInit.get_db_prefix()+"batch_property.xml"));
 			if(obj==null)
-				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+new batch_init().get_db_prefix()+"batch_property.xml"));
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+bInit.get_db_prefix()+"batch_property.xml"));
 			if(obj==null)
 				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("batch_property.xml"));
 			if(obj==null)
@@ -61,9 +131,9 @@ public class xml_4Batch implements i_4Batch  {
 		}catch(Exception e){
 		}	
 		try{
-			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(new batch_init().get_db_prefix()+"batch_log.xml"));
+			Object obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte(bInit.get_db_prefix()+"batch_log.xml"));
 			if(obj==null)
-				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+new batch_init().get_db_prefix()+"batch_log.xml"));
+				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/"+bInit.get_db_prefix()+"batch_log.xml"));
 			if(obj==null)
 				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("batch_log.xml"));
 			if(obj==null)
@@ -76,6 +146,7 @@ public class xml_4Batch implements i_4Batch  {
 					last_batch_log.put(log.getCd_btch(),log);	
 			}
 		}catch(Exception e){
+			new bsException(e, iStub.log_ERROR);
 		}		
 	}
 

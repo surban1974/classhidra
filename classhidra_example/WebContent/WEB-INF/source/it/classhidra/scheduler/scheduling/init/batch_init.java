@@ -55,6 +55,7 @@ public class batch_init implements Serializable{
 	private String _db_prefix="";
 	private String _stub="";
 	private String loadedFrom="";
+	private Properties properties=null;
 	
 	public static final String CONST_STUB_EMPTY = 					"empty";
 	public static final String CONST_STUB_EXTERNAL = 				"external";
@@ -131,8 +132,15 @@ public void init() {
 			_scan = (System.getProperty(id_scan)==null)?_scan:System.getProperty(id_scan);
 			_db_prefix = (System.getProperty(id_db_prefix)==null)?_db_prefix:System.getProperty(id_db_prefix);
 			_stub = (System.getProperty(id_stub)==null)?_stub:System.getProperty(id_stub);
+			this.properties = new Properties();
+			this.properties.setProperty(id_active, _active);
+			this.properties.setProperty(id_sleep, _sleep);
+			this.properties.setProperty(id_scan, _scan);
+			this.properties.setProperty(id_db_prefix, _db_prefix);
+			this.properties.setProperty(id_stub, _stub);
 			
 			if(_sleep!=null && _scan!=null) loadedFrom="System.property";
+			
 
 		}
 	}
@@ -140,6 +148,8 @@ public void init() {
 }
 
 public void init(Properties ex_property) {
+	if(ex_property!=null)
+		this.properties = ex_property;
 	_active = (ex_property.getProperty(id_active)==null)?_active:ex_property.getProperty(id_active);
 	_sleep = (ex_property.getProperty(id_sleep)==null)?_sleep:ex_property.getProperty(id_sleep);
 	_scan = (ex_property.getProperty(id_scan)==null)?_scan:ex_property.getProperty(id_scan);
@@ -260,5 +270,9 @@ public void set_db_prefix(String _db_prefix) {
 public batch_init set_stub(String _stub) {
 	this._stub = _stub;
 	return this;
+}
+
+public Properties getCurrentProperties() {
+	return properties;
 }
 }

@@ -14,11 +14,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_xml;
+import it.classhidra.serialize.JsonWriter.OrderContainer;
 
 
 
@@ -31,9 +34,13 @@ public class JsonWriter2 {
 	
 	public static String object2json(Object obj, String name){
 		return object2json(obj,name,null);
-	}	
-
+	}
+	
 	public static String object2json(Object obj, String name, List filters){
+		return object2json(obj,name,filters,null);
+	}
+
+	public static String object2json(Object obj, String name, List filters, WriteValidator validator){
 		String result="{\n";
 		if(obj==null)
 			result+="\"error\":  \"Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL\"";
@@ -58,7 +65,7 @@ public class JsonWriter2 {
 					(annotation!=null)?annotation.depth():0,
 					util_xml.convertFilters(filters),
 					null,
-					null,
+					validator,
 					objList);
 			objList.clear();
 			objList=null;
@@ -581,6 +588,9 @@ public class JsonWriter2 {
 			Map name_tmp = new HashMap();
 			try{
 				String[] prefixes = new String[]{"get","is"};
+				
+				SortedMap ordered = new TreeMap();
+				
 				for(int p=0;p<prefixes.length;p++){
 					Method[] methods = util_reflect.getMethods(sub_obj,prefixes[p]);
 					for(int i=0;i<methods.length;i++){
@@ -611,26 +621,36 @@ public class JsonWriter2 {
 										||
 										(sub_annotation!=null && sub_annotation.value())
 								){								
-//								if(sub_annotation!=null || serializeChildren || serializeDepth>0){
-									
-									if(!sub_obj2.equals(sub_obj)){
+								
+								if(!sub_obj2.equals(sub_obj)){
 										boolean nFirst = true;
 										if(result_tmp.length()==0) nFirst=false;
 										
 									
-											if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
+										if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 												result_tmp+=generateJsonItemTag_Start(new Object(), methodName, level+1, sub_annotation, nFirst);
 												result_tmp+="\"WARNING\":\"cyclic pointer\"";
 												result_tmp+=generateJsonItemTag_Finish(new Object(), methodName, level+1, nFirst);
+										}else{
+											String map_name = util_reflect.revAdaptMethodName(methodName);
+											if(sub_annotation!=null && sub_annotation.output()!=null && sub_annotation.output().name()!=null && !sub_annotation.output().name().equals(""))
+												map_name = sub_annotation.output().name();
+											name_tmp.put(map_name, map_name);
+											
+											if(sub_annotation!=null && sub_annotation.order()>-1){
+												OrderContainer oc = new JsonWriter2().new OrderContainer();
+												oc.sub_obj = sub_obj2;
+												oc.name = methodName;
+												oc.annotation = sub_annotation;
+												oc.serializeChildren = (sub_annotation!=null)?sub_annotation.children():false;
+												oc.serializeDepth = (sub_annotation!=null && sub_annotation.depth()>0)
+															?
+																sub_annotation.depth()
+															:
+																(serializeDepth-1>=0)?serializeDepth-1:0;
+												ordered.put(sub_annotation.order(), oc);				
 											}else{
 												avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-												
-												String map_name = util_reflect.revAdaptMethodName(methodName);
-												if(sub_annotation!=null && sub_annotation.output()!=null && sub_annotation.output().name()!=null && !sub_annotation.output().name().equals(""))
-													map_name = sub_annotation.output().name();
-												
-												name_tmp.put(map_name, map_name);
-												
 												result_tmp+=generateJsonItem(
 														sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers,sub_annotation,
 														(sub_annotation!=null)?sub_annotation.children():false,
@@ -644,9 +664,9 @@ public class JsonWriter2 {
 														null,
 														validator,
 														objList);
-												avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
+												avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));		
 											}
-											
+										}											
 									}
 								}
 							}
@@ -678,39 +698,75 @@ public class JsonWriter2 {
 									if(result_tmp.length()==0) nFirst=false;
 									
 									if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-
 										result_tmp+=generateJsonItemTag_Start(new Object(), fieldName, level+1, sub_annotation, nFirst);
 										result_tmp+="\"WARNING\":\"cyclic pointer\"";
 										result_tmp+=generateJsonItemTag_Finish(new Object(), fieldName, level+1, nFirst);
 									}else{
-										avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-										 
-										result_tmp+=generateJsonItem(
-												sub_obj2, fieldName,level+1,nFirst,avoidCyclicPointers,sub_annotation,
-												(sub_annotation!=null)?sub_annotation.children():false,
-												(sub_annotation!=null && sub_annotation.depth()>0)
-												?
-													sub_annotation.depth()
-												:
-													(serializeDepth-1>=0)?serializeDepth-1:0
-												,
-												treeFilters,
-												null,
-												validator,
-												objList);
-											
-										avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
-									}
-							
+										if(sub_annotation!=null && sub_annotation.order()>-1){
+											OrderContainer oc = new JsonWriter2().new OrderContainer();
+											oc.sub_obj = sub_obj2;
+											oc.name = fieldName;
+											oc.annotation = sub_annotation;
+											oc.serializeChildren = (sub_annotation!=null)?sub_annotation.children():false;
+											oc.serializeDepth = (sub_annotation!=null && sub_annotation.depth()>0)
+														?
+															sub_annotation.depth()
+														:
+															(serializeDepth-1>=0)?serializeDepth-1:0;
+											ordered.put(sub_annotation.order(), oc);				
+										}else{	
+											avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());											 
+											result_tmp+=generateJsonItem(
+													sub_obj2, fieldName,level+1,nFirst,avoidCyclicPointers,sub_annotation,
+													(sub_annotation!=null)?sub_annotation.children():false,
+													(sub_annotation!=null && sub_annotation.depth()>0)
+													?
+														sub_annotation.depth()
+													:
+														(serializeDepth-1>=0)?serializeDepth-1:0
+													,
+													treeFilters,
+													null,
+													validator,
+													objList);												
+											avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));	
+										}
+									}							
 								}
-							}
-							
-						}
-						
+							}							
+						}						
 					}	
 				}					
 				
-				
+				if(ordered.size()>0) {
+					Iterator it = ordered.values().iterator();
+					 
+					while (it.hasNext()) {
+						OrderContainer oc = (OrderContainer)it.next();
+						if(oc!=null && oc.sub_obj!=null) {
+							boolean nFirst = true;
+							if(result_tmp.length()==0) 
+								nFirst=false;
+							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(oc.sub_obj)), oc.sub_obj.getClass().getName());										 
+							result_tmp+=generateJsonItem(
+									oc.sub_obj,
+									oc.name,
+									level+1,
+									nFirst,
+									avoidCyclicPointers,
+									oc.annotation,
+									oc.serializeChildren,
+									oc.serializeDepth,
+									treeFilters,
+									null,
+									validator,
+									objList);												
+							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(oc.sub_obj)));
+						}
+					}
+				}
+				ordered.clear();
+				ordered=null;				
 				
 				return result+result_tmp;
 			}catch(Exception e){				
@@ -772,22 +828,44 @@ public class JsonWriter2 {
 
 
 		String result="";
-		if (
-			input.indexOf("\\")>-1 ||
-			input.indexOf("\"")>-1) {
+		
+//		if (
+//			input.indexOf('\\')>-1 ||
+//			input.indexOf('\"')>-1 ||
+//			input.indexOf('\b')>-1 ||
+//			input.indexOf('\f')>-1 ||
+//			input.indexOf('\n')>-1 ||
+//			input.indexOf('\r')>-1 ||
+//			input.indexOf('\t')>-1
+//			
+//		) {
 
 			for (int i=0;i<input.length();i++) {
-				if (input.charAt(i)=='\\') 
+				char c = input.charAt(i);
+				if (c=='\\') 
 					result+="\\\\";
-				else 
-					if (input.charAt(i)=='"') result+="\\\"";
-				else 
-					result+=input.charAt(i);
+				else if (c=='"') 
+					result+="\\\"";
+				else if (c=='\b') 
+					result+="\\b";
+				else if (c=='\f') 
+					result+="\\f";
+				else if (c=='\n') 
+					result+="\\n";
+				else if (c=='\r') 
+					result+="\\r";
+				else if (c=='\t') 
+					result+="\\t";
+				else if (c<' '){
+					String t = "000" + Integer.toHexString(c);
+					result+=("\\u" + t.substring(t.length() - 4));
+				}else 
+					result+=c;
 			}
 			
-		}
-		else
-			result = input;
+//		}
+//		else
+//			result = input;
 		
 		if(encoding==null || encoding.equals(""))
 			return result;
@@ -811,5 +889,14 @@ public class JsonWriter2 {
 				map_name = annotation.output().name();
 		}
 		return map_name;
+	}
+	
+	class OrderContainer{
+		Object sub_obj;
+		String name;
+		int level;
+		Serialized annotation;
+		boolean serializeChildren;
+		int serializeDepth;
 	}
 }

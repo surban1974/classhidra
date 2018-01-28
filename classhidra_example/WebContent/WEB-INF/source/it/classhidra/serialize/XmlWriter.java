@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -747,6 +746,8 @@ public class XmlWriter {
 					while (it.hasNext()) 
 						result+=it.next();
 				}
+				ordered.clear();
+				ordered=null;
 				result+=stringBuffer.toString();
 				
 				
