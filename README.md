@@ -17,41 +17,62 @@ Maven:<br>
 
 Maven repository:<br>
 &lt;repositories&gt;<br>
-&lt;id&gt;classhidra-mvn-repo&lt;/id&gt;<br>
-&lt;url&gt;https://github.com/surban1974/classhidra/raw/mvn-repo/ &lt;/url&gt;<br>
-&lt;snapshots&gt;<br>
-&lt;enabled&gt;true&lt;/enabled&gt;<br>
-&lt;updatePolicy&gt;always&lt;/updatePolicy&gt;<br>
-&lt;/snapshots&gt;<br>
-&lt;/repository&gt;<br>
-&lt;/repositories&gt;<br>
-
-Maven dependencies (jar):<br>
-&lt;dependency&gt;<br>
-&lt;groupId&gt;com.github.surban1974.classhidra&lt;/groupId&gt;<br>
-&lt;!-- RAR<br>
-&lt;artifactId&gt;classhidra-origin&lt;/artifactId&gt;<br>
---&gt;<br>
-&lt;!-- JAR<br>
-&lt;artifactId&gt;classhidra-base&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-base-7&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-spring&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-spring-7&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-cdi&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-cdi-7&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-ejb&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-ejb-7&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-jboss7-vfs&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-jboss7-vfs-7&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-jetty-embedded&lt;/artifactId&gt;<br>
---&gt;<br>
-&lt;!-- WAR<br>
-&lt;artifactId&gt;classhidra-base-example&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-spring-example&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-cdi-example&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-ejb-example&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-cdi-ejb-example&lt;/artifactId&gt;<br>
-&lt;artifactId&gt;classhidra-starter-7&lt;/artifactId&gt;<br>
---&gt;<br>
-&lt;version&gt;1.5.4&lt;/version&gt;<br>
-&lt;/dependency&gt;<br>
+&#9;	&lt;repository&gt;<br>
+&#9;&#9;	&lt;id&gt;neohort-mvn-repo&lt;/id&gt;<br>
+&#9;&#9;	&lt;url&gt;https://github.com/surban1974/neohort/raw/mvn-repo/&lt;/url&gt;<br>
+&#9;&#9;	&lt;snapshots&gt;<br>
+&#9;&#9;&#9;		&lt;enabled&gt;true&lt;/enabled&gt;<br>
+&#9;&#9;&#9;		&lt;updatePolicy&gt;always&lt;/updatePolicy&gt;<br>
+&#9;&#9;	&lt;/snapshots&gt;<br>
+&#9;	&lt;/repository&gt;<br>
+&lt;/repositories&gt;<br> 
+<br>
+&lt;dependencies&gt;<br> 
+&lt;!-- PDF --&gt;<br>
+&lt;!-- In case if you want to use iText 5.* support for PDF (AGPL) --&gt;<br>
+&#9;	&lt;dependency&gt;<br>
+&#9;&#9;	&lt;groupId&gt;com.github.surban1974.neohort&lt;/groupId&gt;<br>
+&#9;&#9;	&lt;artifactId&gt;neohort-pdf-itext500&lt;/artifactId&gt;<br>
+&#9;&#9;	&lt;version&gt;1.4.1&lt;/version&gt;<br>
+&#9;	&lt;/dependency&gt;<br>
+&lt;!-- In case if you want to use librepdf OpenPdf support for PDF --&gt;<br>
+&#9;	&lt;dependency&gt;<br>
+&#9;&#9;	&lt;groupId&gt;com.github.surban1974.neohort&lt;/groupId&gt;<br>
+&#9;&#9;	&lt;artifactId&gt;neohort-pdf-openpdf&lt;/artifactId&gt;<br>
+&#9;&#9;	&lt;version&gt;1.4.1&lt;/version&gt;<br>
+&#9;	&lt;/dependency&gt;<br>
+&lt;!-- In case if you want to use iText 2.1.7 support for PDF --&gt;<br>
+&#9;	&lt;dependency&gt;<br>
+&#9;&#9;	&lt;groupId&gt;com.github.surban1974.neohort&lt;/groupId&gt;<br>
+&#9;&#9;	&lt;artifactId&gt;neohort-pdf-itext217&lt;/artifactId&gt;<br>
+&#9;&#9;	&lt;version&gt;1.4.1&lt;/version&gt;<br>
+&#9;	&lt;/dependency&gt;<br>
+<br>
+&lt;!-- EXCEL --&gt;<br>
+&lt;!-- In case if you want to use JExcel API support for XLS --&gt;<br>	
+&#9;	&lt;dependency&gt;<br>
+&#9;&#9;	&lt;groupId&gt;com.github.surban1974.neohort&lt;/groupId&gt;<br>
+&#9;&#9;	&lt;artifactId&gt;neohort-xls-jxl&lt;/artifactId&gt;<br>
+&#9;&#9;	&lt;version&gt;1.4.1&lt;/version&gt;<br>
+&#9;	&lt;/dependency&gt;<br>
+&lt;!-- In case if you want to use Apache POI support for XLSX --&gt;<br>	
+&#9;	&lt;dependency&gt;<br>
+&#9;&#9;	&lt;groupId&gt;com.github.surban1974.neohort&lt;/groupId&gt;<br>
+&#9;&#9;	&lt;artifactId&gt;neohort-xlsx-poi&lt;/artifactId&gt;<br>
+&#9;&#9;	&lt;version&gt;1.4.1&lt;/version&gt;<br>
+&#9;	&lt;/dependency&gt;<br>
+<br>	
+&lt;!-- RTF --&gt;<br>	
+&lt;!-- In case if you want to use librepdf pdf.rtf support for RTF --&gt;<br>	
+&#9;	&lt;dependency&gt;<br>
+&#9;&#9;	&lt;groupId&gt;com.github.surban1974.neohort&lt;/groupId&gt;<br>
+&#9;&#9;	&lt;artifactId&gt;neohort-rtf&lt;/artifactId&gt;<br>
+&#9;&#9;	&lt;version&gt;1.4.1&lt;/version&gt;<br>
+&#9;	&lt;/dependency&gt;<br>
+&lt;!-- In case if you want to use iText 2.1.7 support for RTF --&gt;<br>
+&#9;	&lt;dependency&gt;<br>
+&#9;&#9;	&lt;groupId&gt;com.github.surban1974.neohort&lt;/groupId&gt;<br>
+&#9;&#9;	&lt;artifactId&gt;neohort-rtf-itext217&lt;/artifactId&gt;<br>
+&#9;&#9;	&lt;version&gt;1.4.1&lt;/version&gt;<br>
+&#9;	&lt;/dependency&gt;<br>	
+&lt;/dependencies&gt;   
