@@ -1,6 +1,6 @@
 /**
 * Name: jsTool.js
-* Version: 1.5.2.3 (compatible classHidra 1.5.2)
+* Version: 1.5.4 (compatible classHidra 1.5.4)
 * Creation date: (25/05/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */

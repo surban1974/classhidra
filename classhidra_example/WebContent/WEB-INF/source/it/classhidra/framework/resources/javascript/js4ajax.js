@@ -1,7 +1,8 @@
 /**
 * Name: js4ajax.js
-* Version: 1.5.2 (compatible classHidra 1.5.2)
+* Version: 1.5.4 (compatible classHidra 1.5.4)
 * Creation date: (21/04/2015)
+* Last update: (26/02/2018)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
@@ -244,9 +245,21 @@ function ajax_makeParameters(frm,url) {
 			if(	url.indexOf("?"+element.name+"=")==-1 &&
 					url.indexOf("&"+element.name+"=")==-1){
 				if(element.name && element.name!=""){
-					if	(element.type.toUpperCase() == "TEXT" ||
-				         element.type.toUpperCase() == "HIDDEN" ||
-				         element.type.toUpperCase() == "PASSWORD") {
+					if	(	element.type.toUpperCase() == "TEXT" ||
+							element.type.toUpperCase() == "COLOR" ||
+					        element.type.toUpperCase() == "DATE" ||
+					        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+					        element.type.toUpperCase() == "EMAIL" ||
+					        element.type.toUpperCase() == "MONTH" ||
+					        element.type.toUpperCase() == "NUMBER" ||
+					        element.type.toUpperCase() == "RANGE" ||
+					        element.type.toUpperCase() == "SEARCH" ||
+					        element.type.toUpperCase() == "TEL" ||
+					        element.type.toUpperCase() == "TIME" ||
+					        element.type.toUpperCase() == "URL" ||
+					        element.type.toUpperCase() == "WEEK" ||							
+					        element.type.toUpperCase() == "HIDDEN" ||
+					        element.type.toUpperCase() == "PASSWORD") {
 			        	getstr += element.name + "=" + encodeURIComponent(element.value) + "&";
 				    }
 					if	(element.type.toUpperCase() == "TEXTAREA") {
@@ -304,9 +317,21 @@ function ajax_makeParameters64(frm,url) {
 			if(	url.indexOf("?"+element.name+"=")==-1 &&
 					url.indexOf("&"+element.name+"=")==-1){
 				if(element.name && element.name!=""){
-					if	(element.type.toUpperCase() == "TEXT" ||
-				         element.type.toUpperCase() == "HIDDEN" ||
-				         element.type.toUpperCase() == "PASSWORD") {
+					if	(	element.type.toUpperCase() == "TEXT" ||
+							element.type.toUpperCase() == "COLOR" ||
+					        element.type.toUpperCase() == "DATE" ||
+					        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+					        element.type.toUpperCase() == "EMAIL" ||
+					        element.type.toUpperCase() == "MONTH" ||
+					        element.type.toUpperCase() == "NUMBER" ||
+					        element.type.toUpperCase() == "RANGE" ||
+					        element.type.toUpperCase() == "SEARCH" ||
+					        element.type.toUpperCase() == "TEL" ||
+					        element.type.toUpperCase() == "TIME" ||
+					        element.type.toUpperCase() == "URL" ||
+					        element.type.toUpperCase() == "WEEK" ||
+					        element.type.toUpperCase() == "HIDDEN" ||
+					        element.type.toUpperCase() == "PASSWORD") {
 			        	getstr += element.name + "=" + encodeURIComponent(base64_encode(element.value)) + "&";
 				    }
 					if	(element.type.toUpperCase() == "TEXTAREA") {
@@ -536,9 +561,21 @@ function ajax_makeJSONParameters(frm,url) {
 
 				if(element.name && element.name!=""){
 
-					if	(element.type.toUpperCase() == "TEXT" ||
-				         element.type.toUpperCase() == "HIDDEN" ||
-				         element.type.toUpperCase() == "PASSWORD") {
+					if	(	element.type.toUpperCase() == "TEXT" ||
+							element.type.toUpperCase() == "COLOR" ||
+					        element.type.toUpperCase() == "DATE" ||
+					        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+					        element.type.toUpperCase() == "EMAIL" ||
+					        element.type.toUpperCase() == "MONTH" ||
+					        element.type.toUpperCase() == "NUMBER" ||
+					        element.type.toUpperCase() == "RANGE" ||
+					        element.type.toUpperCase() == "SEARCH" ||
+					        element.type.toUpperCase() == "TEL" ||
+					        element.type.toUpperCase() == "TIME" ||
+					        element.type.toUpperCase() == "URL" ||
+					        element.type.toUpperCase() == "WEEK" ||
+					        element.type.toUpperCase() == "HIDDEN" ||
+					        element.type.toUpperCase() == "PASSWORD") {
 						issue[element.name ] = (element.value);
 				    }
 					if	(element.type.toUpperCase() == "TEXTAREA") {
@@ -603,9 +640,21 @@ function ajax_makeJSONParameters64(frm,url) {
 
 				if(element.name && element.name!=""){
 
-					if	(element.type.toUpperCase() == "TEXT" ||
-				         element.type.toUpperCase() == "HIDDEN" ||
-				         element.type.toUpperCase() == "PASSWORD") {
+					if	(	element.type.toUpperCase() == "TEXT" ||
+							element.type.toUpperCase() == "COLOR" ||
+					        element.type.toUpperCase() == "DATE" ||
+					        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+					        element.type.toUpperCase() == "EMAIL" ||
+					        element.type.toUpperCase() == "MONTH" ||
+					        element.type.toUpperCase() == "NUMBER" ||
+					        element.type.toUpperCase() == "RANGE" ||
+					        element.type.toUpperCase() == "SEARCH" ||
+					        element.type.toUpperCase() == "TEL" ||
+					        element.type.toUpperCase() == "TIME" ||
+					        element.type.toUpperCase() == "URL" ||
+					        element.type.toUpperCase() == "WEEK" ||
+					        element.type.toUpperCase() == "HIDDEN" ||
+					        element.type.toUpperCase() == "PASSWORD") {
 						issue[element.name ] = base64_encode(element.value);
 				    }
 					if	(element.type.toUpperCase() == "TEXTAREA") {
@@ -856,9 +905,21 @@ function ajax_makeMPARTParameters(frm,url) {
 
 					if(element.name && element.name!=""){
 
-						if	(element.type.toUpperCase() == "TEXT" ||
-					         element.type.toUpperCase() == "HIDDEN" ||
-					         element.type.toUpperCase() == "PASSWORD") {
+						if	(	element.type.toUpperCase() == "TEXT" ||
+								element.type.toUpperCase() == "COLOR" ||
+						        element.type.toUpperCase() == "DATE" ||
+						        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+						        element.type.toUpperCase() == "EMAIL" ||
+						        element.type.toUpperCase() == "MONTH" ||
+						        element.type.toUpperCase() == "NUMBER" ||
+						        element.type.toUpperCase() == "RANGE" ||
+						        element.type.toUpperCase() == "SEARCH" ||
+						        element.type.toUpperCase() == "TEL" ||
+						        element.type.toUpperCase() == "TIME" ||
+						        element.type.toUpperCase() == "URL" ||
+						        element.type.toUpperCase() == "WEEK" ||							
+						        element.type.toUpperCase() == "HIDDEN" ||
+						        element.type.toUpperCase() == "PASSWORD") {
 								formdata.append(element.name, element.value);
 					    }
 						if	(element.type.toUpperCase() == "TEXTAREA") {
@@ -932,9 +993,21 @@ function ajax_makeMPARTParameters64(frm,url) {
 
 					if(element.name && element.name!=""){
 
-						if	(element.type.toUpperCase() == "TEXT" ||
-					         element.type.toUpperCase() == "HIDDEN" ||
-					         element.type.toUpperCase() == "PASSWORD") {
+						if	(	element.type.toUpperCase() == "TEXT" ||
+								element.type.toUpperCase() == "COLOR" ||
+						        element.type.toUpperCase() == "DATE" ||
+						        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+						        element.type.toUpperCase() == "EMAIL" ||
+						        element.type.toUpperCase() == "MONTH" ||
+						        element.type.toUpperCase() == "NUMBER" ||
+						        element.type.toUpperCase() == "RANGE" ||
+						        element.type.toUpperCase() == "SEARCH" ||
+						        element.type.toUpperCase() == "TEL" ||
+						        element.type.toUpperCase() == "TIME" ||
+						        element.type.toUpperCase() == "URL" ||
+						        element.type.toUpperCase() == "WEEK" ||							
+						        element.type.toUpperCase() == "HIDDEN" ||
+						        element.type.toUpperCase() == "PASSWORD") {
 								formdata.append(element.name, base64_encode(element.value));
 					    }
 						if	(element.type.toUpperCase() == "TEXTAREA") {

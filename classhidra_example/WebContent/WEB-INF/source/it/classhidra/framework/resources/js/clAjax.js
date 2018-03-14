@@ -1,7 +1,8 @@
 /**
 * Name: clAjax.js
-* Version: 1.0.5
+* Version: 1.0.7
 * Creation date: (08/11/2016)
+* Last update: (13/03/2018)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -562,10 +563,16 @@
 							.setUrl(this.action)
 							.setMpart(this.getParametersAsMpart(this.form, this.action))
 							.request(this.form.method);
-					}else
-						this
-							.setUrl(this.action+this.getParametersAsUrl(this.form, this.action))
-							.request(this.form.method);
+					}else{
+						if(this.action.indexOf('?')>-1)
+							this
+								.setUrl(this.action.substring(0,this.action.indexOf('?')+1)+this.getParametersAsUrl(this.form, this.action))
+								.request(this.form.method);
+						else
+							this
+								.setUrl(this.action+this.getParametersAsUrl(this.form, this.action))
+								.request(this.form.method);
+					}
 				}
 				return this;
 
@@ -597,10 +604,13 @@
 							urlOnly=this.url;
 						}
 					}
-					if(parametersOnly=='')
-						parametersOnly+='js4ajax=true';
+					if(parametersOnly!='')
+						parametersOnly+='&';
+
+					if(this.base64)
+						parametersOnly+='js4ajax='+base64_encode('true');
 					else
-						parametersOnly+='&js4ajax=true';
+						parametersOnly+='js4ajax=true';
 
 				}else if(this.asJson){
 					if(typeof this.json === 'object')
@@ -617,14 +627,20 @@
 					    		var chunks = urlParameters.split('&');
 					    		for(var c=0; c < chunks.length; c++){
 					    			var split = chunks[c].split('=', 2);
-					    			sendJson[split[0]] = split[1];
+					    			if(this.base64)
+					    				sendJson[split[0]] = base64_encode(split[1]);
+					    			else
+					    				sendJson[split[0]] = split[1];
 					    		}
 					    	}
 						}else{
 							urlOnly=this.url;
 						}
 					}
-					sendJson['js4ajax'] = 'true';
+					if(this.base64)
+						sendJson['js4ajax'] = base64_encode('true');
+					else
+						sendJson['js4ajax'] = 'true';
 
 				}else if(this.asXml){
 
@@ -642,14 +658,20 @@
 					    		var chunks = urlParameters.split('&');
 					    		for(var c=0; c < chunks.length; c++){
 					    			var split = chunks[c].split('=', 2);
-					    			this.mpart.append(split[0], (split[1]));
+					    			if(this.base64)
+					    				this.mpart.append(split[0], base64_encode(split[1]));
+					    			else
+					    				this.mpart.append(split[0], (split[1]));
 					    		}
 					    	}
 						}else{
 							urlOnly=this.url;
 						}
 					}
-					this.mpart.append('js4ajax','true');
+					if(this.base64)
+						this.mpart.append('js4ajax',base64_encode('true'));
+					else
+						this.mpart.append('js4ajax','true');
 				}
 
 
@@ -1029,9 +1051,21 @@
 							_url.indexOf('?'+element_name+'=')==-1 &&
 							_url.indexOf('&'+element_name+'=')==-1){
 
-								if	(element.type.toUpperCase() == 'TEXT' ||
-							         element.type.toUpperCase() == 'HIDDEN' ||
-							         element.type.toUpperCase() == 'PASSWORD') {
+								if	(	element.type.toUpperCase() == 'TEXT' ||
+										element.type.toUpperCase() == "COLOR" ||
+								        element.type.toUpperCase() == "DATE" ||
+								        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+								        element.type.toUpperCase() == "EMAIL" ||
+								        element.type.toUpperCase() == "MONTH" ||
+								        element.type.toUpperCase() == "NUMBER" ||
+								        element.type.toUpperCase() == "RANGE" ||
+								        element.type.toUpperCase() == "SEARCH" ||
+								        element.type.toUpperCase() == "TEL" ||
+								        element.type.toUpperCase() == "TIME" ||
+								        element.type.toUpperCase() == "URL" ||
+								        element.type.toUpperCase() == "WEEK" ||
+								        element.type.toUpperCase() == 'HIDDEN' ||
+								        element.type.toUpperCase() == 'PASSWORD') {
 									if(this.base64)
 										getstr += element_name + '=' + encodeURIComponent(base64_encode(element.value)) + '&';
 									else
@@ -1105,7 +1139,7 @@
 			    	issue = {};
 
 			    if(this.base64)
-			    	issue[$inputBase64]='true';
+			    	issue['$inputBase64']='true';
 
 			    if(_url.indexOf('?')>-1){
 			    	var urlParameters=_url.substring(_url.indexOf('?')+1,_url.length);
@@ -1138,9 +1172,21 @@
 							_url.indexOf('&'+element_name+'=')==-1){
 
 
-								if	(element.type.toUpperCase() == 'TEXT' ||
-							         element.type.toUpperCase() == 'HIDDEN' ||
-							         element.type.toUpperCase() == 'PASSWORD') {
+								if	(	element.type.toUpperCase() == 'TEXT' ||
+										element.type.toUpperCase() == "COLOR" ||
+								        element.type.toUpperCase() == "DATE" ||
+								        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+								        element.type.toUpperCase() == "EMAIL" ||
+								        element.type.toUpperCase() == "MONTH" ||
+								        element.type.toUpperCase() == "NUMBER" ||
+								        element.type.toUpperCase() == "RANGE" ||
+								        element.type.toUpperCase() == "SEARCH" ||
+								        element.type.toUpperCase() == "TEL" ||
+								        element.type.toUpperCase() == "TIME" ||
+								        element.type.toUpperCase() == "URL" ||
+								        element.type.toUpperCase() == "WEEK" ||
+								        element.type.toUpperCase() == 'HIDDEN' ||
+								        element.type.toUpperCase() == 'PASSWORD') {
 									if(this.base64)
 										issue[element_name ] = base64_encode(element.value);
 									else
@@ -1250,9 +1296,21 @@
 
 
 
-									if	(element.type.toUpperCase() == 'TEXT' ||
-								         element.type.toUpperCase() == 'HIDDEN' ||
-								         element.type.toUpperCase() == 'PASSWORD') {
+									if	(	element.type.toUpperCase() == 'TEXT' ||
+											element.type.toUpperCase() == "COLOR" ||
+									        element.type.toUpperCase() == "DATE" ||
+									        element.type.toUpperCase() == "DATETIME-LOCAL" ||
+									        element.type.toUpperCase() == "EMAIL" ||
+									        element.type.toUpperCase() == "MONTH" ||
+									        element.type.toUpperCase() == "NUMBER" ||
+									        element.type.toUpperCase() == "RANGE" ||
+									        element.type.toUpperCase() == "SEARCH" ||
+									        element.type.toUpperCase() == "TEL" ||
+									        element.type.toUpperCase() == "TIME" ||
+									        element.type.toUpperCase() == "URL" ||
+									        element.type.toUpperCase() == "WEEK" ||
+									        element.type.toUpperCase() == 'HIDDEN' ||
+									        element.type.toUpperCase() == 'PASSWORD') {
 										if(this.base64)
 											formdata.append(element_name, base64_encode(element.value));
 										else
