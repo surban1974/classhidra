@@ -2240,7 +2240,7 @@ function showAsPopupSubmitExt_json(formName,action,panel_width,panel_height,scro
 
 //---
 
-function showAlertAsPopup(label){
+function showAlertAsPopup(label, _width, _height){
 	if(document.getElementById("content_body_Panel_Popup")){
 	}else{
 		var tmp_container = document.createElement("div");
@@ -2258,7 +2258,7 @@ function showAlertAsPopup(label){
 												"jsp/included/page_popup.jsp",
 												"tmp_container",
 												function(){
-													showAlertAsPopup(label);
+													showAlertAsPopup(label, _width, _height);
 												},
 												"",
 												false		
@@ -2274,10 +2274,15 @@ function showAlertAsPopup(label){
 
 
 	try{
-		document.getElementById("content_body_Panel_Popup").style.width=505;
+		if(_width && _width>0)
+			document.getElementById("content_body_Panel_Popup").style.width=_width;
+		else
+			document.getElementById("content_body_Panel_Popup").style.width=505;
 	}catch(e){
 	}
 	try{
+		if(_height && _height>0)
+			document.getElementById("content_body_Panel_Popup").style.height=_height;
 //		document.getElementById("content_body_Panel_Popup").style.height=100;
 	}catch(e){
 	}
@@ -2375,7 +2380,7 @@ function showAlertAsPopup(label){
 
 }
 
-function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo){
+function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo, _width, _height){
 
 	if(document.getElementById("content_body_Panel_Popup")){
 	}else{
@@ -2388,13 +2393,13 @@ function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo){
 								"tmp_container",
 								function(http_request,target){
 									if(http_request.status == 200){
-										showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo);
+										showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo, _width, _height);
 									}else{
 										ajax_makeRequest(	
 												"jsp/included/page_popup.jsp",
 												"tmp_container",
 												function(){
-													showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo);
+													showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo, _width, _height);
 												},
 												"",
 												false		
@@ -2411,10 +2416,15 @@ function showConfirmAsPopup(label,callOk, callKo, labelBtnOk, labelBtnKo){
 
 
 	try{
-		document.getElementById("content_body_Panel_Popup").style.width=505;
+		if(_width && _width>0)
+			document.getElementById("content_body_Panel_Popup").style.width=_width;
+		else
+			document.getElementById("content_body_Panel_Popup").style.width=505;
 	}catch(e){
 	}
 	try{
+		if(_height && _height>0)
+			document.getElementById("content_body_Panel_Popup").style.height=_height;
 //		document.getElementById("content_body_Panel_Popup").style.height=120;
 	}catch(e){
 	}

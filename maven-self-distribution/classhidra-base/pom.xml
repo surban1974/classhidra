@@ -113,6 +113,7 @@
 					 					<include>it/classhidra/scheduler/*.properties</include>
 					 					<include>it/classhidra/scheduler/**/*.properties</include>
 					 					<include>it/classhidra/scheduler/**/*.sql</include>
+					 					<include>it/classhidra/qreports/xslt/*.xslt</include>
 					 				</includes>
 			                	</resource>
 								<resource>
