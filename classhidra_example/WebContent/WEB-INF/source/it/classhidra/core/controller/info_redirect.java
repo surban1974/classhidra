@@ -39,7 +39,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class info_redirect extends info_entity implements i_elementBase{
-	private static final long serialVersionUID = 7358853792255105361L;
+	private static final long serialVersionUID = -1L;
 	private String path;
 	private String auth_id;
 	private String error;
@@ -59,6 +59,7 @@ public class info_redirect extends info_entity implements i_elementBase{
 
 	private Vector v_info_sections;
 	private Vector v_info_transformationoutput;
+	private boolean external=false;
 
 
 
@@ -207,20 +208,23 @@ public class info_redirect extends info_entity implements i_elementBase{
 	public String getPath() {
 		return path;
 	}
-	public void setPath(String string) {
+	public info_redirect setPath(String string) {
 		path = string;
+		return this;
 	}
 	public String getAuth_id() {
 		return auth_id;
 	}
-	public void setAuth_id(String string) {
+	public info_redirect setAuth_id(String string) {
 		auth_id = string;
+		return this;
 	}
 	public String getError() {
 		return error;
 	}
-	public void setError(String string) {
+	public info_redirect setError(String string) {
 		error = string;
+		return this;
 	}
 	public String getDescr() {
 		return descr;
@@ -228,32 +232,37 @@ public class info_redirect extends info_entity implements i_elementBase{
 	public String getMess_id() {
 		return mess_id;
 	}
-	public void setDescr(String string) {
+	public info_redirect setDescr(String string) {
 		descr = string;
+		return this;
 	}
-	public void setMess_id(String string) {
+	public info_redirect setMess_id(String string) {
 		mess_id = string;
+		return this;
 	}
 	public String getUnited_id() {
 		return united_id;
 	}
-	public void setUnited_id(String string) {
+	public info_redirect setUnited_id(String string) {
 		united_id = string;
+		return this;
 	}
 	public String getImg() {
 		return img;
 	}
 
-	public void setImg(String img) {
+	public info_redirect setImg(String img) {
 		this.img = img;
+		return this;
 	}
 
 	public String getNavigated() {
 		return navigated;
 	}
 
-	public void setNavigated(String navigated) {
+	public info_redirect setNavigated(String navigated) {
 		this.navigated = navigated;
+		return this;
 	}
 
 	public String getContentType() {
@@ -445,6 +454,15 @@ public class info_redirect extends info_entity implements i_elementBase{
 
 	public info_redirect setAvoidPermissionCheck(String avoidPermissionCheck) {
 		this.avoidPermissionCheck = avoidPermissionCheck;
+		return this;
+	}
+
+	public boolean isExternal() {
+		return external;
+	}
+
+	public info_redirect setExternal(boolean external) {
+		this.external = external;
 		return this;
 	}
 

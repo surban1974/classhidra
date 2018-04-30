@@ -291,51 +291,55 @@ public class action extends bean implements i_action, Serializable{
 		String uri=null;
 		if(current_redirect!=null) uri = current_redirect.get_uri();
 		if(uri!=null && uri.indexOf("?")!=-1) uri=uri.substring(0,uri.indexOf("?"));
-		try{
-			info_redirect local = (info_redirect)_infoaction.get_redirects().get(uri);
-			if(local!=null){
-				info_redirect global = null;
-				try{
-					global = (info_redirect)bsController.getAction_config().get_redirects().get(uri);
-				}catch(Exception e){
-				}
-				if(global==null)
-					current_redirect.set_inforedirect(local);
-				else{
-					if((local.getDescr()==null || local.getDescr().equals("")) && (global.getDescr()!=null && !global.getDescr().equals("")))
-						local.setDescr(global.getDescr());
-					if((local.getMess_id()==null || local.getMess_id().equals("")) && (global.getMess_id()!=null && !global.getMess_id().equals("")))
-						local.setMess_id(global.getMess_id());	
-					if((local.getContentType()==null || local.getContentType().equals("")) && (global.getContentType()!=null && !global.getContentType().equals("")))
-						local.setContentType(global.getContentType());	
-					if((local.getContentName()==null || local.getContentName().equals("")) && (global.getContentName()!=null && !global.getContentName().equals("")))
-						local.setContentName(global.getContentName());	
-					if((local.getContentEncoding()==null || local.getContentEncoding().equals("")) && (global.getContentEncoding()!=null && !global.getContentEncoding().equals("")))
-						local.setContentEncoding(global.getContentEncoding());	
-					if((local.getTransformationName()==null || local.getTransformationName().equals("")) && (global.getTransformationName()!=null && !global.getTransformationName().equals("")))
-						local.setTransformationName(global.getTransformationName());	
-					if((local.getAvoidPermissionCheck()==null || local.getAvoidPermissionCheck().equals("")) && (global.getAvoidPermissionCheck()!=null && !global.getAvoidPermissionCheck().equals("")))
-						local.setAvoidPermissionCheck(global.getAvoidPermissionCheck());	
+		if(current_redirect!=null && current_redirect.get_inforedirect()!=null && current_redirect.get_inforedirect().isExternal())
+			return;
+		else {
+			try{
+				info_redirect local = (info_redirect)_infoaction.get_redirects().get(uri);
+				if(local!=null){
+					info_redirect global = null;
+					try{
+						global = (info_redirect)bsController.getAction_config().get_redirects().get(uri);
+					}catch(Exception e){
+					}
+					if(global==null)
+						current_redirect.set_inforedirect(local);
+					else{
+						if((local.getDescr()==null || local.getDescr().equals("")) && (global.getDescr()!=null && !global.getDescr().equals("")))
+							local.setDescr(global.getDescr());
+						if((local.getMess_id()==null || local.getMess_id().equals("")) && (global.getMess_id()!=null && !global.getMess_id().equals("")))
+							local.setMess_id(global.getMess_id());	
+						if((local.getContentType()==null || local.getContentType().equals("")) && (global.getContentType()!=null && !global.getContentType().equals("")))
+							local.setContentType(global.getContentType());	
+						if((local.getContentName()==null || local.getContentName().equals("")) && (global.getContentName()!=null && !global.getContentName().equals("")))
+							local.setContentName(global.getContentName());	
+						if((local.getContentEncoding()==null || local.getContentEncoding().equals("")) && (global.getContentEncoding()!=null && !global.getContentEncoding().equals("")))
+							local.setContentEncoding(global.getContentEncoding());	
+						if((local.getTransformationName()==null || local.getTransformationName().equals("")) && (global.getTransformationName()!=null && !global.getTransformationName().equals("")))
+							local.setTransformationName(global.getTransformationName());	
+						if((local.getAvoidPermissionCheck()==null || local.getAvoidPermissionCheck().equals("")) && (global.getAvoidPermissionCheck()!=null && !global.getAvoidPermissionCheck().equals("")))
+							local.setAvoidPermissionCheck(global.getAvoidPermissionCheck());	
+						
+	
+						
+						current_redirect.set_inforedirect(local);
+					}
+				}else{
+					info_redirect global = null;
+					try{
+						global = (info_redirect)bsController.getAction_config().get_redirects().get(uri);
+					}catch(Exception e){
+					}
+					if(global!=null)
+						current_redirect.set_inforedirect(global);
+					else if(get_infoaction()!=null && get_infoaction().getIRedirect()!=null)
+						current_redirect.set_inforedirect(get_infoaction().getIRedirect());
 					
-
-					
-					current_redirect.set_inforedirect(local);
 				}
-			}else{
-				info_redirect global = null;
-				try{
-					global = (info_redirect)bsController.getAction_config().get_redirects().get(uri);
-				}catch(Exception e){
-				}
-				if(global!=null)
-					current_redirect.set_inforedirect(global);
-				else if(get_infoaction()!=null && get_infoaction().getIRedirect()!=null)
-					current_redirect.set_inforedirect(get_infoaction().getIRedirect());
-				
+			}catch(Exception e){
+				if( e instanceof java.lang.NullPointerException){
+				}else new bsControllerException(e,iStub.log_DEBUG);
 			}
-		}catch(Exception e){
-			if( e instanceof java.lang.NullPointerException){
-			}else new bsControllerException(e,iStub.log_DEBUG);
 		}
 	}
 

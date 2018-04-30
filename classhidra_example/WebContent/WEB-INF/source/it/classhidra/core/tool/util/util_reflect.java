@@ -688,13 +688,16 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 		field_name=tmp;
 	}
 	
-	StringTokenizer st = new StringTokenizer(field_name,".");
+//	StringTokenizer st = new StringTokenizer(field_name,".");
+	String[] tokens = field_name.split("\\.");
+	if(tokens.length==0 && field_name.length()>0)
+		 tokens = new String[] {field_name};
 	Object current_requested = requested;
 	
 
 	
-	while(st.hasMoreTokens()){
-		
+//	while(st.hasMoreTokens()){
+	for(int t=0;t<tokens.length;t++) {	
 		try{
 			if(	current_requested!=null && current_requested instanceof i_bean)
 				current_requested = ((i_bean)current_requested).asBean();
@@ -709,7 +712,8 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 		
 		
 		
-		String current_field_name = st.nextToken();
+//		String current_field_name = st.nextToken();
+		String current_field_name = tokens[t];
 		
 		if(syn!=null && syn.get(current_field_name)!=null)
 			current_field_name=(String)syn.get(current_field_name);
@@ -769,9 +773,10 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 				}
 			}else if(current_requested!=null && current_requested instanceof info_navigation){
 				try{
-					writeValue = util_reflect.getValue(current_requested,method_prefix+util_reflect.adaptMethodName(current_field_name),parameters);
+					
+					writeValue = util_reflect.getValue(current_requested,method_prefix+util_reflect.adaptMethodName(current_field_name),(t==tokens.length-1)?parameters:null);
 					if(writeValue==null && method_prefix.equals("get"))
-						writeValue = util_reflect.getValue(current_requested,"is"+util_reflect.adaptMethodName(current_field_name),parameters);
+						writeValue = util_reflect.getValue(current_requested,"is"+util_reflect.adaptMethodName(current_field_name),(t==tokens.length-1)?parameters:null);
 
 				}catch (Exception e) {
 				}
@@ -784,18 +789,18 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 				}
 
 			}else{
-				writeValue = util_reflect.getValue(current_requested,method_prefix+util_reflect.adaptMethodName(current_field_name),parameters);
+				writeValue = util_reflect.getValue(current_requested,method_prefix+util_reflect.adaptMethodName(current_field_name),(t==tokens.length-1)?parameters:null);
 				if(writeValue==null && method_prefix.equals("get"))
-					writeValue = util_reflect.getValue(current_requested,"is"+util_reflect.adaptMethodName(current_field_name),parameters);
+					writeValue = util_reflect.getValue(current_requested,"is"+util_reflect.adaptMethodName(current_field_name),(t==tokens.length-1)?parameters:null);
 
 			}
 			if(isException){
-				writeValue = util_reflect.getValue(current_requested,method_prefix+util_reflect.adaptMethodName(current_field_name),parameters);
+				writeValue = util_reflect.getValue(current_requested,method_prefix+util_reflect.adaptMethodName(current_field_name),(t==tokens.length-1)?parameters:null);
 				if(writeValue==null && method_prefix.equals("get"))
-					writeValue = util_reflect.getValue(current_requested,"is"+util_reflect.adaptMethodName(current_field_name),parameters);
+					writeValue = util_reflect.getValue(current_requested,"is"+util_reflect.adaptMethodName(current_field_name),(t==tokens.length-1)?parameters:null);
 
 			}
-			if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,parameters);
+			if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,(t==tokens.length-1)?parameters:null);
 		}catch(Exception e){
 		}
 
