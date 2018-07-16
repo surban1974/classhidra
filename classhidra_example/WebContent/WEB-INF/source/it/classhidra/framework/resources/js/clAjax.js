@@ -1,8 +1,8 @@
 /**
 * Name: clAjax.js
-* Version: 1.0.7
+* Version: 1.0.8
 * Creation date: (08/11/2016)
-* Last update: (13/03/2018)
+* Last update: (16/07/2018)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -43,6 +43,7 @@
 		this.contentType = 			(prot)?prot.contentType:null;
 		this.progressWait = 		(prot)?prot.progressWait:null;
 		this.mimeType = 			(prot)?prot.mimeType:null;
+		this.enlargeServerStatus = 	(prot)?((prot.enlargeServerStatus)?prot.enlargeServerStatus:false):false;
 
 		this.start = 				(prot)?prot.start:null;
 
@@ -133,6 +134,7 @@
 				this.contentType=null;
 				this.progressWait=null;
 				this.mimeType=null;
+				this.enlargeServerStatus=false;
 
 				this.start=null;
 				this.success=null;
@@ -228,6 +230,11 @@
 
 			setMimeType : function(_mimeType){
 				this.mimeType = _mimeType;
+				return this;
+			},
+			
+			setEnlargeServerStatus : function(_enlargeServerStatus){
+				this.enlargeServerStatus = _enlargeServerStatus;
 				return this;
 			},
 
@@ -370,6 +377,7 @@
 				.setContentType(this.contentType)
 				.setAsynchronous(this.asynchronous)
 				.setMimeType(this.mimeType)
+				.setEnlargeServerStatus(this.enlargeServerStatus)
 				.setStart(this.start)
 				.setSuccess(this.success)
 				.setRedy(this.ready)
@@ -417,7 +425,11 @@
 					var e = document.createElement('script');
 
 					if(this.base64){
-						var parameters = this.getParametersAsUrl(null,this.url);
+						var parameters = null;
+						if(this.form)
+							parameters = this.getParametersAsUrl(this.form,this.url);
+						else
+							parameters = this.getParametersAsUrl(null,this.url);
 						if(this.url.indexOf('?')>-1)
 							e.src = this.url.substring(0,this.url.indexOf('?'))+parameters;
 						else
@@ -792,6 +804,19 @@
 
 					    		if (http_request.status == 200 ) {
 					    			statusAccepted = true;
+					    		}else if(	instance.enlargeServerStatus &&
+					    					instance.enlargeServerStatus==true && 
+					    					(	http_request.status == 200 ||
+					    						http_request.status == 201 ||
+					    						http_request.status == 400 ||
+					    						http_request.status == 401 ||
+					    						http_request.status == 404 ||
+					    						http_request.status == 405
+					    					)
+					    			){
+					    			statusAccepted = true;
+								}
+					    		if(statusAccepted){
 					    			if(instance.ready && instance.ready!='')
 				            			_fready = instance.ready;
 					    			if(instance.success && instance.success!='')
@@ -801,9 +826,9 @@
 					    			if(instance.finish && instance.finish!='')
 				            			_ffinish = instance.finish;
 					    			if(instance.error && instance.error!='')
-				            			_ferror = instance.error;
-
+				            			_ferror = instance.error;					    			
 					    		}
+					    		
 					    		if(_facceptableStatus && _facceptableStatus.length>0){
 
 					    		}else if(instance.acceptableStatus && instance.acceptableStatus.length>0){

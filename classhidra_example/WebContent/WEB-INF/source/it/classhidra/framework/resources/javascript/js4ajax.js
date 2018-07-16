@@ -2,7 +2,7 @@
 * Name: js4ajax.js
 * Version: 1.5.4 (compatible classHidra 1.5.4)
 * Creation date: (21/04/2015)
-* Last update: (26/02/2018)
+* Last update: (66/07/2018)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
@@ -205,7 +205,7 @@ function dhtmlLoadScript_submit(url,frm,type,rel,charset,inbase64,afterJSFunctio
 
 function ajax_submit(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 
-	if(document.getElementById(target) ){
+	if(target && document.getElementById(target) ){
 		var parameters;
 		   if(inbase64)
 			   parameters = ajax_makeParameters64(frm,frm.action);
@@ -220,7 +220,7 @@ function ajax_submit(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,
 
 function ajax_submitExt(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 
-	if(document.getElementById(target) ){
+	if(target && document.getElementById(target) ){
 		var parameters;
 		   if(inbase64)
 			   parameters = ajax_makeParameters64(frm,action);
@@ -389,19 +389,20 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 		if(parametersOnly=="") parametersOnly+="js4ajax=true";
 		else parametersOnly+="&js4ajax=true";
 
-
-		if(	target=="spacer"){
-		}else{
-			try{
-				var viewBack=true;
-				if(showImgBack==false) viewBack=false;
-			}catch(e){
-				viewBack=true;
-			}
-			try{
-				if(viewBack==true)
-					document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>";
-			}catch(e){
+		if(target){
+			if(	target=="spacer"){
+			}else{
+				try{
+					var viewBack=true;
+					if(showImgBack==false) viewBack=false;
+				}catch(e){
+					viewBack=true;
+				}
+				try{
+					if(viewBack==true && document.getElementById(target))
+						document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>";
+				}catch(e){
+				}
 			}
 		}
 
@@ -458,7 +459,8 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 		            			eval(redrawTargetJSFunction + "(http_request,target)");
 		            		}
 		            	}else{
-		            		document.getElementById(target).innerHTML=http_request.responseText;
+		            		if(target && document.getElementById(target))
+		            			document.getElementById(target).innerHTML=http_request.responseText;
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
 		            		if (typeof afterJSFunction === "function") {
@@ -511,7 +513,7 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 //JSON way
 function ajax_submit_json(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 
-	if(document.getElementById(target) ){
+	if(target && document.getElementById(target) ){
 		var json;
 		if(inbase64)
 			json = ajax_makeJSONParameters64(frm,url);
@@ -525,7 +527,7 @@ function ajax_submit_json(frm,target,afterJSFunction,inbase64,redrawTargetJSFunc
 
 function ajax_submitExt_json(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 
-	if(document.getElementById(target) ){
+	if(target && document.getElementById(target) ){
 		var json;
 		if(inbase64)
 			json = ajax_makeJSONParameters64(frm,url);
@@ -726,19 +728,20 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 		jsonParameters["js4ajax"] = "true";
 
 
-
-		if(	target=="spacer"){
-		}else{
-			try{
-				var viewBack=true;
-				if(showImgBack==false) viewBack=false;
-			}catch(e){
-				viewBack=true;
-			}
-			try{
-				if(viewBack==true)
-					document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='images/wait.gif' border='0'></td></tr></table>";
-			}catch(e){
+		if(target){
+			if(	target=="spacer"){
+			}else{
+				try{
+					var viewBack=true;
+					if(showImgBack==false) viewBack=false;
+				}catch(e){
+					viewBack=true;
+				}
+				try{
+					if(viewBack==true && document.getElementById(target))
+						document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='images/wait.gif' border='0'></td></tr></table>";
+				}catch(e){
+				}
 			}
 		}
 
@@ -793,7 +796,8 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 		            			eval(redrawTargetJSFunction + "(http_request,target)");
 		            		}
 		            	}else{
-		            		document.getElementById(target).innerHTML=http_request.responseText;
+		            		if(target && document.getElementById(target))
+		            			document.getElementById(target).innerHTML=http_request.responseText;
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
 		            		if (typeof afterJSFunction === "function") {
@@ -848,7 +852,7 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 function ajax_submit_mpart(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack){
 	if(window.FormData){
 
-		if(document.getElementById(target) ){
+		if(target && document.getElementById(target) ){
 			var formdata;
 			if(inbase64)
 				formdata = ajax_makeMPARTParameters64(frm,url);
@@ -865,7 +869,7 @@ function ajax_submit_mpart(frm,target,afterJSFunction,inbase64,redrawTargetJSFun
 
 function ajax_submitExt_mpart(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack){
 	if(window.FormData){
-		if(document.getElementById(target) ){
+		if(target && document.getElementById(target) ){
 			var formdata;
 			if(inbase64)
 				formdata = ajax_makeMPARTParameters64(frm,url);
@@ -1085,19 +1089,20 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 		formdata.append("js4ajax","true");
 
 
-
-		if(	target=="spacer"){
-		}else{
-			try{
-				var viewBack=true;
-				if(showImgBack==false) viewBack=false;
-			}catch(e){
-				viewBack=true;
-			}
-			try{
-				if(viewBack==true)
-					document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img src='images/wait.gif' border='0'></td></tr></table>";
-			}catch(e){
+		if(target){
+			if(	target=="spacer"){
+			}else{
+				try{
+					var viewBack=true;
+					if(showImgBack==false) viewBack=false;
+				}catch(e){
+					viewBack=true;
+				}
+				try{
+					if(viewBack==true && document.getElementById(target))
+						document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img src='images/wait.gif' border='0'></td></tr></table>";
+				}catch(e){
+				}
 			}
 		}
 
@@ -1141,7 +1146,8 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 		            			eval(redrawTargetJSFunction + "(http_request,target)");
 		            		}
 		            	}else{
-		            		document.getElementById(target).innerHTML=http_request.responseText;
+		            		if(target && document.getElementById(target))
+		            			document.getElementById(target).innerHTML=http_request.responseText;
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
 		            		if (typeof afterJSFunction === "function") {
@@ -1176,29 +1182,6 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
  }
 
 
-// --------
-/*
-function ajax_handleResponse(http_request,target) {
-	try{
-	    if (http_request.readyState == 4) {
-	       if (http_request.status == 200) {
-	          result = http_request.responseText;
-	          var content_ajax = result;
-	          document.getElementById(target).innerHTML=content_ajax;
-
-//	          if(target!="idDivMessage") ajax_loadMessage("idDivMessage");
-
-	       } else {
-	          alert('There was a problem with the request.');
-	       }
-
-	    }
-	    http_request.close();
-	} catch (e) {
-		alert(e);
-    }
- }
-*/
 // -------
 function base64_encode(data) {
 
