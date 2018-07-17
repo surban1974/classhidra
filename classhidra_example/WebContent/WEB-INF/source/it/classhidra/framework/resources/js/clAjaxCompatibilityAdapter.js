@@ -1,7 +1,7 @@
 /**
 * Name: clAjaxCompatibilityAdapter.js
 * Version: 1.5.4 (compatible classHidra 1.5.4)
-* Creation date: (16/07/2018)
+* Creation date: (17/07/2018)
 * Last update: 
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
@@ -26,6 +26,7 @@ function ajax_loadAction(action,target, afterJSFunction){
 
 function dhtmlLoadCss(href,type,rel,charset,media,inbase64,afterJSFunction){
 	var current = new clajax();
+	current.setCompatibility(true);
 	current.setAsCss(true);
 	if(href)
 		current.setUrl(href);
@@ -39,8 +40,10 @@ function dhtmlLoadCss(href,type,rel,charset,media,inbase64,afterJSFunction){
 		current.setMedia(media);
 	if(inbase64)
 		current.setBase64(inbase64);
-	if(afterJSFunction)
+	if(afterJSFunction){
 		current.setSuccess(afterJSFunction);
+		current.setFail(afterJSFunction);
+	}
 	
 	current.load();
 }
@@ -48,6 +51,7 @@ function dhtmlLoadCss(href,type,rel,charset,media,inbase64,afterJSFunction){
 // Javascript way
 function dhtmlLoadScript(url,type,rel,charset,inbase64,afterJSFunction){
 	var current = new clajax();
+	current.setCompatibility(true);
 	current.setAsScript(true);
 	if(url)
 		current.setUrl(url);
@@ -59,8 +63,10 @@ function dhtmlLoadScript(url,type,rel,charset,inbase64,afterJSFunction){
 		current.setContentEncoding(charset);
 	if(inbase64)
 		current.setBase64(inbase64);
-	if(afterJSFunction)
+	if(afterJSFunction){
 		current.setSuccess(afterJSFunction);
+		current.setFail(afterJSFunction);
+	}
 	
 	current.load();
 }
@@ -68,6 +74,7 @@ function dhtmlLoadScript(url,type,rel,charset,inbase64,afterJSFunction){
 function dhtmlLoadScript_submit(url,frm,type,rel,charset,inbase64,afterJSFunction){
 
 	var current = new clajax();
+	current.setCompatibility(true);
 	current.setAsScript(true);
 	if(frm)
 		current.setForm(frm);
@@ -81,8 +88,10 @@ function dhtmlLoadScript_submit(url,frm,type,rel,charset,inbase64,afterJSFunctio
 		current.setContentEncoding(charset);
 	if(inbase64)
 		current.setBase64(inbase64);
-	if(afterJSFunction)
+	if(afterJSFunction){
 		current.setSuccess(afterJSFunction);
+		current.setFail(afterJSFunction);
+	}
 	
 	current.load();
 }
@@ -92,12 +101,15 @@ function dhtmlLoadScript_submit(url,frm,type,rel,charset,inbase64,afterJSFunctio
 function ajax_submit(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 	if(document.getElementById(target) ){
 		var current = new clajax();
+		current.setCompatibility(true);
 		if(frm)
 			current.setForm(frm);
 		if(target && document.getElementById(target))
 			current.setTarget(document.getElementById(target));
-		if(afterJSFunction)
+		if(afterJSFunction){
 			current.setSuccess(afterJSFunction);
+			current.setFail(afterJSFunction);
+		}
 		if(redrawTargetJSFunction)
 			current.setReady(redrawTargetJSFunction);	
 		if(showImgBack){
@@ -128,14 +140,17 @@ function ajax_submit(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,
 function ajax_submitExt(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 	if(document.getElementById(target) ){
 		var current = new clajax();
+		current.setCompatibility(true);
 		if(frm)
 			current.setForm(frm);
 		if(action)
 			current.setUrl(action);
 		if(target && document.getElementById(target))
 			current.setTarget(document.getElementById(target));
-		if(afterJSFunction)
+		if(afterJSFunction){
 			current.setSuccess(afterJSFunction);
+			current.setFail(afterJSFunction);
+		}
 		if(redrawTargetJSFunction)
 			current.setReady(redrawTargetJSFunction);	
 		if(showImgBack){
@@ -165,12 +180,14 @@ function ajax_submitExt(frm,action,target,afterJSFunction,inbase64,redrawTargetJ
 
 function ajax_makeParameters(frm,url) {
 	var current = new clajax();
+	current.setCompatibility(true);
 	var url = current.getParametersAsUrl(frm,url);
 	return json;
  }
 
 function ajax_makeParameters64(frm,url) {
 	var current = new clajax();
+	current.setCompatibility(true);
 	current.setBase64(true);
 	var url = current.getParametersAsUrl(frm,url);
 	return json;
@@ -178,12 +195,15 @@ function ajax_makeParameters64(frm,url) {
 
 function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus) {	
 	var current = new clajax();
+	current.setCompatibility(true);
 	if(urlWidthParameters)
 		current.setUrl(urlWidthParameters);
 	if(target && document.getElementById(target))
 		current.setTarget(document.getElementById(target));
-	if(afterJSFunction)
+	if(afterJSFunction){
 		current.setSuccess(afterJSFunction);
+		current.setFail(afterJSFunction);
+	}
 	if(redrawTargetJSFunction)
 		current.setReady(redrawTargetJSFunction);	
 	if(showImgBack){
@@ -215,13 +235,16 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 function ajax_submit_json(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 	if(document.getElementById(target) ){
 		var current = new clajax();
+		current.setCompatibility(true);
 		current.setJson(true);
 		if(frm)
 			current.setForm(frm);
 		if(target && document.getElementById(target))
 			current.setTarget(document.getElementById(target));
-		if(afterJSFunction)
+		if(afterJSFunction){
 			current.setSuccess(afterJSFunction);
+			current.setFail(afterJSFunction);
+		}
 		if(redrawTargetJSFunction)
 			current.setReady(redrawTargetJSFunction);	
 		if(showImgBack){
@@ -253,6 +276,7 @@ function ajax_submit_json(frm,target,afterJSFunction,inbase64,redrawTargetJSFunc
 function ajax_submitExt_json(frm,action,target,afterJSFunction,inbase64,redrawTargetJSFunction,showImgBack,responseType){
 	if(document.getElementById(target) ){
 		var current = new clajax();
+		current.setCompatibility(true);
 		current.setJson(true);
 		if(frm)
 			current.setForm(frm);
@@ -260,8 +284,10 @@ function ajax_submitExt_json(frm,action,target,afterJSFunction,inbase64,redrawTa
 			current.setUrl(action);
 		if(target && document.getElementById(target))
 			current.setTarget(document.getElementById(target));
-		if(afterJSFunction)
+		if(afterJSFunction){
 			current.setSuccess(afterJSFunction);
+			current.setFail(afterJSFunction);
+		}
 		if(redrawTargetJSFunction)
 			current.setReady(redrawTargetJSFunction);	
 		if(showImgBack){
@@ -292,12 +318,14 @@ function ajax_submitExt_json(frm,action,target,afterJSFunction,inbase64,redrawTa
 
 function ajax_makeJSONParameters(frm,url) {
 	var current = new clajax();
+	current.setCompatibility(true);
 	var json = current.getParametersAsJson(frm,url);
 	return json;
  }
 
 function ajax_makeJSONParameters64(frm,url) {
 	var current = new clajax();
+	current.setCompatibility(true);
 	current.setBase64(true);
 	var json = current.getParametersAsJson(frm,url);
 	return json;
@@ -306,6 +334,7 @@ function ajax_makeJSONParameters64(frm,url) {
 
 function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus) {
 	var current = new clajax();
+	current.setCompatibility(true);
 	current.setAsJson(true);
 	if(urlWidthParameters)
 		current.setUrl(urlWidthParameters);
@@ -313,8 +342,10 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 		current.setJson(jsonParameters);
 	if(target && document.getElementById(target))
 		current.setTarget(document.getElementById(target));
-	if(afterJSFunction)
+	if(afterJSFunction){
 		current.setSuccess(afterJSFunction);
+		current.setFail(afterJSFunction);
+	}
 	if(redrawTargetJSFunction)
 		current.setReady(redrawTargetJSFunction);	
 	if(showImgBack){
@@ -347,13 +378,16 @@ function ajax_submit_mpart(frm,target,afterJSFunction,inbase64,redrawTargetJSFun
 	if(window.FormData){
 		if(document.getElementById(target) ){
 			var current = new clajax();
+			current.setCompatibility(true);
 			current.setAsMpart(true);
 			if(frm)
 				current.setForm(frm);
 			if(target && document.getElementById(target))
 				current.setTarget(document.getElementById(target));
-			if(afterJSFunction)
+			if(afterJSFunction){
 				current.setSuccess(afterJSFunction);
+				current.setFail(afterJSFunction);
+			}
 			if(redrawTargetJSFunction)
 				current.setReady(redrawTargetJSFunction);	
 			if(showImgBack){
@@ -386,13 +420,16 @@ function ajax_submitExt_mpart(frm,action,target,afterJSFunction,inbase64,redrawT
 	if(window.FormData){
 		if(document.getElementById(target) ){
 			var current = new clajax();
+			current.setCompatibility(true);
 			current.setAsMpart(true);
 			if(frm)
 				current.setForm(frm);
 			if(target && document.getElementById(target))
 				current.setTarget(document.getElementById(target));
-			if(afterJSFunction)
+			if(afterJSFunction){
 				current.setSuccess(afterJSFunction);
+				current.setFail(afterJSFunction);
+			}
 			if(redrawTargetJSFunction)
 				current.setReady(redrawTargetJSFunction);	
 			if(showImgBack){
@@ -424,6 +461,7 @@ function ajax_submitExt_mpart(frm,action,target,afterJSFunction,inbase64,redrawT
 function ajax_makeMPARTParameters(frm,url) {
 	if(window.FormData){
 		var current = new clajax();
+		current.setCompatibility(true);
 		var formdata = current.getParametersAsMpart(frm,url);
 		return formdata;
 	}else{
@@ -435,6 +473,7 @@ function ajax_makeMPARTParameters(frm,url) {
 function ajax_makeMPARTParameters64(frm,url) {
 	if(window.FormData){
 		var current = new clajax();
+		current.setCompatibility(true);
 		current.setBase64(true);
 		var formdata = current.getParametersAsMpart(frm,url);
 		return formdata;			
@@ -448,6 +487,7 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 	if(window.FormData){
 		
 		var current = new clajax();
+		current.setCompatibility(true);
 		current.setAsMpart(true);
 		if(urlWidthParameters)
 			current.setUrl(urlWidthParameters);
@@ -455,8 +495,10 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 			current.setMpart(formdata);
 		if(target && document.getElementById(target))
 			current.setTarget(document.getElementById(target));
-		if(afterJSFunction)
+		if(afterJSFunction){
 			current.setSuccess(afterJSFunction);
+			current.setFail(afterJSFunction);
+		}
 		if(redrawTargetJSFunction)
 			current.setReady(redrawTargetJSFunction);	
 		if(showImgBack){
