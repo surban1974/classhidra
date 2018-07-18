@@ -2,7 +2,7 @@
 * Name: clAjax.js
 * Version: 1.1.0
 * Creation date: (08/11/2016)
-* Last update: (17/07/2018)
+* Last update: (18/07/2018)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -227,6 +227,11 @@
 
 			setContentType : function(_contentType){
 				this.contentType = _contentType;
+				return this;
+			},
+			
+			setProgressWait : function(_progressWait){
+				this.progressWait = _progressWait;
 				return this;
 			},
 
