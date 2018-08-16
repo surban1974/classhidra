@@ -165,7 +165,7 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 	}
 
 	function drawGraph(){
-		ajax_makeJSONRequest("statistisc_json","","","", "loadJsonList_callBackJs",false);
+		ajax_makeJSONRequest("statistisc_json?middleAction=","","","", "loadJsonList_callBackJs",false);
 		window.setTimeout("drawGraph()",5000);
 	}
 
