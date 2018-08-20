@@ -99,7 +99,7 @@ public String sql_Select() {
     String result="";
     result+="SELECT * FROM "+b_init.get_db_prefix()+"batch ";
     result+="WHERE ";
-    result+="cd_btch='"+this.getCd_btch()+"' \n";
+    result+="cd_btch='"+util_format.convertAp(this.getCd_btch())+"' \n";
     result+="and cd_ist='"+this.getCd_ist()+"' \n";
 
     return result;
@@ -108,7 +108,7 @@ public String sql_Delete() {
     String result="";
     result+="DELETE FROM "+b_init.get_db_prefix()+"batch ";
     result+="WHERE ";
-    result+="cd_btch='"+this.getCd_btch()+"' \n";
+    result+="cd_btch='"+util_format.convertAp(this.getCd_btch())+"' \n";
     result+="and cd_ist='"+this.getCd_ist()+"' \n";
 
     return result;

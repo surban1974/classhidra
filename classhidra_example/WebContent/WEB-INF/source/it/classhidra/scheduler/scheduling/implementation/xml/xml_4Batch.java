@@ -25,6 +25,7 @@ import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
 import it.classhidra.scheduler.scheduling.db.db_batch_property;
+import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.util.util_batch;
 
@@ -34,9 +35,9 @@ import it.classhidra.scheduler.util.util_batch;
 public class xml_4Batch implements i_4Batch  {
 	
 	protected static List<db_batch> xml_batch = new ArrayList<db_batch>();
-	protected static List<db_batch_log> xml_batch_log = new ArrayList<db_batch_log>();
+	protected static List<i_batch_log> xml_batch_log = new ArrayList<i_batch_log>();
 	protected static List<db_batch_property> xml_batch_property = new ArrayList<db_batch_property>();
-	protected static Map<String,db_batch_log> last_batch_log = new HashMap<String, db_batch_log>();
+	protected static Map<String,i_batch_log> last_batch_log = new HashMap<String, i_batch_log>();
 	protected static final int max_log_size = 20;
 	protected static final String CONST_XML_FOLDER = "xml.data.folder";
 	
@@ -89,9 +90,9 @@ public class xml_4Batch implements i_4Batch  {
 							obj = util_beanMessageFactory.message2bean(util_file.getBytesFromFile(xml_file));
 					}
 					if(obj!=null && obj instanceof List<?>)
-						xml_batch_log = (List<db_batch_log>)obj;
-					for(db_batch_log log:xml_batch_log){
-						db_batch_log h_log = last_batch_log.get(log.getCd_btch());
+						xml_batch_log = (List<i_batch_log>)obj;
+					for(i_batch_log log:xml_batch_log){
+						i_batch_log h_log = last_batch_log.get(log.getCd_btch());
 						if(h_log==null || (h_log!=null && h_log.getTm_fin().getTime()<log.getTm_fin().getTime()))
 							last_batch_log.put(log.getCd_btch(),log);	
 					}
@@ -139,9 +140,9 @@ public class xml_4Batch implements i_4Batch  {
 			if(obj==null)
 				obj = util_beanMessageFactory.message2bean(util_classes.getResourceAsByte("config/batch_log.xml"));			
 			if(obj!=null && obj instanceof List<?>)
-				xml_batch_log = (List<db_batch_log>)obj;
-			for(db_batch_log log:xml_batch_log){
-				db_batch_log h_log = last_batch_log.get(log.getCd_btch());
+				xml_batch_log = (List<i_batch_log>)obj;
+			for(i_batch_log log:xml_batch_log){
+				i_batch_log h_log = last_batch_log.get(log.getCd_btch());
 				if(h_log==null || (h_log!=null && h_log.getTm_fin().getTime()<log.getTm_fin().getTime()))
 					last_batch_log.put(log.getCd_btch(),log);	
 			}
@@ -154,45 +155,48 @@ public class xml_4Batch implements i_4Batch  {
 	public Object operation(String oper, HashMap form) throws Exception {
 		if(oper==null) return null;
 		oper=oper.toUpperCase();
-
-if(oper.equals(o_FINDFORMLIST))
-			return operation_FINDFORMLIST(form);
 		
-if(oper.equals(o_LOAD_BATCH_PROPERTIES))
-			return operation_LOAD_BATCH_PROPERTIES(form);		
+		if(oper.equals(o_INSTANCE_LOG_OBJECT))
+			return new db_batch_log();
 
-if(oper.equals(o_DELETE))
-			return operation_DELETE(form);
-
-if(oper.equals(o_UPDATE))
-			return operation_UPDATE(form);
+		if(oper.equals(o_FINDFORMLIST))
+					return operation_FINDFORMLIST(form);
+				
+		if(oper.equals(o_LOAD_BATCH_PROPERTIES))
+					return operation_LOAD_BATCH_PROPERTIES(form);		
 		
-if(oper.equals(o_UPDATE_STATE))
-			return operation_UPDATE_STATE(form);	
-
-if(oper.equals(o_UPDATE_STATES_AND_NEXTEXEC))
-			return operation_UPDATE_STATES_AND_NEXTEXEC(form);			
+		if(oper.equals(o_DELETE))
+					return operation_DELETE(form);
 		
-if(oper.equals(o_INSERT))
-			return operation_INSERT(form);
-
-if(oper.equals(o_CLEAR_STATE))
-			return operation_CLEAR_STATE(form);
-
-if(oper.equals(o_FIND))
-			return operation_FIND(form);
+		if(oper.equals(o_UPDATE))
+					return operation_UPDATE(form);
+				
+		if(oper.equals(o_UPDATE_STATE))
+					return operation_UPDATE_STATE(form);	
 		
-if(oper.equals(o_FIND_SIMPLE))
-			return operation_FIND_SIMPLE(form);		
+		if(oper.equals(o_UPDATE_STATES_AND_NEXTEXEC))
+					return operation_UPDATE_STATES_AND_NEXTEXEC(form);			
+				
+		if(oper.equals(o_INSERT))
+					return operation_INSERT(form);
 		
-if(oper.equals(o_CLEAR_BATCH_STATES))
-			return operation_CLEAR_BATCH_STATES(form);	
+		if(oper.equals(o_CLEAR_STATE))
+					return operation_CLEAR_STATE(form);
 		
-if(oper.equals(o_KILL4TIMEOUT))
-			return operation_KILL4TIMEOUT(form);			
-
-if(oper.equals(o_WRITE_LOG))
-			return operation_WRITE_LOG(form);			
+		if(oper.equals(o_FIND))
+					return operation_FIND(form);
+				
+		if(oper.equals(o_FIND_SIMPLE))
+					return operation_FIND_SIMPLE(form);		
+				
+		if(oper.equals(o_CLEAR_BATCH_STATES))
+					return operation_CLEAR_BATCH_STATES(form);	
+				
+		if(oper.equals(o_KILL4TIMEOUT))
+					return operation_KILL4TIMEOUT(form);			
+		
+		if(oper.equals(o_WRITE_LOG))
+					return operation_WRITE_LOG(form);			
 
 		return null;
 	}
@@ -222,7 +226,7 @@ if(oper.equals(o_WRITE_LOG))
 				}else insert = false;
 			}
 			if(insert){
-				db_batch_log h_log = last_batch_log.get(batch.getCd_btch());
+				i_batch_log h_log = last_batch_log.get(batch.getCd_btch());
 				if(h_log!=null)
 					batch.setTm_last(h_log.getTm_fin());
 				return batch;
@@ -240,7 +244,7 @@ if(oper.equals(o_WRITE_LOG))
 		
 		for(db_batch batch:xml_batch){
 			if(batch.getCd_ist().intValue()==element.getCd_ist().intValue() && batch.getCd_btch().equals(element.getCd_btch())){
-				db_batch_log h_log = last_batch_log.get(batch.getCd_btch());
+				i_batch_log h_log = last_batch_log.get(batch.getCd_btch());
 				if(h_log!=null)
 					batch.setTm_last(h_log.getTm_fin());
 				return batch;
@@ -281,7 +285,7 @@ if(oper.equals(o_WRITE_LOG))
 					}else insert = false;
 				}
 				if(insert){
-					db_batch_log h_log = last_batch_log.get(batch.getCd_btch());
+					i_batch_log h_log = last_batch_log.get(batch.getCd_btch());
 					if(h_log!=null)
 						batch.setTm_last(h_log.getTm_fin());
 					elements.add(batch);
@@ -457,8 +461,8 @@ if(oper.equals(o_WRITE_LOG))
 		if(form.get("cd_btch")==null)
 			return new Boolean(false);
 		
-		for (Iterator<db_batch_log> iter = xml_batch_log.listIterator(); iter.hasNext(); ) {
-			db_batch_log log = iter.next();
+		for (Iterator<i_batch_log> iter = xml_batch_log.listIterator(); iter.hasNext(); ) {
+			i_batch_log log = iter.next();
 		    if (log.getCd_btch().equals(form.get("cd_btch").toString())) {
 		        iter.remove();
 		    }
@@ -537,14 +541,14 @@ if(oper.equals(o_WRITE_LOG))
 
 		if(form==null) return new Boolean(false);
 
-		db_batch_log log = (db_batch_log)form.get("selected");
+		i_batch_log log = (i_batch_log)form.get("selected");
 		if(log==null)
 			return new Boolean(false);
 		
 		xml_batch_log.add(log);
 		if(xml_batch_log.size()>max_log_size)
 			xml_batch_log.remove(0);
-		db_batch_log h_log = last_batch_log.get(log.getCd_btch());
+		i_batch_log h_log = last_batch_log.get(log.getCd_btch());
 		if(h_log==null || (h_log!=null && h_log.getTm_fin().getTime()<log.getTm_fin().getTime()))
 			last_batch_log.put(log.getCd_btch(),log);	
 

@@ -5,8 +5,8 @@ import java.util.Date;
 import it.classhidra.core.tool.util.util_cloner;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEvent;
-import it.classhidra.scheduler.scheduling.db.db_batch_log;
 
 
 
@@ -21,7 +21,7 @@ public class singleThreadEvent extends Thread implements Runnable{
 	private boolean threadDone = false;
 	private long delta_time;
 	private db_batch batch;
-	private db_batch_log log;
+	private i_batch_log log;
 	private i_batch worker;
 	private int state;
 	private Date exec_time;
@@ -38,7 +38,7 @@ public class singleThreadEvent extends Thread implements Runnable{
 		state=0;
 	}	
 	
-	public singleThreadEvent(db_batch _batch, db_batch_log _log, i_batch _worker) {
+	public singleThreadEvent(db_batch _batch, i_batch_log _log, i_batch _worker) {
 		super();
 		delta_time = -1;
 		try{
@@ -112,7 +112,7 @@ public class singleThreadEvent extends Thread implements Runnable{
 		return realExec_time;
 	}
 
-	public db_batch_log getLog() {
+	public i_batch_log getLog() {
 		return log;
 	}
 
@@ -138,7 +138,7 @@ public class singleThreadEvent extends Thread implements Runnable{
 
 
 
-	public singleThreadEvent setLog(db_batch_log log) {
+	public singleThreadEvent setLog(i_batch_log log) {
 		this.log = log;
 		return this;
 	}

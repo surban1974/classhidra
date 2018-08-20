@@ -7,7 +7,7 @@ import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
-import it.classhidra.scheduler.scheduling.db.db_batch_log;
+import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEvent;
@@ -36,7 +36,7 @@ public class util_batch {
 		return "";
 	}
 	
-	public static synchronized db_batch checkBatchAndState(Integer cd_ist, String cd_btch, db_batch_log log) throws Exception{
+	public static synchronized db_batch checkBatchAndState(Integer cd_ist, String cd_btch, i_batch_log log) throws Exception{
 
 
 		db_batch batch = new db_batch();
@@ -59,7 +59,8 @@ public class util_batch {
 		if(	batch==null ||
 			batch.getState().shortValue()== i_batch.STATE_INEXEC ||
 			batch.getState().shortValue()== i_batch.STATE_SUSPEND){
-			if(log!=null){				
+			if(log!=null){	
+				log.setCd_ist(cd_ist);
 				log.setCd_btch(cd_btch);
 				log.setSt_exec(new Integer(i_batch.STATE_KO));
 				log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+"Batch ["+cd_btch+"] is null or in execution.");
@@ -67,7 +68,7 @@ public class util_batch {
 			}
 			return null;
 		}
-
+		log.setCd_ist(cd_ist);
 		log.setCd_btch(batch.getCd_btch());
 		batch.setInitialState(batch.getState());
 

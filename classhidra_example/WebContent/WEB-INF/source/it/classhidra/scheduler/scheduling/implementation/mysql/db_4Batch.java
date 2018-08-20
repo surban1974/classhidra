@@ -18,6 +18,7 @@ import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
+import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.util.util_batch;
 
 
@@ -29,6 +30,9 @@ public class db_4Batch implements i_4Batch  {
 		if(oper==null) return null;
 		oper=oper.toUpperCase();
 
+		if(oper.equals(o_INSTANCE_LOG_OBJECT))
+			return new db_batch_log();
+		
 		if(oper.equals(o_FINDFORMLIST))
 			return operation_FINDFORMLIST(form);
 		
@@ -460,7 +464,7 @@ public class db_4Batch implements i_4Batch  {
 
 		if(form==null) return new Boolean(false);
 
-		db_batch_log log = (db_batch_log)form.get("selected");
+		i_batch_log log = (i_batch_log)form.get("selected");
 		if(log==null)
 			return new Boolean(false);
 		

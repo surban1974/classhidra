@@ -17,6 +17,7 @@ public interface i_4Batch {
 	public final static String o_CLEAR_BATCH_STATES = "CLEAR_BATCH_STATES";
 	public final static String o_KILL4TIMEOUT = "KILL4TIMEOUT";
 	public final static String o_WRITE_LOG = "WRITE_LOG";
+	public final static String o_INSTANCE_LOG_OBJECT = "INSTANCE_LOG_OBJECT";
 
 	public abstract Object operation(String oper, HashMap form)
 			throws Exception;

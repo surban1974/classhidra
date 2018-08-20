@@ -24,7 +24,7 @@ import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
-import it.classhidra.scheduler.scheduling.db.db_batch_log;
+import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
 import it.classhidra.scheduler.util.util_batch;
@@ -99,7 +99,7 @@ public class ProcessBatchEvent  {
 		return result_eb;
 	}	
 	
-	public String[] single(db_batch batch, db_batch_log log, i_batch worker){
+	public String[] single(db_batch batch, i_batch_log log, i_batch worker){
 		String[] result_eb = null;
 		try {
 			result_eb = executeSingle(batch,log, worker, "");
@@ -111,7 +111,7 @@ public class ProcessBatchEvent  {
 		return result_eb;
 	}
 	
-	public String[] single(db_batch batch, db_batch_log log, i_batch worker, String common_area){
+	public String[] single(db_batch batch, i_batch_log log, i_batch worker, String common_area){
 		String[] result_eb = null;
 		try {
 			result_eb = executeSingle(batch,log, worker, common_area);
@@ -133,7 +133,12 @@ public class ProcessBatchEvent  {
 
 		db_batch batch = null;
 
-		db_batch_log log = new db_batch_log();
+//		i_batch_log log = new db_batch_log();
+		i_batch_log log = null;
+		try {
+			log = (i_batch_log)binit.get4BatchManager().operation(i_4Batch.o_INSTANCE_LOG_OBJECT, null);
+		}catch(Exception e) {			
+		}
 		log.setTm_start(new Timestamp(new Date().getTime()));
 
 		i_batch currentBatchClass = null;
@@ -224,7 +229,8 @@ public class ProcessBatchEvent  {
 					}catch(Exception e){
 						e.toString();
 					}
-						
+
+					batch.setSt_exec(Integer.valueOf(i_batch.STATE_OK));
 					for(int i=0;i<child_batch.size();i++){
 							db_batch current = (db_batch)child_batch.get(i);
 							String[] current_eb = executeBatch(current.getCd_ist(), current.getCd_btch(), common_area,false,true,parent_recalc);
@@ -234,6 +240,7 @@ public class ProcessBatchEvent  {
 							
 							if( current_state>batch.getSt_exec().shortValue()) 
 								batch.setSt_exec(new Integer(current_state));
+
 					}
 					log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec()) + generic_batch.map2xml(h_common_area));	
 
@@ -333,15 +340,19 @@ public class ProcessBatchEvent  {
 	}
 	
 	
-	private String[] executeSingle(db_batch batch, db_batch_log log, i_batch worker, String common_area){
+	private String[] executeSingle(db_batch batch, i_batch_log log, i_batch worker, String common_area){
 		
-
+		batch_init binit = DriverScheduling.getConfiguration();
 		String[] result_eb = new String[]{common_area,"1"};
 		if(batch==null) 
 			return result_eb;
 
-		if(log==null)
-			log = new db_batch_log();
+		if(log==null) {
+			try {
+				log = (i_batch_log)binit.get4BatchManager().operation(i_4Batch.o_INSTANCE_LOG_OBJECT, null);
+			}catch(Exception e) {			
+			}
+		}
 
 		log.setTm_start(new Timestamp(new Date().getTime()));
 
@@ -508,7 +519,7 @@ public class ProcessBatchEvent  {
 
 	}
 
-	private void writeLog(db_batch_log log){
+	private void writeLog(i_batch_log log){
 		if(log==null) return;
 		
 		batch_init binit = DriverScheduling.getConfiguration();		
