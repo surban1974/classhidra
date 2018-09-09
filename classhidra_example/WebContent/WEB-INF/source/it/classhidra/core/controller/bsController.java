@@ -1559,6 +1559,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 	
 	public static i_action getPrevActionInstance(String id_action, String id_current, iContext context, boolean beanInitFromRequest) throws bsControllerException,ServletException, UnavailableException{
+		return getPrevActionInstance(id_action, null, id_current, context, beanInitFromRequest);
+	}	
+	
+	public static i_action getPrevActionInstance(String id_action, String id_current, String id_current_call, iContext context, boolean beanInitFromRequest) throws bsControllerException,ServletException, UnavailableException{
 		i_action prev_action_instance = getAction_config().actionFactory(id_action,context.getRequest().getSession(),context.getRequest().getSession().getServletContext());
 
 		i_bean bean_instance = getCurrentForm(id_action,context.getRequest());
@@ -1630,6 +1634,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 						validate_redirect = bean_instance.validate(request2map);
 				}catch(Exception e){					
 				}
+				if(validate_redirect==null) {
+					try{
+						if(!isRemoteEjb)
+							validate_redirect = bean_instance.validate(id_action, id_current,  id_current_call, context.getRequest());
+						else
+							validate_redirect = bean_instance.validate(id_action, id_current,  id_current_call, request2map);
+					}catch(Exception e){					
+					}					
+				}
 				try{
 					if(!isRemoteEjb)
 						bean_instance.onPostValidate(validate_redirect,context.getRequest());
@@ -1639,6 +1652,29 @@ public class bsController extends HttpServlet implements bsConstants  {
 					
 
 				}
+				
+// 20180909 UPDATE START			
+				if(	prev_action_instance instanceof i_bean &&
+						(
+							prev_action_instance.get_infoaction().getName().equals("") ||
+							bean_instance.asBean().getClass().getName().equals(prev_action_instance.asBean().getClass().getName())
+						)
+				){
+//					info_context info = checkBeanContext(bean_instance_clone.asBean()); 
+					if(bean_instance.asBean().getInfo_context().isOnlyProxied()){
+						if(prev_action_instance.getRealBean()==null){
+							try{
+								prev_action_instance = (i_action)bean_instance;
+							}catch(Exception e){
+								prev_action_instance.get_bean().reInit(bean_instance);
+							}
+						}else
+							prev_action_instance.set_bean(bean_instance, (bean_instance!=null)?bean_instance.getInfo_context():null);
+					}else
+						prev_action_instance = bean_instance.asAction();					
+				}				
+// 20180909 UPDATE FINISH
+				
 				prev_action_instance.onPreSetCurrent_redirect();
 				prev_action_instance.setCurrent_redirect(validate_redirect);
 				prev_action_instance.onPostSetCurrent_redirect();
@@ -1763,6 +1799,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 						validate_redirect = bean_instance_clone.validate(request2map);
 				}catch(Exception e){
 					validate_redirect = bean_instance_clone.validate(request2map);
+				}
+				if(validate_redirect==null) {
+					try{
+						if(!isRemoteEjb)
+							validate_redirect = bean_instance_clone.validate(id_action, id_current, id_current_call, context.getRequest());
+						else
+							validate_redirect = bean_instance_clone.validate(id_action, id_current, id_current_call, request2map);
+					}catch(Exception e){
+						validate_redirect = bean_instance_clone.validate(request2map);
+					}
 				}
 				try{
 					if(!isRemoteEjb)
@@ -3022,15 +3068,30 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static i_action performAction(String id_action, String id_call, ServletContext servletContext,
 				iContext context, boolean beanInitFromRequest) throws bsControllerException, Exception, Throwable{
 		i_action prev_action_instance = null;
-
+		String id_prev = null;
 		String id_rtype = (String)context.getRequest().getAttribute(CONST_ID_REQUEST_TYPE);
 		if(id_rtype!=null && id_rtype.equalsIgnoreCase(CONST_REQUEST_TYPE_INCLUDE)){
 
 		}else{
-			String id_prev = context.getRequest().getParameter(CONST_BEAN_$NAVIGATION);
+			id_prev = context.getRequest().getParameter(CONST_ID_$NAVIGATION);
+			
+// 20180909 UPDATE	START			
+			if(id_prev==null) {
+				id_prev = (String)context.getRequest().getSession().getAttribute(CONST_ID_$LAST_NAVIGATION);
+				if(id_prev!=null)
+					context.getRequest().getSession().removeAttribute(CONST_ID_$LAST_NAVIGATION);
+			}
+// 20180909 UPDATE FINISH	
+			
 			if(id_prev!=null && id_prev.indexOf(":")>-1){
 				id_prev = id_prev.substring(0,id_prev.indexOf(":"));
-				prev_action_instance = getPrevActionInstance(id_prev,id_action,context,beanInitFromRequest);
+				prev_action_instance = getPrevActionInstance(id_prev,id_action,id_call,context,beanInitFromRequest);
+				
+//	20180909 UPDATE	START			
+				if(prev_action_instance!=null && prev_action_instance.getCurrent_redirect()!=null)
+					return prev_action_instance;
+				
+/*				
 				if(prev_action_instance!=null && prev_action_instance.getCurrent_redirect()!=null){
 
 					if(context.getRequest().getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL)==null)
@@ -3045,10 +3106,49 @@ public class bsController extends HttpServlet implements bsConstants  {
 					execRedirect(prev_action_instance,servletContext,context.getRequest(),context.getResponse(),false);
 					return null;
 				}
-			}
+*/
+// 20180909 UPDATE FINISH			
+				
+			}			
 		}
 		i_action action_instance = null;
 		action_instance = getActionInstance(id_action,id_call,context,beanInitFromRequest);
+		
+//		20180909 UPDATE	START			
+		if(action_instance!=null && id_prev!=null && prev_action_instance!=null && !id_action.equals(id_prev)) {
+			try{
+				HashMap request2map = null;
+				boolean isRemoteEjb=false;
+				if(prev_action_instance.getInfo_context()!=null && prev_action_instance.getInfo_context().isRemote()){
+					isRemoteEjb=true;
+					try{
+						request2map = (HashMap)
+								util_reflect.findDeclaredMethod(
+										prev_action_instance.asBean().getClass(),
+									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+								.invoke(null, new Object[]{context.getRequest()});
+					}catch (Exception e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}catch (Throwable e) {
+						new bsControllerException(e, iStub.log_ERROR);
+					}
+					if(request2map==null)
+						request2map = new HashMap();
+				}
+
+				if(!isRemoteEjb) {					
+					prev_action_instance.leaveActionContext(action_instance, context.getRequest(), context.getResponse());
+					action_instance.enterActionContext(prev_action_instance, context.getRequest(), context.getResponse());
+				}
+				else {
+					prev_action_instance.leaveActionContext(action_instance,request2map);
+					action_instance.enterActionContext(prev_action_instance,request2map);
+				}
+			}catch(Exception e){					
+			}
+		}
+//		20180909 UPDATE	FINISH		
+			
 		return action_instance;
 	}
 
@@ -5125,7 +5225,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static info_navigation getFromInfoNavigation(String id,HttpServletRequest request){
-		info_navigation nav = null;
+		info_navigation nav = getInfoNavigation(request);
+/*		
 		i_ProviderWrapper inw = checkInfoNavigationWrapper(request);
 		if(inw!=null)
 			nav = (info_navigation)inw.getInstance();
@@ -5136,9 +5237,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}catch(Exception e){
 			}
 		}
-		if(nav==null)
-			return null;
-		if(id==null)
+*/		
+		if(nav==null || id==null)
 			return nav;
 		return nav.find(id);
 	}
@@ -5160,7 +5260,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 	}
 
+	public static info_navigation getInfoNavigation(HttpServletRequest request){
+		info_navigation nav = null;
+		i_ProviderWrapper inw = checkInfoNavigationWrapper(request);
+		if(inw!=null)
+			nav = (info_navigation)inw.getInstance();
 
+		if(nav==null){
+			try{
+				nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
+			}catch(Exception e){
+			}
+		}
+		return nav;
+	}
 
 	
 	public static Map checkLocalContainer(){

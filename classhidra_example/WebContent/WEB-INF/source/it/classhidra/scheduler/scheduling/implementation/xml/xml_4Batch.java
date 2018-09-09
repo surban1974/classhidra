@@ -23,7 +23,7 @@ import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
-import it.classhidra.scheduler.scheduling.db.db_batch_log;
+import it.classhidra.scheduler.scheduling.db.db_batch_log2;
 import it.classhidra.scheduler.scheduling.db.db_batch_property;
 import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.scheduling.init.batch_init;
@@ -157,7 +157,7 @@ public class xml_4Batch implements i_4Batch  {
 		oper=oper.toUpperCase();
 		
 		if(oper.equals(o_INSTANCE_LOG_OBJECT))
-			return new db_batch_log();
+			return new db_batch_log2();
 
 		if(oper.equals(o_FINDFORMLIST))
 					return operation_FINDFORMLIST(form);

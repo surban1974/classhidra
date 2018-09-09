@@ -133,11 +133,16 @@ public void init() {
 			_db_prefix = (System.getProperty(id_db_prefix)==null)?_db_prefix:System.getProperty(id_db_prefix);
 			_stub = (System.getProperty(id_stub)==null)?_stub:System.getProperty(id_stub);
 			this.properties = new Properties();
-			this.properties.setProperty(id_active, _active);
-			this.properties.setProperty(id_sleep, _sleep);
-			this.properties.setProperty(id_scan, _scan);
-			this.properties.setProperty(id_db_prefix, _db_prefix);
-			this.properties.setProperty(id_stub, _stub);
+			if(_active!=null)
+				this.properties.setProperty(id_active, _active);
+			if(_sleep!=null)
+				this.properties.setProperty(id_sleep, _sleep);
+			if(_scan!=null)
+				this.properties.setProperty(id_scan, _scan);
+			if(_db_prefix!=null)
+				this.properties.setProperty(id_db_prefix, _db_prefix);
+			if(_stub!=null)
+				this.properties.setProperty(id_stub, _stub);
 			
 			if(_sleep!=null && _scan!=null) loadedFrom="System.property";
 			

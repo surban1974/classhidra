@@ -1299,5 +1299,14 @@ public String get$csrf() {
 	return _saltid;
 }
 
+public redirects validate(String currentAction, String newAction, String newActionCall, HttpServletRequest request)
+		throws bsControllerException {
+	return null;
+}
+
+public redirects validate(String currentAction, String newAction, String newActionCall, HashMap parameters) throws bsControllerException {
+	return null;
+}
+
 
 }

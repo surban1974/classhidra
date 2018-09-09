@@ -543,6 +543,18 @@ public class action extends bean implements i_action, Serializable{
 
 	public static void convertMap2Request(HttpServletRequest request, HttpServletResponse response){
 		
+	}
+	
+	public void enterActionContext(i_action oldAction, HttpServletRequest request, HttpServletResponse response) {
+	}
+
+	public void enterActionContext(i_action oldAction, HashMap _content) {
+	}	
+
+	public void leaveActionContext(i_action newAction, HttpServletRequest request, HttpServletResponse response) {
+	}
+
+	public void leaveActionContext(i_action newAction, HashMap _content) {
 	}	
 
 

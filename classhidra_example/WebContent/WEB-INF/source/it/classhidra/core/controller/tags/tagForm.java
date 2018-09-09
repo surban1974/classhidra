@@ -502,6 +502,7 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 		results.append("<input type=\"hidden\" id=\""+bsController.CONST_ID_$NAVIGATION+"\" name=\""+bsController.CONST_ID_$NAVIGATION+"\" value= \"");
 		try{
 			results.append(formAction.get_infoaction().getPath()+":"+formAction.getCurrent_redirect().get_inforedirect().getPath());
+			request.getSession().setAttribute(bsController.CONST_ID_$LAST_NAVIGATION, formAction.get_infoaction().getPath()+":"+formAction.getCurrent_redirect().get_inforedirect().getPath());
 		}catch(Exception e){
 		}
 		results.append("\">"+System.getProperty("line.separator"));

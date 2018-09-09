@@ -61,4 +61,8 @@ public interface i_action extends listener_action, i_bean, Serializable{
 	i_bean getRealBean();
 	i_action asAction();
 	boolean isBeanEqualAction();
+	void enterActionContext(i_action oldAction, HttpServletRequest request, HttpServletResponse response);
+	void enterActionContext(i_action oldAction,HashMap _content);	
+	void leaveActionContext(i_action newAction, HttpServletRequest request, HttpServletResponse response);
+	void leaveActionContext(i_action newAction,HashMap _content);
 }

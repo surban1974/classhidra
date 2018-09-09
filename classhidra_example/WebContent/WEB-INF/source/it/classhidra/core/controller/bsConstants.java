@@ -63,6 +63,7 @@ public interface bsConstants {
 
 	public final static String CONST_ID_$ACTION_HELP 					=	"$help";
 	public final static String CONST_ID_$NAVIGATION 					=	"$navigation";
+	public final static String CONST_ID_$LAST_NAVIGATION 				=	"$last_navigation";
 	public final static String CONST_ID_$CSRF 							=	"$csrf";	
 	
 //	TODO	@Deprecated
