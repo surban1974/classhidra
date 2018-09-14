@@ -66,7 +66,7 @@ public class showLMActionLabel extends TagSupport{
 	}
 
 	public int doEndTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -102,7 +102,7 @@ public class showLMActionLabel extends TagSupport{
 
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 
 		try{
 

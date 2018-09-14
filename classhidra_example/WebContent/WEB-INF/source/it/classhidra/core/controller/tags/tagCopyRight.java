@@ -34,7 +34,7 @@ public class tagCopyRight extends TagSupport{
 
 
 	public int doStartTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		if(img_path==null) img_path="../images";
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
@@ -53,7 +53,7 @@ public class tagCopyRight extends TagSupport{
   
 	protected String createTagBody() {
 	
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 			results.append("<img src=\"../images/copyright.gif\" border=\"0\"/>");
 		return results.toString();
 	}

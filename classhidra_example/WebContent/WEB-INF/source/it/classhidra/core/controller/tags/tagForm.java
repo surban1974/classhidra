@@ -107,7 +107,7 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 
 
 	public int doStartTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -121,7 +121,7 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 
 	public int doEndTag() throws JspException {
 
-		StringBuffer results = new StringBuffer("</form>");
+		final StringBuffer results = new StringBuffer("</form>");
 		JspWriter writer = pageContext.getOut();
 		try {
 			writer.print(results.toString());
@@ -220,7 +220,7 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 
 		info_action	formInfoAction = formAction.get_infoaction();
 
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		if(embedScript!=null && (embedScript.toUpperCase().equals("NO") || embedScript.toUpperCase().equals("FALSE"))){
 		}else{
 			if(onhistory!=null)	results.append("<script>"+onhistory+"</script>");

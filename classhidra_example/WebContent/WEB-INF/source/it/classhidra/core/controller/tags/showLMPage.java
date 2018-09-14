@@ -40,7 +40,7 @@ public class showLMPage extends TagSupport{
 	public int doStartTag() throws JspException {
 
 
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append("<div id='"+name+"' name='"+name+"' style='position:absolute;visibility: hidden'>"+System.getProperty("line.separator"));
 		results.append("<font face='GENEVA, ARIAL, MS SANS SERIF, SANS-SERIF' size='1'>"+System.getProperty("line.separator"));
 		results.append("<table cellspacing='0' border='0'");
@@ -89,7 +89,7 @@ public class showLMPage extends TagSupport{
 	}
 
 	public int doEndTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 
 		results.append("</table>"+System.getProperty("line.separator"));
 		results.append("</font>"+System.getProperty("line.separator"));

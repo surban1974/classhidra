@@ -159,7 +159,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 	}
 	
 	public int doEndTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -417,7 +417,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			}
 		}
 		boolean isChecked = false;
-		StringBuffer results = new StringBuffer("<input ");
+		final StringBuffer results = new StringBuffer("<input ");
 		if(name!=null){
 			results.append(" name=\"");
 			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))

@@ -69,7 +69,7 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 
 
 	public int doStartTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -83,7 +83,7 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 /*
 	public int doEndTag() throws JspException {
 
-		StringBuffer results = new StringBuffer("</form>");
+		final StringBuffer results = new StringBuffer("</form>");
 		JspWriter writer = pageContext.getOut();
 		try {
 			writer.print(results.toString());
@@ -131,7 +131,7 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 
 		HttpServletRequest  request   		= (HttpServletRequest) this.pageContext.getRequest();
 
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		results.append("<link ");
 
 		if (charset != null) {

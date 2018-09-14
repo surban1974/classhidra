@@ -84,7 +84,7 @@ public class tagImage extends TagSupport implements DynamicAttributes {
 
 	public int doStartTag() throws JspException
 	{
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
 		try
@@ -141,7 +141,7 @@ public class tagImage extends TagSupport implements DynamicAttributes {
 
 		BigDecimal cdIst = ((auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION)).get_cd_ist();
 
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		results.append("<img ");
 		if ( src != null)
 		{

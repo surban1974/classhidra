@@ -49,7 +49,7 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 	private String multiple=null;
 	public int doEndTag() throws JspException {
 
-		StringBuffer results = new StringBuffer("</select>");
+		final StringBuffer results = new StringBuffer("</select>");
 		JspWriter writer = pageContext.getOut();
 		try {
 			writer.print(results.toString());
@@ -201,7 +201,7 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			}
 	
 			
-		StringBuffer results = new StringBuffer("<select ");
+		final StringBuffer results = new StringBuffer("<select ");
 		if(name!=null){
 			results.append(" name=\"");
 			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
@@ -575,7 +575,7 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 		return results.toString();
 	}
 	public int doStartTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {

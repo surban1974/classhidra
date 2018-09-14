@@ -123,7 +123,7 @@ public class tagOperand extends ClTagSupport{
 			name=checkParametersIfDynamic(name, null);		
 		if(method_prefix==null) method_prefix="get";
 		
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		Object writeValue=null;
 		Object anotherBean=null;
 		if(bean==null){

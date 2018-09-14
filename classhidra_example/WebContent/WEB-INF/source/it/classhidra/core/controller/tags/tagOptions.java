@@ -126,7 +126,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		List iterator = null;
 		if(property!=null)
 			property=checkParametersIfDynamic(property, null);
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		try{
 			if(bean==null){
 				iterator = (List)util_reflect.prepareWriteValueForTag(formBean,"get",property,null);
@@ -228,7 +228,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		if(arguments!=null)
 			arguments.clear();
 		
-		StringBuffer results = new StringBuffer("<option ");
+		final StringBuffer results = new StringBuffer("<option ");
 
 		Object currentValue=null;
 		Object currentLabel=null;
@@ -460,6 +460,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 			}catch(Exception e){}
 			results.append(currentLabel);
 		}
+		results.append("</option>");
 		results.append(System.getProperty("line.separator"));
 
 		return results.toString();

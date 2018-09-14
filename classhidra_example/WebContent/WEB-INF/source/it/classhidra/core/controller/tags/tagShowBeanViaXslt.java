@@ -54,7 +54,7 @@ public class tagShowBeanViaXslt extends TagSupport{
 
 
 	public int doStartTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createStartTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -68,7 +68,7 @@ public class tagShowBeanViaXslt extends TagSupport{
 
 	public int doEndTag() throws JspException {
 			
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createEndTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -92,7 +92,7 @@ public class tagShowBeanViaXslt extends TagSupport{
   
 	protected String createStartTagBody() {
 	
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		String forInclude = getStringForInclude(startTag_xslt);
 		if(forInclude!=null) results.append(forInclude);			
 		return results.toString();
@@ -100,7 +100,7 @@ public class tagShowBeanViaXslt extends TagSupport{
 
 	protected String createEndTagBody() {
 		
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		String forInclude = getStringForInclude(endTag_xslt);
 		if(forInclude!=null) results.append(forInclude);			
 		return results.toString();

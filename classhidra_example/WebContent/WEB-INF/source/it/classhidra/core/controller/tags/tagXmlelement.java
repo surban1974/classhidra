@@ -39,7 +39,7 @@ public class tagXmlelement extends tagFormelement implements DynamicAttributes {
 
 	
 	protected String drawTagBody(Object writeValue, String prefixName){
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		if(writeValue!=null){
 			if(styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
 				results.append(" <span ");

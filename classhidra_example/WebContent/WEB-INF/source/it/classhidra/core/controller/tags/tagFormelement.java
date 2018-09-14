@@ -75,7 +75,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	}
 
 	public int doEndTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -210,7 +210,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	}	
 	
 	protected String drawTagBody(Object writeValue, String prefixName){
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		if(writeValue!=null){
 			if(styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
 				results.append(" <span ");

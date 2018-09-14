@@ -80,7 +80,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 	}
 
 	public int doEndTag() throws JspException {
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		results.append(this.createTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
@@ -144,7 +144,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 			source=checkParametersIfDynamic(source, null);		
 		if(method_prefix==null) method_prefix="get";
 		
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		Object writeValue=null;
 
 		

@@ -143,7 +143,7 @@ public class tagList extends TagSupport implements DynamicAttributes {
 
 	public int doStartTag() throws JspException {
 
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 
 		try{
 			JspWriter writer = pageContext.getOut();
@@ -233,7 +233,7 @@ public class tagList extends TagSupport implements DynamicAttributes {
 		Object anotherBean=null;
 
 
-		StringBuffer results = new StringBuffer();
+		final StringBuffer results = new StringBuffer();
 		try{
 			if(bean==null){
 				anotherBean = formBean;
@@ -470,7 +470,7 @@ public class tagList extends TagSupport implements DynamicAttributes {
 	}
 
 	protected String createDIV_TagBodyStart() {
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 
 		if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){
 		}else{
@@ -580,7 +580,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 	}
 
 	protected String createDIV_TagBodyTable( Vector v_td_width) {
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 
 
 
@@ -638,7 +638,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 	}
 
 	protected String createDIV_TagBodyFinish(List iterator, Vector v_propertys, Vector v_values, Vector v_formatsOutput, Vector v_replaceOnBlank, Vector v_td_width, Vector v_td_styleClassOutput, Vector v_key_values) {
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 
 
 
@@ -663,7 +663,7 @@ results.append("</a>"+System.getProperty("line.separator"));
 	}
 
 	protected String createTR_TagBody(int current_position, Object current,Vector v_propertys, Vector v_values, Vector v_formatsOutput, Vector v_replaceOnBlank, Vector v_td_width,Vector v_td_styleClassOutput, Vector v_key_values, String stylePariDispari) {
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		Object writeObject = null;
 
 		boolean selectedValue = false;
@@ -822,7 +822,7 @@ results.append("</a>"+System.getProperty("line.separator"));
 
 	protected String createTD_TagBody(Object current, Object v_propertys_current, Object v_formatsOutput_current, Object v_replaceOnBlank_current, Object v_td_width_current, Object v_td_styleClassOutput_current) {
 
-		StringBuffer results = new StringBuffer("<td ");
+		final StringBuffer results = new StringBuffer("<td ");
 		if(v_td_width_current!=null){
 		}
 
@@ -939,7 +939,7 @@ results.append("</a>"+System.getProperty("line.separator"));
 	}
 
 	protected String createSCRIPT_TagBody(Vector v_values) {
-		StringBuffer results = new StringBuffer("");
+		final StringBuffer results = new StringBuffer("");
 		results.append("<script>"+System.getProperty("line.separator"));
 
 
