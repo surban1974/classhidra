@@ -99,6 +99,7 @@ public class bean extends elementBeanBase implements i_bean  {
 	protected info_context info_context = new info_context(this.getClass());
 	
 	protected HashMap initErrors;
+	protected HashMap components;
 
 
 
@@ -1308,5 +1309,10 @@ public redirects validate(String currentAction, String newAction, String newActi
 	return null;
 }
 
+public Map getComponents() {
+	if(components==null)
+		components = new HashMap();
+	return components;	
+}
 
 }

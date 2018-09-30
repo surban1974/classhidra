@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.DynamicAttributes;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -48,7 +47,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 import it.classhidra.core.tool.util.util_xml;
 
-public class tagList extends TagSupport implements DynamicAttributes {
+public class tagList extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 1L;
 
 	protected String objId = null;// id
@@ -126,6 +125,7 @@ public class tagList extends TagSupport implements DynamicAttributes {
 
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
+	protected String component=null;
 
 	protected Map tagAttributes = new HashMap();
 
@@ -217,8 +217,12 @@ public class tagList extends TagSupport implements DynamicAttributes {
 			if(formBean!=null)
 				formBean=formBean.asBean();
 		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
+			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+		}
 
-		List				iterator = null;
+		List iterator = null;
 
 		Vector v_propertys = new Vector();
 		Vector v_values = new Vector();
@@ -346,7 +350,7 @@ public class tagList extends TagSupport implements DynamicAttributes {
 				results.append(createDIV_TagBodyTable(v_td_width));
 			}
 			results.append(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput,v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
-
+/*
 			String row_id ="";
 			try{
 				if(objId!=null){
@@ -380,13 +384,12 @@ public class tagList extends TagSupport implements DynamicAttributes {
 
 				results.append("<script language='javascript'>");
 				results.append("try{");
-//				results.append("window.setTimeout(\"if(document.getElementById('"+row_id+"')){if(document.getElementById('"+div_id+"')){document.getElementById('"+div_id+"').scrollTop=document.getElementById('"+row_id+"').offsetTop - document.getElementById('"+div_id+"').offsetTop;}}\",100);");
 				results.append("window.setTimeout(\"if(document.getElementById('"+row_id+"')){if(document.getElementById('"+div_id+"')){document.getElementById('"+div_id+"').scrollTop="+intScrollTopDiv+";}}\",1000);");
 				results.append("}catch(e){}");
 				results.append("</script>"+System.getProperty("line.separator"));
 			}catch(Exception e){
 			}
-
+*/
 			writer.print(results);
 		} catch (IOException e) {
 			throw new JspException(e.toString());
@@ -463,6 +466,7 @@ public class tagList extends TagSupport implements DynamicAttributes {
 
 		formatLanguage=null;
 		formatCountry=null;
+		component=null;
 
 		tagAttributes = new HashMap();
 		
@@ -471,7 +475,7 @@ public class tagList extends TagSupport implements DynamicAttributes {
 
 	protected String createDIV_TagBodyStart() {
 		final StringBuffer results = new StringBuffer("");
-
+/*
 		if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){
 		}else{
 			results.append(" <input type=\"hidden\"");
@@ -492,7 +496,7 @@ public class tagList extends TagSupport implements DynamicAttributes {
 			}
 			results.append("/>"+System.getProperty("line.separator"));
 		}
-
+*/
 
 		if(objId!=null){
 			div_id="div_"+objId;
@@ -514,8 +518,29 @@ public class tagList extends TagSupport implements DynamicAttributes {
 
 
 
-		results.append(" <input type=\"hidden\" name=\""+div_id+"_scrollTop\" value=\""+intScrollTopDiv+"\"/>"+System.getProperty("line.separator"));
+//		results.append(" <input type=\"hidden\" name=\""+div_id+"_scrollTop\" value=\""+intScrollTopDiv+"\"/>"+System.getProperty("line.separator"));
 		results.append("<div id=\""+div_id+"\"");
+		
+		if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){
+		}else{
+			results.append(" <input type=\"hidden\"");
+			if(objId!=null){
+				results.append(" id=\"");
+				results.append(objId);
+				results.append('"');
+			}
+			if(name!=null){
+				results.append(" name=\"");
+				results.append(name);
+				results.append('"');
+			}
+			if (value != null) {
+				results.append(" value=\"");
+				results.append(value);
+				results.append('"');
+			}
+			results.append("/>"+System.getProperty("line.separator"));
+		}
 
 		if (styleClass != null) {
 			results.append(" class=\"");
@@ -574,6 +599,28 @@ public class tagList extends TagSupport implements DynamicAttributes {
 
 		
 		results.append(">"+System.getProperty("line.separator"));
+results.append(" <input type=\"hidden\" name=\""+div_id+"_scrollTop\" value=\""+intScrollTopDiv+"\"/>"+System.getProperty("line.separator"));	
+
+if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){
+}else{
+	results.append(" <input type=\"hidden\"");
+	if(objId!=null){
+		results.append(" id=\"");
+		results.append(objId);
+		results.append('"');
+	}
+	if(name!=null){
+		results.append(" name=\"");
+		results.append(name);
+		results.append('"');
+	}
+	if (value != null) {
+		results.append(" value=\"");
+		results.append(value);
+		results.append('"');
+	}
+	results.append("/>"+System.getProperty("line.separator"));
+}
 results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-decoration: none;\">"+System.getProperty("line.separator"));
 
 		return results.toString();
@@ -639,7 +686,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 	protected String createDIV_TagBodyFinish(List iterator, Vector v_propertys, Vector v_values, Vector v_formatsOutput, Vector v_replaceOnBlank, Vector v_td_width, Vector v_td_styleClassOutput, Vector v_key_values) {
 		final StringBuffer results = new StringBuffer("");
-
+		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 
 
 
@@ -655,7 +702,49 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 		results.append("</table>"+System.getProperty("line.separator"));
 		results.append(createSCRIPT_TagBody(v_values));
-results.append("</a>"+System.getProperty("line.separator"));
+		results.append("</a>"+System.getProperty("line.separator"));
+		
+		String row_id ="";
+		try{
+			if(objId!=null){
+				row_id = "tr_"+objId+"_"+v_values.get(v_values.size()-1);
+			}else{
+				if(bean==null) row_id = "tr_formBean_"+name+"_"+v_values.get(v_values.size()-1);
+				else row_id = "tr_"+bean+"_"+name+"_"+v_values.get(v_values.size()-1);
+			}
+
+			if(objId!=null){
+				div_id="div_"+objId;
+			}else{
+				if(bean!=null){
+					div_id="div_"+bean+"_"+name;
+				}
+				else{
+					div_id="div_formBean_"+name;
+				}
+			}
+
+
+
+			try{
+				if(request.getParameter(div_id+"_scrollTop")!=null){
+					intScrollTopDiv = Integer.valueOf(request.getParameter(div_id+"_scrollTop")).intValue();
+				}
+			}catch(Exception e){
+
+			}
+
+
+			results.append("<script language='javascript'>");
+			results.append("try{");
+			results.append("window.setTimeout(\"if(document.getElementById('"+row_id+"')){if(document.getElementById('"+div_id+"')){document.getElementById('"+div_id+"').scrollTop="+intScrollTopDiv+";}}\",1000);");
+			results.append("}catch(e){}");
+			results.append("</script>"+System.getProperty("line.separator"));
+		}catch(Exception e){
+		}
+
+
+
 		results.append("</div>"+System.getProperty("line.separator"));
 
 
@@ -1457,6 +1546,26 @@ results.append("</a>"+System.getProperty("line.separator"));
 	
 	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
 		tagAttributes.put(localName, value);
+	}
+
+
+	public String getTable_id() {
+		return table_id;
+	}
+
+
+	public void setTable_id(String table_id) {
+		this.table_id = table_id;
+	}
+
+
+	public String getComponent() {
+		return component;
+	}
+
+
+	public void setComponent(String component) {
+		this.component = component;
 	}
 }
 

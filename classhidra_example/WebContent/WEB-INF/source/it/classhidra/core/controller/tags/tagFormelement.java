@@ -49,6 +49,7 @@ import it.classhidra.core.tool.util.util_xml;
 
 public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
+	protected String objId = null;// id
 	protected String bean = null;
 	protected String name = null;
 	protected String styleClass=null;
@@ -64,6 +65,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	protected String normalASCII=null;
 	protected String normalHTML=null;	
 	protected String additionalAttr=null;
+	protected String component=null;
 	
 	protected Map tagAttributes = new HashMap();
 	protected List arguments=null;
@@ -88,6 +90,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 
 	public void release() {
 		super.release();
+		objId = null;
 		bean=null;
 		name=null;
 		styleClass=null;
@@ -103,6 +106,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 		normalASCII=null;
 		normalHTML=null;
 		additionalAttr=null;
+		component=null;
 		tagAttributes = new HashMap();
 		arguments=null;
 	}
@@ -133,7 +137,9 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 					formBean=formBean.asBean();
 			}
 	
-			
+			if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
+				renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+			}			
 			if(name!=null)
 				name=checkParametersIfDynamic(name, null);
 			
@@ -212,8 +218,13 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	protected String drawTagBody(Object writeValue, String prefixName){
 		final StringBuffer results = new StringBuffer("");
 		if(writeValue!=null){
-			if(styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
+			if(objId!=null || styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
 				results.append(" <span ");
+				if(objId!=null){
+					results.append(" id=\"");
+					results.append(objId);
+					results.append('"');
+				}
 				if(styleClass!=null){
 					results.append(" class=\"");
 					results.append(styleClass);
@@ -387,6 +398,22 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 
 	public void setCharset(String charset) {
 		this.charset = charset;
+	}
+
+	public String getComponent() {
+		return component;
+	}
+
+	public void setComponent(String componentId) {
+		this.component = componentId;
+	}
+
+	public String getObjId() {
+		return objId;
+	}
+
+	public void setObjId(String objId) {
+		this.objId = objId;
 	}
 
 

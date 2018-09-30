@@ -26,6 +26,7 @@ package it.classhidra.core.controller.tags;
 
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -43,8 +46,10 @@ import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
-public class tagSequence extends  ClTagSupport {
+public class tagSequence extends  ClTagSupport implements DynamicAttributes  {
 	private static final long serialVersionUID = 1L;
+	protected String objId = null;// id
+	protected String component = null;
 	protected String bean=null;
 	protected String name=null;
 	protected String method_prefix=null;
@@ -57,6 +62,13 @@ public class tagSequence extends  ClTagSupport {
 	protected int index = 0;
 	protected int size = 0;
 	protected boolean pair = false;
+	
+	protected String styleClass=null;
+	protected String domelement = null;
+
+	
+	protected Map tagAttributes = new HashMap();
+
 	
 	
 
@@ -90,7 +102,9 @@ public class tagSequence extends  ClTagSupport {
 				if(formBean!=null)
 					formBean=formBean.asBean();
 			}
-			
+			if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
+				renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+			}
 			if(name!=null)
 				name=checkParametersIfDynamic(name, null);			
 			if(method_prefix==null) method_prefix="get";
@@ -168,6 +182,39 @@ public class tagSequence extends  ClTagSupport {
 			}
 		
 //		}
+			final StringBuffer results = new StringBuffer("");	
+			if(objId!=null){
+				if(domelement!=null)
+					results.append(" <"+domelement);
+				else
+					results.append(" <span");
+				results.append(" id=\"");
+				results.append(objId);
+				results.append('"');
+
+				if(styleClass!=null){
+					results.append(" class=\"");
+					results.append(styleClass);
+					results.append("\"");
+				}
+				
+			    for(Object attrName : tagAttributes.keySet() ) {
+			    	results.append(" ");
+			    	results.append(attrName);
+			    	results.append("=\"");
+			    	results.append(tagAttributes.get(attrName));
+			    	results.append("\"");
+			     }
+
+				results.append(">");
+				
+				JspWriter writer = pageContext.getOut();
+				try {
+					writer.print(results.toString());
+				} catch (IOException e) {
+					throw new JspException(e.toString());
+				}
+			}
 		
 		if (condition(request))
 			return (EVAL_BODY_INCLUDE);
@@ -181,10 +228,25 @@ public class tagSequence extends  ClTagSupport {
 
 	
 	public int doEndTag() throws JspException {
+		final StringBuffer results = new StringBuffer("");	
+		if(objId!=null){
+			if(domelement!=null)
+				results.append("</"+domelement+">");
+			else
+				results.append("</span>");
+			JspWriter writer = pageContext.getOut();
+			try {
+				writer.print(results.toString());
+			} catch (IOException e) {
+				throw new JspException(e.toString());
+			}
+		}		
 		return (EVAL_BODY_INCLUDE);
 	}
 	public void release() {
 		super.release();
+		objId = null;
+		component = null;
 		bean = null;
 		name = null;
 		index = 0;
@@ -194,6 +256,10 @@ public class tagSequence extends  ClTagSupport {
 		finishIndex=null;
 		finishIndexFromBean=null;		
 		toBean=null;
+		styleClass=null;
+		domelement=null;
+		tagAttributes = new HashMap();
+		
 	}
 	
 	private boolean condition(HttpServletRequest request) throws JspException{
@@ -304,6 +370,42 @@ public class tagSequence extends  ClTagSupport {
 
 	public void setToBean(String toBean) {
 		this.toBean = toBean;
+	}
+
+	public String getObjId() {
+		return objId;
+	}
+
+	public void setObjId(String objId) {
+		this.objId = objId;
+	}
+
+	public String getComponent() {
+		return component;
+	}
+
+	public void setComponent(String component) {
+		this.component = component;
+	}
+
+	public String getStyleClass() {
+		return styleClass;
+	}
+
+	public void setStyleClass(String styleClass) {
+		this.styleClass = styleClass;
+	}
+
+	public String getDomelement() {
+		return domelement;
+	}
+
+	public void setDomelement(String domelement) {
+		this.domelement = domelement;
+	}
+
+	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+		tagAttributes.put(localName, value);
 	}
 
 

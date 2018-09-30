@@ -6,7 +6,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
 
 
-  <tlib-version>classHidra 1.5.4 20180101</tlib-version>
+  <tlib-version>classHidra 1.5.4 20180927</tlib-version>
   <jsp-version>1.3</jsp-version>
   <short-name>bs</short-name>
   <description> Tag library for classHidra   </description>
@@ -17,6 +17,11 @@
     <tag-class>it.classhidra.core.controller.tags.tagForm</tag-class>
     <body-content>JSP</body-content>
     <description>for form</description>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>   
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -273,6 +278,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+
 	<dynamic-attributes>true</dynamic-attributes>
 
   </tag>
@@ -282,6 +288,11 @@
     <tag-class>it.classhidra.core.controller.tags.tagInput</tag-class>
     <body-content>JSP</body-content>
     <description>for input</description>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -717,6 +728,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	
 	<dynamic-attributes>true</dynamic-attributes>	
   </tag>
 
@@ -725,6 +737,11 @@
     <tag-class>it.classhidra.core.controller.tags.tagSelect</tag-class>
     <body-content>JSP</body-content>
     <description>for select</description>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -1075,6 +1092,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	
 	<dynamic-attributes>true</dynamic-attributes>	
   </tag>
 
@@ -1084,6 +1102,11 @@
     <tag-class>it.classhidra.core.controller.tags.tagOptions</tag-class>
     <body-content>JSP</body-content>
     <description>for select-options</description>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -1295,6 +1318,12 @@
     <tag-class>it.classhidra.core.controller.tags.tagMessage</tag-class>
     <body-content>JSP</body-content>
     <description>for message</description>
+  
+    <attribute>
+        <name>objId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
     <attribute>
         <name>code</name>
         <required>false</required>
@@ -1339,7 +1368,8 @@
         <name>normalHTML</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+		
 	<dynamic-attributes>true</dynamic-attributes>
   </tag>
   
@@ -1348,6 +1378,16 @@
     <tag-class>it.classhidra.core.controller.tags.tagFormelement</tag-class>
     <body-content>JSP</body-content>
     <description>for formBean</description>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+    <attribute>
+        <name>objId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -1422,7 +1462,8 @@
         <name>additionalAttr</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+	
 	<dynamic-attributes>true</dynamic-attributes>
 		  
   </tag> 
@@ -1432,6 +1473,16 @@
     <tag-class>it.classhidra.core.controller.tags.tagHtmlelement</tag-class>
     <body-content>JSP</body-content>
     <description>for formBean</description>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+    <attribute>
+        <name>objId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -1481,7 +1532,8 @@
         <name>charset</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+		
 	<dynamic-attributes>true</dynamic-attributes>
 		  
   </tag> 
@@ -1491,6 +1543,16 @@
     <tag-class>it.classhidra.core.controller.tags.tagXmlelement</tag-class>
     <body-content>JSP</body-content>
     <description>for formBean</description>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+    <attribute>
+        <name>objId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -1550,7 +1612,8 @@
         <name>charset</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+		
 	<dynamic-attributes>true</dynamic-attributes>
 		  
   </tag> 
@@ -1560,6 +1623,16 @@
     <tag-class>it.classhidra.core.controller.tags.tagAsciielement</tag-class>
     <body-content>JSP</body-content>
     <description>for formBean</description>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+    <attribute>
+        <name>objId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -1604,7 +1677,8 @@
         <name>additionalAttr</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+		
 	<dynamic-attributes>true</dynamic-attributes>
 		  
   </tag>  
@@ -2047,6 +2121,7 @@
     <tag-class>it.classhidra.core.controller.tags.tagImage</tag-class>
     <body-content>JSP</body-content>
     <description>image</description>
+
     <attribute>
         <name>src</name>
         <required>true</required>
@@ -2197,6 +2272,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	
 	<dynamic-attributes>true</dynamic-attributes>	
   </tag> 
   
@@ -2335,6 +2411,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	
 	<dynamic-attributes>true</dynamic-attributes>    
 </tag>
 <tag>
@@ -2342,6 +2419,26 @@
     <tag-class>it.classhidra.core.controller.tags.tagSequence</tag-class>
     <body-content>JSP</body-content>
     <description>for sequence</description>
+    <attribute>
+        <name>objId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute> 
+    <attribute>
+        <name>domelement</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute> 
+    <attribute>
+        <name>styleClass</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -2382,6 +2479,9 @@
         <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
+	
+	<dynamic-attributes>true</dynamic-attributes>
+	
 </tag> 
 
 <tag>
@@ -2389,7 +2489,11 @@
     <tag-class>it.classhidra.core.controller.tags.tagList</tag-class>
     <body-content>JSP</body-content>
     <description>for list</description>
-	
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
         <name>objId</name>
         <required>false</required>
@@ -2668,6 +2772,7 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+
 	<dynamic-attributes>true</dynamic-attributes>
   </tag>
 
@@ -3035,6 +3140,16 @@
     <body-content>JSP</body-content>
     <description>for formBean</description>
     <attribute>
+        <name>objId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+ 	<attribute>
+        <name>component</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+    <attribute>
         <name>source</name>
         <required>true</required>
 	    <rtexprvalue>true</rtexprvalue>
@@ -3132,6 +3247,7 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+	
 	<dynamic-attributes>true</dynamic-attributes>
   </tag>      
   <tag>
@@ -3301,20 +3417,66 @@
     <body-content>JSP</body-content>
     <description>for formBean</description>
 	<attribute>
-	        <name>bean</name>
-	        <required>false</required>
+	    <name>bean</name>
+	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-	        <name>name</name>
-	        <required>false</required>
+	    <name>name</name>
+	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-	        <name>method_prefix</name>
-	        <required>false</required>
-	    	<rtexprvalue>true</rtexprvalue>
+        <name>method_prefix</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
 	</attribute>
   </tag>   
-     
+  
+  <tag>
+    <name>components</name>
+    <tag-class>it.classhidra.core.controller.tags.tagComponents</tag-class>
+    <body-content>JSP</body-content>
+    <description>for components block</description>
+	<attribute>
+	    <name>skip</name>
+	    <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>    
+  </tag>   
+  
+  <tag>
+    <name>component</name>
+    <tag-class>it.classhidra.core.controller.tags.tagComponent</tag-class>
+    <body-content>JSP</body-content>
+    <description>component wrapper</description>
+    <attribute>
+        <name>objId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>linkedId</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	
+    <attribute>
+        <name>styleClass</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>bean</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>   
+    <attribute>
+        <name>domelement</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>   
+	<dynamic-attributes>true</dynamic-attributes>
+	 
+  </tag>      
 </taglib>

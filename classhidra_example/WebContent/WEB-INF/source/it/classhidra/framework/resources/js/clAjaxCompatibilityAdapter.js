@@ -1,7 +1,7 @@
 /**
 * Name: clAjaxCompatibilityAdapter.js
 * Version: 1.5.4 (compatible classHidra 1.5.4)
-* Creation date: (17/07/2018)
+* Creation date: (28/09/2018)
 * Last update: 
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
@@ -193,7 +193,7 @@ function ajax_makeParameters64(frm,url) {
 	return json;
 }
 
-function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus) {	
+function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus,outer) {	
 	var current = new clajax();
 	current.setCompatibility(true);
 	if(urlWidthParameters)
@@ -226,6 +226,8 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 	
 	if(requestMethod)
 		current.setMethod(requestMethod);
+	if(outer)
+		current.setOuter(outer);
 	current.request();
  }
 

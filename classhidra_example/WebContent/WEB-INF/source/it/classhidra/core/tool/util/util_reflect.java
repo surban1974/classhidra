@@ -41,8 +41,6 @@ public util_reflect() {
 }
 
 
-
-
 public static synchronized String prepareClassInfo(String name){
 	try{
 		name = name.substring(name.lastIndexOf("."),name.length());
@@ -52,26 +50,24 @@ public static synchronized String prepareClassInfo(String name){
 	return prepareClassInfo(new String[]{name+".java"},new String[]{});
 }
 
-public static synchronized String prepareClassInfo(String[] javaNames, String[] methodNames){
+public static synchronized String prepareClassInfo(final String[] javaNames, final String[] methodNames){
 	String classInfo="";
-	StackTraceElement ste = null;
+//	StackTraceElement ste = null;
 	int counter=0;
 	try{
 		if(javaNames.length==0 || methodNames.length==0){
-			Object[] result = forPrepareClassInfo("","",counter);
+			final Object[] result = forPrepareClassInfo("","",counter);
 			if(result!=null){
 				counter = ((Integer)result[0]).intValue();
-				ste = (StackTraceElement)result[1];
-				classInfo = ste.getClassName()+":"+ste.getMethodName();
+				classInfo = ((StackTraceElement)result[1]).getClassName()+":"+((StackTraceElement)result[1]).getMethodName();
 			}
 		}else{
 
 			for(int i=0;i<javaNames.length;i++){
-				Object[] result = forPrepareClassInfo(javaNames[i],methodNames[i],counter);
+				final Object[] result = forPrepareClassInfo(javaNames[i],methodNames[i],counter);
 				if(result!=null){
 					counter = ((Integer)result[0]).intValue();
-					ste = (StackTraceElement)result[1];
-					classInfo = ste.getClassName()+":"+ste.getMethodName();
+					classInfo = ((StackTraceElement)result[1]).getClassName()+":"+((StackTraceElement)result[1]).getMethodName();
 				}
 			}
 		}
@@ -81,10 +77,10 @@ public static synchronized String prepareClassInfo(String[] javaNames, String[] 
 	return classInfo;
 }
 
-private static synchronized Object[] forPrepareClassInfo(String javaName, String methodName,int counter){
-	Object[] result = new Object[2];
+private static synchronized Object[] forPrepareClassInfo(final String javaName, final String methodName, final int counter){
+	final Object[] result = new Object[2];
 	try{
-		StackTraceElement ste = null;
+//		StackTraceElement ste = null;
 		int i=counter;
 
 
@@ -102,12 +98,14 @@ private static synchronized Object[] forPrepareClassInfo(String javaName, String
 				}
 		*/
 		//JDK 1.4
-				while (i<new Exception().getStackTrace().length && ste==null){
-					if(	new Exception().getStackTrace()[i].getFileName() != null &&
-						new Exception().getStackTrace()[i].getFileName().equals(javaName) &&
-						new Exception().getStackTrace()[i].getMethodName().equals(methodName)){
+		final StackTraceElement[] stel = new Exception().getStackTrace();
+	
+				while (i<stel.length){
+					if(	stel[i].getFileName() != null &&
+						stel[i].getFileName().equals(javaName) &&
+						stel[i].getMethodName().equals(methodName)){
 						result[0]= Integer.valueOf(i+1);
-						result[1] = new Exception().getStackTrace()[i+1];
+						result[1] = stel[i+1];
 						return result;
 					}
 					i++;

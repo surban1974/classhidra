@@ -40,7 +40,7 @@ import java.io.File;
  * @author esparm
  *
  */
-public class tagImage extends TagSupport implements DynamicAttributes {
+public class tagImage extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 5955985523908683660L;
 	protected String width = null;
 	protected String vspace = null;
@@ -73,6 +73,7 @@ public class tagImage extends TagSupport implements DynamicAttributes {
 	protected String align = null;
 	protected String src = null;
 	protected String additionalAttr = null;
+
 	
 	protected Map tagAttributes = new HashMap();
 
@@ -132,6 +133,7 @@ public class tagImage extends TagSupport implements DynamicAttributes {
 		align = null;
 		src = null;
 		additionalAttr = null;
+
 		
 		tagAttributes = new HashMap();
 	}
@@ -781,5 +783,7 @@ public class tagImage extends TagSupport implements DynamicAttributes {
 
 	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
 		tagAttributes.put(localName, value);
-	}	
+	}
+
+
 }

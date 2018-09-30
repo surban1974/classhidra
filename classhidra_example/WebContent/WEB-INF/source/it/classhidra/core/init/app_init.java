@@ -61,6 +61,9 @@ public class app_init implements Serializable{
 	public final static String id_ejb_jndi_name				= 	"application.ejb.jndi.name";
 	public final static String id_ejb_jndi_name_prefix 		= 	"application.ejb.jndi.resolvename.prefix";
 	public final static String id_ejb_avoid_loop_reentrant	= 	"application.ejb.avoid.loop.reentrant";
+	
+	public final static String id_tag_component_render		= 	"application.tag.component.render.class";
+	
 	public final static String id_pin						=	"application.pin";
 	public final static String id_db_name 					=	"application.config.db";
 	public final static String id_extention_do 				=	"application.extention.do";
@@ -100,6 +103,7 @@ public class app_init implements Serializable{
 	private String _ejb_jndi_name;
 	private String _ejb_jndi_name_prefix;
 	private String _ejb_avoid_loop_reentrant;
+	private String _tag_component_render;
 	private String _pin;
 	
 	private String _db_name;
@@ -209,6 +213,8 @@ public class app_init implements Serializable{
 			_ejb_jndi_name_prefix=(_ejb_jndi_name_prefix==null)?System.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
 			_ejb_avoid_loop_reentrant=(_ejb_avoid_loop_reentrant==null)?System.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
 			
+			_tag_component_render=(_tag_component_render==null)?System.getProperty(id_tag_component_render):_tag_component_render;
+			
 			_async_provider_servlet=(_async_provider_servlet==null)?System.getProperty(id_async_provider_servlet):_async_provider_servlet;
 			
 			_pin=(_pin==null)?System.getProperty(id_pin):_pin;
@@ -296,6 +302,8 @@ public class app_init implements Serializable{
 		_ejb_jndi_name=(_ejb_jndi_name==null)?property.getProperty(id_ejb_jndi_name):_ejb_jndi_name;
 		_ejb_jndi_name_prefix=(_ejb_jndi_name_prefix==null)?property.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
 		_ejb_avoid_loop_reentrant=(_ejb_avoid_loop_reentrant==null)?property.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
+
+		_tag_component_render=(_tag_component_render==null)?property.getProperty(id_tag_component_render):_tag_component_render;
 		
 		_async_provider_servlet=(_async_provider_servlet==null)?property.getProperty(id_async_provider_servlet):_async_provider_servlet;
 		
@@ -646,5 +654,9 @@ public class app_init implements Serializable{
 
 	public String get_avoid_permission_chech() {
 		return _avoid_permission_chech;
+	}
+
+	public String get_tag_component_render() {
+		return _tag_component_render;
 	}
 }

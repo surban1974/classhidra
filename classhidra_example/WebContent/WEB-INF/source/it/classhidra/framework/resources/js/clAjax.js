@@ -1,8 +1,8 @@
 /**
 * Name: clAjax.js
-* Version: 1.1.0
+* Version: 1.1.1
 * Creation date: (08/11/2016)
-* Last update: (18/07/2018)
+* Last update: (28/09/2018)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -152,6 +152,7 @@
 				this.asScript = false;
 				this.asCss = false;
 				this.opened = false;
+				this.outer = false;
 				this.compatibility = false;
 				this.acceptableStatus = [];
 				this.acceptableReadyState = [];
@@ -320,6 +321,11 @@
 				return this;
 			},
 			
+			setOuter : function(_outer){
+				this.outer = _outer;
+				return this;
+			},			
+			
 			setCompatibility : function(_compatibility){
 				this.compatibility = _compatibility;
 				return this;
@@ -410,6 +416,7 @@
 				.setAsScript(this.asScript)
 				.setAsCss(this.asCss)
 				.setOpened(this.opened)
+				.setOuter(this.outer)
 				.setCompatibility(this.compatibility)
 				.setAcceptableStatus(this.acceptableStatus)
 				.setAcceptableReadyState(this.acceptableReadyState)
@@ -927,8 +934,12 @@
 						            				eval(_fready + '(http_request,instance)');
 						            		}
 						            	}else{
-						            		if(instance.target)
-						            			instance.target.innerHTML=http_request.responseText;
+						            		if(instance.target){
+						            			if(instance.outer)
+						            				instance.target.outerHTML=http_request.responseText
+						            			else
+						            				instance.target.innerHTML=http_request.responseText;
+						            		}
 						            	}
 						            	if(_fsuccess){
 						            		if (typeof _fsuccess === 'function') {

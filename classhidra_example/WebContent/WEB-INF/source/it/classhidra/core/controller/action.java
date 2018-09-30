@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import it.classhidra.annotation.elements.ActionCall;
+import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Expose;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -44,6 +45,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_supportbean;
+import it.classhidra.core.tool.util.util_tag;
 import it.classhidra.serialize.JsonWriter;
 import it.classhidra.serialize.XmlWriter;
 
@@ -162,6 +164,17 @@ public class action extends bean implements i_action, Serializable{
 	}
 	public void actionBeforeRedirect(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 	}
+	
+	@ActionCall (name="componentupdate", navigated="false", entity=@Entity(
+			property="allway:public"
+	))
+	public String componentupdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {
+		String navigation=request.getParameter("navigationId");
+		String id=request.getParameter("componentId");
+		return
+			util_tag.getTagContent(navigation+":"+id,(String)get_bean().getComponents().get(navigation+":"+id),this,request,response);
+	}
+
 
 	@ActionCall (name="asyncupdate", navigated="false")
 	public redirects asyncupdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException {

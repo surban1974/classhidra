@@ -9,8 +9,9 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.DynamicAttributes;
-import javax.servlet.jsp.tagext.TagSupport;
+
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -21,7 +22,7 @@ import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
-public abstract class ClTagSupport extends TagSupport implements DynamicAttributes {
+public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 1L;
 
 
@@ -134,6 +135,22 @@ public abstract class ClTagSupport extends TagSupport implements DynamicAttribut
 		return result;
 	}
 
+	protected void renderComponent(i_bean formBean, i_action formAction, String callerClassName, String cmpId) {
+		try {	
+			if(this.pageContext.getPage()!=null) {
+				final String executorinfo = util_tag.getTagExecutor(callerClassName);
+				if(executorinfo!=null) {
+					final String[] arrayOfString = executorinfo.split(":");
+					util_tag.addTagExecutorObject(arrayOfString[0], this.pageContext.getPage());
+					formBean.getComponents().put(
+						formAction.get_infoaction().getPath()+":"+formAction.getCurrent_redirect().get_inforedirect().getPath()+":"+cmpId
+						,
+						executorinfo);	
+				}
+			}
+		}catch(Exception e) {				
+		}
+	}
 
 	public void setDynamicAttribute(String arg0, String arg1, Object arg2) throws JspException {
 	}

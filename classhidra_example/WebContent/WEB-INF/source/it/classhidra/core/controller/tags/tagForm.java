@@ -40,9 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.DynamicAttributes;
-import javax.servlet.jsp.tagext.TagSupport;
 
-public class tagForm extends TagSupport implements DynamicAttributes {
+
+public class tagForm extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 1L;
 	protected String bean = null;
 	protected String name = null;
@@ -97,6 +97,7 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 	protected String ondrop = null;
 	protected String onmousewheel = null;
 	protected String additionalAttr=null;
+	protected String component=null;
 
 	protected String embedScript = null;
 	
@@ -183,6 +184,7 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 		ondragstart = null;
 		ondrop = null;
 		onmousewheel = null;
+		component=null;
 		additionalAttr = null;
 
 		embedScript=null;
@@ -217,6 +219,10 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
 			if(pool!=null) pool.put(name, formAction);
 		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
+			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+		}
 
 		info_action	formInfoAction = formAction.get_infoaction();
 
@@ -235,15 +241,17 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 			results.append(name);
 			results.append('"');
 		}
-
-		if(objId==null){
-			if(formInfoAction!=null) objId=formInfoAction.getName();
-		}
 		if(objId!=null){
+			results.append(" id=\"");
+			results.append(objId);
+			results.append('"');
+		}else {
 			results.append(" id=\"");
 			results.append(name);
 			results.append('"');
+
 		}
+
 
 		results.append(" action=\"");
 		if(formInfoAction!=null)
@@ -862,6 +870,15 @@ public class tagForm extends TagSupport implements DynamicAttributes {
 	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
 		tagAttributes.put(localName, value);
 	}
+
+	public String getComponent() {
+		return component;
+	}
+
+	public void setComponent(String component) {
+		this.component = component;
+	}
+
 
 }
 

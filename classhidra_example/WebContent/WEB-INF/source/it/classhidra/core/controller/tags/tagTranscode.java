@@ -50,6 +50,7 @@ import it.classhidra.core.tool.util.util_xml;
 
 public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -6037366698116086666L;
+	protected String objId = null;// id
 	protected String source = null;
 	protected String inputField = null;
 	protected String outputField = null;
@@ -69,6 +70,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 	protected String normalASCII=null;
 	protected String normalHTML=null;
 	protected String additionalAttr=null;
+	protected String component=null;
 	
 	protected Map tagAttributes = new HashMap();
 	protected List arguments=null;
@@ -112,6 +114,8 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		normalASCII=null;
 		normalHTML=null;
 		additionalAttr=null;
+		component=null;
+		objId = null;
 		
 		tagAttributes = new HashMap();
 		arguments=null;
@@ -288,8 +292,13 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		if(writeValue==null && valueKey!=null) writeValue=valueKey;
 		
 		if(writeValue!=null){
-			if(styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
+			if(objId!=null || styleClass!=null || additionalAttr!=null || tagAttributes.size()>0){
 				results.append(" <span ");
+				if(objId!=null){
+					results.append(" id=\"");
+					results.append(objId);
+					results.append('"');
+				}				
 				if(styleClass!=null){
 					results.append(" class=\"");
 					results.append(styleClass);
@@ -543,6 +552,14 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 
 	public void setCharset(String charset) {
 		this.charset = charset;
+	}
+
+	public String getComponent() {
+		return component;
+	}
+
+	public void setComponent(String componentId) {
+		this.component = componentId;
 	}	
 }
 

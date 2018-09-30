@@ -39,6 +39,7 @@ import javax.servlet.jsp.tagext.DynamicAttributes;
 
 public class tagMessage extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = -896536174738762236L;
+	protected String objId = null;// id
 	protected String code = null;	
 	protected String styleClass=null;
 	protected String defaultValue=null;
@@ -49,6 +50,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 	protected String charset;
 	protected String normalASCII=null;
 	protected String normalHTML=null;
+
 
 	protected Map tagAttributes = new HashMap();
 
@@ -72,6 +74,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 
 	public void release() {
 		super.release();
+		objId = null;
 		code=null;
 		styleClass=null;
 		defaultValue=null;
@@ -82,6 +85,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 		charset=null;
 		normalASCII=null;
 		normalHTML=null;
+
 		tagAttributes = new HashMap();
 	}
   
@@ -94,6 +98,11 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 				results.append(" <span class=\"");
 				results.append(styleClass);
 				results.append("\"");
+				if(objId!=null){
+					results.append(" id=\"");
+					results.append(objId);
+					results.append('"');
+				}
 				
 			    for(Object attrName : tagAttributes.keySet() ) {
 			    	results.append(" ");
@@ -107,7 +116,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 
 			}
 			
-			String writeValue = bsController.writeLabel(request,checkParametersIfDynamic(code, null),checkParametersIfDynamic(defaultValue, null),parameters);
+			final String writeValue = bsController.writeLabel(request,checkParametersIfDynamic(code, null),checkParametersIfDynamic(defaultValue, null),parameters);
 			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
 				results.append(util_xml.normalXML((writeValue==null)?"":writeValue.toString(),charset));	
 			else if(normalXML10!=null && normalXML10.toLowerCase().equals("true"))
@@ -204,6 +213,16 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 
 	public void setNormalHTML(String normalHTML) {
 		this.normalHTML = normalHTML;
+	}
+
+
+
+	public String getObjId() {
+		return objId;
+	}
+
+	public void setObjId(String objId) {
+		this.objId = objId;
 	}
 
 

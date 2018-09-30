@@ -149,6 +149,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 	protected String solveBeanName=null;
 	protected String asyncUpdate=null;
 	protected String asyncUpdateJsFunction=null;
+	protected String component=null;
 	
 	protected Map tagAttributes = new HashMap();
 	protected List arguments=null;
@@ -267,6 +268,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		solveBeanName=null;
 		asyncUpdate=null;
 		asyncUpdateJsFunction=null;
+		component=null;
 		
 		tagAttributes = new HashMap();
 		arguments=null;
@@ -295,6 +297,9 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			formBean = formAction.get_bean();
 			if(formBean!=null)
 				formBean=formBean.asBean();
+		}
+		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
+			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
 		}
 		if(name!=null)
 			name=checkParametersIfDynamic(name, null);
@@ -1575,6 +1580,14 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 
 	public void setArguments(List arguments) {
 		this.arguments = arguments;
+	}
+
+	public String getComponent() {
+		return component;
+	}
+
+	public void setComponent(String componentId) {
+		this.component = componentId;
 	}	
 
 }

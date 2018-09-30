@@ -3385,3 +3385,78 @@ function makeCookie(name, value, p) {
 function rmCookie(name) {
 	return !makeCookie(name, '', { expires: -1 });
 }
+
+function updateTagComponent(componentId,formName,componentOuter,onComplete){
+	var component;
+	var navigation;
+	var action;
+	try{
+		if(formName){
+			
+			navigation = (document.querySelectorAll("[name='"+formName+"'] [id='$navigation']"))[0];
+			action = (document.querySelectorAll("[name='"+formName+"'] [id='$action']"))[0];
+			if(componentOuter)
+				component = (document.querySelectorAll("[name='"+formName+"'] [id='"+componentOuter+"']"))[0];
+			else
+				component = (document.querySelectorAll("[name='"+formName+"'] [id='"+componentId+"']"))[0];
+		}else{
+			if(componentOuter)
+				component = document.getElementById(componentOuter);
+			else
+				component = document.getElementById(componentId);
+			navigation = document.getElementById('$navigation');
+			action = document.getElementById('$action');
+		}
+		if(component && navigation && action ){
+			var url = action.value+'-componentupdate?navigationId='+escape(navigation.value)+'&componentId='+escape(componentId)+'&tmp='+new Date().getTime();
+			ajax_makeRequest(
+					url,
+					null,
+					function(http_request,target){
+						if(http_request && http_request.responseText)
+							component.outerHTML = http_request.responseText;
+						if(onComplete){
+							if (typeof onComplete === "function") {
+								onComplete();
+							}else{
+								eval(onComplete + "()");
+							}
+						}
+					}
+			);
+		}
+	}catch(e){
+		
+	}
+
+}
+
+function updateTagComponentDirect(action,redirect,componentId,componentOuter,onComplete){
+	try{
+		if(action && redirect && componentId ){
+			var url = action+'-componentupdate?navigationId='+escape(action+':'+redirect)+'&componentId='+escape(componentId)+'&tmp='+new Date().getTime();
+			ajax_makeRequest(
+					url,
+					null,
+					function(http_request,target){
+						if(http_request && http_request.responseText){
+							if(componentOuter)
+								document.getElementById(componentOuter).outerHTML = http_request.responseText;
+							else
+								document.getElementById(componentId).outerHTML = http_request.responseText;
+						}
+						if(onComplete){
+							if (typeof onComplete === "function") {
+								onComplete();
+							}else{
+								eval(onComplete + "()");
+							}
+						}
+					}
+			);
+		}
+	}catch(e){
+		
+	}
+
+}

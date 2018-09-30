@@ -64,6 +64,7 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 	protected String type = null;
 	protected String additionalAttr = null;
 
+
 	protected Map tagAttributes = new HashMap();
 
 
@@ -122,6 +123,7 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 		title = null;
 		type = null;
 		additionalAttr = null;
+
 		
 		tagAttributes = new HashMap();
 	}
@@ -445,6 +447,7 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 	public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
 		tagAttributes.put(localName, value);
 	}
+
 
 }
 

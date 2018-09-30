@@ -84,6 +84,9 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			if(formBean!=null)
 				formBean=formBean.asBean();
 		}
+		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
+			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+		}
 		if(name!=null)
 			name=checkParametersIfDynamic(name, null);
 		if(method_prefix==null) method_prefix="get";

@@ -95,6 +95,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	protected String formatInput = null;
 	protected String ignoreCase =null;
+	protected String component=null;
 	
 	protected Map tagAttributes = new HashMap();
 	protected List arguments=null;
@@ -122,7 +123,9 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 			if(formBean!=null)
 				formBean=formBean.asBean();
 		}
-
+		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null)) {
+			renderComponent(formBean, formAction, this.getClass().getName(), (objId));
+		}
 		List iterator = null;
 		if(property!=null)
 			property=checkParametersIfDynamic(property, null);
@@ -211,6 +214,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		ondrop = null;
 		onmousewheel = null;
 		ignoreCase = null;
+		component=null;
 		additionalAttr= null;
 		
 		tagAttributes = new HashMap();
@@ -769,6 +773,14 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	public void setArguments(List arguments) {
 		this.arguments = arguments;
+	}
+
+	public String getComponent() {
+		return component;
+	}
+
+	public void setComponent(String component) {
+		this.component = component;
 	}
 
 }

@@ -2,7 +2,7 @@
 * Name: js4ajax.js
 * Version: 1.5.4 (compatible classHidra 1.5.4)
 * Creation date: (21/04/2015)
-* Last update: (66/07/2018)
+* Last update: (29/09/2018)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 
@@ -365,7 +365,7 @@ function ajax_makeParameters64(frm,url) {
     return getstr;
  }
 
-function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus) {
+function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus,outer) {
 		var urlOnly="";
 		var parametersOnly="";
 		var method="POST";
@@ -459,8 +459,12 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 		            			eval(redrawTargetJSFunction + "(http_request,target)");
 		            		}
 		            	}else{
-		            		if(target && document.getElementById(target))
-		            			document.getElementById(target).innerHTML=http_request.responseText;
+		            		if(target && document.getElementById(target)){
+		            			if(outer && outer == true)
+		            				document.getElementById(target).outerHTML=http_request.responseText;
+		            			else
+		            				document.getElementById(target).innerHTML=http_request.responseText;
+		            		}
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
 		            		if (typeof afterJSFunction === "function") {
@@ -696,7 +700,7 @@ function ajax_makeJSONParameters64(frm,url) {
  }
 
 
-function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus) {
+function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus,outer) {
 
 		var urlOnly="";
 		var method="POST";
@@ -796,8 +800,12 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 		            			eval(redrawTargetJSFunction + "(http_request,target)");
 		            		}
 		            	}else{
-		            		if(target && document.getElementById(target))
-		            			document.getElementById(target).innerHTML=http_request.responseText;
+		            		if(target && document.getElementById(target)){
+		            			if(outer && outer == true)
+		            				document.getElementById(target).outerHTML=http_request.responseText;
+		            			else
+		            				document.getElementById(target).innerHTML=http_request.responseText;
+		            		}
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
 		            		if (typeof afterJSFunction === "function") {
@@ -1057,7 +1065,7 @@ function ajax_makeMPARTParameters64(frm,url) {
  }
 
 
-function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunction,redrawTargetJSFunction,showImgBack,requestMethod,anyServerStatus) {
+function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunction,redrawTargetJSFunction,showImgBack,requestMethod,anyServerStatus,outer) {
 	if(window.FormData){
 		var urlOnly="";
 		var method="POST";
@@ -1146,8 +1154,12 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 		            			eval(redrawTargetJSFunction + "(http_request,target)");
 		            		}
 		            	}else{
-		            		if(target && document.getElementById(target))
-		            			document.getElementById(target).innerHTML=http_request.responseText;
+		            		if(target && document.getElementById(target)){
+		            			if(outer && outer == true)
+		            				document.getElementById(target).outerHTML=http_request.responseText;
+		            			else
+		            				document.getElementById(target).innerHTML=http_request.responseText;
+		            		}
 		            	}
 		            	if(afterJSFunction && afterJSFunction!=""){
 		            		if (typeof afterJSFunction === "function") {
