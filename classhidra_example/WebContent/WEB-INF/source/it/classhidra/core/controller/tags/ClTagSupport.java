@@ -135,10 +135,10 @@ public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttr
 		return result;
 	}
 
-	protected void renderComponent(i_bean formBean, i_action formAction, String callerClassName, String cmpId) {
+	protected void renderComponent(i_bean formBean, i_action formAction, String callerClassName, String cmpId, boolean fullpage) {
 		try {	
 			if(this.pageContext.getPage()!=null) {
-				final String executorinfo = util_tag.getTagExecutor(callerClassName);
+				final String executorinfo = util_tag.getTagExecutor(callerClassName, fullpage);
 				if(executorinfo!=null) {
 					final String[] arrayOfString = executorinfo.split(":");
 					util_tag.addTagExecutorObject(arrayOfString[0], this.pageContext.getPage());

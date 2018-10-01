@@ -21,7 +21,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>   
+	</attribute> 
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	  
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -292,7 +297,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute>  
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	  
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -741,7 +751,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute>
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -1106,7 +1121,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute>
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	    
     <attribute>
         <name>bean</name>
         <required>false</required>
@@ -1304,6 +1324,37 @@
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+        <name>normalXML</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+	<attribute>
+        <name>normalXML10</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+	<attribute>
+        <name>normalXML11</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>    
+	<attribute>
+        <name>charset</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+        <name>normalASCII</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+        <name>normalHTML</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+	
+	<attribute>
         <name>additionalAttr</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
@@ -1382,7 +1433,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute>  
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	  
     <attribute>
         <name>objId</name>
         <required>false</required>
@@ -1477,7 +1533,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute>  
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	  
     <attribute>
         <name>objId</name>
         <required>false</required>
@@ -1547,7 +1608,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute>  
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	  
     <attribute>
         <name>objId</name>
         <required>false</required>
@@ -1627,7 +1693,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute> 
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	   
     <attribute>
         <name>objId</name>
         <required>false</required>
@@ -2420,26 +2491,6 @@
     <body-content>JSP</body-content>
     <description>for sequence</description>
     <attribute>
-        <name>objId</name>
-        <required>false</required>
-    	<rtexprvalue>true</rtexprvalue>
-	</attribute>
- 	<attribute>
-        <name>component</name>
-        <required>false</required>
-    	<rtexprvalue>true</rtexprvalue>
-	</attribute> 
-    <attribute>
-        <name>domelement</name>
-        <required>false</required>
-	    <rtexprvalue>true</rtexprvalue>
-	</attribute> 
-    <attribute>
-        <name>styleClass</name>
-        <required>false</required>
-	    <rtexprvalue>true</rtexprvalue>
-	</attribute>
-    <attribute>
         <name>bean</name>
         <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
@@ -2493,6 +2544,11 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
 	</attribute>	
     <attribute>
         <name>objId</name>
@@ -3148,7 +3204,12 @@
         <name>component</name>
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
-	</attribute>    
+	</attribute> 
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute>	   
     <attribute>
         <name>source</name>
         <required>true</required>
@@ -3433,17 +3494,6 @@
 	</attribute>
   </tag>   
   
-  <tag>
-    <name>components</name>
-    <tag-class>it.classhidra.core.controller.tags.tagComponents</tag-class>
-    <body-content>JSP</body-content>
-    <description>for components block</description>
-	<attribute>
-	    <name>skip</name>
-	    <required>false</required>
-	    <rtexprvalue>true</rtexprvalue>
-	</attribute>    
-  </tag>   
   
   <tag>
     <name>component</name>
@@ -3476,6 +3526,12 @@
         <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>   
+    <attribute>
+        <name>rendering</name>
+        <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>	    
+	</attribute> 	
+	
 	<dynamic-attributes>true</dynamic-attributes>
 	 
   </tag>      

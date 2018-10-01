@@ -40,6 +40,9 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_tag_helper;
+import it.classhidra.core.controller.tagrender.ClPageContext;
+import it.classhidra.core.tool.exception.bsTagEndRendering;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
@@ -91,11 +94,20 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 	protected String ondrop = null;
 	protected String onmousewheel = null;
 	protected String additionalAttr=null;
+	
+	protected String normalXML=null;
+	protected String normalXML10=null;
+	protected String normalXML11=null;
+	protected String charset;
+	protected String normalASCII=null;
+	protected String normalHTML=null;	
+
 
 
 	protected String formatInput = null;
 	protected String ignoreCase =null;
 	protected String component=null;
+	protected String rendering = null;
 	
 	protected Map tagAttributes = new HashMap();
 	protected List arguments=null;
@@ -108,7 +120,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	public int doEndTag() throws JspException {
 
-		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+		final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action formAction=null;
 		i_bean formBean=null;
 		if(bean!=null){
@@ -124,7 +136,8 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 				formBean=formBean.asBean();
 		}
 		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null)) {
-			renderComponent(formBean, formAction, this.getClass().getName(), (objId));
+			renderComponent(formBean, formAction, this.getClass().getName(), (objId),
+					(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 		}
 		List iterator = null;
 		if(property!=null)
@@ -166,6 +179,27 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && (objId!=null )) {
+			String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			if(componentId!=null && (componentId.equals(objId) )) {
+				ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
+				if(pageContext!=null) {
+					try {						
+						pageContext.getOut().write(results.toString());
+						throw new bsTagEndRendering(objId);
+					}catch(Exception e) {
+						if(e instanceof bsTagEndRendering)
+							throw (bsTagEndRendering)e;
+					}
+
+				}
+				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			}
+			
+		}
+
+		
 		return super.doEndTag();
 	}
 
@@ -215,7 +249,15 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		onmousewheel = null;
 		ignoreCase = null;
 		component=null;
+		rendering=null;
 		additionalAttr= null;
+		
+		normalXML=null;
+		normalXML10=null;
+		normalXML11=null;
+		charset=null;
+		normalASCII=null;
+		normalHTML=null;	
 		
 		tagAttributes = new HashMap();
 		arguments=null;
@@ -258,7 +300,23 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		}
 		if (currentValue != null) {
 			results.append(" value=\"");
-			results.append(util_xml.normalHTML((currentValue==null)?"":currentValue.toString(),null));
+			
+			
+			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
+				results.append(util_xml.normalXML((currentValue==null)?"":currentValue.toString(),charset));	
+			else if(normalXML10!=null && normalXML10.toLowerCase().equals("true"))
+				results.append(util_xml.escapeXML10((currentValue==null)?"":currentValue.toString(),charset));		
+			else if(normalXML11!=null && normalXML11.toLowerCase().equals("true"))
+				results.append(util_xml.escapeXML11((currentValue==null)?"":currentValue.toString(),charset));		
+			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
+				results.append(util_xml.normalASCII((currentValue==null)?"":currentValue.toString()));	
+			else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
+				results.append(util_xml.normalHTML((currentValue==null)?"":currentValue.toString(), null));	
+			else 
+				results.append(util_xml.normalHTML((currentValue==null)?"":currentValue.toString(),null));
+			
+			
+			
 			results.append('"');
 		}else	results.append(" value=\"\"");
 
@@ -462,7 +520,18 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 			try{
 				currentLabel=util_format.makeFormatedString(formatOutput,currentLabel);
 			}catch(Exception e){}
-			results.append(currentLabel);
+			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
+				results.append(util_xml.normalXML((currentLabel==null)?"":currentLabel.toString(),charset));	
+			else if(normalXML10!=null && normalXML10.toLowerCase().equals("true"))
+				results.append(util_xml.escapeXML10((currentLabel==null)?"":currentLabel.toString(),charset));		
+			else if(normalXML11!=null && normalXML11.toLowerCase().equals("true"))
+				results.append(util_xml.escapeXML11((currentLabel==null)?"":currentLabel.toString(),charset));		
+			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
+				results.append(util_xml.normalASCII((currentLabel==null)?"":currentLabel.toString()));	
+			else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
+				results.append(util_xml.normalHTML((currentLabel==null)?"":currentLabel.toString(), null));	
+			else 
+				results.append(currentLabel);
 		}
 		results.append("</option>");
 		results.append(System.getProperty("line.separator"));
@@ -781,6 +850,62 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	public void setComponent(String component) {
 		this.component = component;
+	}
+
+	public String getRendering() {
+		return rendering;
+	}
+
+	public void setRendering(String rendering) {
+		this.rendering = rendering;
+	}
+
+	public String getNormalXML() {
+		return normalXML;
+	}
+
+	public void setNormalXML(String normalXML) {
+		this.normalXML = normalXML;
+	}
+
+	public String getNormalXML10() {
+		return normalXML10;
+	}
+
+	public void setNormalXML10(String normalXML10) {
+		this.normalXML10 = normalXML10;
+	}
+
+	public String getNormalXML11() {
+		return normalXML11;
+	}
+
+	public void setNormalXML11(String normalXML11) {
+		this.normalXML11 = normalXML11;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
+
+	public String getNormalASCII() {
+		return normalASCII;
+	}
+
+	public void setNormalASCII(String normalASCII) {
+		this.normalASCII = normalASCII;
+	}
+
+	public String getNormalHTML() {
+		return normalHTML;
+	}
+
+	public void setNormalHTML(String normalHTML) {
+		this.normalHTML = normalHTML;
 	}
 
 }

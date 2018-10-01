@@ -2480,7 +2480,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 	
 	public static HttpServletResponse execRedirect(i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, boolean allowAnotherOutput) throws Exception, bsControllerException,ServletException, UnavailableException{
-		return execRedirect(action_instance, servletContext, new bsContext(request, response), false);
+		return execRedirect(action_instance, servletContext, new bsContext(request, response), allowAnotherOutput);
 	}
 
 	public static HttpServletResponse execRedirect(i_action action_instance, ServletContext servletContext, iContext context, boolean allowAnotherOutput) throws Exception, bsControllerException,ServletException, UnavailableException{

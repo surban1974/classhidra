@@ -41,6 +41,9 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_tag_helper;
+import it.classhidra.core.controller.tagrender.ClPageContext;
+import it.classhidra.core.tool.exception.bsTagEndRendering;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
@@ -66,6 +69,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	protected String normalHTML=null;	
 	protected String additionalAttr=null;
 	protected String component=null;
+	protected String rendering = null;
 	
 	protected Map tagAttributes = new HashMap();
 	protected List arguments=null;
@@ -85,6 +89,31 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && (objId!=null || name!=null)) {
+			final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+			String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			if(componentId!=null && (componentId.equals(objId) || componentId.equals(name))) {
+				ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
+				if(pageContext!=null) {
+					try {						
+						pageContext.getOut().write(this.createTagBody());
+						if(objId!=null)
+							throw new bsTagEndRendering(objId);
+						else 
+							throw new bsTagEndRendering(name);
+					}catch(Exception e) {
+						if(e instanceof bsTagEndRendering)
+							throw (bsTagEndRendering)e;
+					}
+
+				}
+				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			}
+			
+		}
+		
+		
 		return super.doEndTag();
 	}
 
@@ -107,6 +136,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 		normalHTML=null;
 		additionalAttr=null;
 		component=null;
+		rendering=null;
 		tagAttributes = new HashMap();
 		arguments=null;
 	}
@@ -138,7 +168,8 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 			}
 	
 			if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
-				renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+				renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")),
+						(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 			}			
 			if(name!=null)
 				name=checkParametersIfDynamic(name, null);
@@ -414,6 +445,14 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 
 	public void setObjId(String objId) {
 		this.objId = objId;
+	}
+
+	public String getRendering() {
+		return rendering;
+	}
+
+	public void setRendering(String rendering) {
+		this.rendering = rendering;
 	}
 
 

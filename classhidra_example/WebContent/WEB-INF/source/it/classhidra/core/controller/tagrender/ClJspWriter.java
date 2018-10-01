@@ -29,8 +29,11 @@ public class ClJspWriter extends JspWriter {
 
 	
 	public void close() throws IOException {
-		sout.close();
-		out.close();		
+		try {
+			sout.close();
+			out.close();
+		}catch(Exception e) {			
+		}
 	}
 
 	
@@ -150,11 +153,12 @@ public class ClJspWriter extends JspWriter {
 		out.write(cbuf, off, len);			
 	}
 	
-	public String getAsString() {
-		if(sout!=null)
+	public String getAsString() {		
+		if(sout!=null) {			
+			sout.flush();
 			return sout.toString();
-		else
+		}else
 			return null;
 	}
-
+	
 }

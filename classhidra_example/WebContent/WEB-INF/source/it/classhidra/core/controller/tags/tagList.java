@@ -42,6 +42,9 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_tag_helper;
+import it.classhidra.core.controller.tagrender.ClPageContext;
+import it.classhidra.core.tool.exception.bsTagEndRendering;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
@@ -126,6 +129,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String component=null;
+	protected String rendering = null;
 
 	protected Map tagAttributes = new HashMap();
 
@@ -140,69 +144,83 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		this.method_prefix = method_prefix;
 	}
 
+	
+	protected String createTagBody() {
+		
+		final StringBuffer results = new StringBuffer("");
+		div_id="";
+		table_id="";
+		array_id="";
+		if(objId!=null){
+			div_id="div_"+objId;
+			table_id="table_"+objId;
+			array_id+=objId;
+		}else{
+			if(bean!=null){
+				div_id="div_"+bean+"_"+name;
+				table_id="table_"+bean+"_"+name;
+				array_id="array_"+bean+"_"+name;
+			}
+			else{
+				div_id="div_formBean_"+name;
+				table_id="table_formBean_"+name;
+				array_id="array_formBean_"+name;
+			}
+		}
+
+		results.append(createDIV_TagBodyStart());
+		if(body_as_first_row!=null && body_as_first_row.toUpperCase().equals("TRUE")){
+			Vector v_td_width = new Vector();
+			Vector v_propertys = new Vector();
+			int count_propertys=0;
+
+			if(propertys!=null){
+				StringTokenizer st = new StringTokenizer(propertys,";");
+				while(st.hasMoreTokens()){
+					v_propertys.add(st.nextToken().trim());
+					count_propertys++;
+				}
+			}
+			if(td_width!=null){
+				StringTokenizer st = new StringTokenizer(td_width,";");
+				while(st.hasMoreTokens()) v_td_width.add(st.nextToken().trim() );
+				int len = v_td_width.size();
+				for(int i=0;i<count_propertys-len;i++) v_td_width.add(null);
+			}else{
+				for(int i=0;i<count_propertys;i++) v_td_width.add(null);
+			}
+			results.append(createDIV_TagBodyTable(v_td_width));
+		}
+
+		return results.toString();
+
+	}
 
 	public int doStartTag() throws JspException {
 
-		final StringBuffer results = new StringBuffer();
-
 		try{
 			JspWriter writer = pageContext.getOut();
-
-			div_id="";
-			table_id="";
-			array_id="";
-			if(objId!=null){
-				div_id="div_"+objId;
-				table_id="table_"+objId;
-				array_id+=objId;
-			}else{
-				if(bean!=null){
-					div_id="div_"+bean+"_"+name;
-					table_id="table_"+bean+"_"+name;
-					array_id="array_"+bean+"_"+name;
-				}
-				else{
-					div_id="div_formBean_"+name;
-					table_id="table_formBean_"+name;
-					array_id="array_formBean_"+name;
-				}
-			}
-
-			results.append(createDIV_TagBodyStart());
-			if(body_as_first_row!=null && body_as_first_row.toUpperCase().equals("TRUE")){
-				Vector v_td_width = new Vector();
-				Vector v_propertys = new Vector();
-				int count_propertys=0;
-
-				if(propertys!=null){
-					StringTokenizer st = new StringTokenizer(propertys,";");
-					while(st.hasMoreTokens()){
-						v_propertys.add(st.nextToken().trim());
-						count_propertys++;
-					}
-				}
-				if(td_width!=null){
-					StringTokenizer st = new StringTokenizer(td_width,";");
-					while(st.hasMoreTokens()) v_td_width.add(st.nextToken().trim() );
-					int len = v_td_width.size();
-					for(int i=0;i<count_propertys-len;i++) v_td_width.add(null);
-				}else{
-					for(int i=0;i<count_propertys;i++) v_td_width.add(null);
-				}
-				results.append(createDIV_TagBodyTable(v_td_width));
-			}
-
-			writer.print(results);
+			writer.print(createTagBody());
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && (objId!=null || name!=null)) {
+			final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+			String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			if(componentId!=null && (componentId.equals(objId) || componentId.equals(name))) {		
+				return EVAL_BODY_BUFFERED;
+			}
+		}
+
+		
 		return EVAL_BODY_INCLUDE;
 	}
 
 
 	public int doEndTag() throws JspException {
 
-		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+		final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action formAction=null;
 		i_bean formBean=null;
 		if(bean!=null){
@@ -219,7 +237,8 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		}
 		
 		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
-			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")),
+					(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 		}
 
 		List iterator = null;
@@ -237,7 +256,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		Object anotherBean=null;
 
 
-		final StringBuffer results = new StringBuffer();
+		
 		try{
 			if(bean==null){
 				anotherBean = formBean;
@@ -342,58 +361,52 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 
 
 
-
-		JspWriter writer = pageContext.getOut();
+		final StringBuffer results = new StringBuffer();
+		final JspWriter writer = pageContext.getOut();
 
 		try {
 			if(body_as_first_row==null || body_as_first_row.toUpperCase().equals("FALSE")){
 				results.append(createDIV_TagBodyTable(v_td_width));
 			}
 			results.append(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput,v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
-/*
-			String row_id ="";
-			try{
-				if(objId!=null){
-					row_id = "tr_"+objId+"_"+v_values.get(v_values.size()-1);
-				}else{
-					if(bean==null) row_id = "tr_formBean_"+name+"_"+v_values.get(v_values.size()-1);
-					else row_id = "tr_"+bean+"_"+name+"_"+v_values.get(v_values.size()-1);
-				}
 
-				if(objId!=null){
-					div_id="div_"+objId;
-				}else{
-					if(bean!=null){
-						div_id="div_"+bean+"_"+name;
-					}
-					else{
-						div_id="div_formBean_"+name;
-					}
-				}
-
-
-
-				try{
-					if(request.getParameter(div_id+"_scrollTop")!=null){
-						intScrollTopDiv = Integer.valueOf(request.getParameter(div_id+"_scrollTop")).intValue();
-					}
-				}catch(Exception e){
-
-				}
-
-
-				results.append("<script language='javascript'>");
-				results.append("try{");
-				results.append("window.setTimeout(\"if(document.getElementById('"+row_id+"')){if(document.getElementById('"+div_id+"')){document.getElementById('"+div_id+"').scrollTop="+intScrollTopDiv+";}}\",1000);");
-				results.append("}catch(e){}");
-				results.append("</script>"+System.getProperty("line.separator"));
-			}catch(Exception e){
-			}
-*/
 			writer.print(results);
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && (objId!=null || name!=null)) {
+
+			final String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			if(componentId!=null && (componentId.equals(objId) || componentId.equals(name))) {
+				final ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
+				if(pageContext!=null) {
+					try {						
+						pageContext.getOut().write(this.createTagBody());
+						if(this.getBodyContent()!=null)
+							pageContext.getOut().write(this.getBodyContent().getString());
+						if(body_as_first_row==null || body_as_first_row.toUpperCase().equals("FALSE")){
+							pageContext.getOut().write(createDIV_TagBodyTable(v_td_width));
+						}
+						pageContext.getOut().write(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput,v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
+
+
+						if(objId!=null)
+							throw new bsTagEndRendering(objId);
+						else 
+							throw new bsTagEndRendering(name);
+					}catch(Exception e) {
+						if(e instanceof bsTagEndRendering)
+							throw (bsTagEndRendering)e;
+					}
+
+				}
+				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			}
+			
+		}		
+		
+		
 		return EVAL_BODY_INCLUDE;
 	}
 
@@ -467,6 +480,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		formatLanguage=null;
 		formatCountry=null;
 		component=null;
+		rendering=null;
 
 		tagAttributes = new HashMap();
 		
@@ -475,28 +489,6 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 
 	protected String createDIV_TagBodyStart() {
 		final StringBuffer results = new StringBuffer("");
-/*
-		if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){
-		}else{
-			results.append(" <input type=\"hidden\"");
-			if(objId!=null){
-				results.append(" id=\"");
-				results.append(objId);
-				results.append('"');
-			}
-			if(name!=null){
-				results.append(" name=\"");
-				results.append(name);
-				results.append('"');
-			}
-			if (value != null) {
-				results.append(" value=\"");
-				results.append(value);
-				results.append('"');
-			}
-			results.append("/>"+System.getProperty("line.separator"));
-		}
-*/
 
 		if(objId!=null){
 			div_id="div_"+objId;
@@ -1566,6 +1558,16 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 	public void setComponent(String component) {
 		this.component = component;
+	}
+
+
+	public String getRendering() {
+		return rendering;
+	}
+
+
+	public void setRendering(String rendering) {
+		this.rendering = rendering;
 	}
 }
 

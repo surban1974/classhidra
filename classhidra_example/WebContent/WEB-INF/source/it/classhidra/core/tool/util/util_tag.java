@@ -52,11 +52,11 @@ public class util_tag {
 		return parent;
 	}
 	
-	public static String getTagExecutor(final String callerClassName) {
+	public static String getTagExecutor(final String callerClassName, final boolean fullpage) {
 		if(bsController.getTagComponentRender()!=null) {
 			final i_tag_helper helper = (i_tag_helper)bsController.getTagComponentRender().get_bean(i_tag_helper.CONST_TAG_HELPER);
 			if(helper!=null)
-				return helper.getTagExecutor(callerClassName);
+				return helper.getTagExecutor(callerClassName, fullpage);
 		}
 		return null;
 	}

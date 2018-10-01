@@ -38,6 +38,9 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_tag_helper;
+import it.classhidra.core.controller.tagrender.ClPageContext;
+import it.classhidra.core.tool.exception.bsTagEndRendering;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
@@ -47,9 +50,32 @@ import it.classhidra.core.tool.util.util_xml;
 public class tagSelect extends tagInput implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
 	private String multiple=null;
+	
+	public int doStartTag() throws JspException {
+		final StringBuffer results = new StringBuffer();
+		results.append(this.createTagBody());
+		JspWriter writer = pageContext.getOut();
+		try {
+			writer.print(results.toString());
+		} catch (IOException e) {
+			throw new JspException(e.toString());
+		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && (objId!=null || name!=null)) {
+			final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+			String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			if(componentId!=null && (componentId.equals(objId) || componentId.equals(name))) {		
+				return EVAL_BODY_BUFFERED;
+			}
+		}
+		
+		return EVAL_BODY_INCLUDE;
+	}
+	
 	public int doEndTag() throws JspException {
 
-		final StringBuffer results = new StringBuffer("</select>");
+		final StringBuffer results = new StringBuffer();
+		results.append(createEndTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
 			writer.print(results.toString());
@@ -57,9 +83,46 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			throw new JspException(e.toString());
 		}
 		value=null;
+		
+		if(component!=null && component.equalsIgnoreCase("true") && (objId!=null || name!=null)) {
+			final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+			String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			if(componentId!=null && (componentId.equals(objId) || componentId.equals(name))) {
+				ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
+				if(pageContext!=null) {
+					try {						
+						pageContext.getOut().write(this.createTagBody());
+						if(this.getBodyContent()!=null)
+							pageContext.getOut().write(this.getBodyContent().getString());
+						pageContext.getOut().write(this.createEndTagBody());
+
+						if(objId!=null)
+							throw new bsTagEndRendering(objId);
+						else 
+							throw new bsTagEndRendering(name);
+					}catch(Exception e) {
+						if(e instanceof bsTagEndRendering)
+							throw (bsTagEndRendering)e;
+					}
+
+				}
+				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			}
+			
+		}
+		
+		
 		return EVAL_BODY_INCLUDE;
 
 	}
+	
+	protected String createEndTagBody() {
+		
+		final StringBuffer results = new StringBuffer("</select>");
+		return results.toString();
+
+	}
+	
 	protected String createTagBody() {
 		Object[] arg = null;
 		if(arguments!=null && arguments.size()>0){
@@ -85,7 +148,8 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 				formBean=formBean.asBean();
 		}
 		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
-			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")),
+					(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 		}
 		if(name!=null)
 			name=checkParametersIfDynamic(name, null);
@@ -577,17 +641,7 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 		prefixName=null;
 		return results.toString();
 	}
-	public int doStartTag() throws JspException {
-		final StringBuffer results = new StringBuffer();
-		results.append(this.createTagBody());
-		JspWriter writer = pageContext.getOut();
-		try {
-			writer.print(results.toString());
-		} catch (IOException e) {
-			throw new JspException(e.toString());
-		}
-		return EVAL_BODY_INCLUDE;
-	}
+
 	public void release() {
 		super.release();
 		multiple=null;

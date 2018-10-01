@@ -31,6 +31,7 @@ import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_tag_helper;
 import it.classhidra.core.controller.tagrender.ClPageContext;
+import it.classhidra.core.tool.exception.bsTagEndRendering;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 	protected String styleClass=null;
 	protected String bean = null;
 	protected String domelement = null;
+	protected String rendering = null;
 
 	protected Map tagAttributes = new HashMap();
 
@@ -70,9 +72,13 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 				if(pageContext!=null) {
 					try {
 						pageContext.getOut().write(this.createTagBody());
-						pageContext.getOut().write(this.getBodyContent().getString());
+						if(this.getBodyContent()!=null)
+							pageContext.getOut().write(this.getBodyContent().getString());
 						pageContext.getOut().write(this.createEndTagBody());
+						throw new bsTagEndRendering(objId);
 					}catch(Exception e) {
+						if(e instanceof bsTagEndRendering)
+							throw (bsTagEndRendering)e;
 					}
 				}
 				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
@@ -80,8 +86,12 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 				ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
 				if(pageContext!=null) {
 					try {
-						pageContext.getOut().write(this.getBodyContent().getString());
+						if(this.getBodyContent()!=null)
+							pageContext.getOut().write(this.getBodyContent().getString());
+						throw new bsTagEndRendering(linkedId);
 					}catch(Exception e) {
+						if(e instanceof bsTagEndRendering)
+							throw (bsTagEndRendering)e;
 					}
 				}
 				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
@@ -112,7 +122,13 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 					formBean=formBean.asBean();
 			}
 	
-			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((linkedId!=null)?linkedId:"")));
+			
+			renderComponent(
+					formBean,
+					formAction,
+					this.getClass().getName(),
+					((objId!=null)?objId:((linkedId!=null)?linkedId:"")),
+					(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 		}
 		
 		final StringBuffer results = new StringBuffer();
@@ -141,6 +157,7 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 		styleClass=null;
 		bean=null;
 		domelement=null;
+		rendering=null;
 		tagAttributes = new HashMap();
 	}
   
@@ -234,6 +251,14 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 
 	public void setLinkedId(String linkedId) {
 		this.linkedId = linkedId;
+	}
+
+	public String getRendering() {
+		return rendering;
+	}
+
+	public void setRendering(String rendering) {
+		this.rendering = rendering;
 	}
 
 

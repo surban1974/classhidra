@@ -18,6 +18,9 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_provider;
 import it.classhidra.core.controller.i_tag_helper;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.exception.bsTagEndRendering;
+import it.classhidra.core.tool.log.stubs.iStub;
 
 
 
@@ -32,14 +35,24 @@ public class Jasper2TagComponentRenderProvider implements i_provider {
 	private final i_tag_helper helper = new i_tag_helper() {
 		private static final long serialVersionUID = 1L;
 
-		public String getTagExecutor(final String callerClassName) {		
+		public String getTagExecutor(final String callerClassName, final boolean fullpage) {		
 			final StackTraceElement[] stel = new Exception().getStackTrace();
 			boolean foundCaller=false;
+			String executorClassName=null;
 			for(int i=0;i<stel.length;i++) {
-				if(!foundCaller && stel[i].getClassName().equals(callerClassName))
-					foundCaller=true;
-				if(foundCaller && !stel[i].getClassName().equals(callerClassName))
-					return stel[i].getClassName()+":"+stel[i].getMethodName();
+				if(fullpage) {
+					if(!foundCaller && stel[i].getClassName().equals(callerClassName))
+						foundCaller=true;
+					if(foundCaller && executorClassName==null && !stel[i].getClassName().equals(callerClassName))
+						executorClassName = stel[i].getClassName();
+					if(foundCaller && executorClassName!=null && !stel[i].getClassName().equals(executorClassName) && (i-1)>=0)
+						return stel[i-1].getClassName()+":"+stel[i-1].getMethodName();					
+				}else {
+					if(!foundCaller && stel[i].getClassName().equals(callerClassName))
+						foundCaller=true;
+					if(foundCaller && !stel[i].getClassName().equals(callerClassName))
+						return stel[i].getClassName()+":"+stel[i].getMethodName();
+				}
 			}
 			return null;
 		}
@@ -47,12 +60,11 @@ public class Jasper2TagComponentRenderProvider implements i_provider {
 
 		public String getTagContent(final String key, final String info, final i_action action_instance, final HttpServletRequest request,
 				final HttpServletResponse response) {
-			String result = null;
 			if(info==null || !info.contains(":"))
-				return result;
+				return "ERROR: COMPONENT ["+key+"] CANNOT BE FOUND. Caused by [UNABLE FIND CALLER]";
 			String[] arrayOfString = info.split(":");
 			if(arrayOfString.length!=2)
-				return result;
+				return "ERROR: COMPONENT ["+key+"] CANNOT BE FOUND. Caused by [UNABLE FIND CALLER]";
 			try{
 				
 				if(request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL)==null)
@@ -99,29 +111,39 @@ public class Jasper2TagComponentRenderProvider implements i_provider {
 						m_getInstance.setAccessible(true);
 						changedAccessible=true;
 					}
-					if(setPC)
-						m_getInstance.invoke(o_provider, parameters);
-					else {
+					
+					if(!setPC){
 						request.setAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT, clPageContext);
 						request.setAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID, key.split(":")[2]);
+					}
+					try {
 						m_getInstance.invoke(o_provider, parameters);
+					}catch(Exception e) {
+						if(e instanceof bsTagEndRendering || e.getCause().toString().indexOf("bsTagEndRendering")>-1) {
+								
+						}else {
+							if(changedAccessible)
+								m_getInstance.setAccessible(false);
+							throw e;
+						}
 					}
 					if(changedAccessible)
 						m_getInstance.setAccessible(false);
-//					if(setPC)
-						return ((ClJspWriter)clPageContext.getOut()).getAsString();
-//					else
-//						return "ERROR: COMPONENT ["+key+"] CANNOT BE FOUND";
+					final String out = ((ClJspWriter)clPageContext.getOut()).getAsString();
+					clPageContext.getOut().close();
+					return out;
 
 					
 				}
 			}catch (Exception e) {
-				return result;
+				new bsControllerException(e, iStub.log_ERROR);
+				return "ERROR: COMPONENT ["+key+"] CANNOT BE FOUND. Caused by ["+e.toString()+"]";
 			}catch (Throwable e) {
-				return result;
+				new bsControllerException(e, iStub.log_ERROR);
+				return "ERROR: COMPONENT ["+key+"] CANNOT BE FOUND. Caused by ["+e.toString()+"]";
 			}
 			
-			return result;
+			return "ERROR: COMPONENT ["+key+"] CANNOT BE FOUND";
 		}
 	};
 	
@@ -132,15 +154,13 @@ public class Jasper2TagComponentRenderProvider implements i_provider {
 		
 		ResponseWrapper(HttpServletResponse response){
 			super(response);
-			pw=new PrintWriter(new StringWriter());
+			pw = new PrintWriter(new StringWriter());
 		}
 
-		@Override
 		public PrintWriter getWriter() throws IOException {
 			return pw;
 		}
 
-		@Override
 		public boolean isCommitted() {
 			return false;
 		}

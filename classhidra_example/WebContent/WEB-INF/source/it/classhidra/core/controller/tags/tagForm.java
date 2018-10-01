@@ -29,7 +29,10 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_tag_helper;
 import it.classhidra.core.controller.info_action;
+import it.classhidra.core.controller.tagrender.ClPageContext;
+import it.classhidra.core.tool.exception.bsTagEndRendering;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -98,6 +101,7 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 	protected String onmousewheel = null;
 	protected String additionalAttr=null;
 	protected String component=null;
+	protected String rendering = null;
 
 	protected String embedScript = null;
 	
@@ -116,22 +120,65 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && objId!=null) {
+			final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+			String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			if(componentId!=null && (componentId.equals(objId))) {		
+				return EVAL_BODY_BUFFERED;
+			}
+		}
+
 		return (EVAL_BODY_INCLUDE);
 
 	}
 
 	public int doEndTag() throws JspException {
 
-		final StringBuffer results = new StringBuffer("</form>");
+		final StringBuffer results = new StringBuffer();
+		results.append(createEndTagBody());
 		JspWriter writer = pageContext.getOut();
 		try {
 			writer.print(results.toString());
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		if(component!=null && component.equalsIgnoreCase("true") && objId!=null) {
+			final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+			String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			if(componentId!=null && componentId.equals(objId)) {
+				ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
+				if(pageContext!=null) {
+					try {
+						pageContext.getOut().write(this.createTagBody());
+						if(this.getBodyContent()!=null)
+							pageContext.getOut().write(this.getBodyContent().getString());
+						pageContext.getOut().write(this.createEndTagBody());
+						throw new bsTagEndRendering(objId);
+					}catch(Exception e) {
+						if(e instanceof bsTagEndRendering)
+							throw (bsTagEndRendering)e;
+					}
+
+				}
+				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
+			}
+			
+		}
+
 		return (EVAL_PAGE);
 
 	}
+	
+	protected String createEndTagBody() {
+		
+		final StringBuffer results = new StringBuffer("");
+		results.append("</form>");
+		return results.toString();
+
+	}
+
 
 	public void release() {
 		super.release();
@@ -185,6 +232,7 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 		ondrop = null;
 		onmousewheel = null;
 		component=null;
+		rendering=null;
 		additionalAttr = null;
 
 		embedScript=null;
@@ -221,7 +269,8 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 		}
 		
 		if(component!=null && component.equalsIgnoreCase("true") && formBean!=null && (objId!=null || name!=null)) {
-			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")));
+			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")),
+					(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 		}
 
 		info_action	formInfoAction = formAction.get_infoaction();
@@ -249,7 +298,7 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 			results.append(" id=\"");
 			results.append(name);
 			results.append('"');
-
+			objId=name;
 		}
 
 
@@ -877,6 +926,14 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 
 	public void setComponent(String component) {
 		this.component = component;
+	}
+
+	public String getRendering() {
+		return rendering;
+	}
+
+	public void setRendering(String rendering) {
+		this.rendering = rendering;
 	}
 
 
