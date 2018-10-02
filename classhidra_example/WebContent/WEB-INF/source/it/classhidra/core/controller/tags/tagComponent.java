@@ -30,7 +30,6 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_tag_helper;
-import it.classhidra.core.controller.tagrender.ClPageContext;
 import it.classhidra.core.tool.exception.bsTagEndRendering;
 
 import java.io.IOException;
@@ -40,6 +39,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
 public class tagComponent extends ClTagSupport implements DynamicAttributes {
@@ -68,7 +68,7 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 			final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 			String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
 			if(componentId!=null && componentId.equals(objId)) {
-				ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
+				PageContext pageContext = (PageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
 				if(pageContext!=null) {
 					try {
 						pageContext.getOut().write(this.createTagBody());
@@ -83,7 +83,7 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 				}
 				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
 			}else if(componentId!=null && componentId.equals(linkedId)) {
-				ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
+				PageContext pageContext = (PageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
 				if(pageContext!=null) {
 					try {
 						if(this.getBodyContent()!=null)

@@ -1,4 +1,4 @@
-package it.classhidra.core.controller.tagrender;
+package it.classhidra.plugin.tagrendering.jasper2;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,7 +26,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 
 
 
-public class Jasper2TagComponentRenderProvider implements i_provider {
+public class TagComponentRenderingProvider implements i_provider {
 	private ServletContext servletContext=null;
 	private Map components = new ConcurrentHashMap();
 	

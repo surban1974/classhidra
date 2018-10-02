@@ -35,6 +35,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import it.classhidra.core.controller.action;
@@ -43,7 +44,6 @@ import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.controller.i_tag_helper;
-import it.classhidra.core.controller.tagrender.ClPageContext;
 import it.classhidra.core.tool.exception.bsTagEndRendering;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
@@ -379,7 +379,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 
 			final String componentId = (String)request.getAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
 			if(componentId!=null && (componentId.equals(objId) || componentId.equals(name))) {
-				final ClPageContext pageContext = (ClPageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
+				final PageContext pageContext = (PageContext)request.getAttribute(i_tag_helper.CONST_TAG_PAGE_CONTEXT);
 				if(pageContext!=null) {
 					try {						
 						pageContext.getOut().write(this.createTagBody());

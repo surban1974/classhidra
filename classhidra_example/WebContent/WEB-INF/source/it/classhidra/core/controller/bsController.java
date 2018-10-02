@@ -594,7 +594,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}else {
 			try{
-				tagComponentRender = (i_provider)Class.forName("it.classhidra.core.controller.tagrender.Jasper2TagComponentRenderProvider").newInstance();
+				tagComponentRender = (i_provider)Class.forName("it.classhidra.plugin.tagrendering.jasper2.TagComponentRenderingProvider").newInstance();
 				if(tagComponentRender!=null)
 					tagComponentRender.set_context(servletContext);
 			}catch(Exception ex){

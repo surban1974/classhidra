@@ -1,4 +1,4 @@
-package it.classhidra.core.controller.tagrender;
+package it.classhidra.plugin.tagrendering.jasper2;
 
 import java.io.IOException;
 import java.util.Enumeration;
