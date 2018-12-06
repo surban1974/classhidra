@@ -25,7 +25,7 @@
 	        <configuration>
 	          	<warName>starter-j7</warName>
 	          	<warSourceDirectory>WebContent</warSourceDirectory>
-	          	<packagingExcludes>WEB-INF/lib/javax.servlet-api-3.0.1.jar, WEB-INF/lib/jsp-api-2.2.jar</packagingExcludes>
+	          	<packagingExcludes>WEB-INF/lib/javax.servlet-api-3.0.1.jar, WEB-INF/lib/jsp-api-2.2.jar, WEB-INF/lib/javax.el-api-3.0.0.jar</packagingExcludes>
 	          	<failOnMissingWebXml>false</failOnMissingWebXml>
 	          	<webResources>
 					<resource>

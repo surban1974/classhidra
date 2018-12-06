@@ -141,6 +141,7 @@
 			            <exclude>it/classhidra/plugin/provider/**/*.java</exclude>
 			            <exclude>it/classhidra/plugin/vfs/**/*.java</exclude>
 			            <exclude>it/classhidra/plugin/was/**/*.java</exclude>
+			            <exclude>it/classhidra/plugin/tagrendering/**/*.java</exclude>
 					</excludes>
 					<includes>
 						<include>it/**/*.java</include>
@@ -234,6 +235,7 @@
 			<artifactId>jsp-api</artifactId>
 			<version>2.2</version>
 		</dependency>
+	
 
 	</dependencies>  
 
