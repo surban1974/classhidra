@@ -64,6 +64,8 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		this.release();
 		return super.doEndTag(); 
 	}
 

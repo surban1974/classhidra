@@ -64,6 +64,8 @@ public class tagForbidSection extends  ClTagSupport {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		this.release();
 		return (EVAL_PAGE);
 	}
 	public void release() {

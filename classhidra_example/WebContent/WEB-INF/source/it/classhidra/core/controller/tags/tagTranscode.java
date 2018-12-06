@@ -114,6 +114,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 			
 		}
 		
+		this.release();
 		return super.doEndTag();
 	}
 

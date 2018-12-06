@@ -98,6 +98,12 @@ public class tagImage extends ClTagSupport implements DynamicAttributes {
 		}
 		return EVAL_BODY_INCLUDE;
 	}
+	
+	public int doEndTag() throws JspException{
+		
+		this.release();
+		return super.doEndTag();
+	}
 
 	public void release()
 	{

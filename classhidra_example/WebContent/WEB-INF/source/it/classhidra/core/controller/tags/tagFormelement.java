@@ -113,7 +113,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 			
 		}
 		
-		
+		this.release();
 		return super.doEndTag();
 	}
 

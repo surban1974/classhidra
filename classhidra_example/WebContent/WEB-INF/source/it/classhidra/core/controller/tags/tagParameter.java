@@ -140,6 +140,8 @@ public class tagParameter extends TagSupport{
 		}catch(Exception e){		
 		}		
 		value=null;
+		
+		this.release();
 		return super.doEndTag(); 
 		
 

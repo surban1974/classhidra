@@ -50,7 +50,7 @@ public class tagOperation extends TagSupport{
 	}
 	
 	public int doEndTag() throws JspException {
-		release();
+		this.release();
 		return super.doEndTag();
 	}
 

@@ -111,7 +111,7 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			
 		}
 		
-		
+		this.release();
 		return EVAL_BODY_INCLUDE;
 
 	}

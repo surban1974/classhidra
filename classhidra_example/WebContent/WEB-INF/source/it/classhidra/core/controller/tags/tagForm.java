@@ -167,6 +167,7 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 			
 		}
 
+		this.release();
 		return (EVAL_PAGE);
 
 	}
@@ -298,7 +299,6 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 			results.append(" id=\"");
 			results.append(name);
 			results.append('"');
-			objId=name;
 		}
 
 

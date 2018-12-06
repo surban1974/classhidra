@@ -199,7 +199,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 			
 		}
 
-		
+		this.release();
 		return super.doEndTag();
 	}
 

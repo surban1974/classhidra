@@ -81,20 +81,13 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 		return (EVAL_BODY_INCLUDE);
 
 	}
-/*
+
 	public int doEndTag() throws JspException {
 
-		final StringBuffer results = new StringBuffer("</form>");
-		JspWriter writer = pageContext.getOut();
-		try {
-			writer.print(results.toString());
-		} catch (IOException e) {
-			throw new JspException(e.toString());
-		}
-
-		return (EVAL_PAGE);
+		this.release();
+		return super.doEndTag();
 	}
-*/
+
 	public void release() {
 		super.release();
 		charset = null;

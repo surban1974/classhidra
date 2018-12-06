@@ -406,7 +406,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 			
 		}		
 		
-		
+		this.release();
 		return EVAL_BODY_INCLUDE;
 	}
 

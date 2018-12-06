@@ -197,6 +197,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			
 		}
 		
+		this.release();
 		return super.doEndTag();
 	}
 

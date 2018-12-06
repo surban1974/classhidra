@@ -57,6 +57,8 @@ public class tagExpression extends ClTagSupport{
 			request.setAttribute(name,obj);
 		}catch(Exception e){
 		}
+		
+		this.release();
 		return EVAL_BODY_INCLUDE;
 
 	}

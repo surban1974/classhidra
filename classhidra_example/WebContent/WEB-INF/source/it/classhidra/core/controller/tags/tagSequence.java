@@ -187,6 +187,8 @@ public class tagSequence extends  ClTagSupport implements DynamicAttributes  {
 
 	
 	public int doEndTag() throws JspException {
+		
+//		this.release();
 		return (EVAL_BODY_INCLUDE);
 	}
 	public void release() {

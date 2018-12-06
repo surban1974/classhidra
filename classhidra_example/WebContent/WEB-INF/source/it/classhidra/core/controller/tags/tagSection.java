@@ -68,6 +68,8 @@ public class tagSection extends  TagSupport {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		this.release();
 		return (EVAL_PAGE);
 	}
 	public void release() {

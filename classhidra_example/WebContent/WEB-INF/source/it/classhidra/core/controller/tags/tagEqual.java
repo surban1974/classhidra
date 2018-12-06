@@ -62,6 +62,8 @@ public class tagEqual extends  ClTagSupport {
 	}
 
 	public int doEndTag() throws JspException {
+		
+		this.release();
 		return (EVAL_PAGE);
 	}
 	public void release() {

@@ -207,9 +207,9 @@ public class tagBean extends ClTagSupport{
 			prefixName=null;
 		}catch(Exception e){
 		}
+		
+		this.release();
 		return super.doEndTag();
-
-
 	}
 
 	public void release() {

@@ -102,6 +102,7 @@ public class showLMPage extends TagSupport{
 			throw new JspException(e.toString());
 		}
 
+		this.release();
 		return super.doEndTag();
 	}
 

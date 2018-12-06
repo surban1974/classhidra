@@ -45,6 +45,12 @@ public class tagCopyRight extends TagSupport{
 		}
 		return EVAL_BODY_INCLUDE; 
 	}
+	
+	public int doEndTag() throws JspException {
+		
+		this.release();
+		return super.doEndTag();
+	}
 
 	public void release() {
 		super.release();

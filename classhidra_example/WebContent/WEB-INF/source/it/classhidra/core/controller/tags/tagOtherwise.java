@@ -41,6 +41,8 @@ public class tagOtherwise extends  TagSupport {
 	}
 
 	public int doEndTag() throws JspException {
+		
+		this.release();
 		return (EVAL_PAGE);
 	}
 	public void release() {

@@ -66,6 +66,8 @@ public class showNavigateStory extends TagSupport implements DynamicAttributes {
 		} catch (IOException e) {
 			throw new JspException(e.toString());
 		}
+		
+		this.release();
 		return EVAL_BODY_INCLUDE;
 	}
 
