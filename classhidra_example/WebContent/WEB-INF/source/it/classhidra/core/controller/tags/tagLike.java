@@ -41,7 +41,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag; 
 
 
-public class tagLike extends  ClTagSupport {
+public class tagLike extends  ClTagSupport implements IExpressionArgument{
 	private static final long serialVersionUID = 1L;
 	protected String bean=null;
 	protected String name=null;
@@ -55,6 +55,8 @@ public class tagLike extends  ClTagSupport {
 	protected String formatCountry=null;
 	protected String ignoreCase =null;
 	
+	protected Boolean argumentValue;
+	
 	public int doStartTag() throws JspException {
 		if (condition())
 			return (EVAL_BODY_INCLUDE);
@@ -63,7 +65,11 @@ public class tagLike extends  ClTagSupport {
 	}
 
 	public int doEndTag() throws JspException {
-		
+		if(argumentValue!=null && getParent()!=null && getParent() instanceof tagExpression){
+			tagOperand operand = new tagOperand();
+			operand.setValue(argumentValue.toString());
+			((tagExpression)getParent()).getElements().add(operand);
+		}		
 		this.release();
 		return (EVAL_PAGE);
 	}
@@ -80,6 +86,7 @@ public class tagLike extends  ClTagSupport {
 		formatLanguage=null;
 		formatCountry=null;	
 		ignoreCase =null;
+		argumentValue=null;
 	}
 	
 	private boolean condition() throws JspException{
@@ -186,31 +193,47 @@ public class tagLike extends  ClTagSupport {
 		if(value==null && writeValue!=null){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
 				((tagSwitch)getParent()).setConditionBreak(true);
+			argumentValue=true;
 			return true;
 		}
-		if(value==null || writeValue==null) return false;
+		if(value==null || writeValue==null) {
+			argumentValue=false;
+			return false;
+		}
 		if(upperCase!=null && upperCase.toLowerCase().equals("true")){
 			if(writeValue.toString().toUpperCase().indexOf(value)>-1){
 				if(getParent()!=null && getParent() instanceof tagSwitch)
 					((tagSwitch)getParent()).setConditionBreak(true);
+				argumentValue=true;
 				return true;
 			}
-			else return false;
+			else {
+				argumentValue=false;
+				return false;
+			}
 		}else{
 			if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true")){
 				if(writeValue.toString().toUpperCase().indexOf(value.toUpperCase())>-1){
 					if(getParent()!=null && getParent() instanceof tagSwitch)
 						((tagSwitch)getParent()).setConditionBreak(true);
+					argumentValue=true;
 					return true;
 				}
-				else return false;
+				else {
+					argumentValue=false;
+					return false;
+				}
 			}else{
 				if(writeValue.toString().indexOf(value)>-1){
 					if(getParent()!=null && getParent() instanceof tagSwitch)
 						((tagSwitch)getParent()).setConditionBreak(true);
+					argumentValue=true;
 					return true;
 				}
-				else return false;	
+				else {
+					argumentValue=false;
+					return false;	
+				}
 			}
 		}
 	}
@@ -295,6 +318,13 @@ public class tagLike extends  ClTagSupport {
 
 	public void setIgnoreCase(String ignoreCase) {
 		this.ignoreCase = ignoreCase;
+	}
+	
+	public String getArgumentValue() {
+		if(argumentValue==null)
+			return null;
+		else
+			return argumentValue.toString();
 	}
 
 }

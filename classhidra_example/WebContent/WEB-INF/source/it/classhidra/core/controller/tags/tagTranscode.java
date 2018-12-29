@@ -52,7 +52,7 @@ import it.classhidra.core.tool.util.util_xml;
 
 
 public class tagTranscode extends ClTagSupport implements DynamicAttributes {
-	private static final long serialVersionUID = -6037366698116086666L;
+	private static final long serialVersionUID = -1L;
 	protected String objId = null;// id
 	protected String source = null;
 	protected String inputField = null;
@@ -69,6 +69,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 	protected String normalXML=null;
 	protected String normalXML10=null;
 	protected String normalXML11=null;
+	protected String normalXMLCDATA=null;
 	protected String charset;
 	protected String normalASCII=null;
 	protected String normalHTML=null;
@@ -135,6 +136,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		normalXML=null;
 		normalXML10=null;
 		normalXML11=null;
+		normalXMLCDATA=null;
 		charset=null;
 		normalASCII=null;
 		normalHTML=null;
@@ -355,6 +357,8 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 				results.append(util_xml.escapeXML10((writeValue==null)?"":writeValue.toString(),charset));		
 			else if(normalXML11!=null && normalXML11.toLowerCase().equals("true"))
 				results.append(util_xml.escapeXML11((writeValue==null)?"":writeValue.toString(),charset));		
+			else if(normalXMLCDATA!=null && normalXMLCDATA.toLowerCase().equals("true"))
+				results.append(util_xml.normalCDATA((writeValue==null)?"":writeValue.toString(),charset));			
 			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
 				results.append(util_xml.normalASCII((writeValue==null)?"":writeValue.toString()));	
 			else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
@@ -585,6 +589,22 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 
 	public void setComponent(String componentId) {
 		this.component = componentId;
+	}
+
+	public String getObjId() {
+		return objId;
+	}
+
+	public void setObjId(String objId) {
+		this.objId = objId;
+	}
+
+	public String getNormalXMLCDATA() {
+		return normalXMLCDATA;
+	}
+
+	public void setNormalXMLCDATA(String normalXMLCDATA) {
+		this.normalXMLCDATA = normalXMLCDATA;
 	}	
 }
 

@@ -33,10 +33,6 @@ import it.classhidra.core.tool.util.util_xml;
 
 public class tagXmlelement extends tagFormelement implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
-	protected String charset;
-	protected String normalXML10=null;
-	protected String normalXML11=null;
-
 	
 	protected String drawTagBody(Object writeValue, String prefixName){
 		final StringBuffer results = new StringBuffer("");
@@ -76,6 +72,8 @@ public class tagXmlelement extends tagFormelement implements DynamicAttributes {
 				results.append(util_xml.escapeXML10((writeValue==null)?"":writeValue.toString(),charset));		
 			else if(normalXML11!=null && normalXML11.toLowerCase().equals("true"))
 				results.append(util_xml.escapeXML11((writeValue==null)?"":writeValue.toString(),charset));		
+			else if(normalXMLCDATA!=null && normalXMLCDATA.toLowerCase().equals("true"))
+				results.append(util_xml.normalCDATA((writeValue==null)?"":writeValue.toString(),charset));			
 			else 
 				results.append(util_xml.normalXML((writeValue==null)?"":writeValue.toString(),charset));
 			
@@ -87,37 +85,7 @@ public class tagXmlelement extends tagFormelement implements DynamicAttributes {
 	
 	public void release() {
 		super.release();		
-		charset=null;
-		normalXML10=null;
-		normalXML11=null;
 	}
-
-
-	public String getCharset() {
-		return charset;
-	}
-
-
-	public void setCharset(String charset) {
-		this.charset = charset;
-	}
-
-	public String getNormalXML10() {
-		return normalXML10;
-	}
-
-	public void setNormalXML10(String normalXML10) {
-		this.normalXML10 = normalXML10;
-	}
-
-	public String getNormalXML11() {
-		return normalXML11;
-	}
-
-	public void setNormalXML11(String normalXML11) {
-		this.normalXML11 = normalXML11;
-	}
-	
 
 }
 

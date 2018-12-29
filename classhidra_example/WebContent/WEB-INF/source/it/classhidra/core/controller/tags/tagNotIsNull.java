@@ -40,11 +40,13 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 
-public class tagNotIsNull extends  ClTagSupport {
+public class tagNotIsNull extends  ClTagSupport implements IExpressionArgument{
 	private static final long serialVersionUID = 1L;
 	protected String bean=null;
 	protected String name=null;
 	protected String method_prefix=null;
+	
+	protected Boolean argumentValue;
 	
 	public int doStartTag() throws JspException {
 		if (condition())
@@ -54,7 +56,11 @@ public class tagNotIsNull extends  ClTagSupport {
 	}
 
 	public int doEndTag() throws JspException {
-		
+		if(argumentValue!=null && getParent()!=null && getParent() instanceof tagExpression){
+			tagOperand operand = new tagOperand();
+			operand.setValue(argumentValue.toString());
+			((tagExpression)getParent()).getElements().add(operand);
+		}		
 		this.release();
 		return (EVAL_PAGE);
 	}
@@ -63,7 +69,7 @@ public class tagNotIsNull extends  ClTagSupport {
 		bean = null;
 		name = null;
 		method_prefix=null;
-
+		argumentValue=null;
 	}
 	
 	private boolean condition() throws JspException{
@@ -131,8 +137,10 @@ public class tagNotIsNull extends  ClTagSupport {
 		if(writeValue!=null){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
 				((tagSwitch)getParent()).setConditionBreak(true);
+			argumentValue=true;
 			return true;
 		}
+		argumentValue=false;
 		return false;
 	}
 	public String getName() {
@@ -154,6 +162,13 @@ public class tagNotIsNull extends  ClTagSupport {
 
 	public void setMethod_prefix(String string) {
 		method_prefix = string;
+	}
+	
+	public String getArgumentValue() {
+		if(argumentValue==null)
+			return null;
+		else
+			return argumentValue.toString();
 	}
 
 }

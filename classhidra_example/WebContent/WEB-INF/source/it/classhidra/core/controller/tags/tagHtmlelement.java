@@ -33,7 +33,6 @@ import it.classhidra.core.tool.util.util_xml;
 
 public class tagHtmlelement extends tagFormelement implements DynamicAttributes {
 	private static final long serialVersionUID = -1L;
-	private String charset;
 
 	
 	protected String drawTagBody(Object writeValue, String prefixName){
@@ -80,19 +79,7 @@ public class tagHtmlelement extends tagFormelement implements DynamicAttributes 
 	
 	public void release() {
 		super.release();		
-		charset=null;
 	}
-
-
-	public String getCharset() {
-		return charset;
-	}
-
-
-	public void setCharset(String charset) {
-		this.charset = charset;
-	}
-	
 
 }
 

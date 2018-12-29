@@ -40,7 +40,7 @@ import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag; 
 
-public class tagNotInto extends  ClTagSupport {
+public class tagNotInto extends  ClTagSupport implements IExpressionArgument{
 	private static final long serialVersionUID = -1L;
 	protected String bean=null;
 	protected String name=null;
@@ -54,6 +54,8 @@ public class tagNotInto extends  ClTagSupport {
 	protected String formatCountry=null;
 	protected String ignoreCase =null;
 	
+	protected Boolean argumentValue;
+	
 	public int doStartTag() throws JspException {
 		if (condition())
 			return (EVAL_BODY_INCLUDE);
@@ -62,7 +64,11 @@ public class tagNotInto extends  ClTagSupport {
 	}
 
 	public int doEndTag() throws JspException {
-		
+		if(argumentValue!=null && getParent()!=null && getParent() instanceof tagExpression){
+			tagOperand operand = new tagOperand();
+			operand.setValue(argumentValue.toString());
+			((tagExpression)getParent()).getElements().add(operand);
+		}		
 		this.release();
 		return (EVAL_PAGE);
 	}
@@ -79,6 +85,7 @@ public class tagNotInto extends  ClTagSupport {
 		formatLanguage=null;
 		formatCountry=null;	
 		ignoreCase =null;
+		argumentValue=null;
 	}
 	
 	private boolean condition() throws JspException{
@@ -184,31 +191,47 @@ public class tagNotInto extends  ClTagSupport {
 		if(value==null && writeValue==null){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
 				((tagSwitch)getParent()).setConditionBreak(true);
+			argumentValue=true;
 			return true;
 		}
-		if(writeValue==null || value==null) return false;
+		if(writeValue==null || value==null) {
+			argumentValue=false;
+			return false;
+		}
 		if(upperCase!=null && upperCase.equalsIgnoreCase("true")){
 			if(value.toString().toUpperCase().indexOf(writeValue.toString())==-1){
 				if(getParent()!=null && getParent() instanceof tagSwitch)
 					((tagSwitch)getParent()).setConditionBreak(true);
+				argumentValue=true;
 				return true;
 			}
-			else return false;
+			else {
+				argumentValue=false;
+				return false;
+			}
 		}else{
 			if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true")){
 				if(value.toString().toUpperCase().indexOf(writeValue.toString().toUpperCase())==-1){
 					if(getParent()!=null && getParent() instanceof tagSwitch)
 						((tagSwitch)getParent()).setConditionBreak(true);
+					argumentValue=true;
 					return true;
 				}
-				else return false;
+				else {
+					argumentValue=false;
+					return false;
+				}
 			}else{
 				if(value.toString().indexOf(writeValue.toString())==-1){
 					if(getParent()!=null && getParent() instanceof tagSwitch)
 						((tagSwitch)getParent()).setConditionBreak(true);
+					argumentValue=true;
 					return true;
 				}
-				else return false;	
+				else {
+					argumentValue=false;
+					return false;	
+				}
 			}
 		}
 
@@ -295,6 +318,13 @@ public class tagNotInto extends  ClTagSupport {
 
 	public void setIgnoreCase(String ignoreCase) {
 		this.ignoreCase = ignoreCase;
+	}
+	
+	public String getArgumentValue() {
+		if(argumentValue==null)
+			return null;
+		else
+			return argumentValue.toString();
 	}
 
 }

@@ -98,6 +98,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 	protected String normalXML=null;
 	protected String normalXML10=null;
 	protected String normalXML11=null;
+	protected String normalXMLCDATA=null;
 	protected String charset;
 	protected String normalASCII=null;
 	protected String normalHTML=null;	
@@ -255,6 +256,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		normalXML=null;
 		normalXML10=null;
 		normalXML11=null;
+		normalXMLCDATA=null;
 		charset=null;
 		normalASCII=null;
 		normalHTML=null;	
@@ -308,6 +310,8 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 				results.append(util_xml.escapeXML10((currentValue==null)?"":currentValue.toString(),charset));		
 			else if(normalXML11!=null && normalXML11.toLowerCase().equals("true"))
 				results.append(util_xml.escapeXML11((currentValue==null)?"":currentValue.toString(),charset));		
+			else if(normalXMLCDATA!=null && normalXMLCDATA.toLowerCase().equals("true"))
+				results.append(util_xml.normalCDATA((currentValue==null)?"":currentValue.toString(),charset));			
 			else if(normalASCII!=null && normalASCII.equalsIgnoreCase("true"))	
 				results.append(util_xml.normalASCII((currentValue==null)?"":currentValue.toString()));	
 			else if(normalHTML!=null && normalHTML.equalsIgnoreCase("true"))
@@ -906,6 +910,14 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	public void setNormalHTML(String normalHTML) {
 		this.normalHTML = normalHTML;
+	}
+
+	public String getNormalXMLCDATA() {
+		return normalXMLCDATA;
+	}
+
+	public void setNormalXMLCDATA(String normalXMLCDATA) {
+		this.normalXMLCDATA = normalXMLCDATA;
 	}
 
 }

@@ -258,6 +258,20 @@ public static String normalXML (String input, String charSet) {
 		return input;
 }
 
+public static String normalCDATA (String input, String charSet) {	
+	if (input==null) return input;	
+	if(input.indexOf("<![CDATA[")==0)
+		return input;
+	try{
+		if(charSet!=null) input = new String(input.replace("]]>", "").getBytes(),charSet);
+		else input = input.replace("]]>", "");
+	}catch(Exception e){
+		new bsException(e, iStub.log_ERROR);
+	}	
+	return "<![CDATA["+input+"]]>";
+}
+
+
 public static String normalASCII(String input){
 	if(input==null || input.length()==0) return "";
 	String result="";

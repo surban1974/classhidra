@@ -30,7 +30,6 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
 
 
 public class tagExpression extends ClTagSupport{
@@ -45,13 +44,10 @@ public class tagExpression extends ClTagSupport{
 	}
 	public int doEndTag() throws JspException {
 		try{
-			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
-			
+			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();	
 
-			Object obj = null;
-			
-			obj = calculation();
-			
+			Object obj = null;			
+			obj = calculation();			
 			if(name!=null)
 				name=checkParametersIfDynamic(name, null);
 			request.setAttribute(name,obj);
@@ -65,19 +61,21 @@ public class tagExpression extends ClTagSupport{
 
 	private Object calculation(){
 		try{
-
 			int i=0;
 			while(i<elements.size()){
 				if(elements.get(i) instanceof tagOperation){
 					int arguments_count = countArguments((tagOperation)elements.get(i));
 					if(i>arguments_count-1){
-						Vector param = new Vector();
-						for(int j=i-1;j>i-1-arguments_count;j--) param.add(elements.get(j));					
-						tagOperand result = calcOperation((tagOperation)elements.get(i),param);
-						elements.remove(i);
-						for(int j=i-1;j>i-1-arguments_count+1;j--) elements.remove(j);
-						elements.set(i-1-arguments_count+1, result);
-						i=-1;
+						final Vector param = new Vector();
+						for(int j=i-1;j>i-1-arguments_count;j--)
+							param.add(elements.get(j));					
+						final IExpressionArgument result = calcOperation((tagOperation)elements.get(i),param);
+						if(result!=null) {
+							elements.remove(i);
+							for(int j=i-1;j>i-1-arguments_count+1;j--) elements.remove(j);
+							elements.set(i-1-arguments_count+1, result);
+							i=-1;
+						}
 					}
 				}
 				i++;
@@ -85,53 +83,79 @@ public class tagExpression extends ClTagSupport{
 		}catch(Exception e){
 			return new String("ExpressionError:"+e.toString());
 		}
-		return ((tagOperand)elements.get(0)).getValue();
+		return ((IExpressionArgument)elements.get(0)).getArgumentValue();
 	}
 	
 	private int countArguments(tagOperation operation){
 		int result=0;
-		if(operation==null || operation.getName()==null) return result;
-		if("^+-*/%".indexOf(operation.getName())>-1) return 2;
+		if(operation==null || operation.getName()==null || operation.getName().equals(""))
+			return result;
+		if("^+-*/%|&".indexOf(operation.getName())>-1) return 2;
 		else return 1;
 	}
 	
 	
-	private tagOperand calcOperation(tagOperation operation, Vector param){
+	private tagOperand calcOperation(final tagOperation operation, final Vector param){
 		
-		
-		double par1 = 0;
-		double par2 = 0;
-		double result = 0;
-		if(param.size()==1) par2=Double.parseDouble(((tagOperand)param.get(0)).getValue());
-		if(param.size()==2){
-			par2=Double.parseDouble(((tagOperand)param.get(0)).getValue());
-			par1=Double.parseDouble(((tagOperand)param.get(1)).getValue());
+		if(operation==null || operation.getName()==null || operation.getName().equals(""))
+			return null;
+		else if("^+-*/%".indexOf(operation.getName())>-1) {			
+			double par1 = 0;
+			double par2 = 0;
+			double result = 0;
+			if(param.size()==1) par1=Double.parseDouble(((IExpressionArgument)param.get(0)).getArgumentValue());
+			if(param.size()==2){
+				par1=Double.parseDouble(((IExpressionArgument)param.get(0)).getArgumentValue());
+				par2=Double.parseDouble(((IExpressionArgument)param.get(1)).getArgumentValue());
+			}
+			if(operation.getName().trim().equals("+"))
+				result=(par2+par1);
+			if(operation.getName().trim().equals("-"))
+				result=(par2-par1);
+			if(operation.getName().trim().equals("*"))
+				result=par2*par1;
+			if(operation.getName().trim().equals("/"))
+				result=par2/par1;
+			if(operation.getName().trim().equals("%"))
+				result=par2%par1;
+			if(operation.getName().trim().equals("^"))
+				result=Math.pow(par2,par1);
+			
+			final tagOperand operand = new tagOperand();
+			operand.setValue(String.valueOf(result));
+			return operand;
+		}else if("|&!".indexOf(operation.getName())>-1) {
+			Boolean par1 = null;
+			Boolean par2 = null;
+			Boolean result = null;
+			if(param.size()==1) {
+				par1=Boolean.parseBoolean(((IExpressionArgument)param.get(0)).getArgumentValue());
+				if(operation.getName().trim().equals("!"))
+					result = !par1;
+			}
+			if(param.size()==2){
+				par1=Boolean.parseBoolean(((IExpressionArgument)param.get(0)).getArgumentValue());
+				par2=Boolean.parseBoolean(((IExpressionArgument)param.get(1)).getArgumentValue());
+				if(operation.getName().trim().equals("&"))
+					result=(par2 & par1);
+				if(operation.getName().trim().equals("|"))
+					result=(par2 | par1);
+			}
+
+			if(result!=null) {
+				final tagOperand operand = new tagOperand();
+				operand.setValue(String.valueOf(result));
+				return operand;
+			}
+			return null;
 		}
-		if(operation.getName().trim().equals("+"))
-			result=(par2+par1)/1;
-		if(operation.getName().trim().equals("-"))
-			result=(par2-par1)/1;
-		if(operation.getName().trim().equals("*"))
-			result=par2*par1/1;
-		if(operation.getName().trim().equals("/"))
-			result=par2/par1/1;
-		if(operation.getName().trim().equals("%"))
-			result=par2%par1/1;
-		if(operation.getName().trim().equals("^"))
-			result=Math.pow(par2,par1);
-		
-		tagOperand operand = new tagOperand();
-		operand.setValue(String.valueOf(result));
-		return operand;
+		return null;
 	}
 	
 	public void release() {
-		super.release();
-
-			super.release();				
-			name=null;
-			elements = new Vector();
-
+		super.release();				
+		name=null;
+		elements = null;
 	}
 
 

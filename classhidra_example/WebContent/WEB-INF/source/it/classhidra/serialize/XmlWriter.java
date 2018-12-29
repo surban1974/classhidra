@@ -451,12 +451,12 @@ public class XmlWriter {
 				if(annotation!=null && annotation.output()!=null){
 					try{					
 						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
-						if(annotation.output().xml_cdata()) {
+						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
@@ -477,12 +477,12 @@ public class XmlWriter {
 				if(annotation!=null && annotation.output()!=null){
 					try{					
 						value=String.valueOf(((Boolean)sub_obj));
-						if(annotation.output().xml_cdata()) {
+						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
@@ -503,12 +503,12 @@ public class XmlWriter {
 				if(annotation!=null && annotation.output()!=null){
 					try{					
 						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
-						if(annotation.output().xml_cdata()) {
+						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
@@ -530,12 +530,12 @@ public class XmlWriter {
 				if(annotation!=null && annotation.output()!=null){
 					try{					
 						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
-						if(annotation.output().xml_cdata()) {
+						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
@@ -556,12 +556,12 @@ public class XmlWriter {
 					try{
 						java.text.DecimalFormat df = new java.text.DecimalFormat("##0.000000", new DecimalFormatSymbols(new Locale("en")));
 						value = df.format(new java.math.BigDecimal(value.trim()).doubleValue());
-						if(annotation.output().xml_cdata()) {
+						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 

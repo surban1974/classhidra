@@ -41,7 +41,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 
-public class tagLess extends  ClTagSupport {
+public class tagLess extends  ClTagSupport implements IExpressionArgument{
 	private static final long serialVersionUID = 1L;
 	protected String bean=null;
 	protected String name=null;
@@ -53,6 +53,8 @@ public class tagLess extends  ClTagSupport {
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	
+	protected Boolean argumentValue;
+	
 	public int doStartTag() throws JspException {
 		if (condition())
 			return (EVAL_BODY_INCLUDE);
@@ -61,7 +63,11 @@ public class tagLess extends  ClTagSupport {
 	}
 
 	public int doEndTag() throws JspException {
-		
+		if(argumentValue!=null && getParent()!=null && getParent() instanceof tagExpression){
+			tagOperand operand = new tagOperand();
+			operand.setValue(argumentValue.toString());
+			((tagExpression)getParent()).getElements().add(operand);
+		}		
 		this.release();
 		return (EVAL_PAGE);
 	}
@@ -76,6 +82,7 @@ public class tagLess extends  ClTagSupport {
 		formatOutput=null;
 		formatLanguage=null;
 		formatCountry=null;	
+		argumentValue=null;
 	}
 
 	private boolean condition() throws JspException{
@@ -182,18 +189,23 @@ public class tagLess extends  ClTagSupport {
 		if(value==null && writeValue!=null){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
 				((tagSwitch)getParent()).setConditionBreak(true);
+			argumentValue=true;
 			return true;
 		}
-		if(value==null || writeValue==null) return false;
+		if(value==null || writeValue==null) {
+			argumentValue=false;
+			return false;
+		}
 		try{
 			if(Double.valueOf(writeValue.toString()).doubleValue()< Double.valueOf(value).doubleValue()){
 				if(getParent()!=null && getParent() instanceof tagSwitch)
 					((tagSwitch)getParent()).setConditionBreak(true);
+				argumentValue=true;
 				return true;
 			}
 		}catch(Exception e){
 		}
-
+		argumentValue=false;
 		return false;
 	}
 	public String getName() {
@@ -261,6 +273,13 @@ public class tagLess extends  ClTagSupport {
 
 	public void setFormatCountry(String formatCountry) {
 		this.formatCountry = formatCountry;
+	}
+	
+	public String getArgumentValue() {
+		if(argumentValue==null)
+			return null;
+		else
+			return argumentValue.toString();
 	}
 
 }

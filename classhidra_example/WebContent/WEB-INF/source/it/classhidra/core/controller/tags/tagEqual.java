@@ -41,8 +41,8 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag; 
 
 
-public class tagEqual extends  ClTagSupport {
-	private static final long serialVersionUID = 549345205198653882L;
+public class tagEqual extends  ClTagSupport implements IExpressionArgument{
+	private static final long serialVersionUID = 1L;
 	protected String bean=null;
 	protected String name=null;
 	protected String value=null;
@@ -54,7 +54,10 @@ public class tagEqual extends  ClTagSupport {
 	protected String formatCountry=null;	
 	protected String ignoreCase =null;
 	
+	protected Boolean argumentValue;
+	
 	public int doStartTag() throws JspException {
+		argumentValue=null;
 		if (condition())
 			return (EVAL_BODY_INCLUDE);
 		else
@@ -62,7 +65,11 @@ public class tagEqual extends  ClTagSupport {
 	}
 
 	public int doEndTag() throws JspException {
-		
+		if(argumentValue!=null && getParent()!=null && getParent() instanceof tagExpression){
+			tagOperand operand = new tagOperand();
+			operand.setValue(argumentValue.toString());
+			((tagExpression)getParent()).getElements().add(operand);
+		}
 		this.release();
 		return (EVAL_PAGE);
 	}
@@ -78,6 +85,7 @@ public class tagEqual extends  ClTagSupport {
 		formatLanguage=null;
 		formatCountry=null;		
 		ignoreCase=null;
+		argumentValue=null;
 	}
 	
 	private boolean condition() throws JspException{
@@ -189,19 +197,26 @@ public class tagEqual extends  ClTagSupport {
 		if(value==null && writeValue!=null){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
 				((tagSwitch)getParent()).setConditionBreak(true);
+			argumentValue=true;
 			return true;
 		}
-		if(value==null || writeValue==null) return false;
+		if(value==null || writeValue==null) {
+			argumentValue=false;
+			return false;
+		}
 		if(writeValue.toString().equals(value)){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
 				((tagSwitch)getParent()).setConditionBreak(true);
+			argumentValue=true;
 			return true;
 		}
 		if(ignoreCase!=null && ignoreCase.equalsIgnoreCase("true") && writeValue.toString().equalsIgnoreCase(value)){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
 				((tagSwitch)getParent()).setConditionBreak(true);
+			argumentValue=true;
 			return true;
 		}
+		argumentValue=false;
 		return false;
 	}
 	public String getName() {
@@ -277,6 +292,13 @@ public class tagEqual extends  ClTagSupport {
 
 	public void setIgnoreCase(String ignoreCase) {
 		this.ignoreCase = ignoreCase;
+	}
+
+	public String getArgumentValue() {
+		if(argumentValue==null)
+			return null;
+		else
+			return argumentValue.toString();
 	}
 
 }
