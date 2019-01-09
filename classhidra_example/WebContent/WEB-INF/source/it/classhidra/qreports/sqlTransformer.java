@@ -1,5 +1,6 @@
 package it.classhidra.qreports;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,8 @@ import java.util.List;
 import it.classhidra.core.tool.util.util_format;
 
 
-public class sqlTransformer {
+public class sqlTransformer implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private static final char START_ARGUMENTS = '{';
 	private static final char FINISH_ARGUMENTS = '}';
 

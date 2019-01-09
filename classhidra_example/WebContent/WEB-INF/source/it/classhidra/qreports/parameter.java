@@ -191,6 +191,15 @@ public class parameter extends elementBase{
 				this.setDefault_value(value);
 			}
 			if(this.getValue_type().equals(parameter.VALUE_CHARACTER)){
+				try{
+					if(value!=null) {
+						if(!this.getFormat_output().equals("") && this.getFormat_output().toLowerCase().indexOf("sqlescape")>-1)
+							value = util_format.convertAp(value);
+					}
+				}catch(Exception e){
+					if(value==null)
+						throw new bsException("ERROR get value = "+this.getName(), iStub.log_ERROR);
+				}
 				this.setDefault_value(value);
 			}
 			if(this.getValue_type().equals(parameter.VALUE_NUMBER)){
@@ -212,8 +221,6 @@ public class parameter extends elementBase{
 				}catch(Exception e){
 					if(num==null)
 						throw new bsException("ERROR get value = "+this.getName(), iStub.log_ERROR);
-
-
 				}
 				this.setDefault_value(value);
 			}

@@ -263,8 +263,8 @@ public static String normalCDATA (String input, String charSet) {
 	if(input.indexOf("<![CDATA[")==0)
 		return input;
 	try{
-		if(charSet!=null) input = new String(input.replace("]]>", "").getBytes(),charSet);
-		else input = input.replace("]]>", "");
+		if(charSet!=null) input = new String(input.replace("]]>", "]]&gt;").getBytes(),charSet);
+		else input = input.replace("]]>", "]]&gt;");
 	}catch(Exception e){
 		new bsException(e, iStub.log_ERROR);
 	}	

@@ -3,6 +3,7 @@ package it.classhidra.qreports;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -19,7 +20,9 @@ import it.classhidra.core.tool.exception.bsException;
 
 
 
-public class report_manager {
+public class report_manager implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	public final static String XSLT_XMLDOC2XML = "xmldoc2xml.xslt";
 	public final static String XSLT_XML2XMLDOC = "xml2xmldoc.xslt";
 	

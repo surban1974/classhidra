@@ -454,9 +454,9 @@ public class XmlWriter {
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "]]&gt;")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "]]&gt;").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
@@ -480,9 +480,9 @@ public class XmlWriter {
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "]]&gt;")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "]]&gt;").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
@@ -506,9 +506,9 @@ public class XmlWriter {
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "]]&gt;")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "]]&gt;").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
@@ -533,9 +533,9 @@ public class XmlWriter {
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "]]&gt;")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "]]&gt;").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
@@ -559,9 +559,9 @@ public class XmlWriter {
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
-								result+="<![CDATA["+value.replace("]]>", "")+"]]>";
+								result+="<![CDATA["+value.replace("]]>", "]]&gt;")+"]]>";
 							else
-								result+="<![CDATA["+new String(value.replace("]]>", "").getBytes(),charset)+"]]>";
+								result+="<![CDATA["+new String(value.replace("]]>", "]]&gt;").getBytes(),charset)+"]]>";
 						}else if(annotation.output().xml_escape10()) 
 							result+=util_xml.escapeXML10(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null));
 						else if(annotation.output().xml_escape11()) 
