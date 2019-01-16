@@ -52,6 +52,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String redirect;
 	private String error;
 	private String memoryInSession;	
+	private String memoryInServletContext;
 	private String memoryAsLastInstance;
 	private String reloadAfterAction;
 	private String reloadAfterNextNavigated;
@@ -227,6 +228,7 @@ public class info_action extends info_entity implements i_elementBase{
 		error="";
 		wac="";
 		memoryInSession="";
+		memoryInServletContext="";
 		memoryAsLastInstance="";
 		reloadAfterAction="";
 		reloadAfterNextNavigated="";
@@ -389,6 +391,8 @@ public class info_action extends info_entity implements i_elementBase{
 		}
 		
 		if(memoryInSession!=null && !memoryInSession.trim().equals("")) result+=" memoryInSession=\""+util_format.normaliseXMLText(memoryInSession)+"\"";
+		if(memoryInServletContext!=null && !memoryInServletContext.trim().equals("")) result+=" memoryInServletContext=\""+util_format.normaliseXMLText(memoryInServletContext)+"\"";
+		
 		if(memoryAsLastInstance!=null && !memoryAsLastInstance.trim().equals("")) result+=" memoryAsLastInstance=\""+util_format.normaliseXMLText(memoryAsLastInstance)+"\"";
 
 		if(reloadAfterAction!=null && !reloadAfterAction.trim().equals("")) result+=" reloadAfterAction=\""+util_format.normaliseXMLText(reloadAfterAction)+"\"";
@@ -757,6 +761,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setiAsync(info_async iAsync) {
 		this.iAsync = iAsync;
+	}
+
+	public String getMemoryInServletContext() {
+		return memoryInServletContext;
+	}
+
+	public void setMemoryInServletContext(String memoryInServletContext) {
+		this.memoryInServletContext = memoryInServletContext;
 	}
 
 

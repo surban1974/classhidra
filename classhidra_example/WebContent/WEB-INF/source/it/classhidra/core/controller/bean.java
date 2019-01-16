@@ -1185,8 +1185,16 @@ public void onAddToSession() {
 	if(listener_b!=null) listener_b.onAddToSession();
 }
 
+public void onAddToServletContext() {
+	if(listener_b!=null) listener_b.onAddToServletContext();
+}
+
 public void onGetFromSession() {
 	if(listener_b!=null) listener_b.onGetFromSession();
+}
+
+public void onGetFromServletContext() {
+	if(listener_b!=null) listener_b.onGetFromServletContext();
 }
 
 public void onAddToLastInstance() {

@@ -22,6 +22,7 @@ public interface i_externalloader{
 	public static final String ACTIONS_instance_scheduler_container="instance_scheduler_container";
 	
 	public static final String ACTIONS_instance_onlysession="instance_onlysession"; 
+	public static final String ACTIONS_instance_servletcontext="instance_servletcontext";
 
 	
 	public static final String MESSAGES_messages="messages";

@@ -1587,23 +1587,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 					form = action_instance.get_bean();
 				
 				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
-/*
-					HashMap fromSession = null;
-					fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
-					if(fromSession==null){
-						fromSession = new HashMap();
-						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession);
-					}
-*/
 					if(form!=null)
 						form.onAddToSession();
-// Mod 20150402 --
-//					fromSession.put(form.get_infobean().getName(),form);
-
 					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null)
 						setToOnlySession(form.get_infoaction().getPath(),form, context.getRequest());
-//						fromSession.put(form.get_infoaction().getPath(),form);
 				}
+				if(form.get_infoaction().getMemoryInServletContext().equalsIgnoreCase("true")){
+					if(form!=null)
+						form.onAddToServletContext();
+					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null)
+						setToOnlyServletContext(form.get_infoaction().getPath(),form, context.getRequest());
+				}				
 				if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
 					if(form!=null)
 						form.onAddToLastInstance();
@@ -3376,24 +3370,33 @@ public class bsController extends HttpServlet implements bsConstants  {
 				final i_bean content = nav.get_content();
 				if(content!=null)
 					content.onGetFromNavigation();
-
-				return content;
+				
+				if(content==null) {
+					final info_action infoAction = (info_action)getAction_config().get_actions().get(id_current);				
+					if(infoAction!=null && infoAction.getNavigatedMemoryContent()!=null && infoAction.getNavigatedMemoryContent().equalsIgnoreCase("false")) {
+					}else
+						return content;
+				}else				
+					return content;
 			}
 		}
 		try{
 			final info_action infoAction = (info_action)getAction_config().get_actions().get(id_current);
+			
 			if(	infoAction.getMemoryInSession().equalsIgnoreCase("true")){
-/*
-				i_bean content = (i_bean)
-					((HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION))
-					.get(infoAction.getPath());
-*/
 				final i_bean content = (i_bean)getFromOnlySession(infoAction.getPath(), request);
 
 				if(content!=null)
 					content.onGetFromSession();
 				return content;
 			}
+			if(	infoAction.getMemoryInServletContext().equalsIgnoreCase("true")){
+				final i_bean content = (i_bean)getFromOnlyServletContext(infoAction.getPath(), request);
+				
+				if(content!=null)
+					content.onGetFromServletContext();
+				return content;
+			}			
 			if(	infoAction.getMemoryAsLastInstance().equalsIgnoreCase("true")){
 				i_bean content = null;
 				try{
@@ -3446,15 +3449,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			nav.init(form.get_infoaction(),null,new info_service(request),null);
 			
 			final info_navigation fromNav = getFromInfoNavigation(null, request);
-
-//			if(fromNav!=null)
-//				fromNav.add(nav);
-//			else
-//				setToInfoNavigation(nav, request);
-			
-			
 			if(fromNav!=null){
-//				if(form!=null) form.onAddToNavigation();
 				if(!redirectNavigatedFalse)
 					fromNav.add(nav);
 				else if(action_instance.get_infoaction()!=null &&
@@ -3491,39 +3486,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(form.get_infoaction().getNavigated().equalsIgnoreCase("true")) go = true;
 		}catch(Exception ex){
 		}
-//		if(!go || action_instance.getCurrent_redirect()==null){
-		if(!go){
-			try{
-				if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
-/*
-					HashMap fromSession = null;
-					fromSession = (HashMap)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
-					if(fromSession==null){
-						fromSession = new HashMap();
-						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,fromSession);
-					}
-*/
-					if(form!=null)
-						form.onAddToSession();
-// Mod 20150402 --
-//					fromSession.put(form.get_infobean().getName(),form);
-					if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null){
-						form.clearBeforeStore();
-						setToOnlySession(form.get_infoaction().getPath(),form, request);
-					}
-//						fromSession.put(form.get_infoaction().getPath(),form);
-				}
-				if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
-					if(form!=null){
-						form.onAddToLastInstance();
-						form.clearBeforeStore();
-					}
-					if(request!=null)
-						request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
-				}
 
-			}catch(Exception e){
-			}
+		if(!go){
+			setCurrentFormIfNotNavigated(form, request);
 			return;
 		}else{
 			try{
@@ -3555,10 +3520,44 @@ public class bsController extends HttpServlet implements bsConstants  {
 					setToInfoNavigation(nav, request);
 			}catch(Exception e){
 			}
+			
+			if(form.get_infoaction().getNavigatedMemoryContent()!=null &&  form.get_infoaction().getNavigatedMemoryContent().equalsIgnoreCase("false")) {
+				setCurrentFormIfNotNavigated(form, request);
+			}
 		}
 	}
 
+	public static void setCurrentFormIfNotNavigated(i_bean form, HttpServletRequest request) {
+		try{
+			if(form.get_infoaction().getMemoryInSession().equalsIgnoreCase("true")){
+				if(form!=null)
+					form.onAddToSession();
+				if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null){
+					form.clearBeforeStore();
+					setToOnlySession(form.get_infoaction().getPath(),form, request);
+				}
+			}
+			if(form.get_infoaction().getMemoryInServletContext().equalsIgnoreCase("true")){
+				if(form!=null)
+					form.onAddToServletContext();
+				if(form.get_infoaction()!=null && form.get_infoaction().getPath()!=null){
+					form.clearBeforeStore();
+					setToOnlyServletContext(form.get_infoaction().getPath(),form, request);
+				}
+			}
+			if(form.get_infoaction().getMemoryAsLastInstance().equalsIgnoreCase("true")){
+				if(form!=null){
+					form.onAddToLastInstance();
+					form.clearBeforeStore();
+				}
+				if(request!=null)
+					request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
+			}
 
+		}catch(Exception e){
+		}
+
+	}
 
 	public static Object getProperty(String key, HttpServletRequest request){
 		if(key==null) return null;
@@ -5136,7 +5135,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		return instance.get(id);
 	}
-
+	
 	public static boolean setToOnlySession(String id,i_bean obj,HttpServletRequest request){
 		try{
 			Map instance = checkOnlySession(request);
@@ -5148,7 +5147,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 				request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
 			}
 			if(obj!=null){
-//				info_context info = checkBeanContext(obj.asBean());
 				if(obj.asBean().getInfo_context().isOnlyProxied()){
 					if(instance.get(id)==null)
 						instance.put(id, obj);
@@ -5225,6 +5223,110 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		instance.clear();
 
+	}
+	
+	public static Map checkOnlyServletContext(HttpServletRequest request){
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return null;
+		
+		String bean_id = bsConstants.CONST_BEAN_$SERVLETCONTEXT;
+		if(!getAction_config().getInstance_servletcontext().equals("") && !getAction_config().getInstance_servletcontext().equalsIgnoreCase("false"))
+			bean_id = getAction_config().getInstance_servletcontext();
+
+			if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(),  bean_id, getAction_config().getInstance_servletcontext(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			} 
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  bean_id, getAction_config().getInstance_servletcontext(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_servletcontext(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, getAction_config().getInstance_servletcontext(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider((request==null)?null:request.getSession().getServletContext());
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_servletcontext(), (request==null)?null:request.getSession().getServletContext());
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getEjbDefaultProvider()!=null){
+				try{
+				
+					wrapper = (i_ProviderWrapper)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
+					if(wrapper!=null){
+						try{
+							wrapper.getInstance();
+						}catch(Exception e){
+							new bsControllerException(e, iStub.log_ERROR);
+							wrapper=null;
+							request.getSession().removeAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
+						}
+					}
+					if(wrapper==null){
+						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_servletcontext(), (request==null)?null:request.getSession().getServletContext());
+						if(wrapper!=null && request!=null && wrapper.getInfo_context()!=null && wrapper.getInfo_context().isStateful())
+							request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper", wrapper);
+					}
+				}catch(Exception e){
+				}
+			}
+		
+			if(wrapper!=null)
+				return (Map)wrapper.getInstance();
+
+		return null;
+	}
+	
+	public static Object getFromOnlyServletContext(String id,HttpServletRequest request){
+		Map instance = checkOnlyServletContext(request);
+
+		if(instance==null)
+			instance = (Map)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+		if(instance==null){
+			instance = new HashMap();
+			request.getSession().getServletContext().setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
+		}
+		return instance.get(id);
+	}
+	
+	public static boolean setToOnlyServletContext(String id,i_bean obj,HttpServletRequest request){
+		try{
+			Map instance = checkOnlyServletContext(request);
+
+			if(instance==null)
+				instance = (Map)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+			if(instance==null){
+				instance = new HashMap();
+				request.getSession().getServletContext().setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
+			}
+			if(obj!=null){
+				if(obj.asBean().getInfo_context().isOnlyProxied()){
+					if(instance.get(id)==null)
+						instance.put(id, obj);
+					return true;
+				}
+			}
+			instance.put(id, obj);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
 	}
 
 

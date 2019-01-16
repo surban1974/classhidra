@@ -98,7 +98,8 @@
 			<xs:attribute name="name" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string"/>
 			<xs:attribute name="redirect" type="xs:string"/>
-			<xs:attribute name="navigated" type="xs:string"/>			<xs:attribute name="memoryInSession" type="xs:boolean"/>			<xs:attribute name="reloadAfterAction" type="xs:boolean"/>			<xs:attribute name="property" type="xs:string"/>
+			<xs:attribute name="navigated" type="xs:string"/>			<xs:attribute name="memoryInSession" type="xs:boolean"/>
+			<xs:attribute name="memoryInServletContext" type="xs:boolean"/>			<xs:attribute name="reloadAfterAction" type="xs:boolean"/>			<xs:attribute name="property" type="xs:string"/>
 			<xs:attribute name="help" type="xs:string"/>
 			<xs:attribute name="error" type="xs:string"/>
 			<xs:attribute name="provider" type="xs:string"/>

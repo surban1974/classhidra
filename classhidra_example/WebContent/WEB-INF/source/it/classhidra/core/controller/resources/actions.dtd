@@ -75,6 +75,7 @@
 	navigated (true | false) #IMPLIED
 	navigatedMemoryContent (true | false) #IMPLIED
 	memoryInSession (true | false) #IMPLIED
+	memoryInServletContext (true | false) #IMPLIED
 	memoryAsLastInstance (true | false) #IMPLIED
 	reloadAfterAction (true | false) #IMPLIED
 	reloadAfterNextNavigated (true | false) #IMPLIED

@@ -375,6 +375,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 					}catch(Exception e){
 					}	
 					if(anotherBean==null) anotherBean = bsController.getFromOnlySession(bean, request);
+					if(anotherBean==null) anotherBean = bsController.getFromOnlyServletContext(bean, request);
 					if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
 					
 				}catch(Exception e){

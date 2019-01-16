@@ -101,7 +101,6 @@ public class info_navigation extends elementBase implements i_elementBase{
 		this.iRedirect = iRedirect;
 		this.id = iAction.getPath().trim();
 		if(content!=null){
-//			info_context info = bsController.checkBeanContext(content.asBean());
 			if(iAction!=null && iAction.getNavigatedMemoryContent()!=null && !iAction.getNavigatedMemoryContent().equals("")){
 				if(iAction.getNavigatedMemoryContent().equalsIgnoreCase("true")){
 					if(content.asBean().getInfo_context().isOnlyProxied()){
@@ -127,8 +126,6 @@ public class info_navigation extends elementBase implements i_elementBase{
 					this._content = content;
 			}
 			
-//			if(content.isNavigable())
-//				this._content = content;
 			if(content instanceof i_bean)
 				class_name = content.asBean().getClass().getName();
 			else if(content instanceof i_action)
@@ -264,33 +261,11 @@ public class info_navigation extends elementBase implements i_elementBase{
 			iNavigation.setParent(this);
 			child = iNavigation;
 			if(	!child.getIService().isComplete() && iService.isComplete()) child.setIService(iService);
-/*
- 			if(	!child.getIService().isComplete() &&
-			 	iService.isComplete() &&
-			 	(
-					child.getIService().getId_pointOfService()==null ||
-					child.getIService().getId_pointOfService().equals("") ||
-					child.getIService().getId_pointOfService().equals(iService.getId_pointOfService())
-				)	
-				) child.setIService(iService);
- 
- */				
 		}else child.add(iNavigation);	
 	}
 	
 	public void reimposta(info_navigation iNavigation){
 		if(iNavigation==null) return;
-/*		
-		if(	this.iRedirect==null &&
-			iNavigation!=null &&
-			iNavigation.getIRedirect()!=null &&
-			!iNavigation.getIRedirect().getNavigated().toLowerCase().equals("true")
-		){
-			if(this.getParent()!=null){
-				this.getParent().child = null;
-			}
-		}else{
-*/			
 			id=iNavigation.getId();
 			desc_second=iNavigation.getDesc_second();
 			iAction = iNavigation.getIAction();
@@ -302,11 +277,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 			else if(iNavigation.getIRedirect()!=null && this.iRedirect==null)
 				iRedirect = iNavigation.getIRedirect();
 			child = iNavigation.getChild();
-//			if(!(_content!=null && iNavigation.get_content()==null))
-//				_content = iNavigation.get_content();
 			if(!(_content!=null && iNavigation.get_realcontent()==null)){
 				if(iNavigation.get_realcontent()!=null){
-//					info_context info = bsController.checkBeanContext(iNavigation.get_realcontent().asBean());
 					if(iAction!=null && iAction.getNavigatedMemoryContent()!=null && !iAction.getNavigatedMemoryContent().equals("")){
 						if(iAction.getNavigatedMemoryContent().equalsIgnoreCase("true")){
 							if(iNavigation.get_realcontent().asBean().getInfo_context().isOnlyProxied()){
@@ -428,29 +400,6 @@ public class info_navigation extends elementBase implements i_elementBase{
 		desc_second = string;
 	}
 	public i_bean get_content() {
-/*
-		if(_content == null && class_name!=null && !class_name.equals("")){
-			Object instance = util_provider.getBeanFromObjectFactory(new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider()}, id, class_name, null);
-			if(instance!=null){
-				if(instance instanceof i_bean)
-					return ((i_bean)instance).asBean();
-				else if(instance instanceof i_action)
-					return ((i_action)instance).asBean();
-				return null;
-			}
-		}
-*/	
-/*		
-		if(_content == null && class_name!=null && !class_name.equals("")){
-			Object instance = util_provider.getBeanFromObjectFactory(new String[]{bsController.getAction_config().getProvider(),bsController.getAppInit().get_cdi_provider()}, id, class_name, null);
-			if(instance!=null){
-				if(instance instanceof i_bean)
-					return ((i_bean)instance);
-
-				return null;
-			}
-		}
-*/		
 		return _content;
 	}
 	public i_bean get_realcontent() {

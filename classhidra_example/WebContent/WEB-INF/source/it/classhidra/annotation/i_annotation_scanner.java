@@ -47,5 +47,7 @@ public interface i_annotation_scanner {
 	
 	String getInstance_onlysession();
 	
+	String getInstance_servletcontext();
+	
 
 }

@@ -25,6 +25,7 @@
 package it.classhidra.core.controller.tags;
 
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ public class tagBean extends ClTagSupport{
 	private static final long serialVersionUID = 1L;
 	public static final String CONST_HEAP_BEANS = "HEAP_BEANS";
 	protected String name = null;
+	protected String constructor=null;
 	protected String source=null;
 	protected String property=null;
 	protected String index=null;
@@ -95,9 +97,32 @@ public class tagBean extends ClTagSupport{
 			
 			if(method_prefix==null) method_prefix="get";
 
-			if(source==null)
+			if(source==null && constructor==null)
 				anotherBean = formBean;
-			else{
+			else if(source==null && constructor!=null && constructor.trim().length()>0) {
+				try {
+					if(arg.length==0)
+						anotherBean = Class.forName(constructor).newInstance();
+					else {
+						Constructor found = null;
+						for(Constructor constructor:Class.forName(constructor).getConstructors()) {
+							if(constructor.getParameterTypes().length==arg.length) {
+								boolean equal = true;
+								for(int i=0;i<constructor.getParameterTypes().length;i++) 
+									equal&=constructor.getParameterTypes()[i].isInstance(arg[i]);
+								if(equal) {
+									found=constructor;
+									break;
+								}
+							}								
+						}
+						if(found!=null)
+							anotherBean = found.newInstance(arg);
+					}
+				}catch(Exception e) {
+					
+				}
+			}else{
 				if(source.equals(bsConstants.CONST_TAG_REQUESTPARAMETER)) anotherBean = request.getParameter(property);
 				if(source.equals(bsConstants.CONST_TAG_SYSTEMPROPERTY)) anotherBean = System.getProperty(property);
 				if(anotherBean==null) anotherBean = request.getAttribute(source);
@@ -109,6 +134,7 @@ public class tagBean extends ClTagSupport{
 				}catch(Exception e){
 				}
 				if(anotherBean==null) anotherBean = bsController.getFromOnlySession(source, request);
+				if(anotherBean==null) anotherBean = bsController.getFromOnlyServletContext(source, request);
 				if(anotherBean==null) anotherBean = bsController.getProperty(source,request);
 				
 				if(anotherBean!=null){
@@ -215,6 +241,7 @@ public class tagBean extends ClTagSupport{
 	public void release() {
 		super.release();
 		name=null;
+		constructor=null;
 		source=null;
 		property=null;
 		method_prefix=null;
@@ -269,6 +296,14 @@ public class tagBean extends ClTagSupport{
 
 	public void setArguments(List arguments) {
 		this.arguments = arguments;
+	}
+
+	public String getConstructor() {
+		return constructor;
+	}
+
+	public void setConstructor(String constructor) {
+		this.constructor = constructor;
 	}
 
 }

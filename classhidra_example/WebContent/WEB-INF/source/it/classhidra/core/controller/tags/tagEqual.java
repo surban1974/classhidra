@@ -133,6 +133,7 @@ public class tagEqual extends  ClTagSupport implements IExpressionArgument{
 			}catch(Exception e){
 			}
 			if(anotherBean==null) anotherBean = bsController.getFromOnlySession(bean, request);
+			if(anotherBean==null) anotherBean = bsController.getFromOnlyServletContext(bean, request);
 			if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
 			
 

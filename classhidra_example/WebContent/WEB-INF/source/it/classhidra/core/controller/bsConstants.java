@@ -80,6 +80,8 @@ public interface bsConstants {
 //	TODO	@Deprecated
 	public final static String CONST_BEAN_$ONLYINSSESSION 				=	"$onlyinssession";
 	
+	public final static String CONST_BEAN_$SERVLETCONTEXT 				=	"$servletcontext";
+	
 	public final static String CONST_BEAN_$ONLYASLASTINSTANCE			=	"$onlyaslastinstance";
 	
 //	TODO	@Deprecated

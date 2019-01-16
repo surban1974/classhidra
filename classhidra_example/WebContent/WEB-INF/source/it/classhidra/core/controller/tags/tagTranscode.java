@@ -209,6 +209,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 				}catch(Exception e){
 				}
 				if(rightBean==null) rightBean = bsController.getFromOnlySession(nameRightBean, request);
+				if(rightBean==null) rightBean = bsController.getFromOnlyServletContext(nameRightBean, request);
 				if(rightBean==null) rightBean = bsController.getProperty(nameRightBean,request);
 				if(rightBean==null && formBean!=null) {
 					rightBean = util_reflect.prepareWriteValueForTag(formBean,method_prefix,nameRightBean,arg);
@@ -261,6 +262,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 				}catch(Exception e){
 				}
 				if(rightBean==null) rightBean = bsController.getFromOnlySession(nameRightBean, request);
+				if(rightBean==null) rightBean = bsController.getFromOnlyServletContext(nameRightBean, request);
 				if(rightBean==null) rightBean = bsController.getProperty(nameRightBean,request);
 				if(rightBean==null && formBean!=null) {
 					rightBean = util_reflect.prepareWriteValueForTag(formBean,method_prefix,nameRightBean,arg);

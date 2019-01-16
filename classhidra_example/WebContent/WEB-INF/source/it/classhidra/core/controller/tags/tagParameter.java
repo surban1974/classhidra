@@ -106,6 +106,7 @@ public class tagParameter extends TagSupport{
 					}catch(Exception e){
 					}		
 					if(anotherBean==null) anotherBean = bsController.getFromOnlySession(source, request);
+					if(anotherBean==null) anotherBean = bsController.getFromOnlyServletContext(source, request);
 					if(anotherBean==null) anotherBean = bsController.getProperty(source,request);
 					
 				}

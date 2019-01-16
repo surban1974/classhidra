@@ -54,6 +54,7 @@
                 redirect="/jsp/test.jsp"
                 navigated="true"
                 memoryInSession="false"
+                memoryInServletContext="false"
                 memoryAsLastInstance="false"
                 reloadAfterAction="true"
                 help="/help/help_test.html"

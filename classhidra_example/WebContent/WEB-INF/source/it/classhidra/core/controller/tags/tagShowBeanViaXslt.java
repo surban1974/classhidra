@@ -179,6 +179,7 @@ public class tagShowBeanViaXslt extends TagSupport{
 			}catch(Exception e){
 			}		
 			if(anotherBean==null) anotherBean = bsController.getFromOnlySession(bean, request);
+			if(anotherBean==null) anotherBean = bsController.getFromOnlyServletContext(bean, request);
 			if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
 			
 			if(anotherBean!=null){

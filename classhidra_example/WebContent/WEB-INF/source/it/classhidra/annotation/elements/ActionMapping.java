@@ -20,6 +20,7 @@ public @interface ActionMapping {
 	String instance_local_container() default "";
 	String instance_scheduler_container() default "";
 	String instance_onlysession() default "";
+	String instance_servletcontext() default "";
 	Stream[] streams() default {};
 	Bean[] beans() default {};
 	Redirect[] redirects() default {};

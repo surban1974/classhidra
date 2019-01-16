@@ -36,8 +36,10 @@ public interface listener_bean{
 	void onAddToNavigation();
 	void onGetFromNavigation();
 	void onAddToSession();
+	void onAddToServletContext();
 	void onAddToLastInstance();
 	void onGetFromSession();
+	void onGetFromServletContext();
 	void onGetFromLastInstance();
 
 	void onPostInit(HttpServletRequest request);

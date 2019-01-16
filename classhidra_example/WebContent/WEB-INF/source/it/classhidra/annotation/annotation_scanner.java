@@ -15,6 +15,7 @@ import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.annotation.elements.ResponseHeader;
 import it.classhidra.annotation.elements.Rest;
 import it.classhidra.annotation.elements.Section;
+import it.classhidra.annotation.elements.ServletContextDirective;
 import it.classhidra.annotation.elements.SessionDirective;
 import it.classhidra.annotation.elements.Stream;
 import it.classhidra.annotation.elements.Transformation;
@@ -84,6 +85,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	protected String instance_local_container;
 	protected String instance_scheduler_container;
 	protected String instance_onlysession;
+	protected String instance_servletcontext;
 
 	
 
@@ -440,6 +442,11 @@ public class annotation_scanner implements i_annotation_scanner {
 					checkClassAnnotation(classType, class_path, subAnnotation, subAnnotations);
 					subAnnotations.put("SessionDirective", subAnnotation);
 				}	
+			subAnnotation = classType.getAnnotation(ServletContextDirective.class);
+				if(subAnnotation!=null){
+					checkClassAnnotation(classType, class_path, subAnnotation, subAnnotations);
+					subAnnotations.put("ServletContextDirective", subAnnotation);
+				}	
 	
 			ActionMapping annotationActionMapping = (ActionMapping)classType.getAnnotation(ActionMapping.class);
 			if(annotationActionMapping!=null){
@@ -467,6 +474,8 @@ public class annotation_scanner implements i_annotation_scanner {
 					instance_scheduler_container=annotationActionMapping.instance_scheduler_container();
 				if(!annotationActionMapping.instance_onlysession().equals(""))
 					instance_onlysession=annotationActionMapping.instance_onlysession();
+				if(!annotationActionMapping.instance_servletcontext().equals(""))
+					instance_servletcontext=annotationActionMapping.instance_servletcontext();
 				
 				Stream[] streams = annotationActionMapping.streams();
 				if(streams!=null && streams.length>0){
@@ -804,11 +813,18 @@ public class annotation_scanner implements i_annotation_scanner {
     	iAction.setRedirect(annotationAction.redirect());
     	iAction.setError(annotationAction.error());
     	iAction.setMemoryInSession(annotationAction.memoryInSession());
+    	iAction.setMemoryInServletContext(annotationAction.memoryInServletContext());
     	
     	SessionDirective sessionDirective = (SessionDirective)subAnnotations.get("SessionDirective");
     	if(sessionDirective!=null){
     		if(!iAction.getMemoryInSession().trim().equalsIgnoreCase("true"))
 	    		iAction.setMemoryInSession("true");
+    	}
+    	
+    	ServletContextDirective servletContextDirective = (ServletContextDirective)subAnnotations.get("ServletContextDirective");
+    	if(servletContextDirective!=null){
+    		if(!iAction.getMemoryInServletContext().trim().equalsIgnoreCase("true"))
+	    		iAction.setMemoryInServletContext("true");
     	}
     	
     	iAction.setMemoryAsLastInstance(annotationAction.memoryAsLastInstance());
@@ -1433,6 +1449,10 @@ public class annotation_scanner implements i_annotation_scanner {
 
 	public String getInstance_onlysession() {
 		return instance_onlysession;
+	}
+	
+	public String getInstance_servletcontext() {
+		return instance_servletcontext;
 	}
 
 

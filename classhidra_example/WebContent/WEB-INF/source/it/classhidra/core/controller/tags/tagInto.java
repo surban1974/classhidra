@@ -134,6 +134,7 @@ public class tagInto extends  ClTagSupport implements IExpressionArgument{
 			}catch(Exception e){
 			}	
 			if(anotherBean==null) anotherBean = bsController.getFromOnlySession(bean, request);
+			if(anotherBean==null) anotherBean = bsController.getFromOnlyServletContext(bean, request);
 			if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
 			if(anotherBean!=null){
 				if(name==null) writeValue = anotherBean.toString();

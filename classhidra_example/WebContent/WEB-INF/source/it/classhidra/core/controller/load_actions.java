@@ -73,6 +73,7 @@ public class load_actions extends elementBase{
 	private String instance_local_container;
 	private String instance_scheduler_container;
 	private String instance_onlysession;
+	private String instance_servletcontext;
 
 
 	private Vector  v_info_actions;
@@ -302,6 +303,11 @@ public void reInit(i_externalloader _externalloader){
 		instance_onlysession=(String)_externalloader.getProperty(i_externalloader.ACTIONS_instance_onlysession);
 		loaded=true;
 	}
+	if(	_externalloader.getProperty(i_externalloader.ACTIONS_instance_servletcontext)!=null &&
+		_externalloader.getProperty(i_externalloader.ACTIONS_instance_servletcontext) instanceof String){
+		instance_servletcontext=(String)_externalloader.getProperty(i_externalloader.ACTIONS_instance_servletcontext);
+		loaded=true;
+	}
 	
 	
 	
@@ -364,6 +370,7 @@ public void reimposta(){
 	if(instance_local_container==null) instance_local_container="";
 	if(instance_scheduler_container==null) instance_scheduler_container="";
 	if(instance_onlysession==null) instance_onlysession="";
+	if(instance_servletcontext==null) instance_servletcontext="";
 	readOk_Resource=false;
 	readOk_Folder=false;
 	readOk_File=false;
@@ -566,6 +573,8 @@ public void loadFromAnnotations(){
 		instance_scheduler_container = l_annotated.getInstance_scheduler_container();	
 	if(l_annotated.getInstance_onlysession()!=null && !l_annotated.getInstance_onlysession().equals(""))
 		instance_onlysession = l_annotated.getInstance_onlysession();	
+	if(l_annotated.getInstance_servletcontext()!=null && !l_annotated.getInstance_servletcontext().equals(""))
+		instance_servletcontext = l_annotated.getInstance_servletcontext();
 	
 	Vector a_streams = new Vector(l_annotated.get_streams().values());
 	if(a_streams.size()>0){
@@ -858,6 +867,8 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 		instance_scheduler_container = l_annotated.getInstance_scheduler_container();	
 	if(l_annotated.getInstance_onlysession()!=null && !l_annotated.getInstance_onlysession().equals(""))
 		instance_onlysession = l_annotated.getInstance_onlysession();	
+	if(l_annotated.getInstance_servletcontext()!=null && !l_annotated.getInstance_servletcontext().equals(""))
+		instance_servletcontext = l_annotated.getInstance_servletcontext();
 	
 
 	Vector a_streams = new Vector(l_annotated.get_streams().values());
@@ -2401,6 +2412,7 @@ public String toXml(){
 	if(instance_local_container!=null && !instance_local_container.trim().equals("")) result+=" instance_local_container=\""+util_format.normaliseXMLText(instance_local_container)+"\"";
 	if(instance_scheduler_container!=null && !instance_scheduler_container.trim().equals("")) result+=" instance_scheduler_container=\""+util_format.normaliseXMLText(instance_scheduler_container)+"\"";
 	if(instance_onlysession!=null && !instance_onlysession.trim().equals("")) result+=" instance_onlysession=\""+util_format.normaliseXMLText(instance_onlysession)+"\"";
+	if(instance_servletcontext!=null && !instance_servletcontext.trim().equals("")) result+=" instance_servletcontext=\""+util_format.normaliseXMLText(instance_servletcontext)+"\"";
 
 	result+=">";
 	result+=System.getProperty("line.separator")+"   <action-streams";
@@ -2671,8 +2683,16 @@ public String getInstance_onlysession() {
 	return instance_onlysession;
 }
 
+public String getInstance_servletcontext() {
+	return instance_servletcontext;
+}
+
 public void setInstance_onlysession(String instance_onlysession) {
 	this.instance_onlysession = instance_onlysession;
+}
+
+public void setInstance_servletcontext(String instance_servletcontext) {
+	this.instance_servletcontext = instance_servletcontext;
 }
 
 
@@ -2939,6 +2959,8 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			instance_scheduler_container = l_annotated.getInstance_scheduler_container();
 		if(l_annotated.getInstance_onlysession()!=null && !l_annotated.getInstance_onlysession().equals(""))
 			instance_onlysession = l_annotated.getInstance_onlysession();	
+		if(l_annotated.getInstance_servletcontext()!=null && !l_annotated.getInstance_servletcontext().equals(""))
+			instance_servletcontext = l_annotated.getInstance_servletcontext();
 		
 		Vector a_streams = new Vector(l_annotated.get_streams().values());
 
