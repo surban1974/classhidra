@@ -105,13 +105,13 @@ public class tagBean extends ClTagSupport{
 						anotherBean = Class.forName(constructor).newInstance();
 					else {
 						Constructor found = null;
-						for(Constructor constructor:Class.forName(constructor).getConstructors()) {
-							if(constructor.getParameterTypes().length==arg.length) {
+						for(Constructor currentConstructor:Class.forName(constructor).getConstructors()) {
+							if(currentConstructor.getParameterTypes().length==arg.length) {
 								boolean equal = true;
-								for(int i=0;i<constructor.getParameterTypes().length;i++) 
-									equal&=constructor.getParameterTypes()[i].isInstance(arg[i]);
+								for(int i=0;i<currentConstructor.getParameterTypes().length;i++) 
+									equal&=currentConstructor.getParameterTypes()[i].isInstance(arg[i]);
 								if(equal) {
-									found=constructor;
+									found=currentConstructor;
 									break;
 								}
 							}								
