@@ -45,7 +45,7 @@ public class ProcessBatchEngine  {
 
 		batch_init binit = DriverScheduling.getConfiguration();
 
-		new bsException("Scheduler: BatchEngine:launch:scan", iStub.log_DEBUG);
+		new bsException("Scheduler: BatchEngine:launch:scan", iStub.log_INFO);
 
 		try{
 			String currentTime = util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm");
@@ -83,7 +83,7 @@ public class ProcessBatchEngine  {
 
 		batch_init binit = DriverScheduling.getConfiguration();
 
-		new bsException("Scheduler: BatchEngine:launch:scan", iStub.log_DEBUG);
+		new bsException("Scheduler: BatchEngine:launch:scan", iStub.log_INFO);
 
 		try{
 			String currentTime = util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm");
@@ -122,7 +122,7 @@ public class ProcessBatchEngine  {
 
 		batch_init binit = DriverScheduling.getConfiguration();
 
-		new bsException("Scheduler: BatchEngine:launch:scan", iStub.log_DEBUG);
+		new bsException("Scheduler: BatchEngine:launch:scan", iStub.log_INFO);
 
 		try{
 			String currentTime = util_format.dataToString(new java.util.Date(), "yyyy-MM-dd-HH-mm");
@@ -163,7 +163,7 @@ public class ProcessBatchEngine  {
 		
 		
 		try{
-			new bsException("Scheduler: BatchEngine:stoping "+el.getCd_btch(), iStub.log_DEBUG);
+			new bsException("Scheduler: BatchEngine:stoping "+el.getCd_btch(), iStub.log_INFO);
 			if(el.getState().shortValue()==i_batch.STATE_SCHEDULED){
 				if(DriverScheduling.getThProcess()!=null){
 					schedulingThreadEvent ste = getFromThreadEvents(el);
@@ -183,7 +183,7 @@ public class ProcessBatchEngine  {
 			}
 			
 			if(remove){
-				new bsException("Scheduler: BatchEngine:removing "+el.getCd_btch(), iStub.log_DEBUG);
+				new bsException("Scheduler: BatchEngine:removing "+el.getCd_btch(), iStub.log_INFO);
 				i_4Batch m4b = binit.get4BatchManager();
 				HashMap form = new HashMap();
 		
@@ -220,7 +220,7 @@ public class ProcessBatchEngine  {
 		i_4Batch m4b = binit.get4BatchManager();
 		HashMap form = new HashMap();		
 		try{
-			new bsException("Scheduler: BatchEngine:launchSingle "+el.getCd_btch(), iStub.log_DEBUG);
+			new bsException("Scheduler: BatchEngine:launchSingle "+el.getCd_btch(), iStub.log_INFO);
 			form.put("cd_ist",el.getCd_ist());
 			form.put("cd_btch",el.getCd_btch());
 			db_batch founded = (db_batch)m4b.operation(i_integration.o_FIND, form);

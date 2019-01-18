@@ -953,7 +953,7 @@ public static void writeToConsole(log_init logInit, String mess){
 	
 
 }
-public static void writeToConsole(log_init logInit, Exception e){
+public static void writeToConsole_(log_init logInit, Exception e){
 	if(e==null) return;
 	writeToConsole(logInit,e.toString());
 }

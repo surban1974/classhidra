@@ -43,7 +43,7 @@ public class info_apply_to_action extends info_entity implements i_elementBase{
 				}
 			}
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}
 	}
 

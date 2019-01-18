@@ -161,9 +161,9 @@ public class util_provider {
 			return 
 				provider.get_bean(id_bean);
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}catch (Throwable t) {
-			new bsControllerException(t,iStub.log_DEBUG);
+			new bsControllerException(t,iStub.log_ERROR);
 		}
 		return null;
 	}
@@ -191,9 +191,9 @@ public class util_provider {
 			return 
 				provider.get_bean(id_bean);
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}catch (Throwable t) {
-			new bsControllerException(t,iStub.log_DEBUG);
+			new bsControllerException(t,iStub.log_ERROR);
 		}
 		return null;
 	}
@@ -469,9 +469,9 @@ public class util_provider {
 			}catch (Exception e) {
 			}
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}catch (Throwable t) {
-			new bsControllerException(t,iStub.log_DEBUG);
+			new bsControllerException(t,iStub.log_ERROR);
 		}
 		return false;
 	}
@@ -492,9 +492,9 @@ public class util_provider {
 			}catch (Exception e) {
 			}
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}catch (Throwable t) {
-			new bsControllerException(t,iStub.log_DEBUG);
+			new bsControllerException(t,iStub.log_ERROR);
 		}
 		return false;
 	}
@@ -520,9 +520,9 @@ public class util_provider {
 			return 
 				null;
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}catch (Throwable t) {
-			new bsControllerException(t,iStub.log_DEBUG);
+			new bsControllerException(t,iStub.log_ERROR);
 		}
 		return null;
 	}	
@@ -540,9 +540,9 @@ public class util_provider {
 			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
 			return info;
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}catch (Throwable t) {
-			new bsControllerException(t,iStub.log_DEBUG);
+			new bsControllerException(t,iStub.log_ERROR);
 		}
 		return info;
 	}	
@@ -561,9 +561,9 @@ public class util_provider {
 			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
 			return info;
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}catch (Throwable t) {
-			new bsControllerException(t,iStub.log_DEBUG);
+			new bsControllerException(t,iStub.log_ERROR);
 		}
 		return null;
 	}
@@ -582,9 +582,9 @@ public class util_provider {
 			info = (info_context)m_getInstance.invoke(null, new Object[]{info, bean});
 			return info;
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}catch (Throwable t) {
-			new bsControllerException(t,iStub.log_DEBUG);
+			new bsControllerException(t,iStub.log_ERROR);
 		}
 		return null;
 	}

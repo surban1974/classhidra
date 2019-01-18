@@ -35,6 +35,7 @@ public class stub_log implements iStub{
 
 public void write(HashMap hm){
 	try{
+		Object class_info = hm.get(iStub.log_class_info);
 		Object mess = hm.get(iStub.log_stub_mess);
 		Object exception = hm.get(iStub.log_stub_exception);
 		Object throwable = hm.get(iStub.log_stub_throwable);		
@@ -43,7 +44,7 @@ public void write(HashMap hm){
 		Object level = hm.get(iStub.log_stub_level);
 
 		util_format.writeToConsole(null,
-				"\nMESSAGE:"+mess + "\nEXCEPTION:" +exception +"\nTHROWABLE:"+throwable+"\nLEVEL:"+level +"\nREQUEST:"+request+"\nSERVLETCONTEXT:"+servletcontext
+				"\nCLASSINFO:"+class_info + "\nMESSAGE:"+mess + "\nEXCEPTION:" +exception +"\nTHROWABLE:"+throwable+"\nLEVEL:"+level +"\nREQUEST:"+request+"\nSERVLETCONTEXT:"+servletcontext
 		);
 
 	}catch(Exception e){

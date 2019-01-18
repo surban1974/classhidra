@@ -2,6 +2,8 @@ package it.classhidra.core.tool.util;
 
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.init.app_init;
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -648,7 +650,7 @@ public class util_classes {
 			}
 
 		}catch(Exception e){
-			util_format.writeToConsole(bsController.getLogInit(),"LoadMessages: Array.ERROR:"+e.toString());
+			new bsException("LoadMessages: Array.ERROR:"+e.toString(),iStub.log_ERROR);
 		}
 		return result;
 	}

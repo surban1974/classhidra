@@ -103,7 +103,7 @@ public Vector _clone_sort(Vector dati, Vector dati_cr) {
 	    	l_index.next();l_index.set(a_index[j]);
 		}
 	}catch(Exception e){
-		e.toString();new bsException(e,iStub.log_DEBUG);
+		new bsException(e,iStub.log_ERROR);
 	}
 
 	for(int i=0;i<index.size();i++)
@@ -209,7 +209,7 @@ public static List _clone_sort(List dati, List dati_cr) {
 	    	l_index.next();l_index.set(a_index[j]);
 		}
 	}catch(Exception e){
-		e.toString();new bsException(e,iStub.log_DEBUG);
+		new bsException(e,iStub.log_ERROR);
 	}
 
 	for(int i=0;i<index.size();i++)
@@ -341,7 +341,7 @@ private static void _clone_sortSelf(Vector dati, Vector dati_cr, int start, int 
 			}else li.next();
 		}
 	}catch(Exception e){
-		new bsException(e,iStub.log_DEBUG);
+		new bsException(e,iStub.log_ERROR);
 	}
 
 //	for(int i=start;i<finish;i++)
@@ -396,7 +396,7 @@ private static void _clone_sortSelf(List dati, List dati_cr, int start, int fini
 			}else li.next();
 		}
 	}catch(Exception e){
-		new bsException(e,iStub.log_DEBUG);
+		new bsException(e,iStub.log_ERROR);
 	}
 
 	List result = new ArrayList();

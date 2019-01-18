@@ -77,7 +77,7 @@ public class info_rest extends info_entity implements i_elementBase{
 				}
 			}
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}
 	}
 

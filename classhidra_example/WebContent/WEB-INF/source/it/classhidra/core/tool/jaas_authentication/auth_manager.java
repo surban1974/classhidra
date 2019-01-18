@@ -136,7 +136,7 @@ public class auth_manager implements i_auth_manager {
 				if(!auth.get_matricola().equals("")) return true;
 			}
 		}catch(Exception ex){	
-			new bsControllerException(ex,iStub.log_DEBUG);
+			new bsControllerException(ex,iStub.log_ERROR);
 		}
 		return false;
 	}
@@ -150,7 +150,7 @@ public class auth_manager implements i_auth_manager {
 			elCooki.setMaxAge(60*60);
 			response.addCookie(elCooki);
 		}catch(Exception ex){	
-			new bsControllerException(ex,iStub.log_DEBUG);
+			new bsControllerException(ex,iStub.log_ERROR);
 		}
 		return false;
 	}

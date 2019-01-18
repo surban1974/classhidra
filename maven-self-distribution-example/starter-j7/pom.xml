@@ -4,7 +4,7 @@
 
   <groupId>com.github.surban1974.classhidra</groupId>
   <artifactId>classhidra-starter-7</artifactId>
-  <version>1.5.4</version>
+  <version>1.5.5</version>
   <packaging>war</packaging>
   <name>Classhidra Starter Java 7</name>
   <description>Classhidra Hello World simple example application. Servlet api &gt; 3</description>
@@ -81,7 +81,7 @@
 	<dependency>
 		<groupId>com.github.surban1974.classhidra</groupId>
 		<artifactId>classhidra-base-7</artifactId>
-		<version>1.5.4</version>
+		<version>1.5.5</version>
 	</dependency>
   
 	<dependency>

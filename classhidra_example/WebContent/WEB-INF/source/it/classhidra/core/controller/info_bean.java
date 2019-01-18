@@ -72,7 +72,7 @@ public class info_bean extends info_entity implements i_elementBase{
 				}
 			}
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}
 		NodeList nodeList = node.getChildNodes();
 		int order_r=0;

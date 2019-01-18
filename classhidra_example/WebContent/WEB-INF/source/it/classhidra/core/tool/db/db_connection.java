@@ -72,7 +72,7 @@ public Connection getContent() throws Exception{
 			conn = getFreeConnection(init); 
 			if(init.get_allwayone().equals("true")){
 				util_container.setContentAsObject(CONST_CONNECTION_LOCAL_CONTAINER, conn);
-				util_format.writeToConsole(bsController.getLogInit(),"APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode());	
+				new bsException("APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode(),iStub.log_ERROR);
 			}
 		}	
 	}catch(Exception e){
@@ -95,7 +95,7 @@ public Connection getContent(boolean writeException) throws Exception{
 			conn = getFreeConnection(init); 
 			if(init.get_allwayone().equals("true")){
 				util_container.setContentAsObject(CONST_CONNECTION_LOCAL_CONTAINER, conn);
-				util_format.writeToConsole(bsController.getLogInit(),"APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode());	
+				new bsException("APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode(),iStub.log_ERROR);	
 			}
 		}	
 	}catch(Exception e){
@@ -124,7 +124,7 @@ public Connection getContentNoLog(){
 			conn = getFreeConnection(init); 
 			if(init.get_allwayone().equals("true")){
 				util_container.setContentAsObject(CONST_CONNECTION_LOCAL_CONTAINER, conn);
-				util_format.writeToConsole(bsController.getLogInit(),"APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode());	
+				new bsException("APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode(),iStub.log_ERROR);	
 			}
 		}	
 	}catch(Exception e){
@@ -146,7 +146,7 @@ public Connection getContent(db_init init_ext) throws Exception{
 			conn = getFreeConnection(init_ext); 
 			if(init_ext.get_allwayone().equals("true")){
 				util_container.setContentAsObject(CONST_CONNECTION_LOCAL_CONTAINER, conn);
-				util_format.writeToConsole(bsController.getLogInit(),"APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode());	
+				new bsException("APP:GETCONNECTION:"+util_format.dataToString(new Date(), "yyyy-MM-dd:HHmm:ssssss")+":" +conn.hashCode(),iStub.log_ERROR);	
 			}
 		}	
 	}catch(Exception e){

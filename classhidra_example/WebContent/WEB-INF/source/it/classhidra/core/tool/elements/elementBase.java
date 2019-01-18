@@ -52,7 +52,7 @@ public Object clone() {
 		try{
 			clone = util_cloner.clone(this);
 		}catch(Exception ex){
-			new bsException(ex,iStub.log_DEBUG);
+			new bsException(ex,iStub.log_ERROR);
 		}
 		
 	}	

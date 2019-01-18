@@ -100,7 +100,7 @@ public class util_auth {
 		try{
 			return auth.get_manager().saveTicker(auth, response);
 		}catch(Exception e){
-			new bsException(e,iStub.log_DEBUG);
+			new bsException(e,iStub.log_ERROR);
 			return false;
 		}		
 	}
@@ -114,7 +114,7 @@ public class util_auth {
 		try{
 			return auth.get_manager().saveFromForm(auth, bean, request, response);
 		}catch(Exception e){
-			new bsException(e,iStub.log_DEBUG);
+			new bsException(e,iStub.log_ERROR);
 			return false;
 		}
 	}	

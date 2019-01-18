@@ -251,7 +251,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 		checkLogGenerator(logInit);	
 //		logG = new log_generator(logInit);
-			if(getLogG().isReadError()) reloadLog_generator(getServletContext());
+		if(getLogG().isReadError())
+			reloadLog_generator(getServletContext());
 
 
 		resourcesInit(getServletContext());
@@ -3413,7 +3414,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}catch(Exception e){
 			if( e instanceof java.lang.NullPointerException){
-			}else new bsControllerException(e,iStub.log_DEBUG);
+			}else new bsControllerException(e,iStub.log_ERROR);
 		}
 
 
@@ -3462,7 +3463,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 			
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 		}
 
 	}
@@ -4440,7 +4441,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 
 		}catch(Exception e){
-			new bsControllerException(e,iStub.log_DEBUG);
+			new bsControllerException(e,iStub.log_ERROR);
 
 			return null;
 		}

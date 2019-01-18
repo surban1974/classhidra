@@ -72,7 +72,7 @@ public static synchronized String prepareClassInfo(final String[] javaNames, fin
 			}
 		}
 	}catch(Exception e){
-		new bsException(e,iStub.log_DEBUG);
+		new bsException(e,iStub.log_ERROR);
 	}
 	return classInfo;
 }

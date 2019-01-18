@@ -351,7 +351,7 @@ public class action extends bean implements i_action, Serializable{
 				}
 			}catch(Exception e){
 				if( e instanceof java.lang.NullPointerException){
-				}else new bsControllerException(e,iStub.log_DEBUG);
+				}else new bsControllerException(e,iStub.log_ERROR);
 			}
 		}
 	}

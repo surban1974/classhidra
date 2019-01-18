@@ -23,6 +23,7 @@
 *********************************************************************************/
 
 package it.classhidra.core.tool.exception;
+import it.classhidra.core.controller.bsController;
 import it.classhidra.core.init.log_init;
 import it.classhidra.core.tool.log.i_log_generator;
 import it.classhidra.core.tool.log.log_generator;
@@ -99,34 +100,37 @@ protected void writeLog(String msg, String level){
 }
 
 private void service_mountLog(){
-	logInit = new log_init();
-		logInit.init();
-	if(logInit.get_LogGenerator()==null || logInit.get_LogGenerator().equals("")){
-		if(	logInit.get_LogPath()==null || logInit.get_LogPath().equals("") && 
-			logInit.get_LogStub()==null || logInit.get_LogStub().equals("")	){
-			try{
-				Object transf = Class.forName("it.classhidra.core.tool.exception.bsIntegrator").newInstance();
-				logInit = (log_init)util_reflect.getValue(transf, "getLogInit", null);
-			}catch(Exception e){	
-				e.toString();
-			}catch(Throwable t){
-				t.toString();
+	logG = bsController.getLogG();
+	if(logG==null) {
+		logInit = new log_init();
+			logInit.init();
+		if(logInit.get_LogGenerator()==null || logInit.get_LogGenerator().equals("")){
+			if(	logInit.get_LogPath()==null || logInit.get_LogPath().equals("") && 
+				logInit.get_LogStub()==null || logInit.get_LogStub().equals("")	){
+				try{
+					Object transf = Class.forName("it.classhidra.core.tool.exception.bsIntegrator").newInstance();
+					logInit = (log_init)util_reflect.getValue(transf, "getLogInit", null);
+				}catch(Exception e){	
+					e.toString();
+				}catch(Throwable t){
+					t.toString();
+				}
 			}
 		}
-	}
-	if(logInit.get_LogGenerator()!=null && !logInit.get_LogGenerator().equals("")){
-		try{
-			logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
-			logG.setInit(logInit);
-			return;
-		}catch(Exception e){	
-			util_format.writeToConsole(logInit,"LogGenerator:"+e.toString());			
-		}catch (Throwable t) {
-			util_format.writeToConsole(logInit,"LogGenerator:"+t.toString());			
+		if(logInit.get_LogGenerator()!=null && !logInit.get_LogGenerator().equals("")){
+			try{
+				logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+				logG.setInit(logInit);
+				return;
+			}catch(Exception e){	
+				util_format.writeToConsole(logInit,"LogGenerator:"+e.toString());			
+			}catch (Throwable t) {
+				util_format.writeToConsole(logInit,"LogGenerator:"+t.toString());			
+			}
 		}
+		
+		logG = new log_generator(logInit);
 	}
-	
-	logG = new log_generator(logInit);
 }
 
 }

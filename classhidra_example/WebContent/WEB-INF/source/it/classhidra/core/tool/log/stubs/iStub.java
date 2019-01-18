@@ -27,6 +27,7 @@ package it.classhidra.core.tool.log.stubs;
 import java.util.HashMap;
 
 public interface iStub {
+	public static String log_class_info = 			"application.log.stub.class_info";
 	public static String log_stub_mess = 			"application.log.stub.mess";
 	public static String log_stub_exception = 		"application.log.stub.exception";
 	public static String log_stub_throwable = 		"application.log.stub.throwable";
@@ -34,11 +35,15 @@ public interface iStub {
 	public static String log_stub_user = 			"application.log.stub.user";
 	public static String log_stub_servletcontext = 	"application.log.stub.servletcontext";
 	public static String log_stub_level = 			"application.log.stub.level";
+	
+	public static String log_ALL = 					"ALL";
+	public static String log_TRACE = 				"TRACE";
 	public static String log_DEBUG = 				"DEBUG";
 	public static String log_INFO = 				"INFO";
 	public static String log_WARN = 				"WARN";
 	public static String log_ERROR = 				"ERROR";
 	public static String log_FATAL = 				"FATAL";
+	public static String log_OFF = 					"OFF";
 	
 	public void write(HashMap hm);
 	

@@ -83,7 +83,7 @@ public void reInit(java.sql.ResultSet rs){
 	try{
 		sql_getFromResultSet(rs,rs.getMetaData());
 	}catch(Exception e){
-		new bsException(e,iStub.log_DEBUG);
+		new bsException(e,iStub.log_ERROR);
 	}
 }
 public boolean sql_getFromResultSet(java.sql.ResultSet rs){

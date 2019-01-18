@@ -5,7 +5,7 @@ import it.classhidra.core.tool.db.db_connection;
 import it.classhidra.core.tool.elements.i_elementDBBase;
 
 import it.classhidra.core.tool.exception.bsException;
-
+import it.classhidra.core.tool.log.stubs.iStub;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -116,7 +116,7 @@ public class util_blob {
 				rs.close();
 
 			}catch(Exception e){
-				new bsException(e,"ERROR");
+				new bsException(e,iStub.log_ERROR);
 				throw e;	
 			}finally{
 				if(ext_conn!=null && ext_st!=null){
@@ -163,7 +163,7 @@ public class util_blob {
 				rs.close();
 
 			}catch(Exception e){
-				new bsException(e,"ERROR");
+				new bsException(e,iStub.log_ERROR);
 				throw e;	
 			}finally{
 				
@@ -208,7 +208,7 @@ public class util_blob {
 				rs.close();
 
 			}catch(Exception e){
-				new bsException(e,"ERROR");
+				new bsException(e,iStub.log_ERROR);
 				throw e;	
 			}finally{
 				if(ext_conn!=null && ext_st!=null){
@@ -255,7 +255,7 @@ public class util_blob {
 				rs.close();
 
 			}catch(Exception e){
-				new bsException(e,"ERROR");
+				new bsException(e,iStub.log_ERROR);
 				throw e;	
 			}finally{
 				
@@ -292,7 +292,7 @@ public class util_blob {
 				rs.close();
 
 			}catch(Exception e){
-				new bsException(e,"ERROR");
+				new bsException(e,iStub.log_ERROR);
 				throw e;	
 			}finally{
 				
@@ -320,7 +320,7 @@ public class util_blob {
 				rs.close();
 
 			}catch(Exception e){
-				new bsException(e,"ERROR");
+				new bsException(e,iStub.log_ERROR);
 				throw e;	
 			}finally{
 				db_connection.release(rs, st, conn);
@@ -347,7 +347,7 @@ public class util_blob {
 				rs.close();
 
 			}catch(Exception e){
-				util_format.writeToConsole(null,"DBConfig Read Error name="+db_name+" :"+e.toString());
+				new bsException("DBConfig Read Error name="+db_name+" :"+e.toString(),iStub.log_ERROR);
 				throw e;	
 			}finally{
 				db_connection.release(rs, st, conn);
@@ -373,7 +373,7 @@ public class util_blob {
 				conn.commit();
 
 			}catch(Exception e){
-				new bsException(e,"ERROR");
+				new bsException(e,iStub.log_ERROR);
 				throw e;	
 			}finally{
 				
@@ -401,7 +401,7 @@ public class util_blob {
 				conn.commit();
 
 			}catch(Exception e){
-				new bsException(e,"ERROR");
+				new bsException(e,iStub.log_ERROR);
 				throw e;	
 			}finally{
 				

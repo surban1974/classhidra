@@ -50,16 +50,21 @@ public log_generator(log_init _init) {
 	logStub = stubFactory(init.get_LogStub());
 	try{
 		if(init==null) throw new Exception("Log INIT is NULL");
-		if(init.get_LogPath()==null) throw new Exception("Log INIT->LogPath is NULL");
-		if(!new File(new log_FileManager(init).getRealPathName()).exists() && logStub==null) readError = true;
+//		if(init.get_LogPath()==null) throw new Exception("Log INIT->LogPath is NULL");
+		if(init.get_LogPath()==null)
+			init.set_LogPath("");
+		else if(init.get_LogPath()!=null && !init.get_LogPath().equals("")) {
+			if(!new File(new log_FileManager(init).getRealPathName()).exists() && logStub==null)
+				readError = true;
+		}
 	}catch(Exception e){	
 		readError = true;
-//	   	bsController.writeLog("Load_log ERROR:"+e.toString(),iStub.log_ERROR);
 		util_format.writeToConsole(_init,"Load_log ERROR: "+e.toString());
 		return;
 	}
 
 }
+
 public void setInit(log_init _init) {
 	this.init = _init;
 	logStub = stubFactory(init.get_LogStub());
@@ -134,6 +139,7 @@ public static iStub stubFactory(log_init _init){
 }
 
 public static HashMap prepare4stub(
+		String class_info,
 		String mess,
 		Exception exception,
 		Throwable throwable,
@@ -143,6 +149,7 @@ public static HashMap prepare4stub(
 		String user){
 	
 	HashMap result = new HashMap();
+		result.put(iStub.log_class_info,class_info);
 		result.put(iStub.log_stub_mess,mess);
 		result.put(iStub.log_stub_exception,exception);
 		result.put(iStub.log_stub_throwable,throwable);
@@ -166,51 +173,52 @@ public synchronized iStub get_log_Stub(){
 public synchronized void writeLog(HttpServletRequest request, String msg, String level) throws IOException {
 	i_log_pattern_web logPattern = patternFactory( init.get_LogPattern());
 	if(logPattern==null) logPattern = new log_patternSimple();
-	String log_mess = logPattern.prepare(request,msg,level);
-
-	util_format.writeToConsole(init,log_mess);
+	String log_mess = logPattern.prepare(request,msg,level);	
 	
 	if(logStub==null) logStub = stubFactory(init);
 	if(logStub!=null){
-		logStub.write(prepare4stub(log_mess, null, null, request,null, level,null));
+		logStub.write(prepare4stub(null, log_mess, null, null, request,null, level,null));
 	}else{	
-		log_FileManager fm = new log_FileManager(init);
-			fm.createFile(true,msg);
-			fm.writeLineRecord(log_mess);
-			fm.closeFile();
+		if(init==null || init.isStackLevel(level)){
+			util_format.writeToConsole(init,log_mess);
+			log_FileManager fm = new log_FileManager(init);
+				fm.createFile(true,msg);
+				fm.writeLineRecord(log_mess);
+				fm.closeFile();
+		}
 	}	
 }
 
 public synchronized void writeLog(String msg,String level) throws IOException {
 		i_log_pattern logPattern = patternFactory( init.get_LogPattern());
 		if(logPattern==null) logPattern = new log_patternSimple();
-		String log_mess = logPattern.prepare(msg,level);
-
-		util_format.writeToConsole(init,log_mess);
+		String log_mess = logPattern.prepare(msg,level);		
 		
 		if(logStub==null) logStub = stubFactory(init);
 		if(logStub!=null){
-			logStub.write(prepare4stub(log_mess, null, null, null,null, level,null));
+			logStub.write(prepare4stub(null, log_mess, null, null, null,null, level,null));
 		}else{
-			log_FileManager fm = new log_FileManager(init);
-				fm.createFile(true,msg);
-				fm.writeLineRecord(log_mess);
-			fm.closeFile();
+			if(init==null || init.isStackLevel(level)){
+				util_format.writeToConsole(init,log_mess);
+				log_FileManager fm = new log_FileManager(init);
+					fm.createFile(true,msg);
+					fm.writeLineRecord(log_mess);
+				fm.closeFile();
+			}
 		}
 }
 
 public static synchronized void writeLog(log_init _init, String msg, String level) throws IOException {
 	i_log_pattern logPattern = patternFactory( _init.get_LogPattern());
 	if(logPattern==null) logPattern = new log_patternSimple();
-	String log_mess = logPattern.prepare(msg,level);
-
-	util_format.writeToConsole(_init,log_mess);
+	String log_mess = logPattern.prepare(msg,level);	
 	
 	iStub _logStub = stubFactory(_init);
 	if(_logStub!=null){
-		_logStub.write(prepare4stub(log_mess, null, null, null,null, level,null));
+		_logStub.write(prepare4stub(null, log_mess, null, null, null,null, level,null));
 	}else{	
-		if(_init.isStackLevel(level)){
+		if(_init==null || _init.isStackLevel(level)){
+			util_format.writeToConsole(_init,log_mess);
 			log_FileManager fm = new log_FileManager(_init);
 				fm.createFile(true,log_mess);
 				fm.writeLineRecord(log_mess);
@@ -224,15 +232,14 @@ public synchronized void writeLog(Object obj_request, String msg,String userIP, 
 	HttpServletRequest request = (HttpServletRequest)obj_request;
 	i_log_pattern_web logPattern = patternFactory( init.get_LogPattern());
 	if(logPattern==null) logPattern = new log_patternSimple();
-	String log_mess = logPattern.prepare(request,msg,userIP,userMatricola,classFrom,level);
-
-	util_format.writeToConsole(init,log_mess);
+	String log_mess = logPattern.prepare(request,msg,userIP,userMatricola,classFrom,level);	
 	
 	if(logStub==null) logStub = stubFactory(init);
 	if(logStub!=null){
-		logStub.write(prepare4stub(log_mess, null, null, request,null, level,userMatricola));
+		logStub.write(prepare4stub(classFrom, log_mess, null, null, request,null, level,userMatricola));
 	}else{
-		if(init.isStackLevel(level)){
+		if(init==null || init.isStackLevel(level)){
+			util_format.writeToConsole(init,log_mess);
 			log_FileManager fm = new log_FileManager(init);
 				fm.createFile(true,msg);
 				fm.writeLineRecord(log_mess);
@@ -244,15 +251,14 @@ public synchronized void writeLog(Object obj_request, String msg,String userIP, 
 public synchronized void writeLog(String msg,String userIP, String userMatricola,String classFrom,String level) throws IOException {
 		i_log_pattern logPattern = patternFactory( init.get_LogPattern());
 		if(logPattern==null) logPattern = new log_patternSimple();
-		String log_mess = logPattern.prepare(msg,userIP,userMatricola,classFrom,level);
-
-		util_format.writeToConsole(init,log_mess);
+		String log_mess = logPattern.prepare(msg,userIP,userMatricola,classFrom,level);		
 
 		if(logStub==null) logStub = stubFactory(init);
 		if(logStub!=null){
-			logStub.write(prepare4stub(log_mess, null, null, null,null, level,userMatricola));
+			logStub.write(prepare4stub(classFrom, log_mess, null, null, null,null, level,userMatricola));
 		}else{	
-			if(init.isStackLevel(level)){
+			if(init==null || init.isStackLevel(level)){
+				util_format.writeToConsole(init,log_mess);
 				log_FileManager fm = new log_FileManager(init);
 					fm.createFile(true,msg);
 					fm.writeLineRecord(log_mess);
@@ -263,15 +269,14 @@ public synchronized void writeLog(String msg,String userIP, String userMatricola
 public synchronized void writeLog(String msg,String userIP, String userMatricola,String classFrom,String level, ServletContext context) throws IOException {
 	i_log_pattern logPattern = patternFactory( init.get_LogPattern());
 	if(logPattern==null) logPattern = new log_patternSimple();
-	String log_mess = logPattern.prepare(msg,userIP,userMatricola,classFrom,level);
-
-	util_format.writeToConsole(init,log_mess);
+	String log_mess = logPattern.prepare(msg,userIP,userMatricola,classFrom,level);	
 
 	if(logStub==null) logStub = stubFactory(init);
 	if(logStub!=null){
-		logStub.write(prepare4stub(log_mess, null, null, null,context, level,userMatricola));
+		logStub.write(prepare4stub(classFrom, log_mess, null, null, null,context, level,userMatricola));
 	}else{	
-		if(init.isStackLevel(level)){
+		if(init==null || init.isStackLevel(level)){
+			util_format.writeToConsole(init,log_mess);
 			log_FileManager fm = new log_FileManager(init);
 				fm.createFile(true,msg);
 				fm.writeLineRecord(log_mess);
@@ -283,15 +288,14 @@ public synchronized void writeLog(String msg,String userIP, String userMatricola
 public static synchronized void writeLog(log_init _init, String msg,String userIP, String userMatricola,String classFrom, String level) throws IOException {
 	i_log_pattern logPattern = patternFactory( _init.get_LogPattern());
 	if(logPattern==null) logPattern = new log_patternSimple();
-	String log_mess = logPattern.prepare(msg,userIP,userMatricola,classFrom,level);
-
-	util_format.writeToConsole(_init,log_mess);
+	String log_mess = logPattern.prepare(msg,userIP,userMatricola,classFrom,level);	
 	
 	iStub _logStub = stubFactory(_init);
 	if(_logStub!=null){
-		_logStub.write(prepare4stub(log_mess, null, null, null,null, level,userMatricola));
+		_logStub.write(prepare4stub(classFrom, log_mess, null, null, null,null, level,userMatricola));
 	}else{	
-		if(_init.isStackLevel(level)){
+		if(_init==null || _init.isStackLevel(level)){
+			util_format.writeToConsole(_init,log_mess);
 			log_FileManager fm = new log_FileManager(_init);
 				fm.createFile(true,logPattern.prepare(msg,userIP,userMatricola,classFrom,level));
 				fm.writeLineRecord(log_mess);

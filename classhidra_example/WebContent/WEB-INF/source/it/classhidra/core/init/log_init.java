@@ -36,6 +36,8 @@ import it.classhidra.core.tool.util.util_format;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 
@@ -77,6 +79,20 @@ public class log_init implements Serializable{
 	private String loadedFrom="";
 	
 	private boolean changed=false;
+	
+	public static Map logLevels = new HashMap() {
+		private static final long serialVersionUID = 1L;
+	{
+		put(iStub.log_ALL,0);
+		put(iStub.log_TRACE,1);
+		put(iStub.log_DEBUG,2);
+		put(iStub.log_INFO,3);
+		put(iStub.log_WARN,4);
+		put(iStub.log_ERROR,5);
+		put(iStub.log_FATAL,6);
+		put(iStub.log_OFF,-1);
+	}};
+
 
 
 public  log_init() {
@@ -395,53 +411,10 @@ public void set_LogMaxFiles(String string) {
 		return _LogStub;
 	}
 
-//	public static void setId_LogFlashRate(String string) {
-//		id_LogFlashRate = string;
-//	}
-//
-//	public static void setId_LogFlashSize(String string) {
-//		id_LogFlashSize = string;
-//	}
-//
-//	public static void setId_LogLevel(String string) {
-//		id_LogLevel = string;
-//	}
-//
-//	public static void setId_LogMaskFormat(String string) {
-//		id_LogMaskFormat = string;
-//	}
-//
-//	public static void setId_LogMaskName(String string) {
-//		id_LogMaskName = string;
-//	}
-//
-//	public static void setId_LogMaxFiles(String string) {
-//		id_LogMaxFiles = string;
-//	}
-//
-//	public static void setId_LogMaxLength(String string) {
-//		id_LogMaxLength = string;
-//	}
-//
-//	public static void setId_LogName(String string) {
-//		id_LogName = string;
-//	}
-//
-//	public static void setId_LogPath(String string) {
-//		id_LogPath = string;
-//	}
-//
-//	public static void setId_LogPattern(String string) {
-//		id_LogPattern = string;
-//	}
-//
-//	public static void setId_LogStub(String string) {
-//		id_LogStub = string;
-//	}
 
 	public void set_LogLevel(String string) {
 		_LogLevel = string;
-		setChanged(true);
+//		setChanged(true);
 	}
 
 	public void set_LogStub(String string) {
@@ -471,7 +444,7 @@ public void set_LogMaxFiles(String string) {
 
 	public void set_Write2Concole(String write2Concole) {
 		_Write2Concole = write2Concole;
-		setChanged(true);
+//		setChanged(true);
 	}
 
 	public String get_LogGenerator() {
@@ -489,7 +462,21 @@ public void set_LogMaxFiles(String string) {
 
 	public boolean isStackLevel(String level){
 		if(_LogLevel==null || _LogLevel.equals("")) return true;
-		
+		int int_logLevel = -1;
+		int int_inputLogLevel = -1;
+		try {
+			int_logLevel = ((Integer)logLevels.get(_LogLevel)).intValue();
+		}catch(Exception e) {			
+		}
+		try {
+			int_inputLogLevel = ((Integer)logLevels.get(level)).intValue();
+		}catch(Exception e) {			
+		}
+		if(int_inputLogLevel>=int_logLevel)
+			return true;
+		else
+			return false;
+/*		
 		if(_LogLevel.equals(iStub.log_DEBUG)) return true;
 		if(_LogLevel.equals(iStub.log_INFO) && !level.equals(iStub.log_DEBUG)) return true;
 		if(_LogLevel.equals(iStub.log_WARN) && !level.equals(iStub.log_DEBUG) && !level.equals(iStub.log_INFO)) return true;
@@ -497,7 +484,7 @@ public void set_LogMaxFiles(String string) {
 		if(_LogLevel.equals(iStub.log_FATAL) && !level.equals(iStub.log_DEBUG) && !level.equals(iStub.log_INFO) && !level.equals(iStub.log_WARN)&& !level.equals(iStub.log_ERROR)) return true;
 
 		return false;
-		
+*/		
 	}
 
 	public boolean isChanged() {
