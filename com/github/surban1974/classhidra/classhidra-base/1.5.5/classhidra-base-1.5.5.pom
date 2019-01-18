@@ -1,0 +1,241 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.surban1974.classhidra</groupId>
+	<artifactId>classhidra-base</artifactId>
+	<version>1.5.5</version>
+	<name>ClassHidra Base Module</name>
+	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Java 1.6 compilation.</description>
+	<url>https://github.com/surban1974/classhidra</url>
+  
+	<issueManagement>
+		<url>https://github.com/surban1974/classhidra/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>  
+	
+	<licenses>
+		<license>
+			<name>GNU General Public License version 2.0 (GPLv2)</name>
+			<url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+ 
+
+	<build>
+
+		<plugins>
+		
+		  
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+			    <version>3.0.0</version>
+			    <configuration>
+					<filesets>
+			        	<fileset>
+			          		<directory>src/main</directory>		          
+			          		<followSymlinks>false</followSymlinks>
+			        	</fileset>
+			      	</filesets>
+				</configuration>
+			</plugin>
+				
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>generate-resources</phase>
+	<!--              
+	             		<phase>package</phase>
+	-->
+	             		<goals>
+	               			<goal>unpack</goal>
+	             		</goals>
+	            		<configuration>
+		               		<artifactItems>
+		                 		<artifactItem>
+		                   			<groupId>com.github.surban1974.classhidra</groupId>
+		                   			<artifactId>classhidra-origin</artifactId>
+		                   			<version>1.5.5</version>
+		                   			<type>rar</type>
+		                   			<overWrite>false</overWrite>
+		                   			<outputDirectory>src/main</outputDirectory>
+		                 		</artifactItem>
+		               		</artifactItems>
+		               		<includes>
+		               			java/it/**/*.*,
+		               			java/config/**/*.*,
+		               			java/external_loaders/**/*.*,
+			            		java/pool/**/*.*,
+			            		resources/META-INF/*.*
+		               		</includes>
+		              		<overWriteReleases>true</overWriteReleases>
+		               		<overWriteSnapshots>true</overWriteSnapshots>
+	             		</configuration>
+	           		</execution>
+	         	</executions>
+			</plugin>
+	  
+	
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+			    <artifactId>build-helper-maven-plugin</artifactId>
+			    <executions>
+					<execution>
+			            <phase>generate-sources</phase>
+			            <goals>
+			            	<goal>add-source</goal>
+			            </goals>
+			            <configuration>
+			                <sources>
+			                    <source>src/main/java</source>
+			                </sources>
+			            </configuration>
+			        </execution>
+			        <execution>
+			            <id>add-resource</id>
+			            <phase>generate-resources</phase>
+			            <goals>
+			              	<goal>add-resource</goal>
+			            </goals>
+			            <configuration>
+							<resources>
+								<resource>
+									<directory>src/main/java</directory>
+					 				<includes>
+					 					<include>config/messages/classhidra_messages.xml</include>
+					 					<include>it/classhidra/version.properties</include>
+					 					<include>it/classhidra/core/controller/resources/*.*</include>
+					 					<include>it/classhidra/framework/resources/**/*.*</include>
+					 					<include>it/classhidra/scheduler/*.properties</include>
+					 					<include>it/classhidra/scheduler/**/*.properties</include>
+					 					<include>it/classhidra/scheduler/**/*.sql</include>
+					 					<include>it/classhidra/qreports/xslt/*.xslt</include>
+					 				</includes>
+			                	</resource>
+								<resource>
+									<directory>src/main/resources</directory>
+									<includes>
+					 					<include>META-INF/**/*.tld</include>
+					 				</includes>									
+			                	</resource>
+			              	</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		
+			
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+		        <version>3.3</version>
+		        <configuration>
+			 		<excludes>
+						<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
+			            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
+			            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
+			            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
+			            <exclude>it/classhidra/plugin/**/*.java</exclude>
+					</excludes>
+					<includes>
+						<include>it/**/*.java</include>
+			            <include>external_loaders/**/*.java</include>
+			            <include>pool/**/*.java</include> 
+					</includes>        
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+			  	<groupId>org.apache.maven.plugins</groupId>
+			  	<artifactId>maven-source-plugin</artifactId>
+			  	<executions>
+			    	<execution>
+			      		<id>attach-sources</id>
+			      		<goals>
+			        		<goal>jar</goal>
+			      		</goals>
+			    	</execution>
+			  	</executions>
+	 			<configuration>
+	 		 		<excludes>
+						<exclude>it/classhidra/core/tool/log/stubs/stub_neoHort_log.java</exclude>
+			            <exclude>it/classhidra/framework/web/components/**/*.java</exclude>
+			            <exclude>it/classhidra/framework/web/formactions/**/*.java</exclude>
+			            <exclude>it/classhidra/framework/web/formbeans/**/*.java</exclude>
+			            <exclude>it/classhidra/plugin/**/*.java</exclude>
+					</excludes>
+			                  
+					<includes>
+						<include>it/**/*.java</include>
+			            <include>external_loaders/**/*.java</include>
+			            <include>pool/**/*.java</include> 
+					</includes>        
+				</configuration>		  	
+			</plugin>		
+			
+		  	<plugin>
+		    	<groupId>org.apache.maven.plugins</groupId>
+		    	<artifactId>maven-install-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>install</goal>
+			            </goals>
+			            <configuration>
+			                <createChecksum>true</createChecksum>
+			            </configuration>
+			        </execution>
+			    </executions>
+		  	</plugin>
+		  			
+	 
+			
+		</plugins>
+	</build>
+
+	<repositories>
+    		<repository>
+        		<id>classhidra-mvn-repo</id>
+        		<url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
+        		<snapshots>
+            			<enabled>true</enabled>
+            			<updatePolicy>always</updatePolicy>
+        		</snapshots>
+    		</repository>
+  	</repositories>
+  
+ 	<dependencies>
+ 		<dependency>
+			<groupId>com.github.surban1974.classhidra</groupId>
+			<artifactId>classhidra-origin</artifactId>
+			<version>1.5.5</version>
+			<type>rar</type>
+		</dependency>
+		
+  		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.2</version>
+		</dependency>
+		
+	</dependencies>  
+
+   	<organization>
+   		<name>Svyatoslav Urbanovych</name>
+   		<url>https://it.linkedin.com/pub/svyatoslav-urbanovych/2/241/754</url>
+   	</organization>
+   	<properties>
+   		<github.global.server>github</github.global.server>
+   	</properties>   
+</project>
