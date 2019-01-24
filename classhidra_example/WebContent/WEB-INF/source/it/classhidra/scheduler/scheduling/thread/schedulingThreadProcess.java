@@ -3,6 +3,7 @@ package it.classhidra.scheduler.scheduling.thread;
 
 
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -18,10 +19,10 @@ import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
 
 
 
-public class schedulingThreadProcess extends Thread {
+public class schedulingThreadProcess extends Thread implements Serializable {
 
-
-    private boolean threadDone = false;
+	private static final long serialVersionUID = 1L;
+	private boolean threadDone = false;
     private Date scan_time;
 
     public schedulingThreadProcess() {

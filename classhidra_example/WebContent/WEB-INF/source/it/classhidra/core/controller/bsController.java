@@ -355,9 +355,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 					initloader.load();
 					bsController.setToLocalContainer(app_init.id_init_loader,initloader);
 				}catch(Exception ex){
-					new bsControllerException(ex, iStub.log_ERROR);
+					new bsControllerException(ex, iStub.log_WARN);
 				}catch (Throwable  th) {
-					new bsControllerException(th, iStub.log_ERROR);
+					new bsControllerException(th, iStub.log_WARN);
 				}
 			}
 		}
@@ -531,9 +531,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 					externalloader.load();
 					bsController.setToLocalContainer(app_init.id_external_loader,externalloader);
 				}catch(Exception ex){
-					new bsControllerException(ex, iStub.log_ERROR);
+					new bsControllerException(ex, iStub.log_WARN);
 				}catch (Throwable  th) {
-					new bsControllerException(th, iStub.log_ERROR);
+					new bsControllerException(th, iStub.log_WARN);
 				}
 			}
 		}
@@ -588,9 +588,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 					if(tagComponentRender!=null)
 						tagComponentRender.set_context(servletContext);
 				}catch(Exception ex){
-					new bsControllerException(ex, iStub.log_ERROR);
+					new bsControllerException(ex, iStub.log_WARN);
 				}catch (Throwable  th) {
-					new bsControllerException(th, iStub.log_ERROR);
+					new bsControllerException(th, iStub.log_WARN);
 				}
 			}
 		}else {
@@ -599,9 +599,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(tagComponentRender!=null)
 					tagComponentRender.set_context(servletContext);
 			}catch(Exception ex){
-				new bsControllerException(ex, iStub.log_ERROR);
+				new bsControllerException(ex, iStub.log_WARN);
 			}catch (Throwable  th) {
-				new bsControllerException(th, iStub.log_ERROR);
+				new bsControllerException(th, iStub.log_WARN);
 			}			
 		}
 
@@ -1005,9 +1005,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-//				request2map = (HashMap)action_instance.asAction().getClass()
-//									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//									.invoke(null, new Object[]{request});
 				request2map = (HashMap)
 						util_reflect.findDeclaredMethod(
 							action_instance.asAction().getClass(),
@@ -1020,7 +1017,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 			if(request2map==null)
 				request2map = new HashMap();
-//				request2map = util_supportbean.request2map(request);
 		}
 		
 //20160419
@@ -1198,7 +1194,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 								
 						}catch(Exception em){
 							searchErrors.add(em);
-//							new bsControllerException(e, iStub.log_ERROR);
 						}
 					}
 					if(iActionMethod==null){
@@ -1212,7 +1207,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 								useAsAction=true;
 						}catch(Exception em){
 							searchErrors.add(em);
-//							new bsControllerException(e, iStub.log_ERROR);
 						}
 					}
 					if(iActionMethod==null){
@@ -1226,7 +1220,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 								useAsAction=true;
 						}catch(Exception em){
 							searchErrors.add(em);
-//							new bsControllerException(e, iStub.log_ERROR);
 						}
 					}
 					if(iActionMethod==null){
@@ -1240,7 +1233,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 								useAsAction=true;
 						}catch(Exception em){
 							searchErrors.add(em);
-//							new bsControllerException(e, iStub.log_ERROR);
 						}
 					}						
 					if(iActionMethod==null && action_instance.get_infoaction().getMappedMethodParameterTypes()!=null){
@@ -1256,7 +1248,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 							}
 						}catch(Exception em){
 							searchErrors.add(em);
-//							new bsControllerException(e, iStub.log_ERROR);
 						}
 					}
 					if(iActionMethod==null){
@@ -1564,9 +1555,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(isRemoteEjb){
 			bsController.checkAuth_init(context.getRequest()).reInit(action_instance.getCurrent_auth());
 			try{
-//				action_instance.asAction().getClass()
-//					.getDeclaredMethod("convertMap2Request", new Class[]{HttpServletRequest.class,HttpServletResponse.class})
-//					.invoke(null, new Object[]{request,response});
 				util_reflect.findDeclaredMethod(
 						action_instance.asAction().getClass(),
 						"convertMap2Request", new Class[]{HttpServletRequest.class,HttpServletResponse.class})
@@ -1640,9 +1628,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(bean_instance.getInfo_context()!=null && bean_instance.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-//						request2map = (HashMap)bean_instance.asBean().getClass()
-//								.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//								.invoke(null, new Object[]{request});
 						request2map = (HashMap)
 								util_reflect.findDeclaredMethod(
 										bean_instance.asBean().getClass(),
@@ -1655,7 +1640,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 					if(request2map==null)
 						request2map = new HashMap();
-//					request2map = util_supportbean.request2map(request);
 
 				}
 
@@ -1798,9 +1782,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 				if(bean_instance_clone.getInfo_context()!=null && bean_instance_clone.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-//						request2map = (HashMap)bean_instance_clone.asBean().getClass()
-//											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//											.invoke(null, new Object[]{request});
 						request2map = (HashMap)
 								util_reflect.findDeclaredMethod(
 										bean_instance_clone.asBean().getClass(),
@@ -1813,7 +1794,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 					if(request2map==null)
 						request2map = new HashMap();
-//					request2map = util_supportbean.request2map(request);
 
 				}
 
@@ -1962,9 +1942,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 							isRemoteEjb=true;
 							try{
-//								request2map = (HashMap)action_instance.asAction().getClass()
-//													.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//													.invoke(null, new Object[]{request});
 								request2map = (HashMap)
 										util_reflect.findDeclaredMethod(
 												action_instance.asAction().getClass(),
@@ -1977,7 +1954,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 							}
 							if(request2map==null)
 								request2map = new HashMap();
-//							request2map = util_supportbean.request2map(request);
 
 						}
 						
@@ -3656,7 +3632,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(logGenerator!=null)
 							ok = true;
 					}catch(Exception e){
-//						logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+					}catch(Throwable t){
 					}
 				}
 				if(!ok && getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
@@ -3665,7 +3641,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(logGenerator!=null)
 							ok = true;
 					}catch(Exception e){
-//						logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+					}catch(Throwable t){
 					}
 				}
 				if(!ok && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
@@ -3674,7 +3650,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(logGenerator!=null)
 							ok = true;
 					}catch(Exception e){
-//						logG = (i_log_generator)Class.forName(logInit.get_LogGenerator()).newInstance();
+					}catch(Throwable t){
 					}
 				}		
 				checkDefaultProvider(null);
@@ -3684,6 +3660,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(logGenerator!=null)
 							ok = true;
 					}catch(Exception e){
+					}catch(Throwable t){
 					}
 				}
 				if(!ok && getEjbDefaultProvider()!=null){
@@ -3692,6 +3669,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(logGenerator!=null)
 							ok = true;
 					}catch(Exception e){
+					}catch(Throwable t){
 					}
 				}
 				

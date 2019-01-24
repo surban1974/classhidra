@@ -226,6 +226,8 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 	
 	if(requestMethod)
 		current.setMethod(requestMethod);
+	else
+		current.setMethod('GET');
 	if(outer)
 		current.setOuter(outer);
 	current.request();

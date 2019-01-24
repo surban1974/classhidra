@@ -1,10 +1,11 @@
 package it.classhidra.scheduler.scheduling.db;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import it.classhidra.core.tool.elements.i_elementDBBase;
 
-public interface i_batch_log {
+public interface i_batch_log extends Serializable{
 
 	void reimposta();
 

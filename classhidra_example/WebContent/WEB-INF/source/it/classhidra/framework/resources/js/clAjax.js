@@ -1,8 +1,8 @@
 /**
 * Name: clAjax.js
-* Version: 1.1.1
+* Version: 1.1.2
 * Creation date: (08/11/2016)
-* Last update: (28/09/2018)
+* Last update: (24/01/2019)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -495,11 +495,13 @@
 
 							}else{
 								//real browsers
+								if (typeof window[instance.success] === "function")
 							    	e.onload=eval(instance.success + '()');
 							    //Internet explorer
 								    e.onreadystatechange = function() {
 								        if (this.readyState == 'complete') {
-								        	eval(instance.success + '()');
+								        	if (typeof window[instance.success] === "function")
+								        		eval(instance.success + '()');
 								        }
 								    }
 							}
@@ -562,11 +564,13 @@
 
 							}else{
 								//real browsers
+								if (typeof window[instance.success] === "function")
 							    	e.onload=eval(instance.success + '()');
 							    //Internet explorer
 								    e.onreadystatechange = function() {
 								        if (this.readyState == 'complete') {
-								        	eval(instance.success + '()');
+								        	if (typeof window[instance.success] === "function")
+								        		eval(instance.success + '()');
 								        }
 								    }
 							}
@@ -728,7 +732,8 @@
 		    		if (typeof this.start === 'function') {
 		    			this.start(this);
 		    		}else{
-		    			eval(this.start + '(this)');
+		    			if (typeof window[this.start] === "function")
+		    				eval(this.start + '(this)');
 		    		}
 		    	}
 
@@ -788,10 +793,12 @@
 		        		if (typeof instance.error === 'function') {
 		        			instance.error(http_request, null, 'Cannot create XMLHTTP instance');
 		        		}else{
-		        			eval(instance.error + '(http_request, null, "Cannot create XMLHTTP instance")');
+		        			if (typeof window[instance.error] === "function")
+		        				eval(instance.error + '(http_request, null, "Cannot create XMLHTTP instance")');
 		        		}
 		        	}else
-		        		alert('Cannot create XMLHTTP instance');
+//		        		alert('Cannot create XMLHTTP instance');
+		        		console.log('Cannot create XMLHTTP instance');
 			       return;
 			    }
 
@@ -927,11 +934,12 @@
 						            				_fready(http_request,((instance.target)?instance.target.id:null));
 						            			else
 						            				_fready(http_request,instance);
-						            		}else{
-						            			if(instance.compatibility)
+						            		}else if (typeof window[_fready] === "function"){
+						            			if(instance.compatibility){
 						            				eval(_fready + '(http_request,((instance.target)?instance.target.id:null))');
-						            			else
+						            			}else{
 						            				eval(_fready + '(http_request,instance)');
+						            			}
 						            		}
 						            	}else{
 						            		if(instance.target){
@@ -948,7 +956,7 @@
 						            			else
 						            				_fsuccess(http_request,instance);
 						            		}
-						            		else{
+						            		else if (typeof window[_fsuccess] === "function"){
 						            			if(instance.compatibility)
 						            				eval(_fsuccess + '(http_request,((instance.target)?instance.target.id:null))');
 						            			else
@@ -962,7 +970,7 @@
 						            				_ffail(http_request,((instance.target)?instance.target.id:null));
 						            			else
 						            				_ffail(http_request,instance);
-						            		}else{
+						            		}else if (typeof window[_ffail] === "function"){
 						            			if(instance.compatibility)
 						            				eval(_ffail + '(http_request,((instance.target)?instance.target.id:null))');
 						            			else
@@ -975,11 +983,12 @@
 						    		if(_ferror){
 					            		if (typeof _ferror === 'function') {
 					            			_ferror(http_request, e, e.toString(),instance);
-					            		}else{
+					            		}else if(typeof window[_ferror] === "function"){
 					            			eval(_ferror + '(http_request, e, e.toString(), instance)');
 					            		}
 						    		}else
-					            		alert('There was a generic problem with callback_function():'+e.toString());
+//					            		alert('There was a generic problem with callback_function():'+e.toString());
+						    			console.log('There was a generic problem with callback_function():'+e.toString());
 					    		}
 
 
@@ -989,7 +998,7 @@
 					        				_ffinish(http_request,((instance.target)?instance.target.id:null));
 					        			else
 					        				_ffinish(http_request,instance);
-					        		}else{
+					        		}else if(typeof window[_ffinish] === "function"){
 					        			if(instance.compatibility)
 					        				eval(_ffinish + '(http_request,((instance.target)?instance.target.id:null))');
 					        			else
@@ -1013,11 +1022,12 @@
 				    		if(instance.error && instance.error!=''){
 			            		if (typeof instance.error === 'function') {
 			            			instance.error(http_request, e, e.toString() ,instance);
-			            		}else{
+			            		}else if(typeof window[instance.error] === "function"){
 			            			eval(instance.error + '(http_request, e, e.toString(), instance)');
 			            		}
 			            	}else
-			            		alert('There was a generic problem with callback_function():'+e.toString());
+//			            		alert('There was a generic problem with callback_function():'+e.toString());
+			            		console.log('There was a generic problem with callback_function():'+e.toString());
 				    	}
 /*
 				    	if(instance.finish && instance.finish!=''){
@@ -1040,7 +1050,7 @@
 			        				instance.timeout(http_request,this.target);
 			        			else
 			        				instance.timeout(http_request,instance);
-			        		}else{
+			        		}else if(typeof window[instance.timeout] === "function"){
 			        			if(instance.compatibility)
 			        				eval(instance.timeout + '(http_request,((instance.target)?instance.target.id:null))');
 			        			else	
@@ -1473,7 +1483,8 @@
 
 				    return formdata;
 				}else{
-					alert('Features supported for object FormData (). Available in Chrome, FireFox, Safari, IE9...');
+//					alert('Features supported for object FormData (). Available in Chrome, FireFox, Safari, IE9...');
+					console.log('Features supported for object FormData (). Available in Chrome, FireFox, Safari, IE9...');
 				}
 			}
 }

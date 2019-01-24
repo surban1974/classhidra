@@ -4,6 +4,7 @@ package it.classhidra.scheduler.scheduling.process;
 
 
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,7 +30,10 @@ import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
 import it.classhidra.scheduler.util.util_batch;
 
-public class ProcessBatchEvent  {
+public class ProcessBatchEvent implements Serializable {
+
+
+	private static final long serialVersionUID = 1L;
 
 	public ProcessBatchEvent(){
 		super();

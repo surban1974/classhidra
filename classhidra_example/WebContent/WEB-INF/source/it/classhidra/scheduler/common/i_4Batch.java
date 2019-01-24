@@ -1,8 +1,9 @@
 package it.classhidra.scheduler.common;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public interface i_4Batch {
+public interface i_4Batch extends Serializable{
 	
 	public final static String o_FINDFORMLIST = "FINDFORMLIST";
 	public final static String o_FIND = "FIND";	

@@ -1,6 +1,8 @@
 package it.classhidra.scheduler.scheduling; 
 
 
+import java.io.Serializable;
+
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
@@ -14,8 +16,9 @@ import it.classhidra.scheduler.servlets.servletBatchScheduling;
 
 
 
-public class DriverScheduling{
-	
+public class DriverScheduling implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private static IBatchScheduling external;
 	private static IBatchFactory factory;
 	private static batch_init configuration;
@@ -28,7 +31,9 @@ public class DriverScheduling{
 				
 				new IBatchFactory() {
 					
-//					@Override
+					private static final long serialVersionUID = 1L;
+
+					//					@Override
 					public i_batch getInstance(String cd_btch, String cls_batch) {
 						try{
 							i_batch instance = null;

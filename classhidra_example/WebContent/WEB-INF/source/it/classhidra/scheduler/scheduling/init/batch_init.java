@@ -210,6 +210,8 @@ public i_4Batch get4BatchManager(){
 	i_4Batch batchManager = null;
 	if(_stub!=null && _stub.equalsIgnoreCase("empty")){
 		batchManager = new i_4Batch() {
+			private static final long serialVersionUID = 1L;
+
 			public Object operation(String oper, HashMap form) throws Exception {
 				return null;
 			}

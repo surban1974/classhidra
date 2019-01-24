@@ -7,6 +7,7 @@ import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEvent;
 import it.classhidra.scheduler.util.util_batch;
 
+import java.io.Serializable;
 import java.util.Date;
 
 
@@ -16,9 +17,9 @@ import java.util.Date;
 
 
 
-public class schedulingThreadEvent extends Thread implements Runnable{
+public class schedulingThreadEvent extends Thread implements Serializable, Runnable{
 
-
+	private static final long serialVersionUID = 1L;
 	private boolean threadDone = false;
 	private long delta_time;
 	private db_batch batch;

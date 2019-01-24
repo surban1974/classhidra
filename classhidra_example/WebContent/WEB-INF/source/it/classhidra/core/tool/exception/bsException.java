@@ -100,7 +100,11 @@ protected void writeLog(String msg, String level){
 }
 
 private void service_mountLog(){
-	logG = bsController.getLogG();
+	try{
+		logG = bsController.getLogG();
+	}catch(Exception e){		
+	}catch(Throwable t){		
+	}
 	if(logG==null) {
 		logInit = new log_init();
 			logInit.init();

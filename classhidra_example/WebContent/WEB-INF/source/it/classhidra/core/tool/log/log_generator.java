@@ -181,10 +181,12 @@ public synchronized void writeLog(HttpServletRequest request, String msg, String
 	}else{	
 		if(init==null || init.isStackLevel(level)){
 			util_format.writeToConsole(init,log_mess);
-			log_FileManager fm = new log_FileManager(init);
-				fm.createFile(true,msg);
-				fm.writeLineRecord(log_mess);
-				fm.closeFile();
+			if(init.get_LogPath()!=null && !init.get_LogPath().equals("")) {
+				log_FileManager fm = new log_FileManager(init);
+					fm.createFile(true,msg);
+					fm.writeLineRecord(log_mess);
+					fm.closeFile();
+			}
 		}
 	}	
 }
@@ -200,10 +202,12 @@ public synchronized void writeLog(String msg,String level) throws IOException {
 		}else{
 			if(init==null || init.isStackLevel(level)){
 				util_format.writeToConsole(init,log_mess);
-				log_FileManager fm = new log_FileManager(init);
-					fm.createFile(true,msg);
-					fm.writeLineRecord(log_mess);
-				fm.closeFile();
+				if(init.get_LogPath()!=null && !init.get_LogPath().equals("")) {
+					log_FileManager fm = new log_FileManager(init);
+						fm.createFile(true,msg);
+						fm.writeLineRecord(log_mess);
+					fm.closeFile();
+				}
 			}
 		}
 }
@@ -219,10 +223,12 @@ public static synchronized void writeLog(log_init _init, String msg, String leve
 	}else{	
 		if(_init==null || _init.isStackLevel(level)){
 			util_format.writeToConsole(_init,log_mess);
-			log_FileManager fm = new log_FileManager(_init);
-				fm.createFile(true,log_mess);
-				fm.writeLineRecord(log_mess);
-			fm.closeFile();
+			if(_init.get_LogPath()!=null && !_init.get_LogPath().equals("")) {
+				log_FileManager fm = new log_FileManager(_init);
+					fm.createFile(true,log_mess);
+					fm.writeLineRecord(log_mess);
+				fm.closeFile();
+			}
 		}
 	}
 }
@@ -240,10 +246,12 @@ public synchronized void writeLog(Object obj_request, String msg,String userIP, 
 	}else{
 		if(init==null || init.isStackLevel(level)){
 			util_format.writeToConsole(init,log_mess);
-			log_FileManager fm = new log_FileManager(init);
-				fm.createFile(true,msg);
-				fm.writeLineRecord(log_mess);
-			fm.closeFile();
+			if(init.get_LogPath()!=null && !init.get_LogPath().equals("")) {
+				log_FileManager fm = new log_FileManager(init);
+					fm.createFile(true,msg);
+					fm.writeLineRecord(log_mess);
+				fm.closeFile();
+			}
 		}
 	}
 }
@@ -259,10 +267,12 @@ public synchronized void writeLog(String msg,String userIP, String userMatricola
 		}else{	
 			if(init==null || init.isStackLevel(level)){
 				util_format.writeToConsole(init,log_mess);
-				log_FileManager fm = new log_FileManager(init);
-					fm.createFile(true,msg);
-					fm.writeLineRecord(log_mess);
-				fm.closeFile();
+				if(init.get_LogPath()!=null && !init.get_LogPath().equals("")) {
+					log_FileManager fm = new log_FileManager(init);
+						fm.createFile(true,msg);
+						fm.writeLineRecord(log_mess);
+					fm.closeFile();
+				}
 			}
 		}
 }
@@ -277,10 +287,12 @@ public synchronized void writeLog(String msg,String userIP, String userMatricola
 	}else{	
 		if(init==null || init.isStackLevel(level)){
 			util_format.writeToConsole(init,log_mess);
-			log_FileManager fm = new log_FileManager(init);
-				fm.createFile(true,msg);
-				fm.writeLineRecord(log_mess);
-			fm.closeFile();
+			if(init.get_LogPath()!=null && !init.get_LogPath().equals("")) {
+				log_FileManager fm = new log_FileManager(init);
+					fm.createFile(true,msg);
+					fm.writeLineRecord(log_mess);
+				fm.closeFile();
+			}
 		}
 	}
 }
@@ -296,10 +308,12 @@ public static synchronized void writeLog(log_init _init, String msg,String userI
 	}else{	
 		if(_init==null || _init.isStackLevel(level)){
 			util_format.writeToConsole(_init,log_mess);
-			log_FileManager fm = new log_FileManager(_init);
-				fm.createFile(true,logPattern.prepare(msg,userIP,userMatricola,classFrom,level));
-				fm.writeLineRecord(log_mess);
-			fm.closeFile();
+			if(_init.get_LogPath()!=null && !_init.get_LogPath().equals("")) {
+				log_FileManager fm = new log_FileManager(_init);
+					fm.createFile(true,logPattern.prepare(msg,userIP,userMatricola,classFrom,level));
+					fm.writeLineRecord(log_mess);
+				fm.closeFile();
+			}
 		}
 	}
 }

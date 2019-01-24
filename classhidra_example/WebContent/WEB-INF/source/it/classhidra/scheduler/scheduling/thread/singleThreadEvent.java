@@ -1,5 +1,6 @@
 package it.classhidra.scheduler.scheduling.thread;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import it.classhidra.core.tool.util.util_cloner;
@@ -15,9 +16,9 @@ import it.classhidra.scheduler.scheduling.process.ProcessBatchEvent;
 
 
 
-public class singleThreadEvent extends Thread implements Runnable{
+public class singleThreadEvent extends Thread implements Serializable, Runnable{
 
-
+	private static final long serialVersionUID = 1L;
 	private boolean threadDone = false;
 	private long delta_time;
 	private db_batch batch;

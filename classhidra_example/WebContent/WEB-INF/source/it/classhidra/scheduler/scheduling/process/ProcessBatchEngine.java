@@ -3,6 +3,7 @@ package it.classhidra.scheduler.scheduling.process;
 
 
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +29,9 @@ import it.classhidra.scheduler.util.util_batch;
 
 
 
-public class ProcessBatchEngine  {
+public class ProcessBatchEngine implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private boolean scan=false;
 	private Timestamp nextScanTime;
 	private ArrayList container_threadevents;
