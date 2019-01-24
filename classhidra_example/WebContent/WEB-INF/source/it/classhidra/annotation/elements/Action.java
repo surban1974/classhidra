@@ -17,6 +17,7 @@ public @interface Action {
 	String error() default "";
 	String memoryInSession() default "";
 	String memoryInServletContext() default "";
+	String memoryInServletContextLoadOnStartup() default "-1";
 	String memoryAsLastInstance() default "";
 	String reloadAfterAction() default "";
 	String reloadAfterNextNavigated() default "";	

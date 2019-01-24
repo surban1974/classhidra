@@ -159,7 +159,7 @@ public class load_organization extends elementBase{
 								ainit.get_external_loader());
 				reInit(extl);
 			}catch(Exception e){
-				bsController.writeLog("Load_organization from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
+				bsController.writeLog("Load_organization from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_WARN);
 			}catch(Throwable t){
 				bsController.writeLog("Load_organization from "+ainit.get_external_loader()+" ERROR "+t.toString(),iStub.log_ERROR);
 			}
@@ -178,7 +178,7 @@ public class load_organization extends elementBase{
 				extl.load();
 				reInit(extl);
 			}catch(Exception e){
-				bsController.writeLog("Load_organization from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
+				bsController.writeLog("Load_organization from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_WARN);
 			}catch(Throwable t){
 				bsController.writeLog("Load_organization from "+this.getExternalloader()+" ERROR "+t.toString(),iStub.log_ERROR);
 			}
@@ -456,7 +456,7 @@ public class load_organization extends elementBase{
 		    	}
 	    	}
 	    }catch (Exception e) {
-	    	bsController.writeLog("Load_organization from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+	    	bsController.writeLog("Load_organization from "+property_name+" ERROR "+e.toString(),iStub.log_WARN);
 	    }finally {
 	    	try {
 	    		if (br != null) br.close();
@@ -474,7 +474,7 @@ public class load_organization extends elementBase{
 		    		return true;
 		    	}
 			}catch(Exception e){
-				bsController.writeLog("Load_organization from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+				bsController.writeLog("Load_organization from "+property_name+" ERROR "+e.toString(),iStub.log_WARN);
 			}
 	    }
 	    

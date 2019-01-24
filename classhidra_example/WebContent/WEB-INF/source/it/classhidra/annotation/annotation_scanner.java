@@ -825,6 +825,10 @@ public class annotation_scanner implements i_annotation_scanner {
     	if(servletContextDirective!=null){
     		if(!iAction.getMemoryInServletContext().trim().equalsIgnoreCase("true"))
 	    		iAction.setMemoryInServletContext("true");
+    		try {
+    			iAction.setMemoryInServletContextLoadOnStartup(String.valueOf(servletContextDirective.loadOnStartup()));
+    		}catch (Exception e) {
+			}
     	}
     	
     	iAction.setMemoryAsLastInstance(annotationAction.memoryAsLastInstance());

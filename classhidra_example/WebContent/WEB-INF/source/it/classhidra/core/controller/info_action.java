@@ -53,6 +53,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String error;
 	private String memoryInSession;	
 	private String memoryInServletContext;
+	private String memoryInServletContextLoadOnStartup;
 	private String memoryAsLastInstance;
 	private String reloadAfterAction;
 	private String reloadAfterNextNavigated;
@@ -229,6 +230,7 @@ public class info_action extends info_entity implements i_elementBase{
 		wac="";
 		memoryInSession="";
 		memoryInServletContext="";
+		memoryInServletContextLoadOnStartup="-1";
 		memoryAsLastInstance="";
 		reloadAfterAction="";
 		reloadAfterNextNavigated="";
@@ -392,7 +394,8 @@ public class info_action extends info_entity implements i_elementBase{
 		
 		if(memoryInSession!=null && !memoryInSession.trim().equals("")) result+=" memoryInSession=\""+util_format.normaliseXMLText(memoryInSession)+"\"";
 		if(memoryInServletContext!=null && !memoryInServletContext.trim().equals("")) result+=" memoryInServletContext=\""+util_format.normaliseXMLText(memoryInServletContext)+"\"";
-		
+		if(memoryInServletContextLoadOnStartup!=null && !memoryInServletContextLoadOnStartup.trim().equals("")) result+=" memoryInServletContextLoadOnStartup=\""+util_format.normaliseXMLText(memoryInServletContextLoadOnStartup)+"\"";
+				
 		if(memoryAsLastInstance!=null && !memoryAsLastInstance.trim().equals("")) result+=" memoryAsLastInstance=\""+util_format.normaliseXMLText(memoryAsLastInstance)+"\"";
 
 		if(reloadAfterAction!=null && !reloadAfterAction.trim().equals("")) result+=" reloadAfterAction=\""+util_format.normaliseXMLText(reloadAfterAction)+"\"";
@@ -767,8 +770,24 @@ public class info_action extends info_entity implements i_elementBase{
 		return memoryInServletContext;
 	}
 
+	public String getMemoryInServletContextLoadOnStartup() {
+		return memoryInServletContextLoadOnStartup;
+	}
+
+	public void setMemoryInServletContextLoadOnStartup(String memoryInServletContextLoadOnStartup) {
+		this.memoryInServletContextLoadOnStartup = memoryInServletContextLoadOnStartup;
+	}
+
 	public void setMemoryInServletContext(String memoryInServletContext) {
 		this.memoryInServletContext = memoryInServletContext;
+	}
+	
+	public int getLoadOnStartup() {
+		try {
+			return Integer.valueOf(memoryInServletContextLoadOnStartup).intValue();
+		}catch (Exception e) {
+			return -1;
+		}
 	}
 
 

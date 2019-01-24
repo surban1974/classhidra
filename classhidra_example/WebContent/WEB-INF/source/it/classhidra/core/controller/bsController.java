@@ -84,9 +84,6 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-//import sun.misc.BASE64Decoder;
-//import sun.misc.BASE64Encoder;
 import javax.xml.bind.DatatypeConverter;
 
 
@@ -144,15 +141,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 	static class LoaderConfigThreadProcessS extends Thread {
 	    private boolean threadDone = false;
 	    private Map othersProperties = null;
-	    public LoaderConfigThreadProcessS(Map othersProperties) {
+	    private ServletContext servletContext = null;
+	    public LoaderConfigThreadProcessS(Map othersProperties, ServletContext servletContext) {
 	        super();
 	        this.othersProperties = othersProperties;
+	        this.servletContext = servletContext;
 	        threadDone=false;
 	    }
 	    public void run() {
 	        while (!threadDone) {
 	    		try {
-	    			loadOnInitS(othersProperties);
+	    			loadOnInitS(othersProperties,servletContext);
 	    			threadDone=true;
 	    		} catch (Exception e) {
 //	    			threadDone=true;
@@ -187,31 +186,31 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 			
 			
-			final Properties initParameters = new Properties();
-			final Enumeration paramNames = getInitParameterNames();
-			while (paramNames.hasMoreElements()){
-				final String name = (String) paramNames.nextElement();
-				initParameters.put(name, getInitParameter(name));
-			}
-			if(initParameters.size()>0)
-				appInit.init(initParameters);
-			
-			checkDefaultProvider(getServletContext());
+		final Properties initParameters = new Properties();
+		final Enumeration paramNames = getInitParameterNames();
+		while (paramNames.hasMoreElements()){
+			final String name = (String) paramNames.nextElement();
+			initParameters.put(name, getInitParameter(name));
+		}
+		if(initParameters.size()>0)
+			appInit.init(initParameters);
+		
+		checkDefaultProvider(getServletContext());
 
-			try{
-				if(idApp==null) idApp = util_format.replace(getContextPathFor5(getServletContext()), "/", "");
-			}catch(Exception ex){
-			}
+		try{
+			if(idApp==null) idApp = util_format.replace(getContextPathFor5(getServletContext()), "/", "");
+		}catch(Exception ex){
+		}
 
-			boolean	loadModeAsThread=false;
-			try{
-				if(appInit.get_load_res_mode().equalsIgnoreCase("thread")) loadModeAsThread=true;
-			}catch(Exception e){
-			}
-				if(loadModeAsThread)
-					new LoaderConfigThreadProcess().start();
-				else
-					loadOnInit();
+		boolean	loadModeAsThread=false;
+		try{
+			if(appInit.get_load_res_mode().equalsIgnoreCase("thread")) loadModeAsThread=true;
+		}catch(Exception e){
+		}
+			if(loadModeAsThread)
+				new LoaderConfigThreadProcess().start();
+			else
+				loadOnInit();
 
 		
 		if(stat!=null){
@@ -258,19 +257,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 		resourcesInit(getServletContext());
 
 
-		if(!getAction_config().isReadOk()) 	reloadAction_config(getServletContext());
-		if(!getMess_config().isReadOk()) 	reloadMess_config(getServletContext());
-		if(!getAuth_config().isReadOk()) 	reloadAuth_config(getServletContext());
-		if(!getOrg_config().isReadOk()) 	reloadOrg_config(getServletContext());
-
-		if(!getMenu_config().isReadOk()) 	reloadMenu_config(getServletContext(),null);
+		if(!getAction_config().isReadOk()) 	
+			reloadAction_config(getServletContext());
+		if(!getMess_config().isReadOk()) 	
+			reloadMess_config(getServletContext());
+		if(!getAuth_config().isReadOk()) 	
+			reloadAuth_config(getServletContext());
+		if(!getOrg_config().isReadOk()) 	
+			reloadOrg_config(getServletContext());
+		if(!getMenu_config().isReadOk()) 	
+			reloadMenu_config(getServletContext(),null);
 		
-
-
-
+		loadActionsOnStartup(getServletContext());
+		
 	}
 	
 	public static void loadOnInitS(Map othersProperties){
+		loadOnInitS(othersProperties, null);
+	}
+	
+	public static void loadOnInitS(Map othersProperties,ServletContext servletContext){
 		logInit = new log_init();
 		if(othersProperties!=null && othersProperties.get(log_init.id_property)!=null && othersProperties.get(log_init.id_property) instanceof Properties)
 			logInit.init((Properties)othersProperties.get(log_init.id_property));
@@ -297,6 +303,29 @@ public class bsController extends HttpServlet implements bsConstants  {
 			reloadAuth_config(null);
 		if(!getOrg_config().isReadOk())
 			reloadOrg_config(null);
+		
+		if(servletContext!=null)
+			loadActionsOnStartup(servletContext);
+	}
+	
+	public static void loadActionsOnStartup(ServletContext servletContext) {
+		if(getAction_config().isReadOk()) {
+			try {
+			Vector info_actions = new util_sort().sort(getAction_config().getV_info_actions(),"loadOnStartup");
+			for(int i=0;i<info_actions.size();i++) {
+				info_action info = (info_action)info_actions.get(i);
+				if(info.getMemoryInServletContext()!=null && info.getMemoryInServletContext().equalsIgnoreCase("true") && info.getLoadOnStartup()>-1) {
+					try {
+						loadActionOnStartup(info,servletContext);
+					}catch(Throwable e) {
+						new bsException("Load action on startup ["+info.getPath()+"]: "+e.toString(), iStub.log_WARN);
+					}
+				}
+			}
+			}catch(Exception e) {
+				new bsException("Load actions on startup: "+e.toString(), iStub.log_WARN);
+			}
+		}
 	}
 	
 
@@ -850,6 +879,54 @@ public class bsController extends HttpServlet implements bsConstants  {
 			service(id_action, getServletContext(), request,response);
 
 	}
+	
+	public static boolean loadActionOnStartup(info_action info, ServletContext servletContext) throws Exception{
+		if(info==null || info.getPath()==null || info.getPath().trim().length()==0)
+			return false;
+		i_action action_instance = getAction_config().actionFactory(info.getPath(), null,servletContext);
+
+		i_bean bean_instance = null;
+
+		if(action_instance!=null && bean_instance==null){
+			final info_bean iBean = (info_bean)getAction_config().get_beans().get(action_instance.get_infoaction().getName());
+			if(	action_instance instanceof i_bean &&
+				(
+					action_instance.get_infoaction().getName().equals("") ||
+					(iBean!=null && action_instance.get_infoaction().getType().equals(iBean.getType()))
+				)
+			){
+				if(action_instance.asBean().getInfo_context().isStateless())
+					bean_instance = action_instance.asBean();
+				else
+					bean_instance = action_instance;
+			}else if(iBean == null && !action_instance.get_infoaction().getName().equals("")){
+				if(action_instance.getRealBean()==null){
+					if(action_instance.asBean().getInfo_context().isOnlyProxied())
+						bean_instance = action_instance;
+					else 
+						bean_instance = action_instance.asBean();
+				}
+			}else
+				bean_instance = getAction_config().beanFactory(action_instance.get_infoaction().getName(),null,servletContext,action_instance);
+			
+			if(bean_instance!=null) {
+				bean_instance.reimposta();
+				bean_instance.loadOnStartup(servletContext);
+				action_instance.onPreSet_bean();
+				action_instance.set_bean(bean_instance, (bean_instance!=null)?bean_instance.getInfo_context():null);
+				action_instance.onPostSet_bean();
+
+				bean_instance.onAddToServletContext();
+				bean_instance.clearBeforeStore();
+				
+				setToOnlyServletContext(bean_instance.get_infoaction().getPath(),bean_instance, servletContext);
+				return true;
+
+			}
+		}
+		return false;
+
+	}
 
 	public static i_action getActionInstance(String id_action, HttpServletRequest request, HttpServletResponse response) throws bsControllerException,ServletException, UnavailableException{
 		return getActionInstance(id_action,null, request, response);
@@ -863,6 +940,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return getActionInstance(id_action, id_call, new bsContext(request, response), beanInitFromRequest);
 	}
 
+	
 
 	public static i_action getActionInstance(String id_action,String id_call, iContext context, boolean beanInitFromRequest) throws bsControllerException,ServletException, UnavailableException{
 
@@ -5272,7 +5350,55 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return null;
 	}
 	
-	public static Object getFromOnlyServletContext(String id,HttpServletRequest request){
+	public static Map checkOnlyServletContext(ServletContext servletContext){
+		i_ProviderWrapper wrapper = null;
+		if(!canBeProxed)
+			return null;
+		
+		String bean_id = bsConstants.CONST_BEAN_$SERVLETCONTEXT;
+		if(!getAction_config().getInstance_servletcontext().equals("") && !getAction_config().getInstance_servletcontext().equalsIgnoreCase("false"))
+			bean_id = getAction_config().getInstance_servletcontext();
+
+			if(getAction_config()!=null && getAction_config().getProvider()!=null && !getAction_config().getProvider().equals("") && !getAction_config().getProvider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAction_config().getProvider(),  bean_id, getAction_config().getInstance_servletcontext(), servletContext);
+				}catch(Exception e){
+				}
+			} 
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  bean_id, getAction_config().getInstance_servletcontext(), servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  bean_id, getAction_config().getInstance_servletcontext(), servletContext);
+				}catch(Exception e){
+				}
+			}
+			if(wrapper==null && getAppInit()!=null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equalsIgnoreCase("false")){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  bean_id, getAction_config().getInstance_servletcontext(), servletContext);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(servletContext);
+			if(wrapper==null && getCdiDefaultProvider()!=null){
+				try{
+					wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  bean_id, getAction_config().getInstance_servletcontext(), servletContext);
+				}catch(Exception e){
+				}
+			}
+	
+			if(wrapper!=null)
+				return (Map)wrapper.getInstance();
+
+		return null;
+	}
+
+	
+	public static Object getFromOnlyServletContext(String id, HttpServletRequest request){
 		Map instance = checkOnlyServletContext(request);
 
 		if(instance==null)
@@ -5280,6 +5406,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(instance==null){
 			instance = new HashMap();
 			request.getSession().getServletContext().setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
+		}
+		return instance.get(id);
+	}
+	
+	
+	public static Object getFromOnlyServletContext(String id, ServletContext servletContext){
+		Map instance = checkOnlyServletContext(servletContext);
+
+		if(instance==null)
+			instance = (Map)servletContext.getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+		if(instance==null){
+			instance = new HashMap();
+			servletContext.setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
 		}
 		return instance.get(id);
 	}
@@ -5293,6 +5432,30 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(instance==null){
 				instance = new HashMap();
 				request.getSession().getServletContext().setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
+			}
+			if(obj!=null){
+				if(obj.asBean().getInfo_context().isOnlyProxied()){
+					if(instance.get(id)==null)
+						instance.put(id, obj);
+					return true;
+				}
+			}
+			instance.put(id, obj);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
+	
+	public static boolean setToOnlyServletContext(String id,i_bean obj,ServletContext servletContext){
+		try{
+			Map instance = checkOnlyServletContext(servletContext);
+
+			if(instance==null)
+				instance = (Map)servletContext.getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+			if(instance==null){
+				instance = new HashMap();
+				servletContext.setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
 			}
 			if(obj!=null){
 				if(obj.asBean().getInfo_context().isOnlyProxied()){
@@ -5737,10 +5900,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static boolean isInitialized() {
-		return isInitialized(null,null);
+		return isInitialized(null,null,null);
 	}
 	
 	public static boolean isInitialized(Properties appInitProperty, Map othersProperties) {
+		return isInitialized(appInitProperty, othersProperties, null);
+	}
+	
+	public static boolean isInitialized(Properties appInitProperty, Map othersProperties, ServletContext servletContext) {
 		if(!initialized){
 			try{
 				initialized = true;
@@ -5778,9 +5945,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}catch(Exception e){
 				}
 				if(loadModeAsThread)
-					new LoaderConfigThreadProcessS(othersProperties).start();
+					new LoaderConfigThreadProcessS(othersProperties,servletContext).start();
 				else
-					loadOnInitS(othersProperties);
+					loadOnInitS(othersProperties,servletContext);
 
 				
 				if(stat!=null){

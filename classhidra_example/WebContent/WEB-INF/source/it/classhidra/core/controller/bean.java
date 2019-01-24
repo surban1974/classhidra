@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 
@@ -53,8 +54,6 @@ import it.classhidra.core.tool.util.util_xml;
 import it.classhidra.serialize.JsonMapper;
 import it.classhidra.serialize.Serialized;
 import it.classhidra.serialize.XmlMapper;
-//import sun.misc.BASE64Decoder;
-//import sun.misc.BASE64Encoder;
 
 
 
@@ -1321,6 +1320,10 @@ public Map getComponents() {
 	if(components==null)
 		components = new HashMap();
 	return components;	
+}
+
+
+public void loadOnStartup(ServletContext servletContext) throws bsControllerException {	
 }
 
 }

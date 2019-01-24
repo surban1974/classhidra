@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import it.classhidra.core.init.auth_init;
@@ -50,6 +51,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void reInit(i_elementDBBase _i_el);
 	void initPartFromMap(HashMap parameters) throws bsControllerException;
 	void initFromMap(HashMap parameters, boolean add2fly) throws bsControllerException;
+	void loadOnStartup(ServletContext servletContext) throws bsControllerException;
 	redirects validate(HttpServletRequest request)  throws bsControllerException;
 	redirects validate(HashMap parameters)  throws bsControllerException;
 	redirects validate(String currentAction, String newAction, String newActionCall, HttpServletRequest request)  throws bsControllerException;

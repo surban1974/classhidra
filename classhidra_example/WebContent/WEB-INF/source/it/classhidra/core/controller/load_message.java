@@ -109,7 +109,7 @@ public void init() throws bsControllerException{
 							ainit.get_external_loader());
 			reInit(extl);
 		}catch(Exception e){
-			bsController.writeLog("Load_messages from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
+			bsController.writeLog("Load_messages from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_WARN);
 		}catch(Throwable t){
 			bsController.writeLog("Load_messages from "+ainit.get_external_loader()+" ERROR "+t.toString(),iStub.log_ERROR);
 		}
@@ -127,7 +127,7 @@ public void init() throws bsControllerException{
 							this.getExternalloader());
 			reInit(extl);
 		}catch(Exception e){
-			bsController.writeLog("Load_messages from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
+			bsController.writeLog("Load_messages from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_WARN);
 		}catch(Throwable t){
 			bsController.writeLog("Load_messages from "+this.getExternalloader()+" ERROR "+t.toString(),iStub.log_ERROR);
 		}
@@ -328,7 +328,7 @@ public void load_from_resources() {
 					load_from_resources("/config/"+property_name0);
 			}
 		}catch(Exception e){
-			bsController.writeLog("Load_messages from resources Array KO "+e.toString(),iStub.log_ERROR);
+			bsController.writeLog("Load_messages from resources Array KO "+e.toString(),iStub.log_WARN);
 		}
 
 
@@ -375,7 +375,7 @@ private boolean load_from_resources(String property_name) {
 		    	}
 		    }catch (Exception e) {
 		    	readOk_Resource = readOk_Resource || false;
-				bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+				bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_WARN);
 			}
 	    }
 	    return false;
@@ -417,7 +417,7 @@ private boolean load_from_resources(ServletContext ctx, String property_name) {
 	    	}
     	}
     }catch (Exception e) {
-    	bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+    	bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_WARN);
     }finally {
     	try {
     		if (br != null) br.close();
@@ -435,7 +435,7 @@ private boolean load_from_resources(ServletContext ctx, String property_name) {
 	    		return true;
 	    	}
 		}catch(Exception e){
-			bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+			bsController.writeLog("Load_messages from "+property_name+" ERROR "+e.toString(),iStub.log_WARN);
 		}
     }
     

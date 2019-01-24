@@ -153,7 +153,7 @@ public void init() throws bsControllerException{
 							ainit.get_external_loader());
 			reInit(extl);
 		}catch(Exception e){
-			bsController.writeLog("Load_authentication from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_ERROR);
+			bsController.writeLog("Load_authentication from "+ainit.get_external_loader()+" ERROR "+e.toString(),iStub.log_WARN);
 		}catch(Throwable t){
 			bsController.writeLog("Load_authentication from "+ainit.get_external_loader()+" ERROR "+t.toString(),iStub.log_ERROR);
 		}
@@ -172,7 +172,7 @@ public void init() throws bsControllerException{
 			extl.load();
 			reInit(extl);
 		}catch(Exception e){
-			bsController.writeLog("Load_authentication from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_ERROR);
+			bsController.writeLog("Load_authentication from "+this.getExternalloader()+" ERROR "+e.toString(),iStub.log_WARN);
 		}catch(Throwable t){
 			bsController.writeLog("Load_authentication from "+this.getExternalloader()+" ERROR "+t.toString(),iStub.log_ERROR);
 		}
@@ -775,7 +775,7 @@ private boolean load_from_resources(ServletContext ctx, String property_name) {
 	    	}
     	}
     }catch (Exception e) {
-    	bsController.writeLog("Load_authentication from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+    	bsController.writeLog("Load_authentication from "+property_name+" ERROR "+e.toString(),iStub.log_WARN);
     }finally {
     	try {
     		if (br != null) br.close();
@@ -793,7 +793,7 @@ private boolean load_from_resources(ServletContext ctx, String property_name) {
 	    		return true;
 	    	}
 		}catch(Exception e){
-			bsController.writeLog("Load_authentication from "+property_name+" ERROR "+e.toString(),iStub.log_ERROR);
+			bsController.writeLog("Load_authentication from "+property_name+" ERROR "+e.toString(),iStub.log_WARN);
 		}
     }
     
