@@ -65,6 +65,8 @@ public class bsFilter implements Filter {
 	public final static String CONST_INIT_CONTENT_TYPE 						= "ContentType";
 	public final static String CONST_INIT_CHARACTER_ENCODING 				= "CharacterEncoding";
 	public final static String CONST_REST_SUPPORT 							= "RestSupport";
+	
+	public static Pattern excludedPattern;
 
 	public class ForCheckBs{
 		private String id_action;
@@ -146,7 +148,8 @@ public class bsFilter implements Filter {
 					}
 					if(def_ExcludedPattern!=null && !mustExclude){
 						try{
-							Pattern excludedPattern = Pattern.compile(def_ExcludedPattern);
+							if(excludedPattern==null)
+								excludedPattern = Pattern.compile(def_ExcludedPattern);
 							Matcher excludedMatcher = excludedPattern.matcher(url);
 							if (excludedMatcher.find())
 								mustExclude=true;

@@ -60,7 +60,7 @@ public class JettyClasshidraStarter {
             Server server = new Server();
 
             SelectChannelConnector connector0 = new SelectChannelConnector();
-	            connector0.setPort(8080);
+	            connector0.setPort(7070);
 	            connector0.setMaxIdleTime(30000);
 	            connector0.setRequestHeaderSize(8192);
 
@@ -71,7 +71,8 @@ public class JettyClasshidraStarter {
 	            bsfilter.setAsyncSupported(true);
 	            bsfilter.setInitParameter("CharacterEncoding", "ISO-8859-1");
 	            bsfilter.setInitParameter("ExcludedUrl","/javascript2012/;/css/;/images/;");
-	            bsfilter.setInitParameter("ExcludedPattern","^(?!.*/neohort/).*\\.jsp$");
+	            bsfilter.setInitParameter("ExcludedPattern_old","^(?!.*/neohort/).*\\.jsp$");
+	            bsfilter.setInitParameter("ExcludedPattern","(?:\\.jsp$|\\.html$|\\.htm$|/neohort/)");
 	            bsfilter.setInitParameter("RestSupport","true");
 
 
@@ -216,10 +217,10 @@ public class JettyClasshidraStarter {
 
             server.start();
 
-            System.out.println("Classhidra Base start on http://localhost:8080/");
+            System.out.println("Classhidra Base start on http://localhost:7070/");
 
             if(Desktop.isDesktopSupported()){
-            	Desktop.getDesktop().browse(new URI("http://localhost:8080/"));
+            	Desktop.getDesktop().browse(new URI("http://localhost:7070/"));
             }
 
             server.join();
