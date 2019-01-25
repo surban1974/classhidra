@@ -1,6 +1,8 @@
 package it.classhidra.core.controller;
 
-public interface i_info_context {
+import java.io.Serializable;
+
+public interface i_info_context extends Serializable{
 
 	void reInitEjb(info_context ic);
 

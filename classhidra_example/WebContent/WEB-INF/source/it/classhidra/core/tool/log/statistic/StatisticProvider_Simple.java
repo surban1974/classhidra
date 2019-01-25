@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class StatisticProvider_Simple implements I_StatisticProvider {
+	private static final long serialVersionUID = 1L;
 
 	public void addStatictic(StatisticEntity stat) {
 		LinkedList stack = (LinkedList)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);

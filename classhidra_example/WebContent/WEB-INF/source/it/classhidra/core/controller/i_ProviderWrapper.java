@@ -1,6 +1,8 @@
 package it.classhidra.core.controller;
 
-public interface i_ProviderWrapper {
+import java.io.Serializable;
+
+public interface i_ProviderWrapper extends Serializable{
 
 	Object getInstance();
 

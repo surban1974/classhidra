@@ -86,6 +86,9 @@ public class info_action extends info_entity implements i_elementBase{
 	
 	private boolean R_R = true;
 	private Map restParametersMapped;
+	
+	private HashMap _tlinked;
+	private int checkTLinked = -1; 
 
 	public info_action(){
 		super();
@@ -256,6 +259,8 @@ public class info_action extends info_entity implements i_elementBase{
 		v_info_calls=new Vector();
 		v_info_beans=new Vector();
 
+		_tlinked=new HashMap();
+		checkTLinked=-1;
 	}
 
 
@@ -788,6 +793,22 @@ public class info_action extends info_entity implements i_elementBase{
 		}catch (Exception e) {
 			return -1;
 		}
+	}
+
+	public HashMap get_tlinked() {
+		return _tlinked;
+	}
+
+	public void set_tlinked(HashMap _tlinked) {
+		this._tlinked = _tlinked;
+	}
+
+	public int getCheckTLinked() {
+		return checkTLinked;
+	}
+
+	public void setCheckTLinked(int checkTLinked) {
+		this.checkTLinked = checkTLinked;
 	}
 
 

@@ -1,6 +1,8 @@
 package it.classhidra.core.controller;
 
-public interface i_externalloader{
+import java.io.Serializable;
+
+public interface i_externalloader extends Serializable{
 	public static final String ACTIONS_actions="actions";
 	public static final String ACTIONS_actioncalls="actioncalls";
 	public static final String ACTIONS_restmapping="restmapping";

@@ -45,6 +45,8 @@ import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.tlinked.I_TLinkedProvider;
+import it.classhidra.core.tool.tlinked.TLinkedProvider_Simple;
 import it.classhidra.scheduler.scheduling.IBatchScheduling;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
@@ -104,6 +106,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	private static String idApp;
 	
 	private static I_StatisticProvider statisticProvider;
+	private static I_TLinkedProvider tLinkedProvider;
 	
 	private static i_provider cdiDefaultProvider;
 	private static i_provider ejbDefaultProvider;
@@ -887,7 +890,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		i_bean bean_instance = null;
 
-		if(action_instance!=null && bean_instance==null){
+		if(action_instance!=null){
 			final info_bean iBean = (info_bean)getAction_config().get_beans().get(action_instance.get_infoaction().getName());
 			if(	action_instance instanceof i_bean &&
 				(
@@ -1150,7 +1153,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						iCall =  (info_call)method_call[1];
 						useAsAction=true;
 						if(iCall.getExposed().size()==0){
-								action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
+							action_instance.get_infoaction().get_calls().put(iCall.getName(),iCall);
 						}else{
 							for(int e=0;e<iCall.getExposed().size();e++){
 								final String suffix = "."+iCall.getExposed().get(e).toString();
@@ -1241,15 +1244,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 				}
 			}catch(Exception ex){
-				new bsControllerException(ex, iStub.log_ERROR);
+				new bsControllerException(ex, iStub.log_WARN);
 			}catch(Throwable th){
 				new bsControllerException(th, iStub.log_ERROR);
 			}
 		}
 
-//		if(iCall!=null && iCall.getNavigated().equalsIgnoreCase("false")){
-//		}else 
-//			setInfoNav_CurrentForm(action_instance,request);
+
 
 
 // ACTIONSEVICE
@@ -1338,6 +1339,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 
 			if(action_instance.get_infoaction().getSyncro().equalsIgnoreCase("true")){
+				
+				try {
+					action_instance = getTLinkedProvider().link(action_instance, context.getRequest(),context.getResponse());
+				}catch(Exception ex){
+					new bsControllerException(ex, iStub.log_WARN);
+				}catch(Throwable th){
+					new bsControllerException(th, iStub.log_ERROR);
+				}
+				
+				if(action_instance.get_bean().getCurrent_auth()==null)
+					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(context.getRequest()));
+				
 				try{
 					if(!isRemoteEjb)
 						action_instance.onPreSyncroservice(context.getRequest(),context.getResponse());
@@ -1346,8 +1359,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}catch(Exception e){
 					action_instance.onPreSyncroservice(null,null);
 				}
-				if(action_instance.get_bean().getCurrent_auth()==null)
-					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(context.getRequest()));
+				
+
 				
 				if(iActionMethod==null){
 					try{
@@ -1362,7 +1375,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else{
 					
 					try{
-//						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response})
 						if(!isRemoteEjb){
 							if(useAsAction)
 								current_redirect = prepareActionResponse(
@@ -1424,8 +1436,29 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}catch(Exception e){
 					action_instance.onPostSyncroservice(current_redirect,null,null);
 				}
-			}
-			else{
+				
+				try {
+					action_instance = getTLinkedProvider().unlink(action_instance, context.getRequest(),context.getResponse());
+				}catch(Exception ex){
+					new bsControllerException(ex, iStub.log_WARN);
+				}catch(Throwable th){
+					new bsControllerException(th, iStub.log_ERROR);
+				}
+				
+			} else{
+				
+				if(action_instance.get_bean().getCurrent_auth()==null)
+					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(context.getRequest()));
+
+				
+				try {
+					action_instance = getTLinkedProvider().link(action_instance, context.getRequest(),context.getResponse());
+				}catch(Exception ex){
+					new bsControllerException(ex, iStub.log_WARN);
+				}catch(Throwable th){
+					new bsControllerException(th, iStub.log_ERROR);
+				}
+				
 				try{
 					if(!isRemoteEjb)
 						action_instance.onPreActionservice(context.getRequest(),context.getResponse());
@@ -1434,8 +1467,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}catch(Exception e){
 					action_instance.onPreActionservice(null,null);
 				}
-				if(action_instance.get_bean().getCurrent_auth()==null)
-					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(context.getRequest()));
 				
 
 				
@@ -1451,11 +1482,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else{
 					
 					try{
-//						current_redirect = (redirects)util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response});
 						if(!isRemoteEjb){
 							if(useAsAction)
 								current_redirect = prepareActionResponse(
-//										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request,response}),
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
 											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
@@ -1466,7 +1495,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 										context);
 							else
 								current_redirect = prepareActionResponse(
-//										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request,response}),
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
 											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
@@ -1478,7 +1506,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}else{
 							if(useAsAction)
 								current_redirect = prepareActionResponse(
-//										util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map}),
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
 											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
@@ -1489,7 +1516,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 										context);
 							else
 								current_redirect = prepareActionResponse(
-//										util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map}),
 										(action_instance.get_infoaction()!=null && !action_instance.get_infoaction().isR_R())
 										?
 											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, action_instance.get_infoaction().getRestParametersMapped(), context), action_instance.get_infoaction().getMappedMethodParameterTypes())
@@ -1515,100 +1541,126 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}catch(Exception e){
 					action_instance.onPostActionservice(current_redirect,null,null);
 				}
+				
+				try {
+					action_instance = getTLinkedProvider().unlink(action_instance, context.getRequest(),context.getResponse());
+				}catch(Exception ex){
+					new bsControllerException(ex, iStub.log_WARN);
+				}catch(Throwable th){
+					new bsControllerException(th, iStub.log_ERROR);
+				}
 			}
 		}else{
 			try{
 				
-					try{
-						if(!isRemoteEjb)
-							action_instance.onPreActionCall(id_call, context.getRequest(), context.getResponse());
-						else
-							action_instance.onPreActionCall(id_call, request2map);	
-					}catch(Exception e){
-						action_instance.onPreActionCall(id_call, null,null);						
-					}
-					if(action_instance.get_bean().getCurrent_auth()==null)
-						action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(context.getRequest()));
+				if(action_instance.get_bean().getCurrent_auth()==null)
+					action_instance.get_bean().setCurrent_auth(bsController.checkAuth_init(context.getRequest()));
+				
+				try {
+					action_instance = getTLinkedProvider().link(action_instance, context.getRequest(),context.getResponse());
+				}catch(Exception ex){
+					new bsControllerException(ex, iStub.log_WARN);
+				}catch(Throwable th){
+					new bsControllerException(th, iStub.log_ERROR);
+				}
+				
+				try{
+					if(!isRemoteEjb)
+						action_instance.onPreActionCall(id_call, context.getRequest(), context.getResponse());
+					else
+						action_instance.onPreActionCall(id_call, request2map);	
+				}catch(Exception e){
+					action_instance.onPreActionCall(id_call, null,null);						
+				}
 
-					try{
-						if(iCallMethod!=null){
-							if(!isRemoteEjb){
-								if(useAsAction)
-									current_redirect = prepareActionCallResponse(
-											(iCall.isR_R())
-											?
-													(iCallMethod.getParameterTypes().length==1)
-													?
-													util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{context})
-													:
-													util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{context.getRequest(),context.getResponse()})
-											:
-												util_reflect.getValue(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
-											iCallMethod,
-											action_instance.get_infoaction(),
-											iCall,
-											context);
-								else
-									current_redirect = prepareActionCallResponse(
-											(iCall.isR_R())
-											?
-													(iCallMethod.getParameterTypes().length==1)
-													?
-													util_reflect.getValue(action_instance, iCallMethod, new Object[]{context})
-													:
-													util_reflect.getValue(action_instance, iCallMethod, new Object[]{context.getRequest(),context.getResponse()})
-											:
-												util_reflect.getValue(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
-											iCallMethod,
-											action_instance.get_infoaction(),
-											iCall,
-											context);
-							}else{
-								if(useAsAction)
-									current_redirect = prepareActionCallResponse(
-											(iCall.isR_R())
-											?
-												util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request2map})
-											:
-												util_reflect.getValue(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
-											iCallMethod,
-											action_instance.get_infoaction(),
-											iCall,
-											context);
-								else
-									current_redirect = prepareActionCallResponse(
-											(iCall.isR_R())
-											?
-												util_reflect.getValue(action_instance, iCallMethod, new Object[]{request2map})
-											:
-												util_reflect.getValue(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
-											iCallMethod,
-											action_instance.get_infoaction(),
-											iCall,
-											context);
-							}
 
+				try{
+					if(iCallMethod!=null){
+						if(!isRemoteEjb){
+							if(useAsAction)
+								current_redirect = prepareActionCallResponse(
+										(iCall.isR_R())
+										?
+												(iCallMethod.getParameterTypes().length==1)
+												?
+												util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{context})
+												:
+												util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{context.getRequest(),context.getResponse()})
+										:
+											util_reflect.getValue(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
+										iCallMethod,
+										action_instance.get_infoaction(),
+										iCall,
+										context);
+							else
+								current_redirect = prepareActionCallResponse(
+										(iCall.isR_R())
+										?
+												(iCallMethod.getParameterTypes().length==1)
+												?
+												util_reflect.getValue(action_instance, iCallMethod, new Object[]{context})
+												:
+												util_reflect.getValue(action_instance, iCallMethod, new Object[]{context.getRequest(),context.getResponse()})
+										:
+											util_reflect.getValue(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
+										iCallMethod,
+										action_instance.get_infoaction(),
+										iCall,
+										context);
 						}else{
-							current_redirect = prepareActionCallResponse(
-									null,
-									null,
-									action_instance.get_infoaction(),
-									iCall,
-									context);
+							if(useAsAction)
+								current_redirect = prepareActionCallResponse(
+										(iCall.isR_R())
+										?
+											util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request2map})
+										:
+											util_reflect.getValue(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
+										iCallMethod,
+										action_instance.get_infoaction(),
+										iCall,
+										context);
+							else
+								current_redirect = prepareActionCallResponse(
+										(iCall.isR_R())
+										?
+											util_reflect.getValue(action_instance, iCallMethod, new Object[]{request2map})
+										:
+											util_reflect.getValue(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
+										iCallMethod,
+										action_instance.get_infoaction(),
+										iCall,
+										context);
 						}
-					}catch(Exception e){
-						new bsControllerException(e, iStub.log_ERROR);
-					}catch(Throwable t){
-						new bsControllerException(t, iStub.log_ERROR);
+
+					}else{
+						current_redirect = prepareActionCallResponse(
+								null,
+								null,
+								action_instance.get_infoaction(),
+								iCall,
+								context);
 					}
-					try{
-						if(!isRemoteEjb)
-							action_instance.onPostActionCall(current_redirect,id_call, context.getRequest(), context.getResponse());
-						else
-							action_instance.onPostActionCall(current_redirect,id_call, request2map);
-					}catch(Exception e){
-						action_instance.onPostActionCall(current_redirect,id_call, null,null);
-					}
+				}catch(Exception e){
+					new bsControllerException(e, iStub.log_ERROR);
+				}catch(Throwable t){
+					new bsControllerException(t, iStub.log_ERROR);
+				}
+				try{
+					if(!isRemoteEjb)
+						action_instance.onPostActionCall(current_redirect,id_call, context.getRequest(), context.getResponse());
+					else
+						action_instance.onPostActionCall(current_redirect,id_call, request2map);
+				}catch(Exception e){
+					action_instance.onPostActionCall(current_redirect,id_call, null,null);
+				}
+				
+				try {
+					action_instance = getTLinkedProvider().unlink(action_instance, context.getRequest(),context.getResponse());
+				}catch(Exception ex){
+					new bsControllerException(ex, iStub.log_WARN);
+				}catch(Throwable th){
+					new bsControllerException(th, iStub.log_ERROR);
+				}
 				
 			}catch(Exception ex){
 				new bsControllerException(ex, iStub.log_ERROR);
@@ -4694,6 +4746,115 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return checkStatisticProvider();
 	}
 
+	
+	public static I_TLinkedProvider checkTLinkedProvider(){
+		if(!canBeProxed){
+			if(tLinkedProvider==null)
+				tLinkedProvider = new TLinkedProvider_Simple();
+			return tLinkedProvider;
+		}
+		
+		if(tLinkedProvider!=null)
+			return tLinkedProvider;
+		
+		I_TLinkedProvider retTLinkedProvider=null;
+		
+			if(getAppInit().get_temporary_linked_provider()==null || getAppInit().get_temporary_linked_provider().equals("")){
+				if(getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equals("false")){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  app_init.id_temporary_linked_provider,TLinkedProvider_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTLinkedProvider==null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_temporary_linked_provider,TLinkedProvider_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTLinkedProvider==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_temporary_linked_provider,I_TLinkedProvider.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				checkDefaultProvider(null);
+				if(retTLinkedProvider==null && getCdiDefaultProvider()!=null){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_temporary_linked_provider,TLinkedProvider_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTLinkedProvider==null && getEjbDefaultProvider()!=null){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  app_init.id_temporary_linked_provider,I_TLinkedProvider.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+
+				if(retTLinkedProvider==null){
+					tLinkedProvider = new TLinkedProvider_Simple();
+					return tLinkedProvider;
+				}
+			}else{
+				if(getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equals("false")){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  app_init.id_temporary_linked_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTLinkedProvider==null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_temporary_linked_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTLinkedProvider==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_temporary_linked_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				checkDefaultProvider(null);
+				if(retTLinkedProvider==null && getCdiDefaultProvider()!=null){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(), app_init.id_temporary_linked_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTLinkedProvider==null && getEjbDefaultProvider()!=null){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(), app_init.id_temporary_linked_provider,getAppInit().get_statistic_provider(), null);
+					}catch(Exception e){
+					}
+				}
+
+				if(retTLinkedProvider==null){
+					try{
+						retTLinkedProvider = (I_TLinkedProvider)Class.forName(getAppInit().get_statistic_provider()).newInstance();
+					}catch(Exception e){
+						writeLog("ERROR instance Statistic Provider:"+getAppInit().get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
+					}
+				}
+				if(retTLinkedProvider==null){
+					tLinkedProvider = new TLinkedProvider_Simple();
+					return tLinkedProvider;
+				}
+
+			
+		}
+		if(retTLinkedProvider==null){
+			tLinkedProvider = new TLinkedProvider_Simple();
+			return tLinkedProvider;
+		}
+		
+		return retTLinkedProvider;
+
+	}
+	
+	public static I_TLinkedProvider getTLinkedProvider(){
+		return checkTLinkedProvider();
+	}
 
 	private static void environmentState(HttpServletRequest request, String id_action){
 		if(System.getProperty("application.environment.debug")!=null && System.getProperty("application.environment.debug").equalsIgnoreCase("true")){

@@ -1,8 +1,9 @@
 package it.classhidra.core.tool.log.statistic;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface I_StatisticProvider {
+public interface I_StatisticProvider extends Serializable{
 	void addStatictic(StatisticEntity stat);
 	
 	List getAllEntities();
