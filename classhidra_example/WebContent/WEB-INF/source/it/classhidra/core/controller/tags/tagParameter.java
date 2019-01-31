@@ -32,7 +32,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsConstants;
@@ -43,7 +43,7 @@ import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 
-public class tagParameter extends TagSupport{
+public class tagParameter extends ClTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 1L;
 	protected String name = null;	
 	protected String source=null;
@@ -71,6 +71,10 @@ public class tagParameter extends TagSupport{
 			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 			i_action formAction=null;
 			i_bean formBean=null;
+			
+			if(source!=null)
+				source=checkParametersIfDynamic(source, null);
+			
 			if(source!=null){
 				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
 				if(pool!=null) formAction = (i_action)pool.get(source);
@@ -84,9 +88,7 @@ public class tagParameter extends TagSupport{
 					formBean=formBean.asBean();
 			}
 			
-			if(value!=null){
-				
-			}
+			Object valueObj=null;
 			if(value==null){
 				Object anotherBean=null;
 				
@@ -117,14 +119,21 @@ public class tagParameter extends TagSupport{
 				if(property!=null){
 					obj = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,property,arg);
 				}else obj = anotherBean;	
-				if(obj!=null) value=obj.toString();
+				if(obj!=null) {
+					if(obj instanceof String)
+						value=obj.toString();
+					else
+						valueObj = obj;
+				}
 			}
 			try{
 				Object obj = getParent();
 				if(obj!=null){
 					Map parameters = (Map)util_reflect.prepareWriteValueForTag(obj,"get","parameters",null);
-					if(value!=null) parameters.put(name,value);
-					else  parameters.put(name,"");
+					if(parameters!=null) {
+						if(value!=null) parameters.put(name,value);
+						else  parameters.put(name,"");
+					}
 				}
 			}catch(Exception e){
 			}
@@ -132,8 +141,13 @@ public class tagParameter extends TagSupport{
 				Object obj = getParent();
 				if(obj!=null){
 					List arguments = (List)util_reflect.prepareWriteValueForTag(obj,"get","arguments",null);
-					if(value!=null) arguments.add(value);
-					else  arguments.add(null);
+					if(arguments!=null) {
+						if(value!=null) 
+							arguments.add(value);
+						else if(valueObj!=null)
+							arguments.add(valueObj);
+						else arguments.add(null);
+					}
 				}
 			}catch(Exception e){
 			}

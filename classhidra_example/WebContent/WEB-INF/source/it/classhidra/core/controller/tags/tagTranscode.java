@@ -172,7 +172,8 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 
 		
 		if(source!=null)
-			source=checkParametersIfDynamic(source, null);		
+			source=checkParametersIfDynamic(source, null);
+		
 		if(method_prefix==null) method_prefix="get";
 		
 		final StringBuffer results = new StringBuffer("");

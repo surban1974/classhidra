@@ -62,6 +62,7 @@
 		this.asScript = 			(prot)?((prot.asScript)?prot.asScript:false):false;
 		this.asCss = 				(prot)?((prot.asCss)?prot.asCss:false):false;
 		this.opened = 				(prot)?((prot.opened)?prot.opened:false):false;
+		this.outer =				(prot)?((prot.outer)?prot.outer:false):false;
 		this.compatibility =		(prot)?((prot.compatibility)?prot.compatibility:false):false;
 		this.http = 				null;
 

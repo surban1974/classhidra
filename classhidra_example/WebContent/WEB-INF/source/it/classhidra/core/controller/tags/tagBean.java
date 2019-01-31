@@ -74,6 +74,10 @@ public class tagBean extends ClTagSupport{
 			HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 			i_action formAction=null;
 			i_bean formBean=null;
+			
+			if(source!=null)
+				source=checkParametersIfDynamic(source, null);
+			
 			if(source!=null){
 				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
 				if(pool!=null) formAction = (i_action)pool.get(source);

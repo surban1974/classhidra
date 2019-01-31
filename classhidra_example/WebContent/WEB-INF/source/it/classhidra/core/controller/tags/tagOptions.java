@@ -124,6 +124,10 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		final HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		i_action formAction=null;
 		i_bean formBean=null;
+		
+		if(bean!=null)
+			bean=checkParametersIfDynamic(bean, null);
+		
 		if(bean!=null){
 			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
 			if(pool!=null) formAction = (i_action)pool.get(bean);
