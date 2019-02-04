@@ -48,6 +48,8 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.tlinked.I_TLinkedProvider;
 import it.classhidra.core.tool.tlinked.TLinkedProvider_Simple;
 import it.classhidra.scheduler.scheduling.IBatchScheduling;
+import it.classhidra.serialize.JsonWriter;
+import it.classhidra.serialize.XmlWriter;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_cloner;
@@ -312,7 +314,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 	
 	public static void loadActionsOnStartup(ServletContext servletContext) {
-		if(getAction_config().isReadOk()) {
+		if(getAction_config().getV_info_actions()!=null && getAction_config().getV_info_actions().size()>0) {
 			try {
 			Vector info_actions = new util_sort().sort(getAction_config().getV_info_actions(),"loadOnStartup");
 			for(int i=0;i<info_actions.size();i++) {
@@ -2424,8 +2426,33 @@ public class bsController extends HttpServlet implements bsConstants  {
 										context.write(((String)rWrapper.getContent()).getBytes());
 									else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
 										context.write(((byte[])rWrapper.getContent()));
-									else 
-										context.write((rWrapper.getContent().toString()).getBytes());
+									else {
+										if(
+											(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getContentType()!=null && iCall.getIRedirect().getContentType().indexOf("/json")>-1) ||
+											(rWrapper.getContentType()!=null && rWrapper.getContentType().indexOf("/json")>-1)
+										){
+											if(context.getResponse()!=null){
+												try {
+													context.write(((String)JsonWriter.object2json(rWrapper.getContent(), "")).getBytes());
+												}catch (Exception e) {
+													new bsException(e,iStub.log_ERROR);
+													context.write((rWrapper.getContent().toString()).getBytes());
+												}
+											}
+										}else if(
+												(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getContentType()!=null && iCall.getIRedirect().getContentType().indexOf("/xml")>-1) ||
+												(rWrapper.getContentType()!=null && rWrapper.getContentType().indexOf("/xml")>-1)
+											){
+											if(context.getResponse()!=null){
+												try {
+													context.write(((String)XmlWriter.object2xml(rWrapper.getContent(),"response")).getBytes());
+												}catch (Exception e) {
+													new bsException(e,iStub.log_ERROR);
+													context.write((rWrapper.getContent().toString()).getBytes());
+												}
+											}
+										}										
+									}
 									
 									if(fake!=null && fake.getFlushBuffer()!=null && fake.getFlushBuffer().equalsIgnoreCase("true")){
 										try{
@@ -2461,6 +2488,36 @@ public class bsController extends HttpServlet implements bsConstants  {
 							
 						}else
 							current_redirect = new redirects(new response_wrapper().setContent(retVal));
+					}
+				}else {
+					if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getContentType()!=null && iCall.getIRedirect().getContentType().indexOf("/json")>-1) {
+						if(retVal!=null && context.getResponse()!=null){
+							try {
+								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
+							}catch (Exception e) {
+								new bsException(e,iStub.log_ERROR);
+								context.write((retVal.toString()).getBytes());
+							}
+						}
+					}else if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getContentType()!=null && iCall.getIRedirect().getContentType().indexOf("/xml")>-1) {
+						if(retVal!=null && context.getResponse()!=null){
+							try {
+								context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes());
+							}catch (Exception e) {
+								new bsException(e,iStub.log_ERROR);
+								context.write((retVal.toString()).getBytes());
+							}
+						}
+					}else {
+						if(retVal!=null && context.getResponse()!=null){
+							try {
+								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
+							}catch (Exception e) {
+								new bsException(e,iStub.log_ERROR);
+								context.write((retVal.toString()).getBytes());
+							}
+						}
+						
 					}
 				}
 			}else if((method.getReturnType()!=null && method.getReturnType().equals(Void.TYPE)) || method.getReturnType()==null){
@@ -2523,9 +2580,33 @@ public class bsController extends HttpServlet implements bsConstants  {
 										context.write(((String)rWrapper.getContent()).getBytes());
 									else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
 										context.write(((byte[])rWrapper.getContent()));
-									else 
-										context.write((rWrapper.getContent().toString()).getBytes());
-									
+									else {
+										if(
+												(iAction!=null && iAction.getRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/json")>-1) ||
+												(rWrapper.getContentType()!=null && rWrapper.getContentType().indexOf("/json")>-1)
+											){
+												if(context.getResponse()!=null){
+													try {
+														context.write(((String)JsonWriter.object2json(rWrapper.getContent(), "")).getBytes());
+													}catch (Exception e) {
+														new bsException(e,iStub.log_ERROR);
+														context.write((rWrapper.getContent().toString()).getBytes());
+													}
+												}
+											}else if(
+													(iAction!=null && iAction.getIRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/xml")>-1) ||
+													(rWrapper.getContentType()!=null && rWrapper.getContentType().indexOf("/xml")>-1)
+												){
+												if(context.getResponse()!=null){
+													try {
+														context.write(((String)XmlWriter.object2xml(rWrapper.getContent(),"response")).getBytes());
+													}catch (Exception e) {
+														new bsException(e,iStub.log_ERROR);
+														context.write((rWrapper.getContent().toString()).getBytes());
+													}
+												}
+											}
+									}
 									if(fake!=null && fake.getFlushBuffer()!=null && fake.getFlushBuffer().equalsIgnoreCase("true")){
 										try{
 											context.flush();
@@ -2562,6 +2643,36 @@ public class bsController extends HttpServlet implements bsConstants  {
 							}
 						}else
 							current_redirect = new redirects(new response_wrapper().setContent(retVal));
+					}
+				}else {
+					if(iAction!=null && iAction.getIRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/json")>-1) {
+						if(retVal!=null && context.getResponse()!=null){
+							try {
+								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
+							}catch (Exception e) {
+								new bsException(e,iStub.log_ERROR);
+								context.write((retVal.toString()).getBytes());
+							}
+						}
+					}else if(iAction!=null && iAction.getIRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/xml")>-1) {
+						if(retVal!=null && context.getResponse()!=null){
+							try {
+								context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes());
+							}catch (Exception e) {
+								new bsException(e,iStub.log_ERROR);
+								context.write((retVal.toString()).getBytes());
+							}
+						}
+					}else {
+						if(retVal!=null && context.getResponse()!=null){
+							try {
+								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
+							}catch (Exception e) {
+								new bsException(e,iStub.log_ERROR);
+								context.write((retVal.toString()).getBytes());
+							}
+						}
+						
 					}
 				}
 			}else if((method.getReturnType()!=null && method.getReturnType().equals(Void.TYPE)) || method.getReturnType()==null){

@@ -54,19 +54,35 @@ public class JsonWriter2 {
 			else if(name==null)
 				map_name = "item";
 			Stack objList = new Stack();
-			result+=generateJsonItem(
-					obj,
-					map_name,
-					0,
-					false,
-					new HashMap(),
-					null,
-					(annotation!=null)?annotation.children():false,
-					(annotation!=null)?annotation.depth():0,
-					util_xml.convertFilters(filters),
-					null,
-					validator,
-					objList);
+			if(map_name!=null && map_name.equals("")) {
+				result+=generateJsonItemOnlyContent(
+						obj,
+						map_name,
+						0,
+						false,
+						new HashMap(),
+						null,
+						(annotation!=null)?annotation.children():false,
+						(annotation!=null)?annotation.depth():0,
+						util_xml.convertFilters(filters),
+						null,
+						validator,
+						objList);
+			}else {
+				result+=generateJsonItem(
+						obj,
+						map_name,
+						0,
+						false,
+						new HashMap(),
+						null,
+						(annotation!=null)?annotation.children():false,
+						(annotation!=null)?annotation.depth():0,
+						util_xml.convertFilters(filters),
+						null,
+						validator,
+						objList);
+			}
 			objList.clear();
 			objList=null;
 		}
@@ -92,23 +108,44 @@ public class JsonWriter2 {
 				map_name = "item";
 			
 			Stack objList = new Stack();
-			result+=generateJsonItem(
-					obj,
-					map_name,
-					0,
-					false,
-					new HashMap(),
-					null,
-					(annotation!=null)?(annotation.children() || children):children,
-					(annotation!=null)
-					?
-					(depth>annotation.depth())?depth:annotation.depth()
-					:
-					depth,
-					util_xml.convertFilters(filters),
-					null,
-					validator,
-					objList);
+			if(map_name!=null && map_name.equals("")) {
+				result+=generateJsonItemOnlyContent(
+						obj,
+						map_name,
+						0,
+						false,
+						new HashMap(),
+						null,
+						(annotation!=null)?(annotation.children() || children):children,
+						(annotation!=null)
+						?
+						(depth>annotation.depth())?depth:annotation.depth()
+						:
+						depth,
+						util_xml.convertFilters(filters),
+						null,
+						validator,
+						objList);
+				
+			}else {
+				result+=generateJsonItem(
+						obj,
+						map_name,
+						0,
+						false,
+						new HashMap(),
+						null,
+						(annotation!=null)?(annotation.children() || children):children,
+						(annotation!=null)
+						?
+						(depth>annotation.depth())?depth:annotation.depth()
+						:
+						depth,
+						util_xml.convertFilters(filters),
+						null,
+						validator,
+						objList);
+			}
 			objList.clear();
 			objList=null;
 		}
@@ -144,6 +181,34 @@ public class JsonWriter2 {
 		}
 		return result;
 	}
+	
+	private static String generateJsonItemOnlyContent(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, String subFilterName, WriteValidator validator, Stack objList){
+		String result="";
+		boolean goAhead = true;
+		Map subTreeFilters = null;
+		if(treeFilters!=null){
+			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
+				goAhead=false;
+			else if(name==null && subFilterName!=null && treeFilters.get(subFilterName)==null && treeFilters.get(util_reflect.revAdaptMethodName(subFilterName))==null)
+				goAhead=false; 
+			else if(name!=null){
+				subTreeFilters = (Map)treeFilters.get(name);
+				if(subTreeFilters==null)
+					subTreeFilters = (Map)treeFilters.get(util_reflect.revAdaptMethodName(name));
+			} else if(name==null && subFilterName!=null){
+				subTreeFilters = (Map)treeFilters.get(subFilterName);
+				if(subTreeFilters==null)
+					subTreeFilters = (Map)treeFilters.get(util_reflect.revAdaptMethodName(subFilterName));
+			}
+		}
+		if(goAhead && validator!=null)
+			goAhead = validator.isWritable(sub_obj, objList, getOutputName(name, annotation));
+		if(goAhead){
+			result+=generateJsonItemTag_Content(sub_obj, name, level, avoidCyclicPointers, annotation, serializeChildren, serializeDepth, subTreeFilters, validator, objList);
+		}
+		return result;
+	}
+	
 
 	private static String generateJsonItemTag_Start(Object sub_obj, String name, int level, Serialized annotation, boolean notFirst){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";

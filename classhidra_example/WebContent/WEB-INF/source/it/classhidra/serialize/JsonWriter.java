@@ -54,18 +54,34 @@ public class JsonWriter {
 				map_name = "item";
 			
 			Stack objList = new Stack();
-			result+=generateJsonItem(
-					obj,
-					map_name,
-					0,
-					false,
-					new HashMap(),
-					null,
-					(annotation!=null)?annotation.children():false,
-					(annotation!=null)?annotation.depth():0,
-					util_xml.convertFilters(filters),
-					validator,
-					objList);			
+			if(map_name!=null && map_name.equals("")) {
+				result+=generateJsonItemOnlyContent(
+						obj,
+						map_name,
+						0,
+						false,
+						new HashMap(),
+						null,
+						(annotation!=null)?annotation.children():false,
+						(annotation!=null)?annotation.depth():0,
+						util_xml.convertFilters(filters),
+						validator,
+						objList);	
+			
+			}else {
+				result+=generateJsonItem(
+						obj,
+						map_name,
+						0,
+						false,
+						new HashMap(),
+						null,
+						(annotation!=null)?annotation.children():false,
+						(annotation!=null)?annotation.depth():0,
+						util_xml.convertFilters(filters),
+						validator,
+						objList);	
+			}
 			objList.clear();
 			objList=null;
 		}
@@ -90,22 +106,42 @@ public class JsonWriter {
 			else if(name==null)
 				map_name = "item";
 			Stack objList = new Stack();
-			result+=generateJsonItem(
-					obj,
-					map_name,
-					0,
-					false,
-					new HashMap(),
-					null,
-					(annotation!=null)?(annotation.children() || children):children,
-					(annotation!=null)
-					?
-					(depth>annotation.depth())?depth:annotation.depth()
-					:
-					depth,
-					util_xml.convertFilters(filters),
-					validator,
-					objList);
+			if(map_name!=null && map_name.equals("")) {
+				result+=generateJsonItemOnlyContent(
+						obj,
+						map_name,
+						0,
+						false,
+						new HashMap(),
+						null,
+						(annotation!=null)?(annotation.children() || children):children,
+						(annotation!=null)
+						?
+						(depth>annotation.depth())?depth:annotation.depth()
+						:
+						depth,
+						util_xml.convertFilters(filters),
+						validator,
+						objList);
+				
+			}else {
+				result+=generateJsonItem(
+						obj,
+						map_name,
+						0,
+						false,
+						new HashMap(),
+						null,
+						(annotation!=null)?(annotation.children() || children):children,
+						(annotation!=null)
+						?
+						(depth>annotation.depth())?depth:annotation.depth()
+						:
+						depth,
+						util_xml.convertFilters(filters),
+						validator,
+						objList);
+			}
 			objList.clear();
 			objList=null;
 		}
@@ -132,6 +168,27 @@ public class JsonWriter {
 			result+=generateJsonItemTag_Start(sub_obj, name, level, annotation, notFirst);
 			result+=generateJsonItemTag_Content(sub_obj, name, level, avoidCyclicPointers, annotation, serializeChildren, serializeDepth, subTreeFilters, validator, objList);
 			result+=generateJsonItemTag_Finish(sub_obj, name, level, notFirst);		
+		}
+		return result;
+	}
+	
+	private static String generateJsonItemOnlyContent(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator, Stack objList){
+		String result="";
+		boolean goAhead = true;
+		Map subTreeFilters = null;
+		if(treeFilters!=null){
+			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
+				goAhead=false;
+			else if(name!=null){
+				subTreeFilters = (Map)treeFilters.get(name);
+				if(subTreeFilters==null)
+					subTreeFilters = (Map)treeFilters.get(util_reflect.revAdaptMethodName(name));
+			}
+		}
+		if(goAhead && validator!=null)
+			goAhead = validator.isWritable(sub_obj, objList, getOutputName(name, annotation));
+		if(goAhead){
+			result+=generateJsonItemTag_Content(sub_obj, name, level, avoidCyclicPointers, annotation, serializeChildren, serializeDepth, subTreeFilters, validator, objList);
 		}
 		return result;
 	}
