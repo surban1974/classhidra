@@ -2492,6 +2492,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else {
 					if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getContentType()!=null && iCall.getIRedirect().getContentType().indexOf("/json")>-1) {
 						if(retVal!=null && context.getResponse()!=null){
+							if(iCall!=null && iCall.getIRedirect()!=null)
+								updateResponseContentType(iCall.getIRedirect(), context.getResponse(), 0);
 							try {
 								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
 							}catch (Exception e) {
@@ -2500,6 +2502,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 							}
 						}
 					}else if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getContentType()!=null && iCall.getIRedirect().getContentType().indexOf("/xml")>-1) {
+						if(iCall!=null && iCall.getIRedirect()!=null)
+							updateResponseContentType(iCall.getIRedirect(), context.getResponse(), 0);
 						if(retVal!=null && context.getResponse()!=null){
 							try {
 								context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes());
@@ -2510,6 +2514,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 					}else {
 						if(retVal!=null && context.getResponse()!=null){
+							if(iCall!=null && iCall.getIRedirect()!=null)
+								updateResponseContentType(iCall.getIRedirect(), context.getResponse(), 0);
 							try {
 								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
 							}catch (Exception e) {
@@ -2647,6 +2653,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else {
 					if(iAction!=null && iAction.getIRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/json")>-1) {
 						if(retVal!=null && context.getResponse()!=null){
+							info_redirect iRedirect = null;
+							if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
+								iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
+							if(iRedirect!=null)
+								updateResponseContentType(iRedirect, context.getResponse(), 0);
 							try {
 								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
 							}catch (Exception e) {
@@ -2656,6 +2667,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 					}else if(iAction!=null && iAction.getIRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/xml")>-1) {
 						if(retVal!=null && context.getResponse()!=null){
+							info_redirect iRedirect = null;
+							if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
+								iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
+							if(iRedirect!=null)
+								updateResponseContentType(iRedirect, context.getResponse(), 0);
 							try {
 								context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes());
 							}catch (Exception e) {
@@ -2665,6 +2681,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 					}else {
 						if(retVal!=null && context.getResponse()!=null){
+							info_redirect iRedirect = null;
+							if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
+								iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
+							if(iRedirect!=null)
+								updateResponseContentType(iRedirect, context.getResponse(), 0);
 							try {
 								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
 							}catch (Exception e) {
