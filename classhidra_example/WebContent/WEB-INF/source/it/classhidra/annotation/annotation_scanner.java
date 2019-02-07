@@ -5,6 +5,7 @@ import it.classhidra.annotation.elements.AccessRelation;
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionCall;
 import it.classhidra.annotation.elements.ActionMapping;
+import it.classhidra.annotation.elements.ActionService;
 import it.classhidra.annotation.elements.Apply_to_action;
 import it.classhidra.annotation.elements.Async;
 import it.classhidra.annotation.elements.Bean;
@@ -1018,16 +1019,22 @@ public class annotation_scanner implements i_annotation_scanner {
 			if(classType!=null){
 				List callMethods = new ArrayList();
 				List actionMethods = new ArrayList();
+				List actionServiceMethods = new ArrayList();
 				Method[] mtds = classType.getMethods();
 				for(int i=0;i<mtds.length;i++){
 					Method current = mtds[i];
 					if(current.getAnnotation(Action.class)!=null)
 						actionMethods.add( mtds[i]);
+					if(current.getAnnotation(ActionService.class)!=null)
+						actionServiceMethods.add( mtds[i]);
 					if(current.getAnnotation(ActionCall.class)!=null)
 						callMethods.add( mtds[i]);
 				}
 				for(int i=0;i<actionMethods.size();i++)
 					checkActionAnnotations(classType, class_path, ((Method)actionMethods.get(i)).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
+
+				for(int i=0;i<actionServiceMethods.size();i++)
+					checkActionServiceAnnotations(iAction, classType, class_path, ((Method)actionServiceMethods.get(i)).getAnnotation(ActionService.class), subAnnotations, (Method)actionServiceMethods.get(i));
 				
 				for(int i=0;i<callMethods.size();i++){
 					checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), iAction, (Method)callMethods.get(i), i);
@@ -1045,16 +1052,22 @@ public class annotation_scanner implements i_annotation_scanner {
     			if(i_action.class.isAssignableFrom(interfaces[k]) && !interfaces[k].equals(i_action.class)){
 					List callMethods = new ArrayList();
 					List actionMethods = new ArrayList();
+					List actionServiceMethods = new ArrayList();
 					Method[] mtds = interfaces[k].getMethods();
 					for(int i=0;i<mtds.length;i++){
 						Method current = mtds[i];
 						if(current.getAnnotation(Action.class)!=null)
 							actionMethods.add( mtds[i]);
+						if(current.getAnnotation(ActionService.class)!=null)
+							actionServiceMethods.add( mtds[i]);
 						if(current.getAnnotation(ActionCall.class)!=null)
 							callMethods.add( mtds[i]);
 					}
 					for(int i=0;i<actionMethods.size();i++)
 						checkActionAnnotations(interfaces[k], class_path, ((Method)actionMethods.get(i)).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
+
+					for(int i=0;i<actionServiceMethods.size();i++)
+						checkActionServiceAnnotations(iAction, interfaces[k], class_path, ((Method)actionServiceMethods.get(i)).getAnnotation(ActionService.class), subAnnotations, (Method)actionServiceMethods.get(i));
 					
 					for(int i=0;i<callMethods.size();i++)
 						checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), iAction, (Method)callMethods.get(i), i);
@@ -1065,6 +1078,58 @@ public class annotation_scanner implements i_annotation_scanner {
     	
     	return iAction;
 	}
+	
+	private info_action checkActionServiceAnnotations(info_action iAction, Class classType, String class_path, ActionService annotationActionService, Map  subAnnotations, Method method) throws Exception{
+		if(iAction==null || annotationActionService==null || method==null || method.equals(""))
+			return null;
+		iAction.setMethod(method.getName());
+    	iAction.setMappedMethodParameterTypes(method.getParameterTypes());
+
+    	
+    	NavigatedDirective navigatedDirective = (NavigatedDirective)subAnnotations.get("NavigatedDirective");
+    	if(navigatedDirective!=null){
+    		if(!iAction.getNavigated().trim().equalsIgnoreCase("true"))
+	    		iAction.setNavigated("true");
+    		if(navigatedDirective.memoryContent()!=null && !navigatedDirective.memoryContent().equals(""))
+    			iAction.setNavigatedMemoryContent(navigatedDirective.memoryContent());
+    	}
+    	
+		Expose action_exposed = annotationActionService.Expose();
+		if(action_exposed!=null){
+			iAction.addExposed(action_exposed.method()).addExposed(action_exposed.methods());
+			if(action_exposed.restmapping()!=null && action_exposed.restmapping().length>0){
+				for(int r=0;r<action_exposed.restmapping().length;r++)
+					iAction.getRestmapping().add(checkRestAnnotation(action_exposed.restmapping()[r], iAction.getExpose(), iAction));
+
+			}
+		}
+    	
+    	setEntity(iAction,annotationActionService.entity());
+    	iAction.setAnnotationLoaded(true);
+    	
+    	
+    	Redirect redirect = annotationActionService.Redirect();
+    	if(redirect!=null){
+    		info_redirect iRedirect = checkRedirectAnnotation(iAction, redirect, -1);
+    		if(iRedirect!=null && !iRedirect.isEmpty()){
+	    		if(iAction.getRedirect()==null || iAction.getRedirect().equals("")){
+	    			if(iRedirect.getPath()!=null && !iRedirect.getPath().equals(""))
+	    				iAction.setRedirect(iRedirect.getPath());
+	    			iAction.setIRedirect(iRedirect);
+	    		}
+    		}
+    	}
+    	
+    	Async callAsync = annotationActionService.Async();
+    	if(callAsync!=null && callAsync.value()){
+    		info_async iAsync = checkAsyncAnnotation(callAsync);
+    		if(iAsync!=null)
+    			iAction.setiAsync(iAsync);
+    	}
+    	
+    	return iAction;
+	}
+	
 	
 	private info_bean checkBeanAnnotation(Class classType, info_action iAction, Bean annotationBean, String class_path, int i){
 		if(annotationBean==null || annotationBean.name()==null || annotationBean.name().equals(""))
