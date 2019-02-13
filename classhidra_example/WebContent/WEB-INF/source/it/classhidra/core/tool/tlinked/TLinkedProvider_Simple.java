@@ -60,7 +60,20 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 							        				field.setAccessible(false);	
 				        					}
 				        				}
-				        			}			        			
+				        			}	
+				        		}else if(field.getType().isAssignableFrom(Map.class)) {	
+				        			if(pair.getValue() instanceof info_tlinked) {
+				        				info_tlinked tlinked = (info_tlinked)pair.getValue();
+					        			if(tlinked.getReference()!=null && tlinked.getReference()!=void.class) {
+				        					Map references = bsController.getCurrentForm(tlinked.getReference(), request);
+				        					boolean isAccessible = field.isAccessible();
+						        			if(!isAccessible)
+						        				field.setAccessible(true);			        			
+						        			field.set(instance, references);			        			
+						        			if(!isAccessible)
+						        				field.setAccessible(false);	
+				        				}
+				        			}
 				        		}else if(field.getType().isAssignableFrom(HttpServletRequest.class)) {
 				        			boolean isAccessible = field.isAccessible();
 				        			if(!isAccessible)

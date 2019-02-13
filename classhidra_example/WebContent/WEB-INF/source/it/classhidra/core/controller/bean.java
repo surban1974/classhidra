@@ -544,6 +544,17 @@ public void setCampoValuePoint(Object req, String nome, Object value) throws Exc
 	if(req instanceof Map){
 		((Map)req).put(nome, value);
 	}else{
+		if(req instanceof List) {
+			int index=-1;
+			try {
+				index = Integer.parseInt(nome);
+			}catch(Exception e) {				
+			}
+			if(index>-1 && index<((List)req).size()) {
+				((List)req).set(index, value);
+				return;
+			}
+		}
 		boolean res = setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),new Object[]{value});
 		if(!res)
 			res = setValueMapped(req, "set", nome.trim(),new Object[]{value},false);
@@ -554,6 +565,17 @@ public void setCampoValuePoint(Object req, String nome, Object value, boolean lo
 	if(req instanceof Map){
 		((Map)req).put(nome, value);
 	}else{
+		if(req instanceof List) {
+			int index=-1;
+			try {
+				index = Integer.parseInt(nome);
+			}catch(Exception e) {				
+			}
+			if(index>-1 && index<((List)req).size()) {
+				((List)req).set(index, value);
+				return;
+			}
+		}
 		boolean res = setValue(req, "set"+util_reflect.adaptMethodName(nome.trim()),new Object[]{value},log);
 		if(!res)
 			res = setValueMapped(req, "set", nome.trim(),new Object[]{value},log);

@@ -3659,6 +3659,77 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return null;
 	}
 
+	
+	public static Map getCurrentForm(Class reference, HttpServletRequest request){
+		if(reference==null) return null;
+		Map result = new HashMap();
+		info_navigation fromNav = getFromInfoNavigation(null, request);
+		if(fromNav!=null){
+			while(fromNav!=null) {
+				if(fromNav.get_content()!=null && (fromNav.get_content().getClass().isAssignableFrom(reference) || isAssignableFromInterface(fromNav.get_content().getClass().getInterfaces(),reference))) {
+					if(fromNav.getIAction()!=null)
+						result.put(fromNav.getIAction().getPath(),fromNav.get_content());
+				}
+				fromNav=fromNav.getChild();
+			}
+		}
+		try{
+			Map instanceSession = checkOnlySession(request);
+			if(instanceSession==null)
+				instanceSession = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			if(instanceSession!=null){
+				Iterator entry = instanceSession.entrySet().iterator();
+				while (entry.hasNext()) {
+					Map.Entry current = (Map.Entry)entry.next();
+					if(current.getValue()!=null && (current.getValue().getClass().isAssignableFrom(reference) || isAssignableFromInterface(current.getValue().getClass().getInterfaces(),reference)))
+						result.put(current.getKey().toString(),current.getValue());
+				}
+			}
+			
+			Map instanceServletContext = checkOnlyServletContext(request);
+			if(instanceServletContext==null)
+				instanceServletContext = (Map)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+			if(instanceServletContext!=null){
+				Iterator entry = instanceServletContext.entrySet().iterator();
+				while (entry.hasNext()) {
+					Map.Entry current = (Map.Entry)entry.next();
+					if(current.getValue()!=null && (current.getValue().getClass().isAssignableFrom(reference) || isAssignableFromInterface(current.getValue().getClass().getInterfaces(),reference)))
+						result.put(current.getKey().toString(),current.getValue());
+				}
+			}
+			
+			i_bean content = null;
+			try{
+				content = (i_bean)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE);
+			}catch(Exception e){
+			}
+			if(	content!=null &&
+				content.get_infoaction()!=null &&
+				content.get_infoaction().getPath()!=null &&
+				content.getClass().isAssignableFrom(reference)
+			)
+				result.put(content.get_infoaction().getPath(),content);
+			
+			
+		}catch(Exception e){
+			if( e instanceof java.lang.NullPointerException){
+			}else new bsControllerException(e,iStub.log_ERROR);
+		}
+
+
+		return result;
+	}
+	
+	public static boolean isAssignableFromInterface(Class[] interfaces, Class interf) {
+		if(interfaces==null || interf==null)
+			return false;
+		for(Class current:interfaces) {
+			if(current==interf)
+				return true;
+		}
+		return false;
+	}
+
 
 	public static void setInfoNav_CurrentForm(i_action action_instance, HttpServletRequest request){
 		boolean go = false;

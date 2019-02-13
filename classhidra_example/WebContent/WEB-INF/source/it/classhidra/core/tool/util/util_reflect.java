@@ -473,7 +473,7 @@ public static boolean setValue(Object requested, String nome, Object[] value, bo
 		        	if(parTypes.length==value.length){
 		        		int j=0;
 			        	while(j<parTypes.length && isCorrect){
-			        		if(!parTypes[j].isAssignableFrom(value[j].getClass()))
+			        		if(value[j]!=null && !parTypes[j].isAssignableFrom(value[j].getClass()))
 			        			isCorrect = false;
 			        		j++;
 			        	}
