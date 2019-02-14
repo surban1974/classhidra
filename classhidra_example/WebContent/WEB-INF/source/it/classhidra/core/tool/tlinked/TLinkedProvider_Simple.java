@@ -31,20 +31,29 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 					if(instance.get_infoaction().get_tlinked()==null)
 						instance.get_infoaction().set_tlinked(new HashMap());
 					instance.get_infoaction().get_tlinked().clear();
-					for(Field field: instance.getClass().getDeclaredFields()) {
-						TemporaryLinked annotation = field.getAnnotation(TemporaryLinked.class);
-						if(annotation!=null) {
-							instance.get_infoaction().get_tlinked().put(field.getName(), new info_tlinked(annotation));
-							instance.get_infoaction().setCheckTLinked(1);
+					Map fields = new HashMap();
+					fields = getAllFields(fields, instance.getClass());
+					for(Object obj: fields.values()) {
+//					for(Field field: instance.getClass().getDeclaredFields() ) {
+						if(obj instanceof Field) {
+							Field field = (Field)obj;
+							TemporaryLinked annotation = field.getAnnotation(TemporaryLinked.class);
+							if(annotation!=null) {
+								instance.get_infoaction().get_tlinked().put(field.getName(), new info_tlinked(annotation));
+								instance.get_infoaction().setCheckTLinked(1);
+							}
 						}
 					}
 				}
 				if(instance.get_infoaction().getCheckTLinked()==1 && instance.get_infoaction().get_tlinked()!=null && instance.get_infoaction().get_tlinked().size()>0) {
+					Map fields = new HashMap();
+					fields = getAllFields(fields, instance.getClass());
 					Iterator it = instance.get_infoaction().get_tlinked().entrySet().iterator();
 				    while (it.hasNext()) {
 				        Map.Entry pair = (Map.Entry)it.next();
 				        try {
-				        	Field field = instance.getClass().getDeclaredField(pair.getKey().toString());
+//				        	Field field = instance.getClass().getDeclaredField(pair.getKey().toString());
+				        	Field field = (Field)fields.get(pair.getKey().toString());
 				        	if(field!=null) {
 				        		if(checkInterfaces(i_bean.class, field.getType().getInterfaces())) {
 				        			if(pair.getValue() instanceof info_tlinked) {
@@ -169,5 +178,18 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 				return true;
 		}
 		return false;
+	}
+	
+	private Map getAllFields(Map fields, Class type) {
+		for(Field field: type.getDeclaredFields() ) {
+			if(field.getAnnotation(TemporaryLinked.class)!=null && fields.get(field.getName())==null)
+				fields.put(field.getName(),field);
+		}
+
+	    if (type.getSuperclass() != null && checkInterfaces(i_action.class, type.getSuperclass().getInterfaces())) {
+	    	getAllFields(fields, type.getSuperclass());
+	    }
+
+	    return fields;
 	}
 }
