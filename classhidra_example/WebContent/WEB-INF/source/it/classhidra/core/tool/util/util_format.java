@@ -298,6 +298,18 @@ public static java.util.Date stringToData ( String data, String formato) throws 
 	if ( pos.getIndex()==0 || dataResult==null ) throw new Exception();
 	return dataResult;
 }
+public static java.util.Date stringToData ( String data, String formato, Locale loc) throws Exception {
+	SimpleDateFormat sdf = new SimpleDateFormat(formato,loc);
+	ParsePosition pos = new ParsePosition(0);
+	Date dataResult = null;
+	try {
+		dataResult = sdf.parse(data,pos);
+	} catch(Exception e) {
+		throw new Exception();
+	}
+	if ( pos.getIndex()==0 || dataResult==null ) throw new Exception();
+	return dataResult;
+}
 public static java.sql.Date stringToSqlData ( String data, String formato, Locale loc) throws ParseException {
 	SimpleDateFormat sdf = new SimpleDateFormat(formato,loc);
 	ParsePosition pos = new ParsePosition(0);

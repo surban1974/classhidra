@@ -514,26 +514,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 //		results.append(" <input type=\"hidden\" name=\""+div_id+"_scrollTop\" value=\""+intScrollTopDiv+"\"/>"+System.getProperty("line.separator"));
 		results.append("<div id=\""+div_id+"\"");
 		
-		if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){
-		}else{
-			results.append(" <input type=\"hidden\"");
-			if(objId!=null){
-				results.append(" id=\"");
-				results.append(objId);
-				results.append('"');
-			}
-			if(name!=null){
-				results.append(" name=\"");
-				results.append(name);
-				results.append('"');
-			}
-			if (value != null) {
-				results.append(" value=\"");
-				results.append(value);
-				results.append('"');
-			}
-			results.append("/>"+System.getProperty("line.separator"));
-		}
+
 
 		if (styleClass != null) {
 			results.append(" class=\"");
@@ -592,6 +573,26 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 
 		
 		results.append(">"+System.getProperty("line.separator"));
+if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){
+}else{
+	results.append(" <input type=\"hidden\"");
+	if(objId!=null){
+		results.append(" id=\"");
+		results.append(objId);
+		results.append('"');
+	}
+	if(name!=null){
+		results.append(" name=\"");
+		results.append(name);
+		results.append('"');
+	}
+	if (value != null) {
+		results.append(" value=\"");
+		results.append(value);
+		results.append('"');
+	}
+	results.append("/>"+System.getProperty("line.separator"));
+}		
 results.append(" <input type=\"hidden\" name=\""+div_id+"_scrollTop\" value=\""+intScrollTopDiv+"\"/>"+System.getProperty("line.separator"));	
 
 if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){

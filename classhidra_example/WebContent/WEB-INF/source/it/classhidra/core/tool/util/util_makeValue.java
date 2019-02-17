@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import it.classhidra.serialize.Serialized;
 
@@ -179,6 +180,11 @@ public class util_makeValue {
 				formatesD[6]="dd-MM-yyyy";
 				formatesD[7]="dd.MM.yyyy";
 			if(ret_class.getName().equals("java.sql.Date")){
+				try {
+					resultObject = util_format.stringToSqlData(value, "EEE MMM dd HH:mm:ss z yyyy", util_format.ENGLISH);
+					if(resultObject!=null) return resultObject;
+				}catch(Exception e) {					
+				}
 				for(int i=0;i< formatesD.length;i++){
 					try{
 						resultObject = util_format.stringToData(value, formatesD[i]);
@@ -203,6 +209,11 @@ public class util_makeValue {
 				}
 			}
 			if(ret_class.getName().equals("java.util.Date")){
+				try {
+					resultObject = util_format.stringToData(value, "EEE MMM dd HH:mm:ss z yyyy", util_format.ENGLISH);
+					if(resultObject!=null) return resultObject;
+				}catch(Exception e) {					
+				}
 				for(int i=0;i< formatesD.length;i++){
 					try{
 						resultObject = util_format.stringToData(value, formatesD[i]);

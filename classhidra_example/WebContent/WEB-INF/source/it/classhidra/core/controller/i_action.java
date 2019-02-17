@@ -65,4 +65,6 @@ public interface i_action extends listener_action, i_bean, Serializable{
 	void enterActionContext(i_action oldAction,HashMap _content);	
 	void leaveActionContext(i_action newAction, HttpServletRequest request, HttpServletResponse response);
 	void leaveActionContext(i_action newAction,HashMap _content);
+	
+	action_payload delegatePayloadProcess(String id_call, iContext context, boolean beanInitFromRequest) throws bsControllerException,ServletException, UnavailableException;
 }

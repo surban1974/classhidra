@@ -89,6 +89,7 @@ public class info_action extends info_entity implements i_elementBase{
 	
 	private HashMap _tlinked;
 	private int checkTLinked = -1; 
+	private String locked = "false"; 
 
 	public info_action(){
 		super();
@@ -261,6 +262,7 @@ public class info_action extends info_entity implements i_elementBase{
 
 		_tlinked=new HashMap();
 		checkTLinked=-1;
+		locked = "false";
 	}
 
 
@@ -407,6 +409,7 @@ public class info_action extends info_entity implements i_elementBase{
 		if(reloadAfterNextNavigated!=null && !reloadAfterNextNavigated.trim().equals("")) result+=" reloadAfterNextNavigated=\""+util_format.normaliseXMLText(reloadAfterNextNavigated)+"\"";
 		if(help!=null && !help.trim().equals("")) result+=" help=\""+util_format.normaliseXMLText(help)+"\"";
 		if(error!=null && !error.trim().equals("")) result+=" error=\""+util_format.normaliseXMLText(error)+"\"";
+		if(locked!=null && !locked.trim().equals("")) result+=" locked=\""+util_format.normaliseXMLText(locked)+"\"";
 		result+=super.toXml();
 		result+=">";
 		boolean isEntity=false;
@@ -809,6 +812,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setCheckTLinked(int checkTLinked) {
 		this.checkTLinked = checkTLinked;
+	}
+
+	public String getLocked() {
+		return locked;
+	}
+
+	public void setLocked(String locked) {
+		this.locked = locked;
 	}
 
 

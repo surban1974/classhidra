@@ -570,6 +570,21 @@ public class action extends bean implements i_action, Serializable{
 	public void leaveActionContext(i_action newAction, HashMap _content) {
 	}	
 
+	public action_payload delegatePayloadProcess(String id_call, iContext context, boolean beanInitFromRequest)
+			throws bsControllerException,ServletException, UnavailableException{
+		if(get_infoaction()!=null && get_infoaction().getLocked()!=null && get_infoaction().getLocked().equalsIgnoreCase("true"))
+			return delegatePayloadProcessLocked(id_call, context, beanInitFromRequest);
+		else
+			return delegatePayloadProcessUnlocked(id_call, context, beanInitFromRequest);
+	}
 
-
+	private synchronized action_payload delegatePayloadProcessLocked(String id_call, iContext context, boolean beanInitFromRequest)
+			throws bsControllerException,ServletException, UnavailableException{		
+		return bsController.getActionInstancePayloadDelegated(this, id_call, context, beanInitFromRequest);	
+	}
+	
+	private action_payload delegatePayloadProcessUnlocked(String id_call, iContext context, boolean beanInitFromRequest)
+			throws bsControllerException,ServletException, UnavailableException{		
+		return bsController.getActionInstancePayloadDelegated(this, id_call, context, beanInitFromRequest);	
+	}
 }

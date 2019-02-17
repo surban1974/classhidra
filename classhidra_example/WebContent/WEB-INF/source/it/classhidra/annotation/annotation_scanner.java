@@ -11,6 +11,7 @@ import it.classhidra.annotation.elements.Async;
 import it.classhidra.annotation.elements.Bean;
 import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Expose;
+import it.classhidra.annotation.elements.Locked;
 import it.classhidra.annotation.elements.NavigatedDirective;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.annotation.elements.ResponseHeader;
@@ -448,6 +449,12 @@ public class annotation_scanner implements i_annotation_scanner {
 					checkClassAnnotation(classType, class_path, subAnnotation, subAnnotations);
 					subAnnotations.put("ServletContextDirective", subAnnotation);
 				}	
+				
+			subAnnotation = classType.getAnnotation(Locked.class);
+				if(subAnnotation!=null){
+					checkClassAnnotation(classType, class_path, subAnnotation, subAnnotations);
+					subAnnotations.put("Locked", subAnnotation);
+				}	
 	
 			ActionMapping annotationActionMapping = (ActionMapping)classType.getAnnotation(ActionMapping.class);
 			if(annotationActionMapping!=null){
@@ -831,6 +838,11 @@ public class annotation_scanner implements i_annotation_scanner {
     		}catch (Exception e) {
 			}
     	}
+    	
+    	Locked locked = (Locked)subAnnotations.get("Locked");
+    	if(locked!=null)
+    		iAction.setLocked(String.valueOf(locked.value()));
+    	
     	
     	iAction.setMemoryAsLastInstance(annotationAction.memoryAsLastInstance());
     	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());

@@ -54,6 +54,8 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 				        try {
 //				        	Field field = instance.getClass().getDeclaredField(pair.getKey().toString());
 				        	Field field = (Field)fields.get(pair.getKey().toString());
+				        	if(field==null)
+				        		field = instance.getClass().getDeclaredField(pair.getKey().toString());
 				        	if(field!=null) {
 				        		if(checkInterfaces(i_bean.class, field.getType().getInterfaces())) {
 				        			if(pair.getValue() instanceof info_tlinked) {
