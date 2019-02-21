@@ -303,9 +303,13 @@ public class tagForm extends ClTagSupport implements DynamicAttributes {
 
 
 		results.append(" action=\"");
-		if(formInfoAction!=null)
-			results.append(formInfoAction.getPath()+bsController.getAppInit().get_extention_do());
-		else results.append("/Controller");
+		if(action!=null){
+			results.append(action);
+		}else {
+			if(formInfoAction!=null)
+				results.append(formInfoAction.getPath()+bsController.getAppInit().get_extention_do());
+			else results.append("/Controller");
+		}
 		results.append('"');
 
 		results.append(" method=\"");

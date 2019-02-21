@@ -46,23 +46,43 @@ public class util_file {
 	           && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
 	           offset += numRead;
 	     }
+	     is.close();
 	     if (offset < bytes.length) {
 	         throw new IOException("Could not completely read file "+file.getName());
 	     }
-	     is.close();
+
 	     return bytes;
 	 }		 
 
 	public static Properties loadExternalProperty(String property_name) throws Exception{
 			Properties property = new Properties();
-			try{
-				InputStream instrm = null;
+			InputStream instrm = null;
+			FileInputStream fis = null;
+			try{				
 				instrm = ClassLoader.getSystemResourceAsStream(property_name);
-				if(instrm!=null) property.load(instrm);
-				else property.load(new FileInputStream(property_name));		
+				if(instrm!=null) {
+					property.load(instrm);
+					instrm.close();
+				}
+				else {
+					fis = new FileInputStream(property_name);
+					property.load(fis);		
+					fis.close();
+				}
 			}catch(Exception e){
 				property=null;
 				throw e;
+			}finally {
+				try {
+					if(instrm!=null)
+						instrm.close();
+				}catch (Exception e) {
+				}
+				try {
+					if(fis!=null)
+						fis.close();
+				}catch (Exception e) {
+				}				
 			}
 			return property;
 	}

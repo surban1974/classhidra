@@ -826,14 +826,27 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			results.append(onmouseup);
 			results.append('"');
 		}
+		
+		results.append(" onblur=\"");
+		final boolean uppercase = (toUpperCase!=null && toUpperCase.equalsIgnoreCase("true"));
+		final boolean trim = (toTrim!=null && toTrim.equalsIgnoreCase("true"));
+		if(trim) 
+			results.append("this.value=trim(this.value"+((uppercase)?".toUpperCase()":"")+"); ");
+		else if(uppercase)
+			results.append("this.value=this.value.toUpperCase()); ");
+		if(onblur != null) {
+			results.append(onblur);
+		}
+		results.append('"');
+/*		
 		if (onblur != null) {
 			results.append(" onblur=\"");
-			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))){
-				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE"))){
+			if(toUpperCase!=null && (toUpperCase.equalsIgnoreCase("no") || toUpperCase.equalsIgnoreCase("false"))){
+				if(toTrim!=null && (toTrim.equalsIgnoreCase("no") || toTrim.equalsIgnoreCase("false"))){
 				}else results.append("this.value=trim(this.value); ");
 			}
 			else{
-				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE")))
+				if(toTrim!=null && (toTrim.equalsIgnoreCase("no") || toTrim.equalsIgnoreCase("false")))
 					results.append("this.value.toUpperCase(); ");
 				else results.append("this.value=trim(this.value.toUpperCase()); ");
 			}
@@ -851,7 +864,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			}
 			results.append('"');
 		}
-
+*/
 		if (onchange != null) {
 			results.append(" onchange=\"");
 			results.append(onchange);
