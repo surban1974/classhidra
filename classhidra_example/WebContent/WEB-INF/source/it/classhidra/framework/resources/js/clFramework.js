@@ -3295,9 +3295,11 @@ function removeAtArray(array, index ){
 function canceOnClicklBubble(event){
 	try{
 		event.stopPropagation();
-		window.event.cancelBubble = true;
+		event = event || window.event;
+		event.cancelBubble = true;
 	}catch(e){
-		window.event.cancelBubble = true;
+		if(window.event)
+			window.event.cancelBubble = true;
 	}
 }
 

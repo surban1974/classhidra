@@ -94,7 +94,7 @@ public class util_file {
 		try{
 			ResourceBundle rb = ResourceBundle.getBundle(property_name);
 
-			Enumeration en = rb.getKeys();
+			Enumeration<String> en = rb.getKeys();
 			while(en.hasMoreElements()){
 				if(property==null) property = new Properties();
 				String key = (String)en.nextElement();
