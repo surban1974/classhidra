@@ -1,0 +1,101 @@
+<!--Created by Svyatoslav Urbanovych-->
+<!ELEMENT apply-to-action EMPTY>
+<!ATTLIST apply-to-action 
+	action CDATA #REQUIRED
+	excluded (true | false) #IMPLIED>
+<!ELEMENT stream (apply-to-action)>
+<!ATTLIST stream 
+	name CDATA #REQUIRED
+	type CDATA #REQUIRED
+	order CDATA #IMPLIED
+	provider CDATA #IMPLIED
+	property CDATA #IMPLIED
+	listener CDATA #IMPLIED>
+<!ELEMENT action-streams (stream)*>
+<!ATTLIST action-streams 
+	listener CDATA #IMPLIED
+	memoryInContainer_streams CDATA #IMPLIED>
+<!ELEMENT form-bean EMPTY>
+<!ATTLIST form-bean 
+	name CDATA #REQUIRED
+	type CDATA #IMPLIED
+	model CDATA #IMPLIED
+	provider CDATA #IMPLIED
+	property CDATA #IMPLIED
+	listener CDATA #IMPLIED>
+<!ELEMENT form-beans (form-bean)*>
+<!ATTLIST form-beans 
+	listener CDATA #IMPLIED>
+<!ELEMENT form-redirect EMPTY>
+<!ATTLIST form-redirect 
+	auth_id CDATA #REQUIRED
+	path CDATA #REQUIRED
+	navigated (true | false) #IMPLIED
+	transformationName CDATA #IMPLIED
+	contentType CDATA #IMPLIED
+	contentEncoding CDATA #IMPLIED
+	contentName CDATA #IMPLIED
+	descr CDATA #IMPLIED
+	mess_id CDATA #IMPLIED
+	property CDATA #IMPLIED>
+<!ELEMENT form-redirects (form-redirect)*>
+<!ELEMENT redirect-transformations (transformationoutput)*>
+<!ELEMENT transformationoutput EMPTY>
+<!ATTLIST transformationoutput 
+	name CDATA #REQUIRED
+	type CDATA #REQUIRED
+	path CDATA #IMPLIED
+	event (before | after | both) #IMPLIED
+	inputformat (byte | string | form) #IMPLIED>
+<!ELEMENT redirect (transformationoutput)*>
+<!ATTLIST redirect 
+	auth_id CDATA #REQUIRED
+	path CDATA #REQUIRED
+	navigated (true | false) #IMPLIED
+	transformationName CDATA #IMPLIED
+	contentType CDATA #IMPLIED
+	contentEncoding CDATA #IMPLIED
+	contentName CDATA #IMPLIED
+	descr CDATA #IMPLIED
+	mess_id CDATA #IMPLIED
+	property CDATA #IMPLIED
+	>
+<!ELEMENT call EMPTY>
+<!ATTLIST call 
+	owner CDATA #IMPLIED
+	name CDATA #REQUIRED
+	method CDATA #IMPLIED>	
+<!ELEMENT action ((redirect)*,(transformationoutput)*,(form-bean)*,(call)*)>
+<!ATTLIST action 
+	path CDATA #REQUIRED
+	name CDATA #IMPLIED
+	method CDATA #IMPLIED
+	type CDATA #IMPLIED
+	redirect CDATA #IMPLIED
+	navigated (true | false) #IMPLIED
+	navigatedMemoryContent (true | false) #IMPLIED
+	memoryInSession (true | false) #IMPLIED
+	memoryInServletContext (true | false) #IMPLIED
+	memoryAsLastInstance (true | false) #IMPLIED
+	reloadAfterAction (true | false) #IMPLIED
+	reloadAfterNextNavigated (true | false) #IMPLIED
+	property CDATA #IMPLIED
+	help CDATA #IMPLIED
+	error CDATA #IMPLIED
+	provider CDATA #IMPLIED
+	syncro (true | false) #IMPLIED
+	listener CDATA #IMPLIED
+	statistic CDATA #IMPLIED
+	>
+	
+<!ELEMENT action-mappings (action)*>
+<!ATTLIST action-mappings 
+	error CDATA #IMPLIED
+	auth_error CDATA #IMPLIED
+	session_error CDATA #IMPLIED
+	listener CDATA #IMPLIED>
+<!ELEMENT action-config (action-streams,form-beans,form-redirects,action-mappings)>
+<!ATTLIST action-mappings 
+	provider CDATA #IMPLIED
+	instance_navigated CDATA #IMPLIED
+	instance_local_container CDATA #IMPLIED>

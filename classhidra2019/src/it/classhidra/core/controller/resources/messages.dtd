@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT messages (message*)>
+<!ELEMENT message EMPTY>
+<!ATTLIST message
+	cd_lang CDATA #REQUIRED
+	cd_mess CDATA #REQUIRED
+	desc_mess CDATA #REQUIRED
+	type (I | E | W)  #REQUIRED
+>
