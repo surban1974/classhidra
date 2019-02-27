@@ -177,9 +177,9 @@ public static void errorMsg(String location, String msg, Exception e) throws Exc
 	throw new Exception(errmsg);
 }
 
-public static Object execStaticMethod(String class_name, String method_name, Class[] arg, Object[] par){
+public static Object execStaticMethod(String class_name, String method_name, Class<?>[] arg, Object[] par){
 	try{
-		Class c_provider = Class.forName(class_name);
+		Class<?> c_provider = Class.forName(class_name);
 		try{
 			Method m_getInstance = c_provider.getDeclaredMethod(method_name, arg);
 			return m_getInstance.invoke(null, par);
@@ -208,9 +208,9 @@ public static int findMethod(String name, Method mtd[]) throws Exception {
 	errorMsg("findMethod", "Not found any method with name: " + name + " into:\n" + elenco, null);
 	return -1;
 }
-public static java.lang.reflect.Constructor[] getConstructors(Object obj, String s) throws Exception {
-	Constructor mtd[] = null;
-	Constructor retVal[] = null;
+public static java.lang.reflect.Constructor<?>[] getConstructors(Object obj, String s) throws Exception {
+	Constructor<?> mtd[] = null;
+	Constructor<?> retVal[] = null;
 	try {
 		mtd = obj.getClass().getConstructors(); 
 	} catch (SecurityException e) {
@@ -240,7 +240,7 @@ public static Object getValue(Object requested, String nome, Object[] value) thr
 	Object resultObject = null;
 	try{
 		java.lang.reflect.Method mtd = null;
-		Class[] cls = new Class[value.length];
+		Class<?>[] cls = new Class[value.length];
 		for(int i=0;i<value.length;i++) cls[i]=value[i].getClass();
 		mtd = requested.getClass().getMethod(nome,cls);
 		if(mtd==null) return null;
@@ -251,7 +251,7 @@ public static Object getValue(Object requested, String nome, Object[] value) thr
 			Method[] methods = requested.getClass().getMethods();
 			for(int i=0;i<methods.length;i++) {				
 		        if (nome.equals(methods[i].getName())) {
-		        	Class[] parTypes = methods[i].getParameterTypes();
+		        	Class<?>[] parTypes = methods[i].getParameterTypes();
 		        	boolean isCorrect = true;
 		        	if(parTypes.length==value.length){
 		        		int j=0;
@@ -272,7 +272,7 @@ public static Object getValue(Object requested, String nome, Object[] value) thr
 		    }			
 		}				
 		
-		Class[] cls = new Class[value.length];
+		Class<?>[] cls = new Class[value.length];
 		for(int i=0;i<value.length;i++) cls[i]=value[i].getClass();
 		int maxCount = 0;
 		boolean fine = false;
@@ -339,7 +339,7 @@ public static Object getValue(Object requested,Method mtd, Object[] value) throw
 	Object resultObject = null;
 	try{
 
-		Class[] cls = new Class[value.length];
+		Class<?>[] cls = new Class[value.length];
 		for(int i=0;i<value.length;i++){
 			if(value[i]!=null)
 				cls[i]=value[i].getClass();
@@ -350,7 +350,7 @@ public static Object getValue(Object requested,Method mtd, Object[] value) throw
 	return  resultObject;
 }
 
-public static Object getValue(Object requested,Method mtd, Object[] value, Class[] cls) throws Exception{
+public static Object getValue(Object requested,Method mtd, Object[] value, Class<?>[] cls) throws Exception{
 	if (mtd == null || requested==null) return null;
 	if(value==null) value = new Object[0];
 	if(cls==null) cls = new Class[0];
@@ -369,7 +369,7 @@ public static Object getValueMethodName(Object requested, String nome, Object[] 
 	Object resultObject = null;
 	try{
 		java.lang.reflect.Method mtd = null;
-		Class[] cls = new Class[value.length];
+		Class<?>[] cls = new Class[value.length];
 		for(int i=0;i<value.length;i++){
 			if(value[i]!=null)
 				cls[i]=value[i].getClass();
@@ -382,13 +382,13 @@ public static Object getValueMethodName(Object requested, String nome, Object[] 
 	return  resultObject;
 }
 
-public static java.lang.reflect.Method getMethodNull(Object requested, String nome, Class[] cls) throws Exception{
+public static java.lang.reflect.Method getMethodNull(Object requested, String nome, Class<?>[] cls) throws Exception{
 	java.lang.reflect.Method result=null;
 	java.lang.reflect.Method[] mtds = requested.getClass().getMethods();
 	for(int i=0;i<mtds.length;i++){
 		java.lang.reflect.Method current = mtds[i];
 		if(nome.equals(current.getName())){
-		Class[] par = current.getParameterTypes();
+		Class<?>[] par = current.getParameterTypes();
 		if(par.length==cls.length){
 			boolean isCorrect=true;
 			for(int j=0;j<cls.length;j++){
@@ -408,12 +408,12 @@ public static java.lang.reflect.Method getMethodNull(Object requested, String no
 	return result;
 }
 
-public static java.lang.reflect.Method getMethodName(Object requested, String nome, Class[] cls) throws Exception{
+public static java.lang.reflect.Method getMethodName(Object requested, String nome, Class<?>[] cls) throws Exception{
 	java.lang.reflect.Method result=null;
 	java.lang.reflect.Method[] mtds = requested.getClass().getMethods();
 	for(int i=0;i<mtds.length;i++){
 		java.lang.reflect.Method current = mtds[i];
-		Class[] par = current.getParameterTypes();
+		Class<?>[] par = current.getParameterTypes();
 		if(nome.equals(current.getName()) && par.length==cls.length)
 			return current;
 	}
@@ -429,7 +429,7 @@ public static boolean setValue(Object requested, String nome, Object[] value) th
 
 public static boolean setValue(Object requested, String nome, Object[] value, boolean writeLog) throws Exception{
 	if (nome == null || nome.trim().length()==0 || requested==null) return false;
-	Class[] cls = null;
+	Class<?>[] cls = null;
 	java.lang.reflect.Method mtd = null;
 	if(value==null)	value = new Object[0];
 /*
@@ -468,7 +468,7 @@ public static boolean setValue(Object requested, String nome, Object[] value, bo
 			Method[] methods = requested.getClass().getMethods();
 			for(int i=0;i<methods.length;i++) {				
 		        if (nome.equals(methods[i].getName())) {
-		        	Class[] parTypes = methods[i].getParameterTypes();
+		        	Class<?>[] parTypes = methods[i].getParameterTypes();
 		        	boolean isCorrect = true;
 		        	if(parTypes.length==value.length){
 		        		int j=0;
@@ -646,6 +646,8 @@ public static String revAdaptMethodName(String value){
 	return result;
 }
 
+
+@SuppressWarnings("rawtypes")
 public static Object prepareWriteValueForTag(Object requested, String method_prefix,String field_name, Object[] parameters){
 	if(requested==null || field_name==null) return null;
 
@@ -657,9 +659,9 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 
 	if(requested instanceof String ) return requested;
 
-	HashMap syn = null;;
+	HashMap<String,String> syn = null;
 	if(field_name.indexOf("'")>-1){
-		syn = new HashMap();
+		syn = new HashMap<String, String>();
 		String tmp ="";
 		String field ="";
 		boolean startAp=false;
@@ -725,19 +727,19 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 		}
 		try{
 			boolean isException=false;
-			if(current_requested!=null && current_requested instanceof Map){
+			if(current_requested!=null && current_requested instanceof Map<?,?>){
 				try{
 					writeValue = ((Map)current_requested).get(current_field_name);
 				}catch(Exception ex){
 					isException=true;
 				}
-			}else  if(current_requested!=null && current_requested instanceof List && int4list>-1){
+			}else  if(current_requested!=null && current_requested instanceof List<?> && int4list>-1){
 				try{
 					writeValue = ((List)current_requested).get(int4list);
 				}catch(Exception ex){
 					isException=true;
 				}
-			}else  if(current_requested!=null && current_requested instanceof Set && int4list>-1){
+			}else  if(current_requested!=null && current_requested instanceof Set<?> && int4list>-1){
 				try{
 					writeValue = Arrays.asList(((Set)current_requested)).toArray()[int4list];
 				}catch(Exception ex){
@@ -745,7 +747,7 @@ public static Object prepareWriteValueForTag(Object requested, String method_pre
 				}
 			}else if(current_requested!=null && current_requested.getClass().isArray() && int4list>-1){
 				try{
-					Class componentType = current_requested.getClass().getComponentType();
+					Class<?> componentType = current_requested.getClass().getComponentType();
 					if(!componentType.isPrimitive())
 						writeValue = ((Object[])current_requested)[int4list];
 					else{
@@ -885,7 +887,7 @@ public static Field getField(Object req, String key) throws Exception{
 	return fld;
 }
 
-public static Field getField(Class req_class, String key) throws Exception{
+public static Field getField(Class<?> req_class, String key) throws Exception{
 	Field fld = null;
 	try{
 		fld=req_class.getField(key);
@@ -900,7 +902,7 @@ public static Field getField(Class req_class, String key) throws Exception{
 	return fld;
 }
 
-public static Field getFieldRecursive(Class req_class, String key) throws Exception{
+public static Field getFieldRecursive(Class<?> req_class, String key) throws Exception{
 	if(req_class==null || key==null)
 		return null;
 	Field fld = null;
@@ -919,11 +921,11 @@ public static Field getFieldRecursive(Class req_class, String key) throws Except
 	return fld;
 }
 
-public static Class getRetClass(Object req, String key) throws Exception{
-	Object resultObject = null;
+@SuppressWarnings("rawtypes")
+public static Class<?> getRetClass(Object req, String key) throws Exception{
 	Field fld = null;
 	Method ret_fld = null;
-	Class ret_class = null;
+	Class<?> ret_class = null;
 	try{
 		fld=req.getClass().getField(key);
 	}catch(Exception ex){
@@ -966,7 +968,7 @@ public static Method getSetMethod(Object req, String key) throws Exception{
 }
 
 //	TODO @Deprecated
-public static Object convertType(Class CTarget, Object source, String format) throws Exception {
+public static Object convertType(@SuppressWarnings("rawtypes") Class CTarget, Object source, String format) throws Exception {
 	String classNameSource = source.getClass().getName();
 	String classNameTarget = CTarget.getName();
 	String err = "SourceType: "+classNameSource+", TargetTipe: "+classNameTarget+", format: "+format;
@@ -1052,7 +1054,7 @@ public Field findField(String name, Object obj) throws Exception {
 		errorMsg("findField","Il campo: "+name+" � invocato su un oggetto nullo.",e);
 	}
 	for (int i=0;i<allFld.length;i++) {
-		Class tipo = allFld[i].getType();
+		Class<?> tipo = allFld[i].getType();
 		if ( allFld[i].getName().equals(name) ) return allFld[i];
 		Object campo = getField(allFld[i],obj);
 		if (campo == null) continue;
@@ -1075,7 +1077,7 @@ public Field findFieldArray(String name, Object obj) throws Exception {
 		errorMsg("findFieldArray","Il campo: "+name+" � invocato su un oggetto nullo",e);
 	}
 	for (int i=0;i<allFld.length;i++) {
-		Class tipo = allFld[i].getType();
+		Class<?> tipo = allFld[i].getType();
 		if ( tipo.isPrimitive() ) continue;
 		if ( tipo.getName().equals("java.lang.String") ) continue;
 		if ( allFld[i].getName().equals(name) && allFld[i].getType().isArray() ) return allFld[i];
@@ -1109,7 +1111,7 @@ public Field findFieldList(String name, Object obj) throws Exception {
 			}
 			return allFld[i];
 		}
-		Class tipo = allFld[i].getType(); // ne deternina il tipo
+		Class<?> tipo = allFld[i].getType(); // ne deternina il tipo
 		if ( tipo.isPrimitive() || tipo.getName().equals("java.lang.String") ) continue; // scarta i tipi string e i tipi primitivi
 		Object campo = getField(allFld[i],obj); // altrimenti ne calcola il valore
 		if (campo == null) continue; // verifica che sia diverso da null
@@ -1174,7 +1176,7 @@ protected Object getObject() {
 	return object;
 }
 //TODO @Deprecated
-public Class getType(Field fld) throws Exception {
+public Class<?> getType(Field fld) throws Exception {
 	if ( fld.getType().isArray() ) { // se � un array
 		Object campo = getFieldOnly(fld,getObject()); // calcola il valore
 		return Array.get( campo, indexOfList).getClass(); // gli copia il valore dell'array di indice i-esimo
@@ -1292,9 +1294,10 @@ public static Object getValueIfIsInputAnnotation(Object requested, String name, 
 	}
 }
 
-public static Field[] getAllDeclaredFields(Class clazz, Comparable comp){
+@SuppressWarnings("unchecked")
+public static Field[] getAllDeclaredFields(Class<?> clazz, @SuppressWarnings("rawtypes") Comparable comp){
 	if(clazz==null) return new Field[0];
-	List all = new ArrayList();
+	List<Field> all = new ArrayList<Field>();
 	while(clazz!=null && !clazz.equals(Object.class)){
 		for(Field field:clazz.getDeclaredFields()){
 			if(comp!=null){
@@ -1311,9 +1314,10 @@ public static Field[] getAllDeclaredFields(Class clazz, Comparable comp){
 	return ret;
 }
 
-public static Method[] getAllDeclaredMethods(Class clazz, Comparable comp){
+@SuppressWarnings("unchecked")
+public static Method[] getAllDeclaredMethods(Class<?> clazz, @SuppressWarnings("rawtypes") Comparable comp){
 	if(clazz==null) return new Method[0];
-	List all = new ArrayList();
+	List<Method> all = new ArrayList<Method>();
 	while(clazz!=null && !clazz.equals(Object.class)){
 		for(Method method:clazz.getDeclaredMethods()){
 			if(comp!=null){
@@ -1330,9 +1334,8 @@ public static Method[] getAllDeclaredMethods(Class clazz, Comparable comp){
 	return ret;
 }
 
-public static Method findDeclaredMethod(Class clazz, String name, Class[] parameterTypes){
+public static Method findDeclaredMethod(Class<?> clazz, String name, Class<?>[] parameterTypes){
 	if(clazz==null) return null;
-	List all = new ArrayList();
 	
 	while(clazz!=null && !clazz.equals(Object.class)){
 		try{

@@ -1,9 +1,14 @@
 package it.classhidra.core.controller.streams;
 
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import it.classhidra.core.controller.bsController;
-import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.info_action;
+import it.classhidra.core.controller.load_actions;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.stream;
 import it.classhidra.core.init.auth_init;
@@ -11,13 +16,6 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.exception.message;
 import it.classhidra.core.tool.log.stubs.iStub;
-
-import java.util.HashMap;
-
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class def_control_middleaction extends stream implements i_stream{
 
@@ -44,7 +42,7 @@ public class def_control_middleaction extends stream implements i_stream{
 		if(id_action==null)
 			return super.streamservice_enter(request, response);
 
-		info_action i_a = (info_action)bsController.getAction_config().get_actions().get(id_action);
+		info_action i_a = load_actions.get_actions().get(id_action);
 		if(i_a==null){
 			return super.streamservice_enter(request, response);
 		}
@@ -54,9 +52,6 @@ public class def_control_middleaction extends stream implements i_stream{
 			redirectURI=id_action+bsController.getAppInit().get_extention_do()+"?middleAction=error_permission_point";
 			if(redirectURI!=null)
 				return new redirects(redirectURI);
-
-			redirectURI = service_AuthRedirect(id_action,request.getSession().getServletContext(),request, response);
-			return new redirects(redirectURI);
 		}
 
 		String id_complete = (String)request.getAttribute(bsController.CONST_ID_COMPLETE);
@@ -68,9 +63,6 @@ public class def_control_middleaction extends stream implements i_stream{
 			redirectURI=id_action+bsController.getAppInit().get_extention_do()+"?middleAction=error_permission_point";
 			if(redirectURI!=null)
 				return new redirects(redirectURI);
-
-			redirectURI = service_AuthRedirect(id_complete,request.getSession().getServletContext(),request, response);
-			return new redirects(redirectURI);
 		}
 		return super.streamservice_enter(request, response);
 
@@ -80,7 +72,7 @@ public class def_control_middleaction extends stream implements i_stream{
 		return super.streamservice_exit(request, response);
 	}
 
-
+/*
 	private String service_AuthRedirect(String id_action,ServletContext servletContext, HttpServletRequest request, HttpServletResponse response){
 		String redirectURI="";
 		try{
@@ -95,21 +87,21 @@ public class def_control_middleaction extends stream implements i_stream{
 		}
 		return redirectURI;
 	}
-
+*/
 
 	private boolean checkMiddleAction(String id_entity,auth_init auth, HttpServletRequest request, HttpServletResponse response){
 		String middle_action = request.getParameter(bsController.CONST_ID_$MIDDLE_ACTION);
 		if(middle_action!=null && middle_action.trim().equals("")) middle_action="_blank";
 
 
-		HashMap m_forbidden =null;
-		HashMap m_allowed =null;
+		Map<String,Map<String,String>> m_forbidden =null;
+		Map<String,Map<String,String>> m_allowed =null;
 		try{
-			m_forbidden = (HashMap)((HashMap)bsController.getAuth_config().get_mtargets().get(auth.get_target())).get(auth.get_ruolo());
+			m_forbidden = bsController.getAuth_config().get_mtargets().get(auth.get_target()).get(auth.get_ruolo());
 		}catch(Exception e){
 		}
 		try{
-			m_allowed = (HashMap)((HashMap)bsController.getAuth_config().get_mtargets_allowed().get(auth.get_target())).get(auth.get_ruolo());
+			m_allowed = bsController.getAuth_config().get_mtargets_allowed().get(auth.get_target()).get(auth.get_ruolo());
 		}catch(Exception e){
 		}
 
@@ -117,9 +109,9 @@ public class def_control_middleaction extends stream implements i_stream{
 			return false;
 		}
 
-		HashMap mactions = (HashMap)m_forbidden.get(id_entity);
+		Map<String,String> mactions = m_forbidden.get(id_entity);
 		if(mactions==null){
-			mactions = (HashMap)m_forbidden.get("*");
+			mactions = m_forbidden.get("*");
 		}
 		if(mactions==null){
 			return false;
@@ -137,9 +129,9 @@ public class def_control_middleaction extends stream implements i_stream{
 		}
 
 		if(m_allowed!=null){
-			HashMap mactions_allowed = (HashMap)m_allowed.get(id_entity);
+			Map<String,String> mactions_allowed = m_allowed.get(id_entity);
 			if(mactions_allowed==null){
-				mactions_allowed = (HashMap)m_allowed.get("*");
+				mactions_allowed = m_allowed.get("*");
 			}
 			if(mactions_allowed!=null){
 				if(	mactions_allowed.get("*")!=null ||

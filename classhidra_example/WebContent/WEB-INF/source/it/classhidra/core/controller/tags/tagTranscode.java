@@ -76,12 +76,12 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 	protected String additionalAttr=null;
 	protected String component=null;
 	
-	protected Map tagAttributes = new HashMap();
-	protected List arguments=null;
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
+	protected List<?> arguments=null;
 	
 
 	public int doStartTag() throws JspException {
-		arguments = new ArrayList();
+		arguments = new ArrayList<Object>();
 		return EVAL_BODY_INCLUDE;
 	}
 
@@ -144,7 +144,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		component=null;
 		objId = null;
 		
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 		arguments=null;
 	}
   
@@ -297,8 +297,8 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 
 		if(valueSource!=null){
 			if(valueSource instanceof Map){
-				if(valueKey!=null) writeValue = ((Map)valueSource).get(valueKey);
-				else if(key!=null) writeValue = ((Map)valueSource).get(key);
+				if(valueKey!=null) writeValue = ((Map<?,?>)valueSource).get(valueKey);
+				else if(key!=null) writeValue = ((Map<?,?>)valueSource).get(key);
 				if(outputField!=null){
 					try{
 						writeValue = util_reflect.prepareWriteValueForTag(writeValue,"get",outputField,null);					 
@@ -307,8 +307,8 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 				}
 			}
 			if(valueSource instanceof List){
-				writeValue = findElementFromList((List)valueSource, valueKey, inputField);
-				if(writeValue==null) writeValue = findElementFromListAsString((List)valueSource, valueKey, inputField);
+				writeValue = findElementFromList((List<?>)valueSource, valueKey, inputField);
+				if(writeValue==null) writeValue = findElementFromListAsString((List<?>)valueSource, valueKey, inputField);
 				if(outputField!=null){
 					try{
 						writeValue = util_reflect.prepareWriteValueForTag(writeValue,"get",outputField,null);					 
@@ -448,7 +448,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		this.key = key;
 	}
 
-	private static Object findElementFromList(List elements, Object valueKey, String field){
+	private static Object findElementFromList(List<?> elements, Object valueKey, String field){
 		if(valueKey==null || field==null) return null;
 		for(int i=0;i<elements.size();i++){
 			if(field==null){
@@ -471,7 +471,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		return null;
 	}
 	
-	private static Object findElementFromListAsString(List elements, Object valueKey, String field){
+	private static Object findElementFromListAsString(List<?> elements, Object valueKey, String field){
 		if(valueKey==null || field==null) return null;
 		for(int i=0;i<elements.size();i++){
 			if(field==null){
@@ -554,11 +554,11 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		tagAttributes.put(localName, value);
 	}
 
-	public List getArguments() {
+	public List<?> getArguments() {
 		return arguments;
 	}
 
-	public void setArguments(List arguments) {
+	public void setArguments(List<?> arguments) {
 		this.arguments = arguments;
 	}
 

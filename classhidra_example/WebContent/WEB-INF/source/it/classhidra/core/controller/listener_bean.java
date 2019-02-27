@@ -29,10 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface listener_bean{
 	void onPreInit(HttpServletRequest request);
-	void onPreInit(HashMap _content);
+	void onPreInit(HashMap<String,Object> _content);
 	void onPreInit(i_bean another_bean);
 	void onPreValidate(HttpServletRequest request);
-	void onPreValidate(HashMap _content);
+	void onPreValidate(HashMap<String,Object> _content);
 	void onAddToNavigation();
 	void onGetFromNavigation();
 	void onAddToSession();
@@ -43,10 +43,10 @@ public interface listener_bean{
 	void onGetFromLastInstance();
 
 	void onPostInit(HttpServletRequest request);
-	void onPostInit(HashMap _content);
+	void onPostInit(HashMap<String,Object> _content);
 	void onPostInit(i_bean another_bean);
 	void onPostValidate(redirects redirect, HttpServletRequest request);
-	void onPostValidate(redirects redirect, HashMap _content);
+	void onPostValidate(redirects redirect, HashMap<String,Object> _content);
 	void onPostInstance();
 	void onPostInstanceFromProvider();
 

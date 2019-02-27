@@ -52,7 +52,7 @@ public interface i_info_context extends Serializable{
 
 	void setProxiedCdi(boolean proxiedCdi);
 
-	Class getOwnerClass();
+	Class<?> getOwnerClass();
 
 	boolean isLocal();
 
@@ -74,9 +74,9 @@ public interface i_info_context extends Serializable{
 
 	void setMappedName(String mappedName);
 
-	Class[] getValue();
+	Class<?>[] getValue();
 
-	void setValue(Class[] value);
+	void setValue(Class<?>[] value);
 
 	boolean isLocalBean();
 
@@ -90,9 +90,9 @@ public interface i_info_context extends Serializable{
 
 	void setStartup(boolean startup);
 
-	Class getProxiedClass();
+	Class<?> getProxiedClass();
 
-	void setProxiedClass(Class proxiedClass);
+	void setProxiedClass(Class<?> proxiedClass);
 
 	int getProxiedId();
 

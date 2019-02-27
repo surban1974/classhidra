@@ -13,8 +13,9 @@ public class util_vfs_classes {
 
 	}
 	
-	public static ArrayList getResources(URL resource) throws ClassNotFoundException {
-		ArrayList res = new ArrayList();
+	@SuppressWarnings("deprecation")
+	public static ArrayList<String> getResources(URL resource) throws ClassNotFoundException {
+		ArrayList<String> res = new ArrayList<String>();
 		if(resource==null || !resource.getProtocol().equalsIgnoreCase("vfs"))
 			return res;
 		
@@ -28,15 +29,16 @@ public class util_vfs_classes {
 	
 
 
-		List array = vFile.getChildren();
+		List<VirtualFile> array = vFile.getChildren();
 		for(int i=0;i<array.size();i++)
 			res.add(  ((VirtualFile)array.get(i)).getName() );
 		
 		return res;
 	}
 	
-	public static ArrayList getChildrenPathName(URL resource) throws ClassNotFoundException {
-		ArrayList res = new ArrayList();
+	@SuppressWarnings("deprecation")
+	public static ArrayList<String> getChildrenPathName(URL resource) throws ClassNotFoundException {
+		ArrayList<String> res = new ArrayList<String>();
 		if(resource==null || !resource.getProtocol().equalsIgnoreCase("vfs"))
 			return res;
 		
@@ -51,7 +53,7 @@ public class util_vfs_classes {
 		
 		res.add(vFile.getPathName());
 		
-		List files = vFile.getChildren();
+		List<VirtualFile> files = vFile.getChildren();
 		for(int i=0;i<files.size();i++)
 			res.add(((VirtualFile)files.get(i)).getPathName());
 	
@@ -59,8 +61,8 @@ public class util_vfs_classes {
 		return res;
 	}
 	
-	public static ArrayList getChildrenPathName(String resource) throws ClassNotFoundException {
-		ArrayList res = new ArrayList();
+	public static ArrayList<String> getChildrenPathName(String resource) throws ClassNotFoundException {
+		ArrayList<String> res = new ArrayList<String>();
 		if(resource==null)
 			return res;
 		
@@ -75,7 +77,7 @@ public class util_vfs_classes {
 		
 		res.add(vFile.getPathName());
 		
-		List files = vFile.getChildren();
+		List<VirtualFile> files = vFile.getChildren();
 		for(int i=0;i<files.size();i++)
 			res.add(((VirtualFile)files.get(i)).getPathName());
 	

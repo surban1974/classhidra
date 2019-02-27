@@ -11,9 +11,10 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 	private static final long serialVersionUID = 1L;
 
 	public void addStatictic(StatisticEntity stat) {
-		LinkedList stack = (LinkedList)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
+		@SuppressWarnings("unchecked")
+		LinkedList<StatisticEntity> stack = (LinkedList<StatisticEntity>)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
 		if(stack==null){
-			stack = new LinkedList();
+			stack = new LinkedList<StatisticEntity>();
 			bsController.putToLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK,stack);
 		}
 		int stacklength = bsConstants.CONST_LEN_STATISTIC_STACK;
@@ -25,18 +26,20 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 		stack.addFirst(stat);
 	}
 
-	public List getAllEntities() {
-		LinkedList stack = (LinkedList)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
-		if(stack==null) return new LinkedList();
+	public List<StatisticEntity> getAllEntities() {
+		@SuppressWarnings("unchecked")
+		LinkedList<StatisticEntity> stack = (LinkedList<StatisticEntity>)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
+		if(stack==null) return new LinkedList<StatisticEntity>();
 		else return stack;
 	}
 
 	public String getAllEntitiesAsXml() {
-		LinkedList stack = (LinkedList)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
+		@SuppressWarnings("unchecked")
+		LinkedList<StatisticEntity> stack = (LinkedList<StatisticEntity>)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
 		if(stack==null) return "";
 		else{
 			String result="";
-			ListIterator  it = stack.listIterator();
+			ListIterator<StatisticEntity>  it = stack.listIterator();
 		    while(it.hasNext()){
 		    	try{
 		    		result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
@@ -47,11 +50,12 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 		}
 	}
 
-	public List getLastEntities(int quantity) {
-		LinkedList stack = (LinkedList)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
-		if(stack==null) return new LinkedList();
+	public List<StatisticEntity> getLastEntities(int quantity) {
+		@SuppressWarnings("unchecked")
+		LinkedList<StatisticEntity> stack = (LinkedList<StatisticEntity>)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
+		if(stack==null) return new LinkedList<StatisticEntity>();
 		else{
-			LinkedList stackQ = new LinkedList();
+			LinkedList<StatisticEntity> stackQ = new LinkedList<StatisticEntity>();
 			int q=0;
 			while(q<quantity && q<stack.size()){
 				stackQ.addFirst(stack.get(q));
@@ -62,11 +66,11 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 	}
 
 	public String getLastEntitiesAsXml(int quantity) {
-		LinkedList stack = (LinkedList)getLastEntities(quantity);
+		LinkedList<StatisticEntity> stack = (LinkedList<StatisticEntity>)getLastEntities(quantity);
 		if(stack==null) return "";
 		else{
 			String result="";
-		    ListIterator  it = stack.listIterator();
+		    ListIterator<StatisticEntity>  it = stack.listIterator();
 		    while(it.hasNext()){
 		    	try{
 		    		result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
@@ -78,14 +82,15 @@ public class StatisticProvider_Simple implements I_StatisticProvider {
 	}
 
 	public void clearAll(){
-		LinkedList stack = (LinkedList)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
+		@SuppressWarnings("unchecked")
+		LinkedList<StatisticEntity> stack = (LinkedList<StatisticEntity>)bsController.getFromLocalContainer(bsConstants.CONST_ID_STATISTIC_STACK);
 		if(stack!=null) stack.clear();		
 	}
 	
 	public void syncroAll(){
 	}
 
-	public List getEntities(String commandDefinedIntoProviderRelise) {
+	public List<StatisticEntity> getEntities(String commandDefinedIntoProviderRelise) {
 		return null;
 	}
 

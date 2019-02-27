@@ -39,7 +39,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 public class Wrapper_CdiOnlyinssession extends bsProvidedWrapper {
 	private static final long serialVersionUID = 1L;
 
-	private static ConcurrentHashMap instance = new ConcurrentHashMap();
+	private static ConcurrentHashMap<Object,Object> instance = new ConcurrentHashMap<Object, Object>();
 
 	public Wrapper_CdiOnlyinssession(){
 		super();		
@@ -56,7 +56,7 @@ public class Wrapper_CdiOnlyinssession extends bsProvidedWrapper {
 	public boolean setInstance(Object _instance) {
 		if(instance!=null){
 			if(_instance!=null && _instance instanceof Map)
-				instance.putAll((Map)_instance);
+				instance.putAll((Map<?,?>)_instance);
 		}
 		return true;
 	}

@@ -51,7 +51,7 @@ import it.classhidra.core.tool.util.util_xml;
 
 public class load_message  extends elementBase{
 	private static final long serialVersionUID = 1L;
-	private HashMap _messages;
+	private HashMap<String,message> _messages;
 	private boolean readOk_Resource=false;
 	private boolean readOk_Folder=false;
 	private boolean readOk_File=false;
@@ -68,7 +68,7 @@ public class load_message  extends elementBase{
 
 public load_message(){
 	super();
-	if(_messages==null) _messages=new HashMap();
+	if(_messages==null) _messages=new HashMap<String, message>();
 	externalloader="";
 	view="";
 	readOk_Resource=false;
@@ -78,12 +78,13 @@ public load_message(){
 
 }
 
+@SuppressWarnings("unchecked")
 public void reInit(i_externalloader _externalloader){ 
 	if(_externalloader==null) return;
 	boolean loaded = false;
 	if(	_externalloader.getProperty(i_externalloader.MESSAGES_messages)!=null &&
-		_externalloader.getProperty(i_externalloader.MESSAGES_messages) instanceof HashMap){
-		_messages.putAll((HashMap)_externalloader.getProperty(i_externalloader.MESSAGES_messages));
+		_externalloader.getProperty(i_externalloader.MESSAGES_messages) instanceof HashMap<?,?>){
+		_messages.putAll((HashMap<String, message>)_externalloader.getProperty(i_externalloader.MESSAGES_messages));
 		loaded=true;
 	}
 	if(loaded)
@@ -300,10 +301,10 @@ public void init(Node node) throws bsControllerException{
 	mess.init(node);
 }
 
-public HashMap get_messages() {
+public HashMap<String, message> get_messages() {
 	return _messages;
 }
-public void set_messages(HashMap map) {
+public void set_messages(HashMap<String, message> map) {
 	_messages = map;
 }
 public boolean isReadOk() {
@@ -321,7 +322,7 @@ public void load_from_resources() {
 		
 		String property_name =  "config."+bsController.CONST_XML_MESSAGES_FOLDER;
 		try{
-			List array = util_classes.getResources(property_name);
+			List<String> array = util_classes.getResources(property_name);
 			for(int i=0;i<array.size();i++){
 				String property_name0 =  bsController.CONST_XML_MESSAGES_FOLDER+"/"+array.get(i);
 				if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)

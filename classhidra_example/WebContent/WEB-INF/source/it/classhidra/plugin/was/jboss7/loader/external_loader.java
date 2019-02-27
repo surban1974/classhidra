@@ -3,9 +3,10 @@ package it.classhidra.plugin.was.jboss7.loader;
 import it.classhidra.core.controller.i_externalloader;
 
 public class external_loader implements i_externalloader{
+	private static final long serialVersionUID = 1L;
 
 
-	
+
 	public Object getProperty(String key) {
 
 		

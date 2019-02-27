@@ -265,7 +265,8 @@ public class util_blob {
 			return clone_element;
 	     }	   
 
-	   public static Vector load_db_elements(i_elementDBBase element,Connection ext_conn, String sql) throws Exception{
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Vector load_db_elements(i_elementDBBase element,Connection ext_conn, String sql) throws Exception{
 		   Vector result = new Vector(); 
 		   if(element==null) return result;
 			Connection conn=null;

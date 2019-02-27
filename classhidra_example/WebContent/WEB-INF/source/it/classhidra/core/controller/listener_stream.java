@@ -33,20 +33,20 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface listener_stream {
 	void onPreInit(HttpServletRequest request, HttpServletResponse response);
-	void onPreInit(HashMap _content);
+	void onPreInit(HashMap<String,Object> _content);
 	void onPreEnter(HttpServletRequest request, HttpServletResponse response);
 	void onPreExit(HttpServletRequest request, HttpServletResponse response);
-	void onPreEnter(HashMap _content);
-	void onPreExit(HashMap _content);
+	void onPreEnter(HashMap<String,Object> _content);
+	void onPreExit(HashMap<String,Object> _content);
 	void onPreRedirect(redirects _redirect, String id_action);
 
 
 	void onPostInit(HttpServletRequest request, HttpServletResponse response);
-	void onPostInit(HashMap _content);
+	void onPostInit(HashMap<String,Object> _content);
 	void onPostEnter(redirects redirect, HttpServletRequest request, HttpServletResponse response);
 	void onPostExit(redirects redirect, HttpServletRequest request, HttpServletResponse response);
-	void onPostEnter(redirects redirect, HashMap _content);
-	void onPostExit(redirects redirect, HashMap _content);
+	void onPostEnter(redirects redirect, HashMap<String,Object> _content);
+	void onPostExit(redirects redirect, HashMap<String,Object> _content);
 	void onPostRedirect(RequestDispatcher rd);
 	void onPostInstance();
 	void onPostInstanceFromProvider();

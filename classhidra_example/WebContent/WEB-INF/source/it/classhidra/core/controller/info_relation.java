@@ -30,7 +30,7 @@ import it.classhidra.core.tool.jaas_authentication.info_group;
 import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -53,17 +53,17 @@ public class info_relation extends info_entity implements i_elementBase{
 	private String elements;
 	private String middleactions;
 	
-	private HashMap _elements;
-	private Vector v_elements;
+	private HashMap<String, HashMap<String,HashMap<String,String>>> _elements;
+	private Vector<String> v_elements;
 	
-	private HashMap _middleactions;
-	private Vector v_middleactions;
+	private HashMap<String, HashMap<String,String>> _middleactions;
+	private Vector<String> v_middleactions;
 
 	
-	private HashMap _groups;
-	private HashMap _targets;
-	private Vector v_info_groups;
-	private Vector v_info_targets;
+	private HashMap<String,info_group> _groups;
+	private HashMap<String,info_target> _targets;
+	private Vector<info_group> v_info_groups;
+	private Vector<info_target> v_info_targets;
 	
 	
 	public info_relation(){
@@ -77,14 +77,14 @@ public class info_relation extends info_entity implements i_elementBase{
 		groups="";
 		elements="";
 		middleactions="";
-		_elements=new HashMap();
-		_middleactions=new HashMap();
-		v_elements=new Vector();
-		v_middleactions=new Vector();
-		_groups=new HashMap();
-		_targets=new HashMap();
-		v_info_groups=new Vector();
-		v_info_targets=new Vector();
+		_elements=new HashMap<String, HashMap<String,HashMap<String,String>>>();
+		_middleactions=new HashMap<String, HashMap<String,String>>();
+		v_elements=new Vector<String>();
+		v_middleactions=new Vector<String>();
+		_groups=new HashMap<String,info_group>();
+		_targets=new HashMap<String,info_target>();
+		v_info_groups=new Vector<info_group>();
+		v_info_targets=new Vector<info_target>();
 
 	}
 
@@ -144,7 +144,7 @@ public class info_relation extends info_entity implements i_elementBase{
 	
 	public void parse(){
 		if(targets!=null){
-			_targets=new HashMap();
+			_targets=new HashMap<String, info_target>();
 			StringTokenizer st=new StringTokenizer(targets,";");
 			while(st.hasMoreTokens()){
 				String key = st.nextToken();
@@ -161,7 +161,7 @@ public class info_relation extends info_entity implements i_elementBase{
 		}
 		
 		if(groups!=null){
-			_groups=new HashMap();
+			_groups=new HashMap<String, info_group>();
 			StringTokenizer st=new StringTokenizer(groups,";");
 			while(st.hasMoreTokens()){
 				String key = st.nextToken();
@@ -178,7 +178,7 @@ public class info_relation extends info_entity implements i_elementBase{
 		}
 		if(elements!=null && !elements.trim().equals("")){
 
-			_elements=new HashMap();
+			_elements=new HashMap<String, HashMap<String,HashMap<String,String>>>();
 			StringTokenizer st=new StringTokenizer(elements,";");
 			while(st.hasMoreTokens()){
 				String key = st.nextToken();
@@ -193,15 +193,15 @@ public class info_relation extends info_entity implements i_elementBase{
 					if(st_key.hasMoreTokens()) key_redirect = st_key.nextToken();
 					if(st_key.hasMoreTokens()) key_section = st_key.nextToken();
 
-					HashMap _redirects = (HashMap)_elements.get(key_action);
+					HashMap<String,HashMap<String,String>> _redirects = (HashMap<String, HashMap<String,String>>)_elements.get(key_action);
 					if(_redirects==null){
-						_redirects=new HashMap();
+						_redirects=new HashMap<String, HashMap<String,String>>();
 						_elements.put(key_action, _redirects);
 					}
 
-					HashMap _sections = (HashMap)_redirects.get(key_redirect);
+					HashMap<String,String> _sections = (HashMap<String, String>)_redirects.get(key_redirect);
 					if(_sections==null){
-						_sections=new HashMap();
+						_sections=new HashMap<String, String>();
 						_redirects.put(key_redirect, _sections);
 					}
 
@@ -213,7 +213,7 @@ public class info_relation extends info_entity implements i_elementBase{
 		}
 		if(middleactions!=null && !middleactions.trim().equals("")){
 
-			_middleactions=new HashMap();
+			_middleactions=new HashMap<String, HashMap<String,String>>();
 			StringTokenizer st=new StringTokenizer(middleactions,";");
 			while(st.hasMoreTokens()){
 				String key = st.nextToken();
@@ -226,9 +226,9 @@ public class info_relation extends info_entity implements i_elementBase{
 					if(st_key.hasMoreTokens()) key_action = st_key.nextToken();
 					if(st_key.hasMoreTokens()) key_middleaction = st_key.nextToken();
 
-					HashMap _mactions = (HashMap)_middleactions.get(key_action);
+					HashMap<String,String> _mactions = (HashMap<String, String>)_middleactions.get(key_action);
 					if(_mactions==null){
-						_mactions=new HashMap();
+						_mactions=new HashMap<String, String>();
 						_middleactions.put(key_action, _mactions);
 					}
 					_mactions.put(key_middleaction, key_middleaction);
@@ -247,15 +247,15 @@ public class info_relation extends info_entity implements i_elementBase{
 		if(st_key.hasMoreTokens()) key_redirect = st_key.nextToken();
 		if(st_key.hasMoreTokens()) key_section = st_key.nextToken();
 
-		HashMap _redirects = (HashMap)_elements.get(key_action);
+		HashMap<String,HashMap<String,String>> _redirects = (HashMap<String, HashMap<String,String>>)_elements.get(key_action);
 		if(_redirects==null){
-			_redirects=new HashMap();
+			_redirects=new HashMap<String, HashMap<String,String>>();
 			_elements.put(key_action, _redirects);
 		}
 
-		HashMap _sections = (HashMap)_redirects.get(key_redirect);
+		HashMap<String,String> _sections = (HashMap<String, String>)_redirects.get(key_redirect);
 		if(_sections==null){
-			_sections=new HashMap();
+			_sections=new HashMap<String, String>();
 			_redirects.put(key_redirect, _sections);
 		}
 
@@ -270,9 +270,9 @@ public class info_relation extends info_entity implements i_elementBase{
 		if(st_key.hasMoreTokens()) key_action = st_key.nextToken();
 		if(st_key.hasMoreTokens()) key_maction = st_key.nextToken();
 
-		HashMap _mactions = (HashMap)_middleactions.get(key_action);
+		HashMap<String,String> _mactions = (HashMap<String, String>)_middleactions.get(key_action);
 		if(_mactions==null){
-			_mactions=new HashMap();
+			_mactions=new HashMap<String, String>();
 			_middleactions.put(key_action, _mactions);
 		}
 		_mactions.put(key_maction, key_maction);
@@ -294,14 +294,14 @@ public class info_relation extends info_entity implements i_elementBase{
 			return;
 		}
 		
-		HashMap _redirects = (HashMap)_elements.get(key_action);
+		HashMap<String,HashMap<String,String>> _redirects = (HashMap<String, HashMap<String,String>>)_elements.get(key_action);
 		if(_redirects!=null){
 			if(key_redirect.equals("*")){
 				_elements.remove(key_action);
 				refreshV_elements();
 				return;
 			}
-			HashMap _sections = (HashMap)_redirects.get(key_redirect);
+			HashMap<String,String> _sections = (HashMap<String, String>)_redirects.get(key_redirect);
 			if(_sections!=null){
 				if(key_section.equals("*")){
 					_redirects.remove(key_redirect);
@@ -325,7 +325,7 @@ public class info_relation extends info_entity implements i_elementBase{
 
 
 		
-		HashMap _mactions = (HashMap)_middleactions.get(key_action);
+		HashMap<String,String> _mactions = (HashMap<String,String>)_middleactions.get(key_action);
 		if(_mactions!=null){
 			if(key_maction.equals("*")){
 				_middleactions.remove(key_action);
@@ -339,16 +339,16 @@ public class info_relation extends info_entity implements i_elementBase{
 	}		
 	
 	public void refreshV_elements(){
-		v_elements=new Vector();
-		Vector v_actions = new Vector(_elements.keySet());
+		v_elements=new Vector<String>();
+		Vector<String> v_actions = new Vector<String>(_elements.keySet());
 		for(int i=0;i<v_actions.size();i++){
 			String key_action=(String)v_actions.get(i);
-			HashMap _redirects = (HashMap)_elements.get(key_action);
-			Vector v_redirects = new Vector(_redirects.keySet());
+			HashMap<String,HashMap<String,String>> _redirects = (HashMap<String, HashMap<String,String>>)_elements.get(key_action);
+			Vector<String> v_redirects = new Vector<String>(_redirects.keySet());
 			for(int j=0;j<v_redirects.size();j++){
 				String key_redirect=(String)v_redirects.get(j);
-				HashMap _sections = (HashMap)_redirects.get(key_redirect);
-				Vector v_sections = new Vector(_sections.keySet());
+				HashMap<String,String> _sections = (HashMap<String,String>)_redirects.get(key_redirect);
+				Vector<String> v_sections = new Vector<String>(_sections.keySet());
 				for(int k=0;k<v_sections.size();k++){
 					String key_section=(String)v_sections.get(k);
 					v_elements.add(key_action+"."+key_redirect+"."+key_section);
@@ -357,12 +357,12 @@ public class info_relation extends info_entity implements i_elementBase{
 		}
 	}	
 	public void refreshV_middleactions(){
-		v_middleactions=new Vector();
-		Vector v_actions = new Vector(_middleactions.keySet());
+		v_middleactions=new Vector<String>();
+		Vector<String> v_actions = new Vector<String>(_middleactions.keySet());
 		for(int i=0;i<v_actions.size();i++){
 			String key_action=(String)v_actions.get(i);
-			HashMap _mactions = (HashMap)_middleactions.get(key_action);
-			Vector v_mactions = new Vector(_mactions.keySet());
+			HashMap<String,String> _mactions = (HashMap<String,String>)_middleactions.get(key_action);
+			Vector<String> v_mactions = new Vector<String>(_mactions.keySet());
 			for(int j=0;j<v_mactions.size();j++){
 				String key_maction=(String)v_mactions.get(j);
 				v_middleactions.add(key_action+"."+key_maction);
@@ -370,12 +370,14 @@ public class info_relation extends info_entity implements i_elementBase{
 		}
 	}		
 	public void refreshV_info_groups(){
-		v_info_groups = (new Vector(_groups.values()));
-		v_info_groups = new util_sort().sort(v_info_groups,"name");
+		v_info_groups = new Vector<info_group>(_groups.values());
+//		v_info_groups = new util_sort().sort(v_info_groups,"name");
+		v_info_groups = Util_sort.sort(v_info_groups,"name");
 	}
 	public void refreshV_info_targets(){
-		v_info_targets = (new Vector(_targets.values()));
-		v_info_targets = new util_sort().sort(v_info_targets,"name");
+		v_info_targets = new Vector<info_target>(_targets.values());
+//		v_info_targets = new util_sort().sort(v_info_targets,"name");
+		v_info_targets = Util_sort.sort(v_info_targets,"name");
 	}	
 	public String toString(){		
 		return toXml();
@@ -436,10 +438,10 @@ public class info_relation extends info_entity implements i_elementBase{
 	public void setElements(String elements) {
 		this.elements = elements;
 	}
-	public Vector getV_elements() {
+	public Vector<String> getV_elements() {
 		return v_elements;
 	}
-	public void setV_elements(Vector vElements) {
+	public void setV_elements(Vector<String> vElements) {
 		v_elements = vElements;
 	}
 	public String getName() {
@@ -448,34 +450,34 @@ public class info_relation extends info_entity implements i_elementBase{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public HashMap get_elements() {
+	public HashMap<String, HashMap<String,HashMap<String,String>>> get_elements() {
 		return _elements;
 	}
-	public void set_elements(HashMap elements) {
+	public void set_elements(HashMap<String, HashMap<String,HashMap<String,String>>> elements) {
 		_elements = elements;
 	}
-	public HashMap get_groups() {
+	public HashMap<String,info_group> get_groups() {
 		return _groups;
 	}
-	public void set_groups(HashMap groups) {
+	public void set_groups(HashMap<String,info_group> groups) {
 		_groups = groups;
 	}
-	public HashMap get_targets() {
+	public HashMap<String,info_target> get_targets() {
 		return _targets;
 	}
-	public void set_targets(HashMap targets) {
+	public void set_targets(HashMap<String,info_target> targets) {
 		_targets = targets;
 	}
-	public Vector getV_info_groups() {
+	public Vector<info_group> getV_info_groups() {
 		return v_info_groups;
 	}
-	public void setV_info_groups(Vector vInfoGroups) {
+	public void setV_info_groups(Vector<info_group> vInfoGroups) {
 		v_info_groups = vInfoGroups;
 	}
-	public Vector getV_info_targets() {
+	public Vector<info_target> getV_info_targets() {
 		return v_info_targets;
 	}
-	public void setV_info_targets(Vector vInfoTargets) {
+	public void setV_info_targets(Vector<info_target> vInfoTargets) {
 		v_info_targets = vInfoTargets;
 	}
 	public String getType() {
@@ -490,16 +492,16 @@ public class info_relation extends info_entity implements i_elementBase{
 	public void setMiddleactions(String middleactions) {
 		this.middleactions = middleactions;
 	}
-	public HashMap get_middleactions() {
+	public HashMap<String, HashMap<String,String>> get_middleactions() {
 		return _middleactions;
 	}
-	public void set_middleactions(HashMap _middleactions) {
+	public void set_middleactions(HashMap<String, HashMap<String,String>> _middleactions) {
 		this._middleactions = _middleactions;
 	}
-	public Vector getV_middleactions() {
+	public Vector<String> getV_middleactions() {
 		return v_middleactions;
 	}
-	public void setV_middleactions(Vector v_middleactions) {
+	public void setV_middleactions(Vector<String> v_middleactions) {
 		this.v_middleactions = v_middleactions;
 	}	
 	

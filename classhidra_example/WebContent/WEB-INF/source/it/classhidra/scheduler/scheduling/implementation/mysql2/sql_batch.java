@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class sql_batch {
 
-	public static String sql_LoadBatch(HashMap form){
+	public static String sql_LoadBatch(HashMap<String,?> form){
 		batch_init b_init = null;
 	    try{
 	    	b_init = servletBatchScheduling.getConfiguration();
@@ -48,7 +48,7 @@ public class sql_batch {
 		return result;
 	}
 	
-	public static String sql_LoadBatchSingle(HashMap form){
+	public static String sql_LoadBatchSingle(HashMap<String,?> form){
 		batch_init b_init = null;
 	    try{
 	    	b_init = servletBatchScheduling.getConfiguration();
@@ -79,7 +79,7 @@ public class sql_batch {
 		return result;
 	}
 
-	public static String sql_LoadBatchLog(HashMap form){
+	public static String sql_LoadBatchLog(HashMap<String,?> form){
 		batch_init b_init = null;
 	    try{
 	    	b_init = servletBatchScheduling.getConfiguration();
@@ -98,7 +98,7 @@ public class sql_batch {
 		return result;
 	}
 
-	public static String sql_DeleteBatchLog(HashMap form){
+	public static String sql_DeleteBatchLog(HashMap<String,?> form){
 		batch_init b_init = null;
 	    try{
 	    	b_init = servletBatchScheduling.getConfiguration();
@@ -115,7 +115,7 @@ public class sql_batch {
 		return result;
 	}
 
-	public static String sql_DeleteBatch(HashMap form){
+	public static String sql_DeleteBatch(HashMap<String,?> form){
 		batch_init b_init = null;
 	    try{
 	    	b_init = servletBatchScheduling.getConfiguration();
@@ -134,7 +134,7 @@ public class sql_batch {
 		return result;
 	}
 
-	public static String sql_ClearStateBatch(HashMap form){
+	public static String sql_ClearStateBatch(HashMap<String,?> form){
 		batch_init b_init = null;
 	    try{
 	    	b_init = servletBatchScheduling.getConfiguration();
@@ -154,7 +154,7 @@ public class sql_batch {
 		return result;
 	}
 	
-	public static String sql_Kill4Timeout(HashMap form){
+	public static String sql_Kill4Timeout(HashMap<String,?> form){
 		batch_init b_init = null;
 	    try{
 	    	b_init = servletBatchScheduling.getConfiguration();
@@ -184,7 +184,7 @@ public class sql_batch {
 		return "update "+b_init.get_db_prefix()+"batch set state=0, st_exec=0, tm_next=null";
 	}
 	
-	public static String sql_LoadBatchProperties(HashMap form){
+	public static String sql_LoadBatchProperties(HashMap<String,?> form){
 		batch_init b_init = null;
 	    try{
 	    	b_init = servletBatchScheduling.getConfiguration();

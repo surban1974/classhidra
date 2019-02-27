@@ -58,7 +58,6 @@ private void prepareElement(HttpServletRequest request){
 			element = bsController.getMenu_config().get_menu();
 		}
 		element.authentication_clear(((auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION)).get_actions_forbidden());
-		element.authentication_clear(((auth_init)request.getSession().getAttribute(bsController.CONST_BEAN_$AUTHENTIFICATION)).get_actions_forbidden());
 
 		element.setVisible(true);
 		element.calculate_potential_elements();

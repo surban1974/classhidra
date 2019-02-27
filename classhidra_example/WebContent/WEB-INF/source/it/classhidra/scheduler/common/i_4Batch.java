@@ -20,7 +20,7 @@ public interface i_4Batch extends Serializable{
 	public final static String o_WRITE_LOG = "WRITE_LOG";
 	public final static String o_INSTANCE_LOG_OBJECT = "INSTANCE_LOG_OBJECT";
 
-	public abstract Object operation(String oper, HashMap form)
+	public abstract Object operation(String oper, HashMap<String,?> form)
 			throws Exception;
 
 }

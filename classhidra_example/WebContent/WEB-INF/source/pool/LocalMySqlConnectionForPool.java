@@ -175,7 +175,7 @@ public class LocalMySqlConnectionForPool implements Connection, iConnectionForPo
 		return conn.getHoldability();
 	}
 
-	public Map getTypeMap() throws SQLException {
+	public Map<String,Class<?>> getTypeMap() throws SQLException {
 		return conn.getTypeMap();
 	}
 
@@ -236,7 +236,7 @@ public class LocalMySqlConnectionForPool implements Connection, iConnectionForPo
 		return conn.setSavepoint(name);
 	}
 
-	public void setTypeMap(Map arg0) throws SQLException {
+	public void setTypeMap(Map<String,Class<?>> arg0) throws SQLException {
 		conn.setTypeMap(arg0);		
 	}
 

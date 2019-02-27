@@ -25,8 +25,10 @@ import it.classhidra.scheduler.util.util_batch;
 
 public class db_4Batch implements i_4Batch  {
 
+	private static final long serialVersionUID = 1L;
 
-	public Object operation(String oper, HashMap form) throws Exception {
+
+	public Object operation(String oper, HashMap<String,?> form) throws Exception {
 		if(oper==null) return null;
 		oper=oper.toUpperCase();
 
@@ -75,13 +77,13 @@ public class db_4Batch implements i_4Batch  {
 		return null;
 	}
 
-	private Object operation_FIND(HashMap form) throws Exception{
+	private Object operation_FIND(HashMap<String,?> form) throws Exception{
 		db_batch element = null;
 		element = (db_batch)util_blob.load_db_element(new db_batch(), null, sql_batch.sql_LoadBatchSingle(form));
 		return element;
 	}
 	
-	private Object operation_FIND_SIMPLE(HashMap form) throws Exception{
+	private Object operation_FIND_SIMPLE(HashMap<String,?> form) throws Exception{
 		db_batch element = (db_batch)form.get("selected");
 		if(element==null)
 			return null;
@@ -90,9 +92,9 @@ public class db_4Batch implements i_4Batch  {
 	}	
 
 
-	private Object operation_FINDFORMLIST(HashMap form) throws Exception{
+	private Object operation_FINDFORMLIST(HashMap<String,?> form) throws Exception{
 
-		List elements = null;
+		List<?> elements = null;
 		if(form!=null && form.get("operation")!=null && form.get("operation").equals("log")){
 			elements = util_blob.load_db_elements(new db_batch_log(), null, sql_batch.sql_LoadBatchLog(form));
 
@@ -101,7 +103,7 @@ public class db_4Batch implements i_4Batch  {
 		return elements;
 	}
 
-	private Object operation_DELETE(HashMap form) throws Exception{
+	private Object operation_DELETE(HashMap<String,?> form) throws Exception{
 
 
 		if(form!=null && form.get("operation")!=null && form.get("operation").equals("log")){
@@ -111,7 +113,7 @@ public class db_4Batch implements i_4Batch  {
 
 	}
 
-	private Object operation_UPDATE(HashMap form) throws Exception{
+	private Object operation_UPDATE(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -164,7 +166,7 @@ public class db_4Batch implements i_4Batch  {
 
 	}
 	
-	private Object operation_UPDATE_STATE(HashMap form) throws Exception{
+	private Object operation_UPDATE_STATE(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -213,16 +215,16 @@ public class db_4Batch implements i_4Batch  {
 	}	
 	
 	
-	private Object operation_UPDATE_STATES_AND_NEXTEXEC(HashMap form) throws Exception{
+	private Object operation_UPDATE_STATES_AND_NEXTEXEC(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
-		List batch_updated = (List)form.get("list");
+		List<?> batch_updated = (List<?>)form.get("list");
 		
 		if(batch_updated==null || batch_updated.size()==0)
 			return new Boolean(false);
 		
-		List sql_updates  = new ArrayList();
+		List<String> sql_updates  = new ArrayList<String>();
 		for(int i=0;i<batch_updated.size();i++){
 			db_batch el = (db_batch)batch_updated.get(i);
 			sql_updates.add(el.sql_Update(el));
@@ -267,7 +269,7 @@ public class db_4Batch implements i_4Batch  {
 
 	}		
 	
-	private Object operation_INSERT(HashMap form) throws Exception{
+	private Object operation_INSERT(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -308,7 +310,7 @@ public class db_4Batch implements i_4Batch  {
 	
 
 
-	private Object operation_CLEAR_STATE(HashMap form) throws Exception{
+	private Object operation_CLEAR_STATE(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -340,7 +342,7 @@ public class db_4Batch implements i_4Batch  {
 	}
 
 
-	private Object operation_DELETELOG(HashMap form) throws Exception{
+	private Object operation_DELETELOG(HashMap<String,?> form) throws Exception{
 
 
 		Connection conn=null;
@@ -371,7 +373,7 @@ public class db_4Batch implements i_4Batch  {
 
 	}
 
-	private Object operation_DELETEBATCH(HashMap form) throws Exception{
+	private Object operation_DELETEBATCH(HashMap<String,?> form) throws Exception{
 
 		Connection conn=null;
 		Statement st=null;
@@ -400,7 +402,7 @@ public class db_4Batch implements i_4Batch  {
 
 	}
 	
-	private Object operation_CLEAR_BATCH_STATES(HashMap form) throws Exception{
+	private Object operation_CLEAR_BATCH_STATES(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -430,7 +432,7 @@ public class db_4Batch implements i_4Batch  {
 
 	}
 	
-	private Object operation_KILL4TIMEOUT(HashMap form) throws Exception{
+	private Object operation_KILL4TIMEOUT(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -460,7 +462,7 @@ public class db_4Batch implements i_4Batch  {
 		return new Boolean(false);
 	}	
 	
-	private Object operation_WRITE_LOG(HashMap form) throws Exception{
+	private Object operation_WRITE_LOG(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -498,7 +500,7 @@ public class db_4Batch implements i_4Batch  {
 	}		
 	
 	
-	public Object operation_LOAD_BATCH_PROPERTIES(HashMap form){
+	public Object operation_LOAD_BATCH_PROPERTIES(HashMap<String,?> form){
 
 
 	    db_batch batch = (db_batch)form.get("selected");

@@ -68,7 +68,7 @@ public class util_auth {
 				:request.getParameter("risoluzione"));
 		
 
-		Enumeration headerNames = request.getHeaderNames();
+		Enumeration<?> headerNames = request.getHeaderNames();
 		while(headerNames.hasMoreElements()) {
 			String headerName = (String)headerNames.nextElement();
 			auth.getRequestHeader().put(headerName,request.getHeader(headerName));

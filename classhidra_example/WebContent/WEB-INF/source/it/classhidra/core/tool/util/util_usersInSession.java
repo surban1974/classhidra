@@ -65,9 +65,10 @@ public class util_usersInSession {
 				}
 			}
 			if(auth!=null && auth.is_logged() && !auth.get_matricola().equals("guest")){
-				HashMap h_user_container = (HashMap)bsController.getFromLocalContainer(CONST_APP_USER_CONTAINER);
+				@SuppressWarnings("unchecked")
+				HashMap<String,HttpSession> h_user_container = (HashMap<String,HttpSession>)bsController.getFromLocalContainer(CONST_APP_USER_CONTAINER);
 				if(h_user_container==null){
-					h_user_container = new HashMap();
+					h_user_container = new HashMap<String, HttpSession>();
 					bsController.setToLocalContainer(CONST_APP_USER_CONTAINER,h_user_container);
 				}
 				HttpSession session_instance = (HttpSession)h_user_container.get(request.getSession().getId());
@@ -125,7 +126,8 @@ public class util_usersInSession {
 				}
 			}
 
-			HashMap h_user_container = (HashMap)bsController.getFromLocalContainer(CONST_APP_USER_CONTAINER);
+			@SuppressWarnings("unchecked")
+			HashMap<String,HttpSession> h_user_container = (HashMap<String,HttpSession>)bsController.getFromLocalContainer(CONST_APP_USER_CONTAINER);
 			String session_id = request.getSession().getId();
 			if(h_user_container!=null){
 				HttpSession session_instance = (HttpSession)h_user_container.get(session_id);

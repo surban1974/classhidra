@@ -57,6 +57,6 @@ public interface i_batch_log extends Serializable{
 
 	void setCd_ist(Integer cdIst);
 	
-	HashMap getFields();
+	HashMap<String,?> getFields();
 
 }

@@ -24,7 +24,7 @@
 
 package it.classhidra.core.tool.db;
 
-import it.classhidra.core.controller.bsController;
+
 import it.classhidra.core.init.db_init;
 import it.classhidra.core.tool.db.pool.db_pool_container;
 import it.classhidra.core.tool.exception.bsException;
@@ -247,7 +247,7 @@ protected  Connection getFreeConnection(db_init init) throws Exception,Throwable
 				else return java.sql.DriverManager.getConnection(init.get_url(),init.get_user(),init.get_password());
 		}
 		if(init.get_connectiontype().equals(db_init.CT_JSQLDATASOURCE)){
-				Hashtable parms = new Hashtable();
+				Hashtable<String,String> parms = new Hashtable<String, String>();
 					parms.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, init.get_driver());
 					parms.put(javax.naming.Context.PROVIDER_URL, init.get_server());
 				javax.naming.InitialContext Ctx = new javax.naming.InitialContext(parms);
@@ -263,7 +263,7 @@ protected  Connection getFreeConnection(db_init init) throws Exception,Throwable
 		}
 		
 		if(init.get_connectiontype().equals(db_init.CT_POOLDATASOURCE5)){
-				Hashtable parms = new Hashtable();
+				Hashtable<String,String> parms = new Hashtable<String,String>();
 					parms.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, init.get_driver());
 				javax.naming.InitialContext Ctx = new javax.naming.InitialContext(parms);
 				if(init.get_user()==null || init.get_password()==null || init.get_user().equals("") && init.get_password().equals("")) return ((DataSource)Ctx.lookup(init.get_datasource())).getConnection();

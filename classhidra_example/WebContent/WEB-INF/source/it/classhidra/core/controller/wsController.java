@@ -102,13 +102,13 @@ public class wsController   {
 	}
 	public String PerformActionSOAP(String id_action, String ssoid, String inputXML, String isCodedInput, String isCodedOutput) {
 
-		HashMap wsParameters = new HashMap();
+		HashMap<String,Object> wsParameters = new HashMap<String, Object>();
 
 		wsParameters.put(bsController.CONST_ID, id_action);
 		wsParameters.put(bsController.CONST_SSOID, ssoid);
 
 		String outputXML="";
-		Vector errors=new Vector();
+		Vector<String> errors=new Vector<String>();
 		auth_init auth = null;
 		if(auth==null) auth = new auth_init();
 
@@ -139,11 +139,11 @@ public class wsController   {
 		if(id_action!=null){
 
 
-			Vector _streams = new Vector();
-			Vector _streams_orig = (Vector)bsController.getAction_config().get_streams_apply_to_actions().get("*");
+			Vector<info_stream> _streams = new Vector<info_stream>();
+			Vector<info_stream> _streams_orig = bsController.getAction_config().get_streams_apply_to_actions().get("*");
 
 			if(_streams_orig!=null) _streams.addAll(_streams_orig);
-			Vector _streams4action = (Vector)bsController.getAction_config().get_streams_apply_to_actions().get(id_action);
+			Vector<info_stream> _streams4action = bsController.getAction_config().get_streams_apply_to_actions().get(id_action);
 			if(_streams4action!=null) _streams.addAll(_streams4action);
 
 			i_action action_instance = null;
@@ -247,7 +247,7 @@ public class wsController   {
 		return outputXML;
 	}
 
-	public  boolean performStream_Enter(Vector _streams, String id_action,i_action action_instance, HashMap wsParameters) throws bsControllerException, Exception, Throwable{
+	public  boolean performStream_Enter(Vector<info_stream> _streams, String id_action,i_action action_instance, HashMap<String,Object> wsParameters) throws bsControllerException, Exception, Throwable{
 		for(int i=0;i<_streams.size();i++){
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = bsController.getAction_config().streamFactory(iStream.getName());
@@ -263,7 +263,7 @@ public class wsController   {
 		return true;
 	}
 
-	public  boolean performStream_Exit(Vector _streams, String id_action,i_action action_instance, HashMap wsParameters) throws bsControllerException, Exception, Throwable{
+	public  boolean performStream_Exit(Vector<info_stream> _streams, String id_action,i_action action_instance, HashMap<String,Object> wsParameters) throws bsControllerException, Exception, Throwable{
 		for(int i=_streams.size()-1;i>-1;i--){
 			info_stream iStream = (info_stream)_streams.get(i);
 			i_stream currentStream = bsController.getAction_config().streamFactory(iStream.getName());

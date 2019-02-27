@@ -28,6 +28,7 @@ import it.classhidra.core.tool.util.util_provider;
 
 public class DependencyInjectionProvider implements i_provider {
 
+	private static final long serialVersionUID = 1L;
 	private static final String LOOKUP_BEANMANAGER = 		"java:comp/BeanManager";
 	private static final String LOOKUP_ENV_BEANMANAGER = 	"java:comp/env/BeanManager";
 
@@ -149,7 +150,7 @@ public class DependencyInjectionProvider implements i_provider {
 
 		boolean anotherCheck4ejb=false;
 		if(instance!=null){
-	    	Class clazz=instance.getClass();
+	    	Class<?> clazz=instance.getClass();
 
 	    	if(instance instanceof i_bean){
 				if(	clazz.getAnnotation(SessionScoped.class)!=null ||
@@ -168,7 +169,7 @@ public class DependencyInjectionProvider implements i_provider {
 				}else{
 					try{
 						i_bean ibean = ((i_bean)instance).asBean();
-						Class clazzi=ibean.getClass();
+						Class<?> clazzi=ibean.getClass();
 						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 							clazzi.getAnnotation(RequestScoped.class)!=null){
@@ -204,7 +205,7 @@ public class DependencyInjectionProvider implements i_provider {
 				}else{
 					try{
 						i_action iaction = ((i_action)instance).asAction();
-						Class clazzi=iaction.getClass();
+						Class<?> clazzi=iaction.getClass();
 						if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 							clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 							clazzi.getAnnotation(RequestScoped.class)!=null){
@@ -240,7 +241,7 @@ public class DependencyInjectionProvider implements i_provider {
 					}else{
 						try{
 							i_stream istream = ((i_stream)instance).asStream();
-							Class clazzi=istream.getClass();
+							Class<?> clazzi=istream.getClass();
 							if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 								clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 								clazzi.getAnnotation(RequestScoped.class)!=null){
@@ -290,7 +291,7 @@ public class DependencyInjectionProvider implements i_provider {
 				ejb_instance = util_provider.getEjbFromProvider(bsController.getEjbDefaultProvider(), null, id_bean.replace("$", "ejb_"), class_bean, _context);
 			if(ejb_instance!=null){
 				try{
-			    	Class clazz=ejb_instance.getClass();
+			    	Class<?> clazz=ejb_instance.getClass();
 
 
 			    	if(ejb_instance instanceof i_bean){
@@ -311,7 +312,7 @@ public class DependencyInjectionProvider implements i_provider {
 						}else{
 							try{
 								i_bean ibean = ((i_bean)ejb_instance).asBean();
-								Class clazzi=ibean.getClass();
+								Class<?> clazzi=ibean.getClass();
 								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 									clazzi.getAnnotation(RequestScoped.class)!=null){
@@ -347,7 +348,7 @@ public class DependencyInjectionProvider implements i_provider {
 						}else{
 							try{
 								i_action iaction = ((i_action)ejb_instance).asAction();
-								Class clazzi=iaction.getClass();
+								Class<?> clazzi=iaction.getClass();
 								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 									clazzi.getAnnotation(RequestScoped.class)!=null){
@@ -383,7 +384,7 @@ public class DependencyInjectionProvider implements i_provider {
 						}else{
 							try{
 								i_stream istream = ((i_stream)ejb_instance).asStream();
-								Class clazzi=istream.getClass();
+								Class<?> clazzi=istream.getClass();
 								if(	clazzi.getAnnotation(SessionScoped.class)!=null ||
 									clazzi.getAnnotation(ApplicationScoped.class)!=null ||
 									clazzi.getAnnotation(RequestScoped.class)!=null){
@@ -412,6 +413,7 @@ public class DependencyInjectionProvider implements i_provider {
 		return elaborateWrapperInfo_context(instance);
 	}	
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Object destroyInstance(String id_bean, String class_bean, ServletContext _context) {
 		boolean result=false;
 		if(id_bean==null && class_bean==null)
@@ -446,7 +448,7 @@ public class DependencyInjectionProvider implements i_provider {
 	
     public static Object resolveReference(String elName) {
         BeanManager bm = getBeanManager();
-        Bean bean = bm.resolve(bm.getBeans(elName));
+        Bean<?> bean = bm.resolve(bm.getBeans(elName));
         if(bean!=null)
         	return bm.getReference(bean, bean.getBeanClass(), bm.createCreationalContext(bean));
         return null;
@@ -460,7 +462,7 @@ public class DependencyInjectionProvider implements i_provider {
      }
 */
     
-    public static Object resolveReference(Class clazz) {
+    public static Object resolveReference(Class<?> clazz) {
         BeanManager bm = getBeanManager();
         Bean<?> bean = bm.resolve(bm.getBeans(clazz));
         if(bean!=null)
@@ -584,7 +586,7 @@ public class DependencyInjectionProvider implements i_provider {
     		info = new info_context();
     	if(bean!=null){
     		try{
-    			Class clazz = bean.getClass();
+    			Class<?> clazz = bean.getClass();
          		if(clazz.getAnnotation(SessionScoped.class)!=null)
          			info.setSessionScoped(true);
          		if(clazz.getAnnotation(ApplicationScoped.class)!=null)

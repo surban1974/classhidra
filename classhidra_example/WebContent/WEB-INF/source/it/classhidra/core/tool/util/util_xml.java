@@ -43,7 +43,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 public class util_xml {
 	
-	public final static Map charsetEscapeXml10 = new HashMap() {
+	public final static Map<String,String> charsetEscapeXml10 = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L;
 		{			
 			put( "&", "&amp;");
@@ -85,7 +85,7 @@ public class util_xml {
 			put( "\uffff", "");
 		}};
 
-		public final static Map charsetEscapeXml11 = new HashMap() {
+		public final static Map<String,String> charsetEscapeXml11 = new HashMap<String, String>() {
 			private static final long serialVersionUID = 1L;
 			{				
 				put( "&", "&amp;");
@@ -326,28 +326,32 @@ public static String normalHTML(String input, String charSet) {
 		return input;
 }
 
-public static Map convertFilters(List filters){
-	Map treeFilters = null;
+
+public static Map<String,?> convertFilters(List<String> filters){
+	Map<String,Object> treeFilters = null;
 	if(filters!=null){
-		treeFilters = new HashMap();
-		Iterator it = filters.iterator();
+		treeFilters = new HashMap<String, Object>();
+		Iterator<String> it = filters.iterator();
 		while(it.hasNext()){
-			String filter = it.next().toString();
+			String filter = it.next();
 			if(filter.indexOf(".")>-1){
-				Map current = null; 
+				Map<String, Object> current = null; 
 				StringTokenizer st = new StringTokenizer(filter, ".");
 				while(st.hasMoreTokens()){
 					String part = st.nextToken();
 					if(current==null){
-						current=(Map)treeFilters.get(part);
+						@SuppressWarnings("unchecked")
+						Map<String, Object> map = (Map<String,Object>)treeFilters.get(part);
+						current=map;
 						if(current==null){
-							current = new HashMap();
+							current = new HashMap<String, Object>();
 							treeFilters.put(part, current);
 						}
 					}else{
-						Map subcurrent = (Map)current.get(part);
+						@SuppressWarnings("unchecked")
+						Map<String, Object> subcurrent = (Map<String, Object>)current.get(part);
 						if(subcurrent==null){
-							subcurrent = new HashMap();
+							subcurrent = new HashMap<String, Object>();
 							current.put(part, subcurrent);									
 						}	
 						current = subcurrent;
@@ -355,7 +359,7 @@ public static Map convertFilters(List filters){
 				}
 			}else{
 				if(treeFilters.get(filter)==null)
-					treeFilters.put(filter, new HashMap());
+					treeFilters.put(filter, new HashMap<String,Object>());
 			}
 		}
 	}

@@ -27,7 +27,7 @@ import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -43,8 +43,8 @@ public class info_redirect extends info_entity implements i_elementBase{
 	private String path;
 	private String auth_id;
 	private String error;
-	private HashMap _sections;
-	private HashMap _transformationoutput;
+	private HashMap<String,info_section> _sections;
+	private HashMap<String,info_transformation> _transformationoutput;
 	private String descr;
 	private String mess_id;
 	private String united_id;
@@ -57,8 +57,8 @@ public class info_redirect extends info_entity implements i_elementBase{
 	private String transformationName;
 	private String avoidPermissionCheck;
 
-	private Vector v_info_sections;
-	private Vector v_info_transformationoutput;
+	private Vector<info_section> v_info_sections;
+	private Vector<info_transformation> v_info_transformationoutput;
 	private boolean external=false;
 
 
@@ -156,11 +156,13 @@ public class info_redirect extends info_entity implements i_elementBase{
 
 			}
 		}
-		v_info_transformationoutput.addAll(new Vector(_transformationoutput.values()));
-		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+		v_info_transformationoutput.addAll(new Vector<info_transformation>(_transformationoutput.values()));
+//		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+		v_info_transformationoutput = Util_sort.sort(v_info_transformationoutput,"int_order");
 
-		v_info_sections.addAll(new Vector(_sections.values()));
-		v_info_sections = new util_sort().sort(v_info_sections,"int_order");
+		v_info_sections.addAll(new Vector<info_section>(_sections.values()));
+//		v_info_sections = new util_sort().sort(v_info_sections,"int_order");
+		v_info_sections = Util_sort.sort(v_info_sections,"int_order");
 
 	}
 
@@ -179,10 +181,10 @@ public class info_redirect extends info_entity implements i_elementBase{
 		img="";
 		navigated="true";
 		avoidPermissionCheck="false";
-		_sections=new HashMap();
-		_transformationoutput=new HashMap();
-		v_info_transformationoutput=new Vector();
-		v_info_sections=new Vector();
+		_sections=new HashMap<String,info_section>();
+		_transformationoutput=new HashMap<String,info_transformation>();
+		v_info_transformationoutput=new Vector<info_transformation>();
+		v_info_sections=new Vector<info_section>();
 	}
 
 
@@ -195,14 +197,14 @@ public class info_redirect extends info_entity implements i_elementBase{
 
 	public void setAllowedSection(boolean value){
 		if(_sections==null) return;
-		Vector keys_sections= new Vector(_sections.keySet());
+		Vector<String> keys_sections= new Vector<String>(_sections.keySet());
 		for(int i=0;i<keys_sections.size();i++){
 			info_section sec = (info_section)_sections.get(keys_sections.get(i));
 			if(sec!=null) sec.setAllowed(value);
 		}
 	}
 	
-	public HashMap get_sections() {
+	public HashMap<String,info_section> get_sections() {
 		return _sections;
 	}
 	public String getPath() {
@@ -357,14 +359,14 @@ public class info_redirect extends info_entity implements i_elementBase{
 		return result;
 	}
 
-	public void syncroWithRelations(HashMap _elements){
+	public void syncroWithRelations(HashMap<String,HashMap<String,String>> _elements){
 		enabled = CONST_ENABLED;
 		if(_elements==null) return;
 		if(_elements.get("*")!=null){
 			setEnableDisable(CONST_DISABLED);
 			return;
 		}
-		HashMap _sections = (HashMap)_elements.get(auth_id);
+		HashMap<String,String> _sections = _elements.get(auth_id);
 		if(_sections==null) return;
 		if(_sections.get("*")!=null){
 			setEnableDisable(CONST_DISABLED);
@@ -393,12 +395,12 @@ public class info_redirect extends info_entity implements i_elementBase{
 	public void refreshEnableDisableLevel(){
 		int count_ENABLED=0;
 		int count_DISABLED=0;
-		int count_DISABLED_CHILD=0;
+//		int count_DISABLED_CHILD=0;
 		for(int i=0;i<v_info_sections.size();i++){
 			info_section current = (info_section)v_info_sections.get(i);
 			if(current.getEnabled()==CONST_ENABLED) count_ENABLED++;
 			if(current.getEnabled()==CONST_DISABLED) count_DISABLED++;
-			if(current.getEnabled()==CONST_DISABLED_CHILD) count_DISABLED_CHILD++;
+//			if(current.getEnabled()==CONST_DISABLED_CHILD) count_DISABLED_CHILD++;
 		}
 		if(v_info_sections.size()==count_ENABLED){
 			enabled=CONST_ENABLED;
@@ -411,25 +413,25 @@ public class info_redirect extends info_entity implements i_elementBase{
 		enabled=CONST_DISABLED_CHILD;
 	}
 
-	public Vector getV_info_sections() {
+	public Vector<info_section> getV_info_sections() {
 		return v_info_sections;
 	}
 
-	public info_redirect setV_info_sections(Vector vInfoSections) {
+	public info_redirect setV_info_sections(Vector<info_section> vInfoSections) {
 		v_info_sections = vInfoSections;
 		return this;
 	}
 
-	public Vector getV_info_transformationoutput() {
+	public Vector<info_transformation> getV_info_transformationoutput() {
 		return v_info_transformationoutput;
 	}
 
-	public info_redirect setV_info_transformationoutput(Vector vInfoTransformationoutput) {
+	public info_redirect setV_info_transformationoutput(Vector<info_transformation> vInfoTransformationoutput) {
 		v_info_transformationoutput = vInfoTransformationoutput;
 		return this;
 	}
 
-	public HashMap get_transformationoutput() {
+	public HashMap<String,info_transformation> get_transformationoutput() {
 		return _transformationoutput;
 	}
 	

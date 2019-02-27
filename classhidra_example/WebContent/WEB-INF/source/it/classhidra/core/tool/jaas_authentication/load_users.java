@@ -46,17 +46,17 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_provider;
-import it.classhidra.core.tool.util.util_sort;
 import it.classhidra.core.tool.util.util_xml;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 public class load_users extends elementBase{
 
 	private static final long serialVersionUID = -1L;
-	private HashMap _users;
-	private HashMap _groups;
-	private HashMap _targets;
-	private HashMap _matriculation;
-	private Vector _matr_groups;
+	private HashMap<String,info_user> _users;
+	private HashMap<String,info_group> _groups;
+	private HashMap<String,info_target> _targets;
+	private HashMap<String,info_user> _matriculation;
+	private Vector<String> _matr_groups;
 	private boolean readOk_Resource=false;
 	private boolean readOk_File=false;
 	private boolean readOk_Db=false;
@@ -68,9 +68,9 @@ public class load_users extends elementBase{
 	private String loadedFrom="";
 
 
-	private Vector v_info_users;
-	private Vector v_info_groups;
-	private Vector v_info_targets;
+	private Vector<info_user> v_info_users;
+	private Vector<info_group> v_info_groups;
+	private Vector<info_target> v_info_targets;
 
 public load_users(){
 	super();
@@ -78,14 +78,14 @@ public load_users(){
 }
 
 public void reimposta(){
-	_users = new HashMap();
-	_groups = new HashMap();
-	_targets = new HashMap();
-	_matr_groups = new Vector();
-	_matriculation = new HashMap();
-	v_info_users=new Vector();
-	v_info_groups=new Vector();
-	v_info_targets=new Vector();
+	_users = new HashMap<String, info_user>();
+	_groups = new HashMap<String, info_group>();
+	_targets = new HashMap<String, info_target>();
+	_matr_groups = new Vector<String>();
+	_matriculation = new HashMap<String, info_user>();
+	v_info_users=new Vector<info_user>();
+	v_info_groups=new Vector<info_group>();
+	v_info_targets=new Vector<info_target>();
 
 	externalloader="";
 	xmlEncoding="";
@@ -182,10 +182,10 @@ public void init() throws bsControllerException{
 }
 
 public void init(String xml) throws bsControllerException{
-	if(_users==null) _users=new HashMap();
-	if(_matr_groups==null) _matr_groups=new Vector();
+	if(_users==null) _users=new HashMap<String, info_user>();
+	if(_matr_groups==null) _matr_groups=new Vector<String>();
 
-	if(_matriculation==null) _matriculation=new HashMap();
+	if(_matriculation==null) _matriculation=new HashMap<String, info_user>();
 	try{
 		Document documentXML = util_xml.readXML(xml);
 		if(documentXML!=null){
@@ -219,10 +219,10 @@ public void init(String xml) throws bsControllerException{
 }
 
 public void initData(String xml) throws bsControllerException{
-	if(_users==null) _users=new HashMap();
-	if(_matr_groups==null) _matr_groups=new Vector();
+	if(_users==null) _users=new HashMap<String, info_user>();
+	if(_matr_groups==null) _matr_groups=new Vector<String>();
 
-	if(_matriculation==null) _matriculation=new HashMap();
+	if(_matriculation==null) _matriculation=new HashMap<String, info_user>();
 	try{
 		Document documentXML = util_xml.readXMLData(xml);
 		if(documentXML!=null){
@@ -284,10 +284,10 @@ public boolean initDB(app_init ainit) throws bsControllerException{
 	
 	if(xmlData==null) return false;
 
-	if(_users==null) _users=new HashMap();
-	if(_matr_groups==null) _matr_groups=new Vector();
+	if(_users==null) _users=new HashMap<String, info_user>();
+	if(_matr_groups==null) _matr_groups=new Vector<String>();
 
-	if(_matriculation==null) _matriculation=new HashMap();
+	if(_matriculation==null) _matriculation=new HashMap<String, info_user>();
 	try{
 		Document documentXML = util_xml.readXMLData(xmlData);
 		if(documentXML!=null){
@@ -392,18 +392,19 @@ private void readFormElements(Node node) throws Exception{
 
 		}
 	}
-	v_info_users = (new Vector(_users.values()));
-	v_info_users = new util_sort().sort(v_info_users,"name");
+	v_info_users = new Vector<info_user>(_users.values());
+	v_info_users = Util_sort.sort(v_info_users,"name");
 
-	v_info_groups = (new Vector(_groups.values()));
-	v_info_groups = new util_sort().sort(v_info_groups,"name");
+	v_info_groups = new Vector<info_group>(_groups.values());
+	v_info_groups = Util_sort.sort(v_info_groups,"name");
 
-	v_info_targets = (new Vector(_targets.values()));
-	v_info_targets = new util_sort().sort(v_info_targets,"name");
+	v_info_targets = new Vector<info_target>(_targets.values());
+	v_info_targets = Util_sort.sort(v_info_targets,"name");
 
 
 }
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public void reInit(i_externalloader _externalloader){
 	if(_externalloader==null) return;
 	boolean loaded = false;
@@ -428,14 +429,14 @@ public void reInit(i_externalloader _externalloader){
 		loaded=true;
 	}
 
-	v_info_users = (new Vector(_users.values()));
-	v_info_users = new util_sort().sort(v_info_users,"name");
+	v_info_users = new Vector<info_user>(_users.values());
+	v_info_users = Util_sort.sort(v_info_users,"name");
 
-	v_info_groups = (new Vector(_groups.values()));
-	v_info_groups = new util_sort().sort(v_info_groups,"name");
+	v_info_groups = new Vector<info_group>(_groups.values());
+	v_info_groups = Util_sort.sort(v_info_groups,"name");
 
-	v_info_targets = (new Vector(_targets.values()));
-	v_info_targets = new util_sort().sort(v_info_targets,"name");
+	v_info_targets = new Vector<info_target>(_targets.values());
+	v_info_targets = Util_sort.sort(v_info_targets,"name");
 
 	if(loaded)
 		loadedFrom+=" "+_externalloader.getClass().getName();
@@ -444,16 +445,16 @@ public void reInit(i_externalloader _externalloader){
 }
 
 public void refreshV_info_users(){
-	v_info_users = (new Vector(_users.values()));
-	v_info_users = new util_sort().sort(v_info_users,"name");
+	v_info_users = new Vector<info_user>(_users.values());
+	v_info_users = Util_sort.sort(v_info_users,"name");
 }
 public void refreshV_info_groups(){
-	v_info_groups = (new Vector(_groups.values()));
-	v_info_groups = new util_sort().sort(v_info_groups,"name");
+	v_info_groups = new Vector<info_group>(_groups.values());
+	v_info_groups = Util_sort.sort(v_info_groups,"name");
 }
 public void refreshV_info_targets(){
-	v_info_targets = (new Vector(_targets.values()));
-	v_info_targets = new util_sort().sort(v_info_targets,"name");
+	v_info_targets = new Vector<info_target>(_targets.values());
+	v_info_targets = Util_sort.sort(v_info_targets,"name");
 }
 
 	private void addGroup(info_user iUser){
@@ -554,19 +555,19 @@ public void refreshV_info_targets(){
 		readOk_ExtLoader = b;
 	}
 
-	public HashMap get_users() {
+	public HashMap<String,info_user> get_users() {
 		return _users;
 	}
 
-	public void set_users1(HashMap map) {
+	public void set_users1(HashMap<String,info_user> map) {
 		_users = map;
 	}
 
-	public HashMap get_matriculation() {
+	public HashMap<String,info_user> get_matriculation() {
 		return _matriculation;
 	}
 
-	public void set_matriculation(HashMap map) {
+	public void set_matriculation(HashMap<String,info_user> map) {
 		_matriculation = map;
 	}
 	public info_user get_user(Object first, Object second) {
@@ -690,55 +691,55 @@ public void refreshV_info_targets(){
 		this.xmlEncoding = xmlEncoding;
 	}
 
-	public Vector getV_info_users() {
+	public Vector<info_user> getV_info_users() {
 		return v_info_users;
 	}
 
-	public void setV_info_users(Vector vInfoUsers) {
+	public void setV_info_users(Vector<info_user> vInfoUsers) {
 		v_info_users = vInfoUsers;
 	}
 
-	public Vector get_matr_groups() {
+	public Vector<String> get_matr_groups() {
 		return _matr_groups;
 	}
 
-	public void set_matr_groups(Vector matrGroups) {
+	public void set_matr_groups(Vector<String> matrGroups) {
 		_matr_groups = matrGroups;
 	}
 
-	public HashMap get_groups() {
+	public HashMap<String,info_group> get_groups() {
 		return _groups;
 	}
 
-	public void set_groups(HashMap groups) {
+	public void set_groups(HashMap<String,info_group> groups) {
 		_groups = groups;
 	}
 
-	public void set_users(HashMap users) {
+	public void set_users(HashMap<String,info_user> users) {
 		_users = users;
 	}
 
-	public Vector getV_info_groups() {
+	public Vector<info_group> getV_info_groups() {
 		return v_info_groups;
 	}
 
-	public void setV_info_groups(Vector vInfoGroups) {
+	public void setV_info_groups(Vector<info_group> vInfoGroups) {
 		v_info_groups = vInfoGroups;
 	}
 
-	public HashMap get_targets() {
+	public HashMap<String,info_target> get_targets() {
 		return _targets;
 	}
 
-	public void set_targets(HashMap targets) {
+	public void set_targets(HashMap<String,info_target> targets) {
 		_targets = targets;
 	}
 
-	public Vector getV_info_targets() {
+	public Vector<info_target> getV_info_targets() {
 		return v_info_targets;
 	}
 
-	public void setV_info_targets(Vector vInfoTargets) {
+	public void setV_info_targets(Vector<info_target> vInfoTargets) {
 		v_info_targets = vInfoTargets;
 	}
 

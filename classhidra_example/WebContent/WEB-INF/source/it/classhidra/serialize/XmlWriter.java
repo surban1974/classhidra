@@ -39,14 +39,14 @@ public class XmlWriter {
 		return object2xml(obj, name, null);
 	}	
 	
-	public static String object2xml(Object obj, String name, List filters){
+	public static String object2xml(Object obj, String name, List<String> filters){
 		return object2xml(obj, name, filters, null, null);
 	}
-	public static String object2xml(Object obj, String name, List filters, Map namespaces){
+	public static String object2xml(Object obj, String name, List<String> filters, Map<String,String> namespaces){
 		return object2xml(obj, name, filters, namespaces, null);
 	}
-	public static String object2xml(Object obj, String name, List filters, Map namespaces, WriteValidator validator){
-		Map avoidCyclicPointers = new HashMap();
+	public static String object2xml(Object obj, String name, List<String> filters, Map<String,String> namespaces, WriteValidator validator){
+		Map<Integer,String> avoidCyclicPointers = new HashMap<Integer, String>();
 
 		String result="";
 		if(obj==null)
@@ -60,7 +60,7 @@ public class XmlWriter {
 				map_name = "items";
 			else if(name==null)
 				map_name = "item";
-			Stack objList = new Stack();
+			Stack<Object> objList = new Stack<Object>();
 			
 			result+=generateXmlItem(
 					obj,
@@ -82,14 +82,15 @@ public class XmlWriter {
 		return result;
 	}
 	
-	public static String object2xml(Object obj, String name, List filters, boolean children, int depth){
+	public static String object2xml(Object obj, String name, List<String> filters, boolean children, int depth){
 		return object2xml(obj, name, filters, children, depth, null, null);
 	}
-	public static String object2xml(Object obj, String name, List filters, boolean children, int depth, Map namespaces){
+	public static String object2xml(Object obj, String name, List<String> filters, boolean children, int depth, Map<String,String> namespaces){
 		return object2xml(obj, name, filters, children, depth, namespaces, null);
 	}	
-	public static String object2xml(Object obj, String name, List filters, boolean children, int depth, Map namespaces, WriteValidator validator){
-		Map avoidCyclicPointers = new HashMap();
+	public static String object2xml(Object obj, String name, List<String> filters, boolean children, int depth, Map<String,String> namespaces,
+			WriteValidator validator){
+		Map<Integer,String> avoidCyclicPointers = new HashMap<Integer, String>();
 
 		String result="";
 		if(obj==null)
@@ -104,7 +105,7 @@ public class XmlWriter {
 			else if(name==null)
 				map_name = "item";
 
-			Stack objList = new Stack();
+			Stack<Object> objList = new Stack<Object>();
 			result+=generateXmlItem(
 					obj,
 					map_name,
@@ -117,7 +118,7 @@ public class XmlWriter {
 					(depth>annotation.depth())?depth:annotation.depth()
 					:
 					depth,
-					util_xml.convertFilters(filters),
+					util_xml.convertFilters(filters), 
 					namespaces,
 					true,
 					validator,
@@ -131,17 +132,24 @@ public class XmlWriter {
 
 
 	
-	private static String generateXmlItem(Object sub_obj, String name, int level, Map avoidCyclicPointer, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, Map namespaces, boolean fixedName, WriteValidator validator, Stack objList){
+	private static String generateXmlItem(Object sub_obj, String name, int level, Map<Integer,String> avoidCyclicPointer,
+			Serialized annotation, boolean serializeChildren, int serializeDepth, Map<String,?> treeFilters,
+			Map<String,String> namespaces, boolean fixedName, WriteValidator validator, Stack<Object> objList){
 		String result="";
 		boolean goAhead = true;
-		Map subTreeFilters = null;
+		Map<String,?> subTreeFilters = null;
 		if(treeFilters!=null){
 			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
 				goAhead=false;
 			else if(name!=null){
-				subTreeFilters = (Map)treeFilters.get(name);
-				if(subTreeFilters==null)
-					subTreeFilters = (Map)treeFilters.get(util_reflect.revAdaptMethodName(name));
+				@SuppressWarnings("unchecked")
+				Map<String,?> map = (Map<String,?>)treeFilters.get(name);
+				subTreeFilters = map;
+				if(subTreeFilters==null){
+					@SuppressWarnings("unchecked")
+					Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(name));
+					subTreeFilters = map2;
+				}
 			}
 		}
 		if(goAhead && validator!=null)
@@ -150,7 +158,8 @@ public class XmlWriter {
 			if(objList !=null && sub_obj!=null)
 				objList.push(sub_obj);
 			result+=generateXmlItemTag_Start(sub_obj, name, level, annotation, namespaces, fixedName);
-			result+=generateXmlItemTag_Content(sub_obj, name, level,avoidCyclicPointer,annotation,serializeChildren,serializeDepth,subTreeFilters, validator, objList);
+			result+=generateXmlItemTag_Content(sub_obj, name, level,avoidCyclicPointer,annotation,serializeChildren,serializeDepth,
+					subTreeFilters, validator, objList);
 			result+=generateXmlItemTag_Finish(sub_obj, name, level, annotation, fixedName);
 			if(objList !=null && sub_obj!=null)
 				objList.remove(sub_obj);
@@ -158,7 +167,8 @@ public class XmlWriter {
 		return result;
 	}
 
-	private static String generateXmlItemTag_Start(Object sub_obj, String name, int level, Serialized annotation, Map namespaces, boolean fixedName){
+	private static String generateXmlItemTag_Start(Object sub_obj, String name, int level, Serialized annotation, Map<String,String> namespaces,
+			boolean fixedName){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String map_name = name;
 		if(name!=null && !fixedName)
@@ -178,9 +188,9 @@ public class XmlWriter {
 		
 		if(namespaces!=null && namespaces.size()>0) {
 
-			Iterator it = namespaces.entrySet().iterator();
+			Iterator<Map.Entry<String,String>> it = namespaces.entrySet().iterator();
 			while (it.hasNext()) {
-			    Map.Entry pair = (Map.Entry)it.next();
+			    Map.Entry<String,String> pair = it.next();
 			    result+=" "+pair.getKey()+"=\""+pair.getValue()+"\"";
 			}
 		}
@@ -208,15 +218,16 @@ public class XmlWriter {
 		return result;
 	}
 
-	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator, Stack objList){
+	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, Map<Integer,String> avoidCyclicPointers,
+			Serialized annotation, boolean serializeChildren, int serializeDepth, Map<String,?> treeFilters, WriteValidator validator,
+			Stack<Object> objList){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String result="";
-		if(sub_obj==null) return result;
 
 		if(sub_obj.getClass().isArray()){
-			Class componentType = sub_obj.getClass().getComponentType();
+			Class<?> componentType = sub_obj.getClass().getComponentType();
 			if(componentType.isPrimitive()){
-				List list = new ArrayList();
+				List<Object> list = new ArrayList<Object>();
 				if (boolean.class.isAssignableFrom(componentType)){ 
 					for(int i=0;i<((boolean[])sub_obj).length;i++)
 						list.add(((boolean[])sub_obj)[i]); 
@@ -277,7 +288,7 @@ public class XmlWriter {
 			    }
 			    return result;
 			}else{
-				Iterator it = Arrays.asList((Object[])sub_obj).iterator(); 
+				Iterator<Object> it = Arrays.asList((Object[])sub_obj).iterator(); 
 				String result_tmp="";
 			    while (it.hasNext()) {
 					Object sub_obj2=it.next();
@@ -317,8 +328,9 @@ public class XmlWriter {
 			
 		}				
 		
-		if(sub_obj instanceof List){
-			List list_sub_obj = (List)sub_obj;
+		if(sub_obj instanceof List<?>){
+			@SuppressWarnings("unchecked")
+			List<Object> list_sub_obj = (List<Object>)sub_obj;
 			for(int i=0;i<list_sub_obj.size();i++){				
 				Object sub_obj2=list_sub_obj.get(i);
 				if(sub_obj2!=null){				
@@ -349,14 +361,15 @@ public class XmlWriter {
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);				
+					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,
+							(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);				
 				
 			}
 			return result;
 		}
 
 		if(sub_obj instanceof Set){
-			Iterator it = Arrays.asList(((Set)sub_obj).toArray()).iterator(); 
+			Iterator<Object> it = Arrays.asList(((Set<?>)sub_obj).toArray()).iterator(); 
 
 			String result_tmp="";
 		    while (it.hasNext()) {
@@ -389,7 +402,8 @@ public class XmlWriter {
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);				
+					result+=generateXmlItem(sub_obj2, null,level+1,avoidCyclicPointers,annotation,serializeChildren,
+							(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);				
 							        
 		    }
 		    return result+result_tmp;
@@ -397,9 +411,9 @@ public class XmlWriter {
 		
 		if(sub_obj instanceof Map){
 			
-			Iterator it = ((Map)sub_obj).entrySet().iterator();
+			Iterator<?> it = ((Map<?,?>)sub_obj).entrySet().iterator();
 		    while (it.hasNext()) {
-		        Map.Entry pair = (Map.Entry)it.next();
+		        Map.Entry<?,?> pair = (Map.Entry<?,?>)it.next();
 		        
 				Object sub_obj2=pair.getValue();
 				if(sub_obj2!=null){	
@@ -430,7 +444,8 @@ public class XmlWriter {
 						}
 					}
 				}else
-					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,avoidCyclicPointers,annotation,serializeChildren,(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);
+					result+=generateXmlItem(sub_obj2, pair.getKey().toString(),level+1,avoidCyclicPointers,annotation,serializeChildren,
+							(serializeDepth-1>=0)?serializeDepth:0,treeFilters, null, false, validator, objList);
 		        
         
 		    }
@@ -450,7 +465,8 @@ public class XmlWriter {
 				check=true;
 				if(annotation!=null && annotation.output()!=null){
 					try{					
-						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
+						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),
+								annotation.output().country(), sub_obj);
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
@@ -581,11 +597,11 @@ public class XmlWriter {
 
 		}
 
-		Map name_tmp = new HashMap();
+		Map<String,String> name_tmp = new HashMap<String, String>();
 			try{
 				String[] prefixes = new String[]{"get","is"};
 				StringBuffer stringBuffer = new StringBuffer();
-				SortedMap ordered = new TreeMap();
+				SortedMap<Integer,String> ordered = new TreeMap<Integer, String>();
 				
 				for(int p=0;p<prefixes.length;p++){
 					Method[] methods = util_reflect.getMethods(sub_obj,prefixes[p]);
@@ -742,7 +758,7 @@ public class XmlWriter {
 				}	
 				
 				if(ordered.size()>0) {
-					Iterator it = ordered.values().iterator();
+					Iterator<String> it = ordered.values().iterator();
 					while (it.hasNext()) 
 						result+=it.next();
 				}

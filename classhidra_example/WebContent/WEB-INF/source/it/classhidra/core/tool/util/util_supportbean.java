@@ -58,9 +58,9 @@ import it.classhidra.serialize.XmlReader2Map;
 public class util_supportbean  {
 
 
-	public static HashMap request2map(HttpServletRequest request){
-		HashMap result = new HashMap();
-		Enumeration en = request.getParameterNames();
+	public static HashMap<String,Object> request2map(HttpServletRequest request){
+		HashMap<String,Object> result = new HashMap<String,Object>();
+		Enumeration<?> en = request.getParameterNames();
 		while(en.hasMoreElements()){
 			String key = (String)en.nextElement();
 			String value = request.getParameter(key);
@@ -72,14 +72,14 @@ public class util_supportbean  {
 			Object value = request.getAttribute(key);
 			result.put(key, value);
 		}	
-		HashMap parameters = util_multipart.popolateHashMap(request);
+		HashMap<String,Object> parameters = util_multipart.popolateHashMap(request);
 		result.putAll(parameters);
 		
 		return result;
 	}
 	
 	
-	public static void init(i_action action_instance, HashMap request2map, HttpServletRequest request) throws bsControllerException{
+	public static void init(i_action action_instance, HashMap<String,Object> request2map, HttpServletRequest request) throws bsControllerException{
 //if(action_instance!=null)
 //	action_instance.setCurrent_redirect(null);
 		if(request==null) return;
@@ -149,6 +149,7 @@ public class util_supportbean  {
 	
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void initNormal(i_bean bean,HttpServletRequest request) throws bsControllerException{
 		bean.setXmloutput(false);
 		bean.setXmloutput_encoding("");
@@ -169,7 +170,7 @@ public class util_supportbean  {
 		
 		
 
-		Enumeration en = request.getParameterNames();
+		Enumeration<?> en = request.getParameterNames();
 		while(en.hasMoreElements()){
 			String key = (String)en.nextElement();
 			String value = request.getParameter(key);
@@ -230,7 +231,7 @@ public class util_supportbean  {
 					}catch(Exception ex){
 						bean.getInitErrors().put(key,"Init Normal: ["+key+"] not found in the bean ["+bean.getClass().getName()+"]. Will be added into FLY.");
 						if(bean.getParametersFly()==null)
-							bean.setParametersFly(new HashMap());
+							bean.setParametersFly(new HashMap<String, Object>());
 						if(key!=null && key.length()>0 && key.indexOf(0)!='$')
 							bean.getParametersFly().put(key, value);
 					}
@@ -251,7 +252,7 @@ public class util_supportbean  {
 							if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
 
 							if(writeValue==null && current_requested.getClass().isArray()){
-								Class componentType = current_requested.getClass().getComponentType();
+								Class<?> componentType = current_requested.getClass().getComponentType();
 								if(!componentType.isPrimitive())
 									writeValue = ((Object[])current_requested)[Integer.valueOf(current_field_name).intValue()];
 								else{
@@ -324,24 +325,26 @@ public class util_supportbean  {
 			}
 		}
 		
-		bean.initFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);
+		bean.initFromMap((HashMap<String,Object>)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);
 		
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public static void initMultiPart(i_bean bean, HttpServletRequest request) throws bsControllerException{
-		HashMap parameters = util_multipart.popolateHashMap(request);
+		HashMap<String,Object> parameters = util_multipart.popolateHashMap(request);
 		bean.initPartFromMap(parameters);
-		bean.initFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);
+		bean.initFromMap((HashMap<String,Object>)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);
 	}
 	
 	public static boolean initJsonPart(i_bean bean, HttpServletRequest request) throws bsControllerException{
 		return initJsonPart(bean, request, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static boolean initJsonPart(i_bean bean, HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
 		boolean isJson=false;
-		HashMap parameters = new HashMap();
+		HashMap<String,Object> parameters = new HashMap<String,Object>();
 
 		
 		DataInputStream in = null;
@@ -361,12 +364,12 @@ public class util_supportbean  {
 			String json = new String(dataBytes,0,dataBytes.length).trim();
 
 			if(mapper!=null){
-				parameters = (HashMap)mapper.mapping(bean, json, parameters);
+				parameters = (HashMap<String, Object>)mapper.mapping(bean, json, parameters);
 				if(parameters!=null)
 					isJson=true;
 			}else{
 				try{
-					parameters = (HashMap)new JsonReader2Map().mapping(bean, json, parameters);
+					parameters = (HashMap<String, Object>)new JsonReader2Map().mapping(bean, json, parameters);
 					if(parameters!=null)
 						isJson=true;
 				}catch(Exception e){
@@ -417,7 +420,7 @@ public class util_supportbean  {
 				request.setAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT, dataBytes);
 		}
 
-		bean.initFromMap((HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);		
+		bean.initFromMap((HashMap<String,Object>)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS),true);		
 
 		return isJson;
 	}
@@ -426,9 +429,10 @@ public class util_supportbean  {
 		return initJsonPart(bean, request, null);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static boolean initXmlPart(i_bean bean, HttpServletRequest request, XmlMapper mapper) throws bsControllerException{
 		boolean isXml=false;
-		HashMap parameters = new HashMap();
+		HashMap<String,Object> parameters = new HashMap<String,Object>();
 		DataInputStream in = null;
 		byte[] dataBytes = null;
 		try{
@@ -445,10 +449,10 @@ public class util_supportbean  {
 
 			String xml = new String(dataBytes,0,dataBytes.length).trim();
 			if(mapper!=null){
-				parameters = (HashMap)mapper.mapping(bean, xml, parameters);
+				parameters = (HashMap<String,Object>)mapper.mapping(bean, xml, parameters);
 				isXml=true;
 			}else{
-				parameters = (HashMap)new XmlReader2Map().mapping(bean, xml, parameters);
+				parameters = (HashMap<String,Object>)new XmlReader2Map().mapping(bean, xml, parameters);
 				if(parameters!=null)
 					isXml=true;
 			}
@@ -506,33 +510,35 @@ public class util_supportbean  {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public static void initMultiPart(Object bean, String prefix, HttpServletRequest request) throws bsControllerException{
-		HashMap parameters = util_multipart.popolateHashMap(request);
+		HashMap<String,Object> parameters = util_multipart.popolateHashMap(request);
 		initPartFromMap(bean,prefix,parameters);
-		initFromMap(bean, prefix, (HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));
+		initFromMap(bean, prefix, (HashMap<String,Object>)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));
 	}
 	
 	
-	public static void initPartFromMap(Object bean, String prefix, HashMap parameters) throws bsControllerException{
+	public static void initPartFromMap(Object bean, String prefix, HashMap<String,Object> parameters) throws bsControllerException{
 		if(parameters==null) 
-			parameters=new HashMap();
+			parameters=new HashMap<String,Object>();
 		initFromMap(bean,prefix,parameters);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static boolean initJsonPart(Object bean, String prefix, HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
 		boolean isJson=false;
-		HashMap parameters = new HashMap();
+		HashMap<String,Object> parameters = new HashMap<String,Object>();
 		try{
 			byte[] dataBytes = (byte[])request.getAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT);
 			if(dataBytes!=null){
 				String json = new String(dataBytes,0,dataBytes.length).trim();
 				if(mapper!=null){
-					parameters = (HashMap)mapper.mapping(null, json, parameters);
+					parameters = (HashMap<String,Object>)mapper.mapping(null, json, parameters);
 					if(parameters!=null)
 						isJson=true;
 				}else{
 					try{
-						parameters = (HashMap)new JsonReader2Map().mapping(null, json, parameters);
+						parameters = (HashMap<String,Object>)new JsonReader2Map().mapping(null, json, parameters);
 						if(parameters!=null)
 							isJson=true;
 					}catch(Exception e){
@@ -574,24 +580,25 @@ public class util_supportbean  {
 		if(isJson)
 			initFromMap(bean,prefix,parameters);
 
-		initFromMap(bean,prefix,(HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
+		initFromMap(bean,prefix,(HashMap<String,Object>)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
 
 		return isJson;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static boolean initXmlPart(Object bean, String prefix, HttpServletRequest request, XmlMapper mapper) throws bsControllerException{
 		boolean isXml=false;
-		HashMap parameters = new HashMap();
+		HashMap<String,Object> parameters = new HashMap<String,Object>();
 		try{
 
 			byte[] dataBytes = (byte[])request.getAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT);
 			if(dataBytes!=null){
 				String xml = new String(dataBytes,0,dataBytes.length).trim();
 				if(mapper!=null){
-					parameters = (HashMap)mapper.mapping(null, xml, parameters);
+					parameters = (HashMap<String,Object>)mapper.mapping(null, xml, parameters);
 					isXml=true;
 				}else{
-					parameters = (HashMap)new XmlReader2Map().mapping(null, xml, parameters);
+					parameters = (HashMap<String,Object>)new XmlReader2Map().mapping(null, xml, parameters);
 					if(parameters!=null)
 						isXml=true;
 				}
@@ -612,6 +619,7 @@ public class util_supportbean  {
 
 	
 	
+	@SuppressWarnings("rawtypes")
 	public static void initNormal(Object bean, String prefix, HttpServletRequest request) throws bsControllerException{
 
 		boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
@@ -623,7 +631,7 @@ public class util_supportbean  {
 		
 		
 
-		Enumeration en = request.getParameterNames();
+		Enumeration<?> en = request.getParameterNames();
 		while(en.hasMoreElements()){
 			String key = (String)en.nextElement();
 			if(key.indexOf(prefix+".")==0){
@@ -685,7 +693,7 @@ public class util_supportbean  {
 								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 								if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
 								if(writeValue==null && current_requested.getClass().isArray()){
-									Class componentType = current_requested.getClass().getComponentType();
+									Class<?> componentType = current_requested.getClass().getComponentType();
 									if(!componentType.isPrimitive())
 										writeValue = ((Object[])current_requested)[Integer.valueOf(current_field_name).intValue()];
 									else{
@@ -761,7 +769,8 @@ public class util_supportbean  {
 	
 	
 	
-	public static void initFromMap(Object bean, String prefix, HashMap parameters) throws bsControllerException{
+	@SuppressWarnings("rawtypes")
+	public static void initFromMap(Object bean, String prefix, HashMap<String,Object> parameters) throws bsControllerException{
 
 		if(parameters==null)
 			return;
@@ -889,7 +898,7 @@ public class util_supportbean  {
 								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 								if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
 								if(writeValue==null && current_requested.getClass().isArray()){
-									Class componentType = current_requested.getClass().getComponentType();
+									Class<?> componentType = current_requested.getClass().getComponentType();
 									if(!componentType.isPrimitive())
 										writeValue = ((Object[])current_requested)[Integer.valueOf(current_field_name).intValue()];
 									else{
@@ -999,7 +1008,7 @@ public class util_supportbean  {
 
 //******************************************************************
 	
-		public static Object assignPrimitiveDefault(Class current){
+		public static Object assignPrimitiveDefault(Class<?> current){
 			if (boolean.class.isAssignableFrom(current))
 				return false; 
 			else if (byte.class.isAssignableFrom(current))
@@ -1019,11 +1028,11 @@ public class util_supportbean  {
 			return null;
 		}
 	
-		public static Object init(Class ret_class, String name, HttpServletRequest request) throws bsControllerException{
+		public static Object init(Class<?> ret_class, String name, HttpServletRequest request) throws bsControllerException{
 			return init(ret_class, name, request, null);
 		}
 		
-		public static Object init(Class ret_class, String name, HttpServletRequest request, i_bean instance) throws bsControllerException{
+		public static Object init(Class<?> ret_class, String name, HttpServletRequest request, i_bean instance) throws bsControllerException{
 			if(request==null) return 
 				null;
 
@@ -1049,37 +1058,39 @@ public class util_supportbean  {
 		}
 		
 		
-		public static Object initMultiPart(Class ret_class, String name, HttpServletRequest request) throws bsControllerException{
-			HashMap parameters = util_multipart.popolateHashMap(request);
+		@SuppressWarnings("unchecked")
+		public static Object initMultiPart(Class<?> ret_class, String name, HttpServletRequest request) throws bsControllerException{
+			HashMap<String,Object> parameters = util_multipart.popolateHashMap(request);
 			Object result = initPartFromMap(ret_class,name,parameters);
 			if(result==null)
-				return initFromMap(ret_class, name, (HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));
+				return initFromMap(ret_class, name, (HashMap<String,Object>)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));
 			else return result;
 		}
 		
 		
-		public static Object initPartFromMap(Class ret_class, String name, HashMap parameters) throws bsControllerException{
+		public static Object initPartFromMap(Class<?> ret_class, String name, HashMap<String,Object> parameters) throws bsControllerException{
 			if(parameters==null) 
-				parameters=new HashMap();
+				parameters=new HashMap<String,Object>();
 			return 
 					initFromMap(ret_class,name,parameters);
 		}
 		
-		public static Object initJsonPart(Class ret_class, String name, HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
+		@SuppressWarnings("unchecked")
+		public static Object initJsonPart(Class<?> ret_class, String name, HttpServletRequest request, JsonMapper mapper) throws bsControllerException{
 			Object result = null;
 			boolean isJson=false;
-			HashMap parameters = new HashMap();
+			HashMap<String,Object> parameters = new HashMap<String,Object>();
 			try{
 				byte[] dataBytes = (byte[])request.getAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT);
 				if(dataBytes!=null){
 					String json = new String(dataBytes,0,dataBytes.length).trim();
 					if(mapper!=null){
-						parameters = (HashMap)mapper.mapping(null, json, parameters);
+						parameters = (HashMap<String,Object>)mapper.mapping(null, json, parameters);
 						if(parameters!=null)
 							isJson=true;
 					}else{
 						try{
-							parameters = (HashMap)new JsonReader2Map().mapping(null, json, parameters);
+							parameters = (HashMap<String,Object>)new JsonReader2Map().mapping(null, json, parameters);
 							if(parameters!=null)
 								isJson=true;
 						}catch(Exception e){
@@ -1122,25 +1133,26 @@ public class util_supportbean  {
 				result = initFromMap(ret_class,name,parameters);
 
 			if(result==null)
-				result = initFromMap(ret_class,name,(HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
+				result = initFromMap(ret_class,name,(HashMap<String,Object>)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
 
 			return result;
 		}
 
-		public static Object initXmlPart(Class ret_class, String name, HttpServletRequest request, XmlMapper mapper) throws bsControllerException{
+		@SuppressWarnings("unchecked")
+		public static Object initXmlPart(Class<?> ret_class, String name, HttpServletRequest request, XmlMapper mapper) throws bsControllerException{
 			Object result = null;
 			boolean isXml=false;
-			HashMap parameters = new HashMap();
+			HashMap<String,Object> parameters = new HashMap<String,Object>();
 			try{
 
 				byte[] dataBytes = (byte[])request.getAttribute(bsController.CONST_RECOVERED_REQUEST_CONTENT);
 				if(dataBytes!=null){
 					String xml = new String(dataBytes,0,dataBytes.length).trim();
 					if(mapper!=null){
-						parameters = (HashMap)mapper.mapping(null, xml, parameters);
+						parameters = (HashMap<String,Object>)mapper.mapping(null, xml, parameters);
 						isXml=true;
 					}else{
-						parameters = (HashMap)new XmlReader2Map().mapping(null, xml, parameters);
+						parameters = (HashMap<String,Object>)new XmlReader2Map().mapping(null, xml, parameters);
 						if(parameters!=null)
 							isXml=true;
 					}
@@ -1155,14 +1167,14 @@ public class util_supportbean  {
 				result = initFromMap(ret_class,name,parameters);
 
 			if(result==null)
-				result = initFromMap(ret_class,name,(HashMap)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
+				result = initFromMap(ret_class,name,(HashMap<String,Object>)request.getAttribute(bsController.CONST_REST_URLMAPPEDPARAMETERS));		
 
 			return result;
 		}
 
 		
 		
-		public static Object initNormal(Class ret_class, String name, HttpServletRequest request) throws bsControllerException{
+		public static Object initNormal(Class<?> ret_class, String name, HttpServletRequest request) throws bsControllerException{
 
 			boolean inputBase64 = (request.getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 					(
@@ -1173,7 +1185,7 @@ public class util_supportbean  {
 			
 			
 
-			Enumeration en = request.getParameterNames();
+			Enumeration<?> en = request.getParameterNames();
 			while(en.hasMoreElements()){
 				String key = (String)en.nextElement();
 				if(name!=null && key.equals(name)){
@@ -1216,7 +1228,7 @@ public class util_supportbean  {
 		
 		
 		
-		public static Object initFromMap(Class ret_class, String name, HashMap parameters) throws bsControllerException{
+		public static Object initFromMap(Class<?> ret_class, String name, HashMap<String,Object> parameters) throws bsControllerException{
 
 			if(parameters==null)
 				return null;
@@ -1296,6 +1308,7 @@ public class util_supportbean  {
 	
 //******************************************************************
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void setCampoValuePoint(Object req, String nome, Object value, boolean log) throws Exception{
 		if(req instanceof Map){
 			((Map)req).put(nome, value);
@@ -1360,7 +1373,7 @@ public class util_supportbean  {
 			final String fkey = nome;
 			Field[] alldf = util_reflect.getAllDeclaredFields(
 					requested.getClass(),
-					new Comparable() {
+					new Comparable<Object>() {
 						public int compareTo(Object field) {
 							if(field instanceof Field){
 								Serialized annotation = ((Field)field).getAnnotation(Serialized.class);
@@ -1380,7 +1393,7 @@ public class util_supportbean  {
 			final String fkey = nome;
 			Method[] alldm = util_reflect.getAllDeclaredMethods(
 					requested.getClass(),
-					new Comparable() {
+					new Comparable<Object>() {
 						public int compareTo(Object method) {
 							if(method instanceof Method){
 								Serialized annotation = ((Method)method).getAnnotation(Serialized.class);

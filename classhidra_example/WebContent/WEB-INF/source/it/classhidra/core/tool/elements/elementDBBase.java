@@ -40,8 +40,8 @@ import java.util.HashMap;
 
 public abstract class elementDBBase extends elementBase implements i_elementDBBase, i_elementBase,  java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	protected HashMap fields;
-	protected HashMap hashDatas;
+	protected HashMap<String,Object> fields;
+	protected HashMap<String,Object> hashDatas;
 
 public boolean control(){
 	return false;
@@ -55,8 +55,8 @@ public boolean find(i_elementDBBase el){
 public abstract void reimposta();
 public void reimposta_super(){
 	super.reimposta();
-	fields=new HashMap();
-	hashDatas=new HashMap();
+	fields=new HashMap<String, Object>();
+	hashDatas=new HashMap<String, Object>();
 }
 
 public void reInit(i_bean another_bean){
@@ -245,7 +245,7 @@ public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMet
 public String get_real_column_method(String column_name){
 	String set_column_method="";
 	try{
-		Class[] cl = new Class[0];
+		Class<?>[] cl = new Class[0];
 		if(set_column_method.equals("")){
 			if(this.getClass().getMethod("get"+util_reflect.adaptMethodName(column_name.toLowerCase()),cl)!=null)
 				set_column_method = util_reflect.adaptMethodName(column_name.toLowerCase());
@@ -517,12 +517,7 @@ private static String replace (String target, String from, String to) {
   	buffer.append (targetChars, copyFrom, targetChars.length-copyFrom);
   	return buffer.toString();
 }
-public HashMap getFields() {
-	return fields;
-}
-public void setFields(HashMap fields) {
-	this.fields = fields;
-}
+
 
 public i_elementDBBase load_use_itself() throws Exception{
 	Connection conn=null;
@@ -575,21 +570,26 @@ public i_elementDBBase load_use_sql(String sql) throws Exception{
 	}
 	return this;
  }
-public HashMap sql2HashMap(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd) throws Exception{
-	if(hashDatas==null) hashDatas = new HashMap();
+public HashMap<String,Object> sql2HashMap(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd) throws Exception{
+	if(hashDatas==null) hashDatas = new HashMap<String, Object>();
 	for(int i=1;i<=rsmd.getColumnCount();i++){
 		String column_name=rsmd.getColumnName(i);
 		hashDatas.put(column_name.toUpperCase(), rs.getObject(column_name));
 	}
 	return hashDatas;
 }
-public HashMap getHashDatas() {
+public HashMap<String,Object> getHashDatas() {
 	return hashDatas;
 }
-public void setHashDatas(HashMap hashDatas) {
+public void setHashDatas(HashMap<String,Object> hashDatas) {
 	this.hashDatas = hashDatas;
 }
-
+public HashMap<String, Object> getFields() {
+	return fields;
+}
+public void setFields(HashMap<String, Object> fields) {
+	this.fields = fields;
+}
 
 public String sql_Select(){
 	return "";
@@ -647,5 +647,6 @@ public PreparedStatement sql_Insert(String alias,PreparedStatement pst){
 public PreparedStatement sql_Update(i_elementDBBase element_mod,String alias,PreparedStatement pst){
 	return pst;
 }
+
 
 }

@@ -33,7 +33,7 @@ public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttr
 		
 		Pattern pattern = Pattern.compile("\\{(.*?)\\}");
 		Matcher matcher = pattern.matcher(input);
-		Map tokens = new HashMap();
+		Map<String,String> tokens = new HashMap<String,String>();
 		while(matcher.find()){
 		   String word = matcher.group(1);
 		   tokens.put(word, word);
@@ -51,7 +51,7 @@ public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttr
 				formBean=formBean.asBean();
 		}
 		
-		Iterator it = tokens.keySet().iterator();
+		Iterator<String> it = tokens.keySet().iterator();
 		while(it.hasNext()){
 			String key = (String)it.next();
 			input=util_format.replace(input, "{"+key+"}", checkParameterIfDynamic(key,formBean));

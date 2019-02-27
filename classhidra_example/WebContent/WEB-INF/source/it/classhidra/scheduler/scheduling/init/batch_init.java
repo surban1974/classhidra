@@ -212,7 +212,7 @@ public i_4Batch get4BatchManager(){
 		batchManager = new i_4Batch() {
 			private static final long serialVersionUID = 1L;
 
-			public Object operation(String oper, HashMap form) throws Exception {
+			public Object operation(String oper, HashMap<String,?> form) throws Exception {
 				return null;
 			}
 		};

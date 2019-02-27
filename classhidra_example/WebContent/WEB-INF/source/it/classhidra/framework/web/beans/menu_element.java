@@ -11,6 +11,7 @@ import org.w3c.dom.NodeList;
 
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_menu_element;
+import it.classhidra.core.controller.info_action;
 import it.classhidra.core.controller.info_menu_element;
 import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.elements.i_elementBase;
@@ -21,8 +22,8 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 
 	private static final long serialVersionUID = 7850850667463869485L;
 	private i_menu_element parent;
-	private Vector children;
-	private HashMap children_info;
+	private Vector<i_menu_element> children;
+	private HashMap<String,i_menu_element> children_info;
 	private info_menu_element info_menu;
 	private boolean visible;
 	private boolean next;
@@ -50,8 +51,8 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 	}
 
 	public void reimposta(){
-		children = new Vector();
-		children_info = new HashMap();
+		children = new Vector<i_menu_element>();
+		children_info = new HashMap<String, i_menu_element>();
 		visible = false;
 		next = false;
 		prev = false;
@@ -59,8 +60,8 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 	}
 
 
-	public void authentication_clear(HashMap forbiden){
-		Vector buf=new Vector();
+	public void authentication_clear(HashMap<String,info_action> forbiden){
+		Vector<i_menu_element> buf=new Vector<i_menu_element>();
 		for(int i=0;i<children.size();i++){
 			i_menu_element founded = (i_menu_element)children.get(i);
 			String key = founded.getInfo_menu().getAction();
@@ -104,7 +105,7 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 		info_menu = new info_menu_element();
 		info_menu.init(node);
 		NodeList list = node.getChildNodes();
-		Vector tmp = new Vector();
+		Vector<i_menu_element> tmp = new Vector<i_menu_element>();
 		for(int i=0;i<list.getLength();i++){
 			Node child_node = list.item(i);
 			if(child_node.getNodeType()== Node.ELEMENT_NODE){
@@ -173,7 +174,7 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 
 
 	public void analyse_potential_group(boolean all){
-		Vector tmp = new Vector();
+		Vector<i_menu_element> tmp = new Vector<i_menu_element>();
 		for(int i=0;i<children.size();i++){
 			i_menu_element child_element = (i_menu_element)children.get(i);
 			child_element.setNext(false);
@@ -198,7 +199,7 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 	}
 
 	public void analyse_potential_group_only(){
-		Vector tmp = new Vector();
+		Vector<i_menu_element> tmp = new Vector<i_menu_element>();
 		for(int i=0;i<children.size();i++){
 			i_menu_element child_element = (i_menu_element)children.get(i);
 			if(	(child_element.getInfo_menu().getAction().equals("menuCreator") && child_element.getPotential_elements()==0) ||
@@ -328,12 +329,12 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 
 
 
-	public Vector getChildren() {
+	public Vector<i_menu_element> getChildren() {
 		return children;
 	}
 
 
-	public HashMap getChildren_info() {
+	public HashMap<String,i_menu_element> getChildren_info() {
 		return children_info;
 	}
 
@@ -416,11 +417,11 @@ public class menu_element extends elementBase implements i_elementBase, i_menu_e
 		potential_elements = i;
 	}
 
-	public void setChildren(Vector children) {
+	public void setChildren(Vector<i_menu_element> children) {
 		this.children = children;
 	}
 
-	public void setChildren_info(HashMap children_info) {
+	public void setChildren_info(HashMap<String,i_menu_element> children_info) {
 		this.children_info = children_info;
 	}
 

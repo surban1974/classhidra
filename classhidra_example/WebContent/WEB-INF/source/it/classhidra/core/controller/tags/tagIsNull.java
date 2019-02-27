@@ -82,8 +82,9 @@ public class tagIsNull extends  ClTagSupport implements IExpressionArgument{
 			bean=checkParametersIfDynamic(bean, null);
 		
 		if(bean!=null){
-			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
-			if(pool!=null) formAction = (i_action)pool.get(bean);
+			@SuppressWarnings("unchecked")
+			HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
 		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		

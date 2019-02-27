@@ -16,9 +16,10 @@ import it.classhidra.core.tool.log.stubs.iStub;
 public class XmlReader2Map implements XmlMapper {
 
 
-	public Map mapping(i_bean bean, String xml, Map table) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Map<String,Object> mapping(i_bean bean, String xml, Map<String,Object> table) {
 		if(table==null)
-			table = new HashMap();
+			table = new HashMap<String,Object>();
 		if(xml==null)
 			return table;
 
@@ -26,23 +27,24 @@ public class XmlReader2Map implements XmlMapper {
 			Object obj = createMap(util_xml.readXMLData(xml).getDocumentElement(),true);
 			if(obj instanceof Map){
 				
-				HashMap mapped = (HashMap)obj;
+
+				Map<String,Object> mapped = (HashMap<String, Object>)obj;
 				if(mapped!=null && mapped.size()>0){
 					Map<String, Object> root = null;
 					
 					String modelname = (String)mapped.get("modelname");
 					if(modelname!=null)
-						root = (mapped.get(modelname)!=null && mapped.get(modelname) instanceof Map)?(Map)mapped.get(modelname):null;
+						root = (mapped.get(modelname)!=null && mapped.get(modelname) instanceof Map<?,?>)?(Map)mapped.get(modelname):null;
 					else if(bean!=null && bean.get_infobean()!=null && bean.get_infobean().getName()!=null && !bean.get_infobean().getName().equals(""))
-						root = (mapped.get(bean.get_infobean().getName())!=null && mapped.get(bean.get_infobean().getName()) instanceof Map)
+						root = (mapped.get(bean.get_infobean().getName())!=null && mapped.get(bean.get_infobean().getName()) instanceof Map<?,?>)
 								?
-								(Map)mapped.get(bean.get_infobean().getName())
+								(Map<String, Object>)mapped.get(bean.get_infobean().getName())
 								:
 								null;
 					else if(bean!=null && bean.get_infoaction()!=null && bean.get_infoaction().getName()!=null && !bean.get_infoaction().getName().equals(""))
-						root = (mapped.get(bean.get_infoaction().getName())!=null && mapped.get(bean.get_infoaction().getName()) instanceof Map)
+						root = (mapped.get(bean.get_infoaction().getName())!=null && mapped.get(bean.get_infoaction().getName()) instanceof Map<?,?>)
 								?
-								(Map)mapped.get(bean.get_infoaction().getName())
+								(Map<String, Object>)mapped.get(bean.get_infoaction().getName())
 								:
 								null;
 					
@@ -70,6 +72,7 @@ public class XmlReader2Map implements XmlMapper {
 
 	private static Map<String, Object> recursive(String key, Map<String, Object> original, Map<String, Object> result, String prefix){
 		if(original.get(key) instanceof Map){
+			@SuppressWarnings("unchecked")
 			Map<String, Object> sub = (Map<String, Object>)original.get(key);
 			for(Object elem : sub.keySet())
 				result = recursive((String)elem, sub, result, ((prefix.equals(""))?"":prefix+".")+key);
@@ -80,7 +83,7 @@ public class XmlReader2Map implements XmlMapper {
 	}
 	
 	public static Object createMap(Node node, boolean first) {
-	    Map map = new HashMap();
+	    Map<String,Object> map = new HashMap<String, Object>();
 	    if(first){
 	    	Node currentNode = node;
 	        String name = currentNode.getNodeName();
@@ -95,11 +98,13 @@ public class XmlReader2Map implements XmlMapper {
 	        }
 	        if (map.containsKey(name)) {
 	            Object os = map.get(name);
-	            if (os instanceof List) {
-	                ((List)os).add(value);
+	            if (os instanceof List<?>) {
+	            	@SuppressWarnings("unchecked")
+					List<Object> list = (List<Object>)os;
+	            	list.add(value);
 	            }
 	            else {
-	                List<Object> objs = new ArrayList();
+	                List<Object> objs = new ArrayList<Object>();
 	                objs.add(os);
 	                objs.add(value);
 	                map.put(name, objs);
@@ -122,11 +127,13 @@ public class XmlReader2Map implements XmlMapper {
 		        }
 		        if (map.containsKey(name)) {
 		            Object os = map.get(name);
-		            if (os instanceof List) {
-		                ((List)os).add(value);
+		            if (os instanceof List<?>) {
+		            	@SuppressWarnings("unchecked")
+						List<Object> list = (List<Object>)os;
+		            	list.add(value);
 		            }
 		            else {
-		                List<Object> objs = new ArrayList();
+		                List<Object> objs = new ArrayList<Object>();
 		                objs.add(os);
 		                objs.add(value);
 		                map.put(name, objs);

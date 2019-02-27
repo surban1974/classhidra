@@ -41,7 +41,7 @@ import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 public class info_action extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -6936168913529591521L;
@@ -64,30 +64,30 @@ public class info_action extends info_entity implements i_elementBase{
 	private String listener;
 	private String statistic;
 	private String expose;
-	private List exposed;
-	private List restmapping;
+	private List<String> exposed;
+	private List<info_rest> restmapping;
 	private info_redirect iRedirect;
 	private info_async iAsync;
 
 	private String wac;
-	private HashMap _redirects;
-	private HashMap _transformationoutput;
-	private HashMap _auth_redirects;
-	private HashMap _calls;
-	private HashMap _beans;
+	private HashMap<String,info_redirect> _redirects;
+	private HashMap<String,info_transformation> _transformationoutput;
+	private HashMap<String,info_redirect> _auth_redirects;
+	private HashMap<String,info_call> _calls;
+	private HashMap<String,info_bean> _beans;
 	private info_bean infobean;
 
-	private Vector  v_info_redirects;
-	private Vector  v_info_transformationoutput;
-	private Vector  v_info_calls;
-	private Vector  v_info_beans;
+	private Vector<info_redirect>  v_info_redirects;
+	private Vector<info_transformation>  v_info_transformationoutput;
+	private Vector<info_call>  v_info_calls;
+	private Vector<info_bean>  v_info_beans;
 	
-	private Vector  vm_streams;
+	private Vector<info_stream>  vm_streams;
 	
 	private boolean R_R = true;
-	private Map restParametersMapped;
+	private Map<String,String> restParametersMapped;
 	
-	private HashMap _tlinked;
+	private HashMap<String,info_tlinked> _tlinked;
 	private int checkTLinked = -1; 
 	private String locked = "false"; 
 
@@ -96,11 +96,11 @@ public class info_action extends info_entity implements i_elementBase{
 		reimposta();
 	}
 
-	public void init(Node node, HashMap glob_redirects) throws bsControllerException{
+	public void init(Node node, HashMap<String,info_redirect> glob_redirects) throws bsControllerException{
 		init(node, glob_redirects, null);
 	}
 	
-	public void init(Node node, HashMap glob_redirects, HashMap glob_beans) throws bsControllerException{
+	public void init(Node node, HashMap<String,info_redirect> glob_redirects, HashMap<String,info_bean> glob_beans) throws bsControllerException{
 		if(node==null) return;
 		try{
 			NamedNodeMap nnm = node.getAttributes();
@@ -188,17 +188,21 @@ public class info_action extends info_entity implements i_elementBase{
 			}
 		}
 
-		v_info_transformationoutput.addAll(new Vector(_transformationoutput.values()));
-		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+		v_info_transformationoutput.addAll(new Vector<info_transformation>(_transformationoutput.values()));
+//		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+		v_info_transformationoutput = Util_sort.sort(v_info_transformationoutput,"int_order");
 
-		v_info_redirects.addAll(new Vector(_redirects.values()));
-		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+		v_info_redirects.addAll(new Vector<info_redirect>(_redirects.values()));
+//		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+		v_info_redirects = Util_sort.sort(v_info_redirects,"int_order");
 
-		v_info_calls.addAll(new Vector(_calls.values()));
-		v_info_calls = new util_sort().sort(v_info_calls,"int_order");
+		v_info_calls.addAll(new Vector<info_call>(_calls.values()));
+//		v_info_calls = new util_sort().sort(v_info_calls,"int_order");
+		v_info_calls = Util_sort.sort(v_info_calls,"int_order");
 		
-		v_info_beans.addAll(new Vector(_beans.values()));
-		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+		v_info_beans.addAll(new Vector<info_bean>(_beans.values()));
+//		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+		v_info_beans = Util_sort.sort(v_info_beans,"int_order");
 		
 
 		Object[] keys = _redirects.keySet().toArray();
@@ -208,15 +212,15 @@ public class info_action extends info_entity implements i_elementBase{
 			if(!iRedirect.getAuth_id().equals("")) _auth_redirects.put(iRedirect.getAuth_id(),iRedirect);
 		}
 	}
-	public HashMap get_beans() {
+	public HashMap<String,info_bean> get_beans() {
 		return _beans;
 	}
 
-	public Vector getV_info_beans() {
+	public Vector<info_bean> getV_info_beans() {
 		return v_info_beans;
 	}
 
-	public void setV_info_beans(Vector v_info_beans) {
+	public void setV_info_beans(Vector<info_bean> v_info_beans) {
 		this.v_info_beans = v_info_beans;
 	}
 
@@ -245,22 +249,22 @@ public class info_action extends info_entity implements i_elementBase{
 		listener="";
 		statistic="true";
 		expose="";
-		exposed=new ArrayList();
-		restmapping=new ArrayList();
+		exposed=new ArrayList<String>();
+		restmapping=new ArrayList<info_rest>();
 
 
-		_redirects=new HashMap();
-		_transformationoutput=new HashMap();
-		_auth_redirects=new HashMap();
-		_calls=new HashMap();
-		_beans=new HashMap();
+		_redirects=new HashMap<String, info_redirect>();
+		_transformationoutput=new HashMap<String, info_transformation>();
+		_auth_redirects=new HashMap<String, info_redirect>();
+		_calls=new HashMap<String, info_call>();
+		_beans=new HashMap<String, info_bean>();
 
-		v_info_redirects=new Vector();
-		v_info_transformationoutput=new Vector();
-		v_info_calls=new Vector();
-		v_info_beans=new Vector();
+		v_info_redirects=new Vector<info_redirect>();
+		v_info_transformationoutput=new Vector<info_transformation>();
+		v_info_calls=new Vector<info_call>();
+		v_info_beans=new Vector<info_bean>();
 
-		_tlinked=new HashMap();
+		_tlinked=new HashMap<String, info_tlinked>();
 		checkTLinked=-1;
 		locked = "false";
 	}
@@ -289,7 +293,7 @@ public class info_action extends info_entity implements i_elementBase{
 		if(iRedirect!=null) return iRedirect.getPath();
 		return null;
 	}	
-	public HashMap get_redirects() {
+	public HashMap<String,info_redirect> get_redirects() {
 		return _redirects;
 	}
 	public String getType() {
@@ -367,11 +371,11 @@ public class info_action extends info_entity implements i_elementBase{
 		help = string;
 	}
 
-	public HashMap get_auth_redirects() {
+	public HashMap<String,info_redirect> get_auth_redirects() {
 		return _auth_redirects;
 	}
 
-	public HashMap get_transformationoutput() {
+	public HashMap<String,info_transformation> get_transformationoutput() {
 		return _transformationoutput;
 	}
 
@@ -415,7 +419,7 @@ public class info_action extends info_entity implements i_elementBase{
 		boolean isEntity=false;
 		
 		if(_beans!=null && _beans.size()>0){
-			for(Object obj : new util_sort().sort(new Vector(_beans.values()),"int_order")){
+			for(Object obj : Util_sort.sort(new Vector<info_bean>(_beans.values()),"int_order")){
 				info_bean iBean = (info_bean)obj;
 				if(iBean!=null){
 					result+=iBean.toXml("      ");
@@ -424,7 +428,7 @@ public class info_action extends info_entity implements i_elementBase{
 			}
 		}
 		if(_redirects!=null && _redirects.size()>0){
-			for(Object obj : new util_sort().sort(new Vector(_redirects.values()),"int_order")){
+			for(Object obj : Util_sort.sort(new Vector<info_redirect>(_redirects.values()),"int_order")){
 				info_redirect iRedirect = (info_redirect)obj;
 				if(iRedirect!=null && iRedirect.getSystem().equals("false")){
 					result+=iRedirect.toXml("      ");
@@ -439,7 +443,7 @@ public class info_action extends info_entity implements i_elementBase{
 			result+=iAsync.toXml("      ");
 		
 		if(_transformationoutput!=null && _transformationoutput.size()>0){
-			for(Object obj : new util_sort().sort(new Vector(_transformationoutput.values()),"int_order")){
+			for(Object obj : Util_sort.sort(new Vector<info_transformation>(_transformationoutput.values()),"int_order")){
 				info_transformation iTransformation = (info_transformation)obj;
 				if(iTransformation!=null){
 					result+=iTransformation.toXml("      ");
@@ -448,7 +452,7 @@ public class info_action extends info_entity implements i_elementBase{
 			}
 		}		
 		if(_calls!=null && _calls.size()>0){
-			for(Object obj : new util_sort().sort(new Vector(_calls.values()),"int_order")){
+			for(Object obj : Util_sort.sort(new Vector<info_call>(_calls.values()),"int_order")){
 				info_call iCall = (info_call)obj;
 				if(iCall!=null && iCall.getSystem().equals("false")){
 					result+=iCall.toXml("      ");
@@ -465,49 +469,7 @@ public class info_action extends info_entity implements i_elementBase{
 				}
 			}
 		}		
-/*		
-		if(v_info_beans!=null && v_info_beans.size()>0){
-
-			for(int i=0;i<v_info_beans.size();i++){
-				info_bean iBean = (info_bean)v_info_beans.get(i);
-				if(iBean!=null){
-					result+=iBean.toXml("      ");
-					isEntity=true;
-				}
-			}
-		}
-		if(v_info_redirects!=null && v_info_redirects.size()>0){
-
-			for(int i=0;i<v_info_redirects.size();i++){
-				info_redirect iRedirect = (info_redirect)v_info_redirects.get(i);
-				if(iRedirect!=null && iRedirect.getSystem().equals("false")){
-					result+=iRedirect.toXml();
-					isEntity=true;
-				}
-			}
-		}	
-		if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
-			isEntity=true;
-			for(int i=0;i<v_info_transformationoutput.size();i++){
-				info_transformation iTransformation = (info_transformation)v_info_transformationoutput.get(i);
-				if(iTransformation!=null){
-					result+=iTransformation.toXml();
-					isEntity=true;
-				}
-			}
-		}	
-		if(v_info_calls!=null && v_info_calls.size()>0){
-
-			for(int i=0;i<v_info_calls.size();i++){
-				info_call iCall = (info_call)v_info_calls.get(i);
-				if(iCall!=null && iCall.getSystem().equals("false")){
-					result+=iCall.toXml();
-					isEntity=true;
-				}
-			}
-		}				
-*/
-		
+	
 		if(isEntity)
 			result+=System.getProperty("line.separator")+"      </action>";
 		else result+="</action>";
@@ -516,7 +478,7 @@ public class info_action extends info_entity implements i_elementBase{
 		return result;
 	}
 
-	public void syncroWithRelations(HashMap _elements){
+	public void syncroWithRelations(HashMap<String, HashMap<String,HashMap<String,String>>> _elements){
 		enabled = CONST_ENABLED;
 		for(int i=0;i<v_info_redirects.size();i++){
 			info_redirect current = (info_redirect)v_info_redirects.get(i);
@@ -528,7 +490,7 @@ public class info_action extends info_entity implements i_elementBase{
 			setEnableDisable(CONST_DISABLED);
 			return;
 		}
-		HashMap _redirects = (HashMap)_elements.get(path);
+		 HashMap<String,HashMap<String,String>> _redirects = ( HashMap<String,HashMap<String,String>>)_elements.get(path);
 		if(_redirects==null) return;
 		if(_redirects.get("*")!=null){
 			setEnableDisable(CONST_DISABLED);
@@ -560,13 +522,13 @@ public class info_action extends info_entity implements i_elementBase{
 		int count_TOTAL=0;
 		int count_ENABLED=0;
 		int count_DISABLED=0;
-		int count_DISABLED_CHILD=0;
+//		int count_DISABLED_CHILD=0;
 		for(int i=0;i<v_info_redirects.size();i++){
 			info_redirect current = (info_redirect)v_info_redirects.get(i);
 			if(current.getSystem().equals("false")){
 				if(current.getEnabled()==CONST_ENABLED) count_ENABLED++;
 				if(current.getEnabled()==CONST_DISABLED) count_DISABLED++;
-				if(current.getEnabled()==CONST_DISABLED_CHILD) count_DISABLED_CHILD++;
+//				if(current.getEnabled()==CONST_DISABLED_CHILD) count_DISABLED_CHILD++;
 				count_TOTAL++;
 			}
 		}
@@ -581,19 +543,19 @@ public class info_action extends info_entity implements i_elementBase{
 		enabled=CONST_DISABLED_CHILD;
 	}
 
-	public Vector getV_info_redirects() {
+	public Vector<info_redirect> getV_info_redirects() {
 		return v_info_redirects;
 	}
 
-	public void setV_info_redirects(Vector vInfoRedirects) {
+	public void setV_info_redirects(Vector<info_redirect> vInfoRedirects) {
 		v_info_redirects = vInfoRedirects;
 	}
 
-	public Vector getV_info_transformationoutput() {
+	public Vector<info_transformation> getV_info_transformationoutput() {
 		return v_info_transformationoutput;
 	}
 
-	public void setV_info_transformationoutput(Vector vInfoTransformationoutput) {
+	public void setV_info_transformationoutput(Vector<info_transformation> vInfoTransformationoutput) {
 		v_info_transformationoutput = vInfoTransformationoutput;
 	}
 
@@ -613,23 +575,23 @@ public class info_action extends info_entity implements i_elementBase{
 		this.statistic = statistic;
 	}
 
-	public Vector getVm_streams() {
+	public Vector<info_stream> getVm_streams() {
 		return vm_streams;
 	}
 
-	public void setVm_streams(Vector vmStreams) {
+	public void setVm_streams(Vector<info_stream> vmStreams) {
 		vm_streams = vmStreams;
 	}
 
-	public HashMap get_calls() {
+	public HashMap<String,info_call> get_calls() {
 		return _calls;
 	}
 
-	public Vector getV_info_calls() {
+	public Vector<info_call> getV_info_calls() {
 		return v_info_calls;
 	}
 
-	public void setV_info_calls(Vector vInfoCalls) {
+	public void setV_info_calls(Vector<info_call> vInfoCalls) {
 		v_info_calls = vInfoCalls;
 	}
 
@@ -667,9 +629,9 @@ public class info_action extends info_entity implements i_elementBase{
 
 
 
-	public List getExposed() {
+	public List<String> getExposed() {
 		if(exposed==null)
-			exposed=new ArrayList();
+			exposed=new ArrayList<String>();
 		return exposed;
 	}
 	
@@ -687,7 +649,7 @@ public class info_action extends info_entity implements i_elementBase{
 		return this;
 	}	
 
-	public void setExposed(List expose) {
+	public void setExposed(List<String> expose) {
 		this.exposed = expose;
 	}
 
@@ -717,7 +679,7 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setExpose(String expose) {
 		if(exposed==null)
-			exposed=new ArrayList();
+			exposed=new ArrayList<String>();
 		exposed.clear();
 		if(expose!=null){
 			this.expose = expose;
@@ -728,9 +690,9 @@ public class info_action extends info_entity implements i_elementBase{
 		
 	}
 	
-	public Map getRestParametersMapped(){
+	public Map<String,String> getRestParametersMapped(){
 		if(restParametersMapped==null){
-			restParametersMapped = new HashMap();
+			restParametersMapped = new HashMap<String,String>();
 			if(restmapping!=null && restmapping.size()>0){
 				for(int i=0;i<restmapping.size();i++){
 					info_rest iRest = (info_rest)restmapping.get(i);
@@ -741,11 +703,11 @@ public class info_action extends info_entity implements i_elementBase{
 		return restParametersMapped;
 	}
 
-	public List getRestmapping() {
+	public List<info_rest> getRestmapping() {
 		return restmapping;
 	}
 
-	public void setRestmapping(List restmapping) {
+	public void setRestmapping(List<info_rest> restmapping) {
 		this.restmapping = restmapping;
 	}
 
@@ -798,11 +760,11 @@ public class info_action extends info_entity implements i_elementBase{
 		}
 	}
 
-	public HashMap get_tlinked() {
+	public HashMap<String,info_tlinked> get_tlinked() {
 		return _tlinked;
 	}
 
-	public void set_tlinked(HashMap _tlinked) {
+	public void set_tlinked(HashMap<String,info_tlinked> _tlinked) {
 		this._tlinked = _tlinked;
 	}
 

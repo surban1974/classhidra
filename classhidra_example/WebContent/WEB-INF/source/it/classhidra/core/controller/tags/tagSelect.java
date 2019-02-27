@@ -140,8 +140,9 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			bean=checkParametersIfDynamic(bean, null);
 		
 		if(bean!=null){
-			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
-			if(pool!=null) formAction = (i_action)pool.get(bean);
+			@SuppressWarnings("unchecked")
+			HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
 		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
@@ -163,9 +164,13 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 
 		String prefixName=null;
 		
-		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null && ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean)!=null){
-			prefixName = ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean).toString();
+		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null) {
+			@SuppressWarnings("unchecked")
+			final HashMap<String, String> hashMap = (HashMap<String,String>)request.getAttribute(tagBean.CONST_HEAP_BEANS);
+			if(hashMap!=null && hashMap.get(bean)!=null)
+					prefixName = hashMap.get(bean);
 		}
+
 		if(prefixName==null)
 			prefixName=name;
 		else prefixName+="."+name;

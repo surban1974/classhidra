@@ -31,8 +31,8 @@ public class load_organization extends elementBase{
 	public static String CONST_$VISIBLE_NODES 		= "$organizations.visible.nodes";
 	public static String CONST_$VISIBLE_NODES4SQL 	= "$organizations.visible.nodes4sql";
 
-	private Vector nodes;
-	private HashMap _nodes;
+	private Vector<info_nodeorganization> nodes;
+	private HashMap<String,info_nodeorganization> _nodes;
 	private boolean readOk_Resource=false;
 	private boolean readOk_Folder=false;
 	private boolean readOk_File=false;
@@ -117,13 +117,14 @@ public class load_organization extends elementBase{
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void reInit(i_externalloader _externalloader){
 		if(_externalloader==null) return;
 		boolean loaded = false;
 		if(	_externalloader.getProperty(i_externalloader.ORGANIZATIONS_nodes)!=null &&
-			_externalloader.getProperty(i_externalloader.ORGANIZATIONS_nodes) instanceof HashMap){
-			_nodes.putAll((HashMap)_externalloader.getProperty(i_externalloader.ORGANIZATIONS_nodes));
-			nodes = new Vector(_nodes.values());			
+			_externalloader.getProperty(i_externalloader.ORGANIZATIONS_nodes) instanceof HashMap<?,?>){
+			_nodes.putAll((HashMap<String, info_nodeorganization>)_externalloader.getProperty(i_externalloader.ORGANIZATIONS_nodes));
+			nodes = new Vector<info_nodeorganization>(_nodes.values());			
 			loaded=true;
 		}
 		if(loaded)
@@ -132,8 +133,8 @@ public class load_organization extends elementBase{
 	}
 
 	public void reimposta(){
-		_nodes = new HashMap();
-		nodes = new Vector();
+		_nodes = new HashMap<String, info_nodeorganization>();
+		nodes = new Vector<info_nodeorganization>();
 		externalloader="";
 		xmlEncoding="";
 		readOk_Resource=false;
@@ -346,7 +347,6 @@ public class load_organization extends elementBase{
 
 
 			}catch(Exception e){}
-			if(node==null) return false;
 		}else return false;
 		return true;
 	}
@@ -507,19 +507,19 @@ public class load_organization extends elementBase{
 		return readOk_File || readOk_Folder || readOk_Resource || readOk_Db || readOk_ExtLoader;
 	}
 
-	public Vector getNodes() {
+	public Vector<info_nodeorganization> getNodes() {
 		return nodes;
 	}
 
-	public void setNodes(Vector nodes) {
+	public void setNodes(Vector<info_nodeorganization> nodes) {
 		this.nodes = nodes;
 	}
 
-	public HashMap get_nodes() {
+	public HashMap<String,info_nodeorganization> get_nodes() {
 		return _nodes;
 	}
 
-	public void set_nodes(HashMap nodes) {
+	public void set_nodes(HashMap<String,info_nodeorganization> nodes) {
 		_nodes = nodes;
 	}
 

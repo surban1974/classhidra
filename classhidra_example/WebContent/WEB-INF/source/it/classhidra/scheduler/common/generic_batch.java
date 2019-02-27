@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -29,8 +28,8 @@ public abstract class generic_batch implements i_batch,Serializable{
 
 	private static final long serialVersionUID = 1L;
 	protected db_batch db = null;
-	protected HashMap input = new HashMap();
-	protected HashMap output = new HashMap();
+	protected HashMap<String,String> input = new HashMap<String, String>();
+	protected HashMap<String,String> output = new HashMap<String, String>();
 	protected String exit = "OK";
 	protected int state = 0;
 	protected static String db_property_name 				= "batchdb";
@@ -41,7 +40,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 		if(xml==null || xml.trim().equals("")) return;
 		try{
 			Document documentXML = null;
-			if (xml==null) return ;
+
 			ByteArrayInputStream xmlSrcStream = new	ByteArrayInputStream(xml.getBytes());
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				dbf.setValidating(false);
@@ -60,7 +59,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 			}
 			if (node==null) return ;
 			
-			if(input==null) input = new HashMap();
+			if(input==null) input = new HashMap<String, String>();
 			
 			for (int i=0;i<node.getChildNodes().getLength();i++) {
 				Node child = node.getChildNodes().item(i);
@@ -98,17 +97,14 @@ public abstract class generic_batch implements i_batch,Serializable{
 		return map2xml(output);
 	}
 	
-	public static String map2xml(Map map){
+	public static String map2xml(Map<String,String> map){
 		if(map==null) return "";
 		String preffix="<area>"+System.getProperty("line.separator");
 		String suffix="</area>";
 		String content="";
-		if(map==null) return preffix+content+suffix;
-		Vector keys = new Vector(map.keySet());
-		for(int i=0;i<keys.size();i++){
-			String key = (String)keys.get(i);
+		for(String key:map.keySet())
 			content+="\n<item name=\""+key+"\">"+util_xml.normalXML((String)map.get(key),null)+"</item>"+System.getProperty("line.separator");
-		}
+		
 		return preffix+content+suffix;
 	}
 	
@@ -120,7 +116,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 			
 			ResourceBundle rb = ResourceBundle.getBundle(db_property_name);
 
-			Enumeration en = rb.getKeys();
+			Enumeration<String> en = rb.getKeys();
 			while(en.hasMoreElements()){
 				if(property==null) property = new Properties();
 				String key = (String)en.nextElement();
@@ -150,7 +146,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 		Properties property = new Properties();
 		
 
-		HashMap form = new HashMap();
+		HashMap<String,db_batch> form = new HashMap<String, db_batch>();
 		form.put("selected",_batch);
 
 		try{
@@ -171,7 +167,7 @@ public abstract class generic_batch implements i_batch,Serializable{
 			
 			ResourceBundle rb = ResourceBundle.getBundle(property_name);
 
-			Enumeration en = rb.getKeys();
+			Enumeration<String> en = rb.getKeys();
 			while(en.hasMoreElements()){
 				if(property==null) property = new Properties();
 				String key = (String)en.nextElement();
@@ -198,11 +194,11 @@ public abstract class generic_batch implements i_batch,Serializable{
 		return state;
 	}
 
-	public HashMap getInput() {
+	public HashMap<String,String> getInput() {
 		return input;
 	}
 
-	public HashMap getOutput() {
+	public HashMap<String,String> getOutput() {
 		return output;
 	}
 	

@@ -29,6 +29,7 @@ public class annotation_scanner extends it.classhidra.annotation.annotation_scan
 	}
 	
 
+	@SuppressWarnings("deprecation")
 	public void loadObject(){
 
 			if(package_annotated!=null && !package_annotated.trim().equals("")){
@@ -100,7 +101,7 @@ public class annotation_scanner extends it.classhidra.annotation.annotation_scan
 					}
 					if(vFile!=null){
 						if (vFile.exists() && vFile.getChildren().size()>0) {
-							List files = vFile.getChildren();
+							List<VirtualFile> files = vFile.getChildren();
 							for(int i=0;i<files.size();i++){
 								String package_path = ((VirtualFile)files.get(i)).getPathName();
 //								package_path=package_annotated+package_path;
@@ -145,8 +146,8 @@ public class annotation_scanner extends it.classhidra.annotation.annotation_scan
 	}
 	
 	
-	public List checkBranchVFile(VirtualFile file_){
-		List array = new ArrayList();
+	public List<VirtualFile> checkBranchVFile(VirtualFile file_){
+		List<VirtualFile> array = new ArrayList<VirtualFile>();
 		try{
 			array = file_.getChildren();
 		}catch(Exception e){

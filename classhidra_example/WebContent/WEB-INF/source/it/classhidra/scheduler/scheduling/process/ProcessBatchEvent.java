@@ -171,7 +171,7 @@ public class ProcessBatchEvent implements Serializable {
 			Date rec = log.getTm_start();
 //System.out.println(rec);
 			String output = "";
-			SortedMap h_common_area = new TreeMap();
+			SortedMap<String,String> h_common_area = new TreeMap<String, String>();
 			try{
 				
 				if(batch.getCls_btch()!=null && !batch.getCls_btch().equals("")){
@@ -221,15 +221,19 @@ public class ProcessBatchEvent implements Serializable {
 					batch.setSt_exec(log.getSt_exec());
 
 				}else{
-					List child_batch = new ArrayList();
+					List<db_batch> child_batch = new ArrayList<db_batch>();
 					
 					i_4Batch m4b = binit.get4BatchManager();
-					HashMap form = new HashMap();
+					HashMap<String,Object> form = new HashMap<String, Object>();
 					form.put("cd_ist", batch.getCd_ist());
 					form.put("cd_btch", batch.getCd_btch());
 					form.put("state", new Short(i_batch.STATE_NORMAL));
 					try{
-						child_batch = (List)m4b.operation(i_integration.o_FINDFORMLIST, form);
+						@SuppressWarnings("unchecked")
+						final List<db_batch> operation = 
+								 (List<db_batch>)m4b.operation(i_integration.o_FINDFORMLIST, 
+								 form);
+						child_batch = operation;
 					}catch(Exception e){
 						e.toString();
 					}
@@ -377,7 +381,7 @@ public class ProcessBatchEvent implements Serializable {
 			
 
 			String output = "";
-			SortedMap h_common_area = new TreeMap();
+			SortedMap<String,String> h_common_area = new TreeMap<String, String>();
 			try{
 				
 				if(worker==null){
@@ -510,7 +514,7 @@ public class ProcessBatchEvent implements Serializable {
 	public static void changeState(db_batch batch, Integer state){
 		
 		batch_init binit = DriverScheduling.getConfiguration();		
-		HashMap form = new HashMap();
+		HashMap<String,Object> form = new HashMap<String, Object>();
 		form.put("selected",batch);
 		form.put("state",state);
 
@@ -527,7 +531,7 @@ public class ProcessBatchEvent implements Serializable {
 		if(log==null) return;
 		
 		batch_init binit = DriverScheduling.getConfiguration();		
-		HashMap form = new HashMap();
+		HashMap<String,Object> form = new HashMap<String, Object>();
 		form.put("selected",log);
 
 		try{

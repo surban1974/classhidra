@@ -43,7 +43,7 @@ public class option_element extends elementDBBase implements i_elementDBBase{
 		if(rs==null) return;
 		try{
 			java.sql.ResultSetMetaData rsmd = rs.getMetaData();
-			HashMap rsmdH = new HashMap();
+			HashMap<String,String> rsmdH = new HashMap<String, String>();
 			for(int i=1;i<=rsmd.getColumnCount();i++) rsmdH.put(rsmd.getColumnLabel(i).toLowerCase(),rsmd.getColumnLabel(i));
 			if(rsmdH.get("code")!=null) this.setCode(rs.getString("code"));
 			if(rsmdH.get("desc")!=null) this.setDesc(rs.getString("desc"));

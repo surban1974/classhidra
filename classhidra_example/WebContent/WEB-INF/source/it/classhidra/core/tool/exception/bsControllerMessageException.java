@@ -67,9 +67,11 @@ public bsControllerMessageException(message mess, HttpServletRequest request) {
 
 	if(request!=null && mess!=null){
 		try{
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			Vector list = null;
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			Vector<message> list = null;
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list!=null) list.add(mess);
 		}catch(Exception e){
 			new bsControllerException(e.toString(), request,iStub.log_ERROR);
@@ -81,9 +83,11 @@ public bsControllerMessageException(message mess, HttpServletRequest request,Str
 	super((mess!=null)?mess.getDESC_MESS(null):"",request,level);
 	if(request!=null && mess!=null){
 		try{
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			Vector list = null;
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			Vector<message> list = null;
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list!=null) list.add(mess);
 		}catch(Exception e){
 			new bsControllerException(e.toString(), request,level);
@@ -99,16 +103,18 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 		mess.setTYPE(String.valueOf(level.charAt(0)));
 	if(request!=null){
 		try{
-			Vector list = null;
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			Vector<message> list = null;
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list!=null) list.add(mess);
 		}catch(Exception e){
 			new bsControllerException(e.toString(), request,level);
 		}
 	}
 }
-public bsControllerMessageException(String cd_mess, HttpServletRequest request,  Exception exc, String level, HashMap parameters) {
+public bsControllerMessageException(String cd_mess, HttpServletRequest request,  Exception exc, String level, HashMap<String,String> parameters) {
 	super(decode(cd_mess,request,exc,parameters).get_log_mess(),request,level);
 	native_Exception = exc;
 	mess = decode(cd_mess,request,exc,parameters);
@@ -116,9 +122,11 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 		mess.setTYPE(String.valueOf(level.charAt(0)));
 	if(request!=null){
 		try{
-			Vector list = null;
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			Vector<message> list = null;
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list!=null) list.add(mess);
 		}catch(Exception e){
 			new bsControllerException(e.toString(), request,level);
@@ -133,9 +141,11 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 		mess.setTYPE(String.valueOf(level.charAt(0)));
 	if(request!=null){
 		try{
-			Vector list = null;
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			Vector<message> list = null;
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list!=null) list.add(mess);
 		}catch(Exception e){
 			new bsControllerException(e.toString(), request,level);
@@ -152,16 +162,18 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 		mess.setTYPE(String.valueOf(level.charAt(0)));	
 	if(request!=null){
 		try{
-			Vector list = null;
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			Vector<message> list = null;
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list!=null) list.add(mess);
 		}catch(Exception e){
 			new bsControllerException(e.toString(), request,level);
 		}
 	}
 }
-public bsControllerMessageException(String cd_mess, HttpServletRequest request,  Throwable exc,String level,HashMap parameters) {
+public bsControllerMessageException(String cd_mess, HttpServletRequest request,  Throwable exc,String level,HashMap<String,String> parameters) {
 	super(decode(cd_mess,request,exc,parameters).get_log_mess(),request,level);
 	native_Throwable = exc;
 	mess = decode(cd_mess,request,exc,parameters);
@@ -169,9 +181,11 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 		mess.setTYPE(String.valueOf(level.charAt(0)));	
 	if(request!=null){
 		try{
-			Vector list = null;
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			Vector<message> list = null;
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list!=null) list.add(mess);
 		}catch(Exception e){
 			new bsControllerException(e.toString(), request,level);
@@ -186,9 +200,11 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 		mess.setTYPE(String.valueOf(level.charAt(0)));	
 	if(request!=null){
 		try{
-			Vector list = null;
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			Vector<message> list = null;
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list!=null) list.add(mess);
 		}catch(Exception e){
 			new bsControllerException(e.toString(), request,level);
@@ -198,7 +214,7 @@ public bsControllerMessageException(String cd_mess, HttpServletRequest request, 
 
 
 
-public static message decode (String cd_mess,HttpServletRequest request, Exception exp,HashMap parameters){
+public static message decode (String cd_mess,HttpServletRequest request, Exception exp,HashMap<String,String> parameters){
 	message mess_in = null;
 	String lang="IT";
 	try{
@@ -245,8 +261,9 @@ public static message decode (String cd_mess,HttpServletRequest request, Excepti
 
 	
 	if(isDebug && request!=null){
-		Vector s_log = (Vector)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
-		if(s_log==null) s_log = new Vector();
+		@SuppressWarnings("unchecked")
+		Vector<String> s_log = (Vector<String>)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
+		if(s_log==null) s_log = new Vector<String>();
 		if(exp!=null) s_log.add(exp.toString());
 		if(mess_in_desc!=null && !mess_in_desc.equals(""))  s_log.add(mess_in_desc);
 		request.getSession().setAttribute(bsController.CONST_SESSION_LOG, s_log);
@@ -254,7 +271,7 @@ public static message decode (String cd_mess,HttpServletRequest request, Excepti
 	mess_in.set_log_mess(_log);
 	return mess_in;
 }
-public static message decode (String cd_mess,HttpServletRequest request, Throwable exp, HashMap parameters){
+public static message decode (String cd_mess,HttpServletRequest request, Throwable exp, HashMap<String,String> parameters){
 	message mess_in = null;
 	String lang="IT";
 	try{
@@ -301,8 +318,9 @@ public static message decode (String cd_mess,HttpServletRequest request, Throwab
 	}
 	
 	if(isDebug && request!=null){
-		Vector s_log = (Vector)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
-		if(s_log==null) s_log = new Vector();
+		@SuppressWarnings("unchecked")
+		Vector<String> s_log = (Vector<String>)request.getSession().getAttribute(bsController.CONST_SESSION_LOG);
+		if(s_log==null) s_log = new Vector<String>();
 		if(exp!=null) s_log.add(exp.toString());
 		if(mess_in_desc!=null && !mess_in_desc.equals(""))  s_log.add(mess_in_desc);
 
@@ -312,12 +330,12 @@ public static message decode (String cd_mess,HttpServletRequest request, Throwab
 	return mess_in;
 }
 
-public static HashMap prepare_hm_parameters(Object[] o_parameters){
-	HashMap result = null;
+public static HashMap<String,String> prepare_hm_parameters(Object[] o_parameters){
+	HashMap<String,String> result = null;
 	if(o_parameters==null || o_parameters.length==0) return result;
-	result=new HashMap();
+	result=new HashMap<String, String>();
 	for(int i=0;i<o_parameters.length;i++)
-		result.put(Integer.valueOf(i).toString(), o_parameters[i]);
+		result.put(Integer.valueOf(i).toString(), (o_parameters[i]==null)?"":o_parameters[i].toString());
 	return result;
 }
 
@@ -325,9 +343,11 @@ public static boolean clearAllMessages(HttpServletRequest request){
 	boolean isNotEmpty = false;
 	if(request!=null){
 		try{
-			Vector list = null;
-			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector());
-			list = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			Vector<message> list = null;
+			if(request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE)==null) request.getSession().setAttribute(bsController.CONST_BEAN_$LISTMESSAGE, new Vector<message>());
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			list = attribute;
 			if(list.size()>0) isNotEmpty = true;
 			bsController.writeLog("*** LISTMESSAGE" + list.toString(),iStub.log_INFO);
 			list.clear();

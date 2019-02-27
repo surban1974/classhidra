@@ -561,7 +561,7 @@ public static String makeFormatedStringWithMethod(String format, Object ref) thr
 	String className = format.substring(0,format.lastIndexOf('.'));
 	String methodName = format.substring(format.lastIndexOf('.')+1, format.length());
 
-		Class c = Class.forName(className);
+		Class<?> c = Class.forName(className);
 		Method m = c.getDeclaredMethod(methodName, new Class[]{Object.class});
 		Object o = m.invoke(null, new Object[]{ref});
 		if(o!=null) result = o.toString();

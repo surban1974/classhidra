@@ -63,8 +63,8 @@ public class bean extends elementBeanBase implements i_bean  {
 	protected info_bean _infobean;
 	protected info_action _infoaction;
 	protected auth_init current_auth;
-	protected HashMap parametersMP;
-	protected HashMap parametersFly;
+	protected HashMap<String,Object> parametersMP;
+	protected HashMap<String,Object> parametersFly;
 	protected String $id_returnPointOfService;
 	protected String middleAction;
 	protected String _saltid;
@@ -97,8 +97,8 @@ public class bean extends elementBeanBase implements i_bean  {
 	
 	protected info_context info_context = new info_context(this.getClass());
 	
-	protected HashMap initErrors;
-	protected HashMap components;
+	protected HashMap<String,String> initErrors;
+	protected HashMap<String,String> components;
 
 
 
@@ -106,14 +106,14 @@ public class bean extends elementBeanBase implements i_bean  {
 
 public void reimposta(){
 	if(parametersFly==null)
-		parametersFly = new HashMap();
+		parametersFly = new HashMap<String, Object>();
 }
 
 public redirects validate(HttpServletRequest request){
 	return null;
 }
 
-public redirects validate(HashMap parameters){
+public redirects validate(HashMap<String,Object> parameters){
 	return null;
 }
 
@@ -203,11 +203,11 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	}	
 
 	
-	public void initPartFromMap(HashMap parameters) throws bsControllerException{
+	public void initPartFromMap(HashMap<String,Object> parameters) throws bsControllerException{
 		if(parameters==null) 
-			parameters=new HashMap();
+			parameters=new HashMap<String, Object>();
 		if(parametersMP==null)
-			parametersMP=new HashMap();
+			parametersMP=new HashMap<String, Object>();
 		parametersMP.putAll(parameters);
 		
 		
@@ -215,9 +215,10 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		
 	}
 	
-	public void initFromMap(HashMap parameters, boolean add2fly) throws bsControllerException{
+	@SuppressWarnings("rawtypes")
+	public void initFromMap(HashMap<String,Object> parameters, boolean add2fly) throws bsControllerException{
 		if(parameters==null) 
-			parameters=new HashMap();
+			parameters=new HashMap<String, Object>();
 
 
 
@@ -344,7 +345,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 							getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"]."+((add2fly)?" Will e added into FLY.":""));
 							if(add2fly){
 								if(parametersFly==null) 
-									parametersFly = new HashMap();
+									parametersFly = new HashMap<String, Object>();
 								if(key!=null && key.length()>0 && key.indexOf(0)!='$') 
 									parametersFly.put(key, value);
 							}
@@ -368,7 +369,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 								if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
 								if(writeValue==null && current_requested.getClass().isArray()){
-									Class componentType = current_requested.getClass().getComponentType();
+									Class<?> componentType = current_requested.getClass().getComponentType();
 									if(!componentType.isPrimitive())
 										writeValue = ((Object[])current_requested)[Integer.valueOf(current_field_name).intValue()];
 									else{
@@ -479,11 +480,11 @@ public void init(HttpServletRequest request) throws bsControllerException{
 
 	}	
 
-public void init(HashMap _content) throws bsControllerException{
+public void init(HashMap<String,Object> _content) throws bsControllerException{
 	init_(_content);
 }
 
-public void init_(HashMap _content) throws bsControllerException{
+public void init_(HashMap<String,Object> _content) throws bsControllerException{
 	if(_content==null) return;
 	initFromMap(_content,true);
 }
@@ -540,11 +541,12 @@ public void clearBeforeStore(){
 
 }
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public void setCampoValuePoint(Object req, String nome, Object value) throws Exception{
-	if(req instanceof Map){
+	if(req instanceof Map<?,?>){
 		((Map)req).put(nome, value);
 	}else{
-		if(req instanceof List) {
+		if(req instanceof List<?>) {
 			int index=-1;
 			try {
 				index = Integer.parseInt(nome);
@@ -561,11 +563,12 @@ public void setCampoValuePoint(Object req, String nome, Object value) throws Exc
 	}
 }
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public void setCampoValuePoint(Object req, String nome, Object value, boolean log) throws Exception{
-	if(req instanceof Map){
+	if(req instanceof Map<?,?>){
 		((Map)req).put(nome, value);
 	}else{
-		if(req instanceof List) {
+		if(req instanceof List<?>) {
 			int index=-1;
 			try {
 				index = Integer.parseInt(nome);
@@ -590,7 +593,7 @@ public Object get(String value) {
 		if(value.indexOf('.')>-1){
 			result = util_reflect.prepareWriteValueForTag(requested,"get",value,null);
 			if(result==null){
-				if(parametersFly==null) parametersFly = new HashMap();
+				if(parametersFly==null) parametersFly = new HashMap<String, Object>();
 				result = util_reflect.prepareWriteValueForTag(parametersFly,"get",value,null);
 			}
 		}else result = getCampoValue(requested,value);
@@ -628,7 +631,7 @@ public Object get(Object requested,String value) {
 
 public void put(String name, Object value) {
 	if(name==null) return;
-	if(parametersFly==null) parametersFly = new HashMap();
+	if(parametersFly==null) parametersFly = new HashMap<String, Object>();
 	parametersFly.put(name, value);
 }
 
@@ -642,7 +645,7 @@ public void set(String name, Object value) {
 public Object getPrimitiveArgument(String name, String s_value){
 
 	Object primArgument = null;
-	Class reqClass = (delegated==null)?this.getClass():delegated.getClass();
+	Class<?> reqClass = (delegated==null)?this.getClass():delegated.getClass();
 	if(name.indexOf('.')>-1){
 		StringTokenizer st = new StringTokenizer(name,".");
 /*
@@ -679,12 +682,12 @@ public Object getPrimitiveArgument(String name, String s_value){
 
 
 	try{
-		java.lang.reflect.Method mtd = null;
-		Class[] cls = new Class[0];
+		Method mtd = null;
+		Class<?>[] cls = new Class[0];
 
 		mtd = reqClass.getMethod("get"+util_reflect.adaptMethodName(name),cls);
 		if(mtd!=null){
-			Class primArgumentClass = mtd.getReturnType();
+			Class<?> primArgumentClass = mtd.getReturnType();
 				if(primArgumentClass.equals(double.class)){
 					primArgument = Double.valueOf(s_value);
 				}else if(primArgumentClass.equals(int.class)){
@@ -777,7 +780,8 @@ public void set(String name, char value) {
 	}
 }
 
-public Collection getCollection(String name){
+@SuppressWarnings("rawtypes")
+public Collection<?> getCollection(String name){
 	Collection result = new ArrayList();
 	Object objectResult = get(name);
 	if(objectResult==null) return result;
@@ -785,7 +789,8 @@ public Collection getCollection(String name){
 	return result;
 }
 
-public List getList(String name) {
+@SuppressWarnings("rawtypes")
+public List<?> getList(String name) {
 	List result = new ArrayList();
 	Object objectResult = get(name);
 	if(objectResult==null) return result;
@@ -793,7 +798,8 @@ public List getList(String name) {
 	return result;
 }
 
-public Map getMap(String name) {
+@SuppressWarnings("rawtypes")
+public Map<?,?> getMap(String name) {
 	Map result = new HashMap();
 	Object objectResult = get(name);
 	if(objectResult==null) return result;
@@ -940,7 +946,7 @@ public boolean setCampoValueWithPoint(String name, Object value) throws Exceptio
 					
 					if(!res){
 						if(parametersFly==null) 
-							parametersFly = new HashMap();
+							parametersFly = new HashMap<String,Object>();
 						parametersFly.put(name, value);
 					}
 					return res;
@@ -1055,19 +1061,19 @@ public void setRefresh(boolean refresh) {
 	this.refresh = refresh;
 }
 
-public HashMap getParametersMP() {
+public HashMap<String,Object> getParametersMP() {
 	return parametersMP;
 }
 
-public void setParametersMP(HashMap parametersMP) {
+public void setParametersMP(HashMap<String,Object> parametersMP) {
 	this.parametersMP = parametersMP;
 }
 
-public HashMap getParametersFly() {
+public HashMap<String,Object> getParametersFly() {
 	return parametersFly;
 }
 
-public void setParametersFly(HashMap parametersFly) {
+public void setParametersFly(HashMap<String,Object> parametersFly) {
 	this.parametersFly = parametersFly;
 }
 
@@ -1154,7 +1160,7 @@ public void setListener_b(listener_bean listener) {
 	}
 }
 
-public void onPostInit(HashMap content) {
+public void onPostInit(HashMap<String,Object> content) {
 	if(listener_b!=null) listener_b.onPostInit(content);
 }
 
@@ -1170,7 +1176,7 @@ public void onPostValidate(redirects redirect,HttpServletRequest request) {
 	if(listener_b!=null) listener_b.onPostValidate(redirect, request);
 }
 
-public void onPreInit(HashMap content) {
+public void onPreInit(HashMap<String,Object> content) {
 	if(listener_b!=null) listener_b.onPreInit(content);
 }
 
@@ -1228,11 +1234,11 @@ public void onGetFromLastInstance() {
 }
 
 
-public void onPreValidate(HashMap _content) {
+public void onPreValidate(HashMap<String,Object> _content) {
 	if(listener_b!=null) listener_b.onPreValidate(_content);
 }
 
-public void onPostValidate(redirects redirect, HashMap _content) {
+public void onPostValidate(redirects redirect, HashMap<String,Object> _content) {
 	if(listener_b!=null) listener_b.onPostValidate(redirect, _content);
 }
 
@@ -1303,9 +1309,9 @@ public void setInfo_context(i_info_context info_context) {
 	this.info_context = (info_context)info_context;
 }
 
-public Map getInitErrors(){ 
+public Map<String,String> getInitErrors(){ 
 	if(initErrors==null)
-		initErrors = new HashMap();
+		initErrors = new HashMap<String,String>();
 	return initErrors;
 }
 
@@ -1334,13 +1340,13 @@ public redirects validate(String currentAction, String newAction, String newActi
 	return null;
 }
 
-public redirects validate(String currentAction, String newAction, String newActionCall, HashMap parameters) throws bsControllerException {
+public redirects validate(String currentAction, String newAction, String newActionCall, HashMap<String,Object> parameters) throws bsControllerException {
 	return null;
 }
 
-public Map getComponents() {
+public Map<String,String> getComponents() {
 	if(components==null)
-		components = new HashMap();
+		components = new HashMap<String,String>();
 	return components;	
 }
 

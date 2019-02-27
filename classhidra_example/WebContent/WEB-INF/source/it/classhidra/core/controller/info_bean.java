@@ -30,7 +30,7 @@ import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -43,8 +43,8 @@ public class info_bean extends info_entity implements i_elementBase{
 	private String model;
 	private String listener;
 
-	private HashMap _items;
-	private Vector v_info_items;
+	private HashMap<String,info_item> _items;
+	private Vector<info_item> v_info_items;
 
 	public info_bean(){
 		super();
@@ -96,8 +96,9 @@ public class info_bean extends info_entity implements i_elementBase{
 				}
 			}
 		}
-		v_info_items.addAll(new Vector(_items.values()));
-		v_info_items = new util_sort().sort(v_info_items,"int_order");
+		v_info_items.addAll(new Vector<info_item>(_items.values()));
+//		v_info_items = new util_sort().sort(v_info_items,"int_order");
+		v_info_items = Util_sort.sort(v_info_items,"int_order");
 
 	}
 
@@ -108,8 +109,8 @@ public class info_bean extends info_entity implements i_elementBase{
 		model="";
 		listener="";
 
-		_items=new HashMap();
-		v_info_items=new Vector();
+		_items=new HashMap<String, info_item>();
+		v_info_items=new Vector<info_item>();
 	}
 	public String getName() {
 		return name;
@@ -164,15 +165,15 @@ public class info_bean extends info_entity implements i_elementBase{
 		return result;
 	}
 
-	public Vector getV_info_items() {
+	public Vector<info_item> getV_info_items() {
 		return v_info_items;
 	}
 
-	public void setV_info_items(Vector vInfoItems) {
+	public void setV_info_items(Vector<info_item> vInfoItems) {
 		v_info_items = vInfoItems;
 	}
 
-	public HashMap get_items() {
+	public HashMap<String,info_item> get_items() {
 		return _items;
 	}
 

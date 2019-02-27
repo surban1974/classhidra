@@ -46,7 +46,7 @@ public class info_async extends info_entity implements i_elementBase{
 	private String loopEvery;
 	private String reInitBeenEveryLoop;
 
-	private List headers;
+	private List<info_header> headers;
 	private String bsIdAction;
 	private String bsIdCall;
 	private String bsIdComplete;
@@ -101,7 +101,7 @@ public class info_async extends info_entity implements i_elementBase{
 		timeout="";	
 		flushBuffer="";
 		loopEvery="";
-		headers=new ArrayList();
+		headers=new ArrayList<info_header>();
 	}
 
 
@@ -173,11 +173,11 @@ public class info_async extends info_entity implements i_elementBase{
 		return this;
 	}
 
-	public List getHeaders() {
+	public List<info_header> getHeaders() {
 		return headers;
 	}
 
-	public info_async setHeaders(List headers) {
+	public info_async setHeaders(List<info_header> headers) {
 		this.headers = headers;
 		return this;
 	}

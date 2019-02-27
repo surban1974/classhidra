@@ -68,7 +68,7 @@ public class schedulingThreadProcess extends Thread implements Serializable {
 		batch_init binit = DriverScheduling.getConfiguration(); 
 		
 		
-		HashMap form = new HashMap();
+		HashMap<String,Object> form = new HashMap<String, Object>();
 
 		try{
 			binit.get4BatchManager().operation(i_4Batch.o_CLEAR_BATCH_STATES, form);
@@ -80,7 +80,7 @@ public class schedulingThreadProcess extends Thread implements Serializable {
 	public void kill4Timeout(){		
 		batch_init binit = DriverScheduling.getConfiguration(); 		
 		
-		HashMap form = new HashMap();
+		HashMap<String,Object> form = new HashMap<String, Object>();
 
 		try{
 			binit.get4BatchManager().operation(i_4Batch.o_KILL4TIMEOUT, form);

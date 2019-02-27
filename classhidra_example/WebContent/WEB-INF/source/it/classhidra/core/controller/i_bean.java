@@ -45,17 +45,17 @@ import it.classhidra.serialize.XmlMapper;
 public interface i_bean extends listener_bean, i_elementBeanBase{
 	void reimposta();
 	void init(HttpServletRequest request)  throws bsControllerException;
-	void init_(HashMap _content)  throws bsControllerException;
-	void init(HashMap _content)  throws bsControllerException;
+	void init_(HashMap<String,Object> _content)  throws bsControllerException;
+	void init(HashMap<String,Object> _content)  throws bsControllerException;
 	void init(i_bean another_bean) throws bsControllerException;
 	void reInit(i_elementDBBase _i_el);
-	void initPartFromMap(HashMap parameters) throws bsControllerException;
-	void initFromMap(HashMap parameters, boolean add2fly) throws bsControllerException;
+	void initPartFromMap(HashMap<String,Object> parameters) throws bsControllerException;
+	void initFromMap(HashMap<String,Object> parameters, boolean add2fly) throws bsControllerException;
 	void loadOnStartup(ServletContext servletContext) throws bsControllerException;
 	redirects validate(HttpServletRequest request)  throws bsControllerException;
-	redirects validate(HashMap parameters)  throws bsControllerException;
+	redirects validate(HashMap<String,Object> parameters)  throws bsControllerException;
 	redirects validate(String currentAction, String newAction, String newActionCall, HttpServletRequest request)  throws bsControllerException;
-	redirects validate(String currentAction, String newAction, String newActionCall, HashMap parameters)  throws bsControllerException;	
+	redirects validate(String currentAction, String newAction, String newActionCall, HashMap<String,Object> parameters)  throws bsControllerException;	
 	info_bean get_infobean();
 	void set_infobean(info_bean bean);
 
@@ -72,9 +72,9 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	char getChar(String name);
 	BigDecimal getBigDecimal(String name);
 	String getString(String name);
-	Collection getCollection(String name);
-	List getList(String name);
-	Map getMap(String name);
+	Collection<?> getCollection(String name);
+	List<?> getList(String name);
+	Map<?,?> getMap(String name);
 	
 
 	void set(String name, Object value);
@@ -100,10 +100,10 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	void setRefresh(boolean refresh);
 	String getMiddleAction();
 	void setMiddleAction(String string);
-	HashMap getParametersMP();
-	void setParametersMP(HashMap parametersMP);
-	HashMap getParametersFly();
-	void setParametersFly(HashMap parametersFly);
+	HashMap<String,Object> getParametersMP();
+	void setParametersMP(HashMap<String,Object> parametersMP);
+	HashMap<String,Object> getParametersFly();
+	void setParametersFly(HashMap<String,Object> parametersFly);
 	String getJs4ajax();
 	void setJs4ajax(String js4ajax);
 
@@ -149,7 +149,7 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	i_bean asBean();
 	
 	void clearBeforeStore();
-	Map getInitErrors();
+	Map<String,String> getInitErrors();
 	
 	boolean isAsyncInterrupt();
 	void setAsyncInterrupt(boolean asyncInterrupt);
@@ -158,6 +158,6 @@ public interface i_bean extends listener_bean, i_elementBeanBase{
 	XmlMapper getXmlMapper();
 	
 	String get$csrf();
-	Map getComponents();
+	Map<String,String> getComponents();
 //	void set$csrf(String csrf);
 }

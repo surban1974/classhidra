@@ -28,7 +28,7 @@ public class MapWriter {
 		return object2map(obj,name,null);
 	}	
 
-	public static Map<String,Object> object2map(Object obj, String name, List filters){
+	public static Map<String,Object> object2map(Object obj, String name, List<String> filters){
 		Map<String,Object> map= new HashMap<String,Object>();
 		if(obj!=null){
 			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);		
@@ -40,7 +40,8 @@ public class MapWriter {
 			else if(name==null)
 				map_name = "item";
 
-			generateMap(map,obj,map_name,0,false,new HashMap(),null, (annotation!=null)?annotation.children():false, (annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
+			generateMap(map,obj,map_name,0,false,new HashMap<Integer, String>(),null, (annotation!=null)?annotation.children():false,
+					(annotation!=null)?annotation.depth():0, util_xml.convertFilters(filters));
 
 		}
 //		if(name==null){
@@ -52,7 +53,7 @@ public class MapWriter {
 	}	
 
 	
-	public static Map<String,Object> object2map(Object obj, String name, List filters, boolean children, int depth){
+	public static Map<String,Object> object2map(Object obj, String name, List<String> filters, boolean children, int depth){
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(obj!=null){
 			Serialized annotation = obj.getClass().getAnnotation(Serialized.class);		
@@ -70,7 +71,7 @@ public class MapWriter {
 							map_name,
 							0,
 							false,
-							new HashMap(),
+							new HashMap<Integer, String>(),
 							null,
 							(annotation!=null)?(annotation.children() || children):children,
 							(annotation!=null)
@@ -85,17 +86,23 @@ public class MapWriter {
 	}	
 	
 
-	private static Object generateMap(Map<String,Object> map, Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters){
+	private static Object generateMap(Map<String,Object> map, Object sub_obj, String name, int level, boolean notFirst, 
+			Map<Integer,String> avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map<String,?> treeFilters){
 
 		boolean goAhead = true;
-		Map subTreeFilters = null;
+		Map<String,?> subTreeFilters = null;
 		if(treeFilters!=null){
 			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
 				goAhead=false;
 			else if(name!=null){
-				subTreeFilters = (Map)treeFilters.get(name);
-				if(subTreeFilters==null)
-					subTreeFilters = (Map)treeFilters.get(util_reflect.revAdaptMethodName(name));
+				@SuppressWarnings("unchecked")
+				Map<String,?> map2 = (Map<String,?>)treeFilters.get(name);
+				subTreeFilters = map2;
+				if(subTreeFilters==null){
+					@SuppressWarnings("unchecked")
+					Map<String,?> map3 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(name));
+					subTreeFilters = map3;
+				}
 			}
 		}
 		if(goAhead)			
@@ -106,7 +113,8 @@ public class MapWriter {
 
 	
 	
-	private static Object generateMapContent(Map<String,Object> map, Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters){
+	private static Object generateMapContent(Map<String,Object> map, Object sub_obj, String name, int level, Map<Integer,String> avoidCyclicPointers,
+			Serialized annotation, boolean serializeChildren, int serializeDepth, Map<String,?> treeFilters){
 
 		String map_name = name;
 		if(name!=null){
@@ -121,12 +129,10 @@ public class MapWriter {
 		if(map==null)
 			map = new HashMap<String,Object>();
 
-		if(sub_obj==null) return null;
-
 		if(sub_obj.getClass().isArray()){
-			Class componentType = sub_obj.getClass().getComponentType();
+			Class<?> componentType = sub_obj.getClass().getComponentType();
 			if(componentType.isPrimitive()){
-				List list = new ArrayList();
+				List<Object> list = new ArrayList<Object>();
 				if (boolean.class.isAssignableFrom(componentType)){ 
 					for(int i=0;i<((boolean[])sub_obj).length;i++)
 						list.add(((boolean[])sub_obj)[i]); 
@@ -153,7 +159,7 @@ public class MapWriter {
 						list.add(((short[])sub_obj)[i]);
 				}
 
-				List toMap = new ArrayList();
+				List<Object> toMap = new ArrayList<Object>();
 
 				for(int i=0;i<list.size();i++) {
 						
@@ -192,9 +198,9 @@ public class MapWriter {
 				map.put(map_name, toMap);
 			    return toMap;
 			}else{
-				Iterator it = Arrays.asList((Object[])sub_obj).iterator(); 
+				Iterator<Object> it = Arrays.asList((Object[])sub_obj).iterator(); 
 	
-				List list = new ArrayList();
+				List<Object> list = new ArrayList<Object>();
 			    while (it.hasNext()) {
 	
 					boolean nFirst = true;
@@ -238,8 +244,9 @@ public class MapWriter {
 
 			
 			
-			List list_sub_obj = (List)sub_obj;
-			List toMap = new ArrayList();
+			@SuppressWarnings("unchecked")
+			List<Object> list_sub_obj = (List<Object>)sub_obj;
+			List<Object> toMap = new ArrayList<Object>();
 			for(int i=0;i<list_sub_obj.size();i++){
 				boolean nFirst = true;
 
@@ -284,9 +291,10 @@ public class MapWriter {
 		if(sub_obj instanceof Map){
 
 			
-			Iterator it = ((Map)sub_obj).entrySet().iterator(); 
+			Iterator<?> it = ((Map<?,?>)sub_obj).entrySet().iterator(); 
 		    while (it.hasNext()) {
-		        Map.Entry pair = (Map.Entry)it.next();
+		        @SuppressWarnings("unchecked")
+				Map.Entry<?,Object> pair = (Map.Entry<?, Object>)it.next();
 				boolean nFirst = true;
 
 				

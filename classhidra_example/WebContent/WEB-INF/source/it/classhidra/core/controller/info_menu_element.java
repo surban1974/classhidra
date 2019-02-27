@@ -24,7 +24,7 @@ public class info_menu_element extends info_entity implements i_elementBase{
 	public String load;
 	
 	private info_menu_element parent;
-	private Vector children;
+	private Vector<info_menu_element> children;
 	private String externalloader;
 
 
@@ -109,7 +109,7 @@ public class info_menu_element extends info_entity implements i_elementBase{
 		img="";
 		type="static";
 		load="PUT";
-		children=new Vector();
+		children=new Vector<info_menu_element>();
 		externalloader="";
 	}
 
@@ -213,10 +213,10 @@ public class info_menu_element extends info_entity implements i_elementBase{
 	public void setParent(info_menu_element parent) {
 		this.parent = parent;
 	}
-	public Vector getChildren() {
+	public Vector<info_menu_element> getChildren() {
 		return children;
 	}
-	public void setChildren(Vector children) {
+	public void setChildren(Vector<info_menu_element> children) {
 		this.children = children;
 	}
 	public String getExternalloader() {

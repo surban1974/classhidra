@@ -7,7 +7,7 @@ public abstract class ClassScope{
 	
 
 	
-    public static Class [] getLoadedClasses (final ClassLoader loader)
+    public static Class<?> [] getLoadedClasses (final ClassLoader loader)
     {
         if (loader == null) throw new IllegalArgumentException ("null input: loader");
         if (CLASSES_VECTOR_FIELD == null)
@@ -16,10 +16,10 @@ public abstract class ClassScope{
         
         try
         {
-            final Vector classes = (Vector) CLASSES_VECTOR_FIELD.get (loader);
+            final Vector<?> classes = (Vector<?>) CLASSES_VECTOR_FIELD.get (loader);
             if (classes == null) return EMPTY_CLASS_ARRAY;
             
-            final Class [] result;
+            final Class<?> [] result;
             
             // Note: Vector is synchronized in Java 2, which helps us make
             // the following into a safe critical section:
@@ -44,7 +44,7 @@ public abstract class ClassScope{
     
     private static final Field CLASSES_VECTOR_FIELD; // Set in <clinit> [can be null]
     
-    private static final Class [] EMPTY_CLASS_ARRAY = new Class [0];
+    private static final Class<?> [] EMPTY_CLASS_ARRAY = new Class [0];
     private static final Throwable CVF_FAILURE; // Set in <clinit>
     
     static

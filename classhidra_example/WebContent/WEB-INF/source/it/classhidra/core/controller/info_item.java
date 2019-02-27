@@ -36,7 +36,7 @@ import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 public class info_item extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = 1L;
@@ -46,8 +46,8 @@ public class info_item extends info_entity implements i_elementBase{
 	private String defValue;
 	private boolean collection=false;
 	
-	private HashMap _items;
-	private Vector v_info_items;
+	private HashMap<String,info_item> _items;
+	private Vector<info_item> v_info_items;
 	
 	public info_item(){
 		super();
@@ -58,8 +58,8 @@ public class info_item extends info_entity implements i_elementBase{
 		type="";
 		defValue="";
 		collection=false;
-		_items=new HashMap();
-		v_info_items=new Vector();		
+		_items=new HashMap<String, info_item>();
+		v_info_items=new Vector<info_item>();		
 	}
 
 	public void init(Node node) throws bsControllerException{
@@ -115,8 +115,9 @@ public class info_item extends info_entity implements i_elementBase{
 						}
 					}
 				}
-				v_info_items.addAll(new Vector(_items.values()));
-				v_info_items = new util_sort().sort(v_info_items,"int_order");
+				v_info_items.addAll(new Vector<info_item>(_items.values()));
+//				v_info_items = new util_sort().sort(v_info_items,"int_order");
+				v_info_items = Util_sort.sort(v_info_items,"int_order");
 				
 			}
 			if(valueAsText){
@@ -186,16 +187,16 @@ public class info_item extends info_entity implements i_elementBase{
 	public void setCollection(boolean collection) {
 		this.collection = collection;
 	}
-	public HashMap get_items() {
+	public HashMap<String,info_item> get_items() {
 		return _items;
 	}
-	public void set_items(HashMap _items) {
+	public void set_items(HashMap<String,info_item> _items) {
 		this._items = _items;
 	}
-	public Vector getV_info_items() {
+	public Vector<info_item> getV_info_items() {
 		return v_info_items;
 	}
-	public void setV_info_items(Vector v_info_items) {
+	public void setV_info_items(Vector<info_item> v_info_items) {
 		this.v_info_items = v_info_items;
 	}	
 }

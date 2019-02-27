@@ -57,8 +57,8 @@ import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_makeValue;
 import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_reflect;
-import it.classhidra.core.tool.util.util_sort;
 import it.classhidra.core.tool.util.util_supportbean;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -114,7 +114,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	private static i_provider ejbDefaultProvider;
 	private static i_provider tagComponentRender;
 
-	private static ConcurrentHashMap local_container = new ConcurrentHashMap();
+	private static ConcurrentHashMap<String,Object> local_container = new ConcurrentHashMap<String,Object>();
 
 
 	private static boolean reInit=false;
@@ -145,9 +145,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	static class LoaderConfigThreadProcessS extends Thread {
 	    private boolean threadDone = false;
-	    private Map othersProperties = null;
+	    private Map<String,Object> othersProperties = null;
 	    private ServletContext servletContext = null;
-	    public LoaderConfigThreadProcessS(Map othersProperties, ServletContext servletContext) {
+	    public LoaderConfigThreadProcessS(Map<String,Object> othersProperties, ServletContext servletContext) {
 	        super();
 	        this.othersProperties = othersProperties;
 	        this.servletContext = servletContext;
@@ -192,7 +192,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 			
 		final Properties initParameters = new Properties();
-		final Enumeration paramNames = getInitParameterNames();
+		final Enumeration<?> paramNames = getInitParameterNames();
 		while (paramNames.hasMoreElements()){
 			final String name = (String) paramNames.nextElement();
 			initParameters.put(name, getInitParameter(name));
@@ -277,11 +277,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 		
 	}
 	
-	public static void loadOnInitS(Map othersProperties){
+	public static void loadOnInitS(Map<String,Object> othersProperties){
 		loadOnInitS(othersProperties, null);
 	}
 	
-	public static void loadOnInitS(Map othersProperties,ServletContext servletContext){
+	public static void loadOnInitS(Map<String,Object> othersProperties,ServletContext servletContext){
 		logInit = new log_init();
 		if(othersProperties!=null && othersProperties.get(log_init.id_property)!=null && othersProperties.get(log_init.id_property) instanceof Properties)
 			logInit.init((Properties)othersProperties.get(log_init.id_property));
@@ -316,9 +316,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static void loadActionsOnStartup(ServletContext servletContext) {
 		if(getAction_config().getV_info_actions()!=null && getAction_config().getV_info_actions().size()>0) {
 			try {
-			Vector info_actions = new util_sort().sort(getAction_config().getV_info_actions(),"loadOnStartup");
-			for(int i=0;i<info_actions.size();i++) {
-				info_action info = (info_action)info_actions.get(i);
+			Vector<info_action> info_actions = Util_sort.sort(getAction_config().getV_info_actions(),"loadOnStartup");
+			for(info_action info : info_actions) {
 				if(info.getMemoryInServletContext()!=null && info.getMemoryInServletContext().equalsIgnoreCase("true") && info.getLoadOnStartup()>-1) {
 					try {
 						loadActionOnStartup(info,servletContext);
@@ -714,7 +713,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			if(isDebug && id_action!=null && id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLogS)){
 				try{
 					String content = "LOG<br>";
-					final Vector s_log = (Vector)request.getSession().getAttribute(bsConstants.CONST_SESSION_LOG);
+					final Vector<?> s_log = (Vector<?>)request.getSession().getAttribute(bsConstants.CONST_SESSION_LOG);
 					if(s_log==null) content="LOG:null";
 					else{
 						for(int i=0;i<s_log.size();i++){
@@ -786,7 +785,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				try{
 					byte[] output = null;
-					ArrayList resources = null;
+					ArrayList<byte[]> resources = null;
 					if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromResources)){
 						if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
 							resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);
@@ -893,7 +892,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		i_bean bean_instance = null;
 
 		if(action_instance!=null){
-			final info_bean iBean = (info_bean)getAction_config().get_beans().get(action_instance.get_infoaction().getName());
+			final info_bean iBean = load_actions.get_beans().get(action_instance.get_infoaction().getName());
 			if(	action_instance instanceof i_bean &&
 				(
 					action_instance.get_infoaction().getName().equals("") ||
@@ -966,7 +965,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		i_bean bean_instance = getCurrentForm(id_action,context.getRequest());
 
 		if(bean_instance==null){
-			final info_bean iBean = (info_bean)getAction_config().get_beans().get(action_instance.get_infoaction().getName());
+			final info_bean iBean = load_actions.get_beans().get(action_instance.get_infoaction().getName());
 			if(	action_instance instanceof i_bean &&
 				(
 					action_instance.get_infoaction().getName().equals("") ||
@@ -1099,24 +1098,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static action_payload getActionInstancePayloadDelegated(i_action action_instance, String id_call, iContext context, boolean beanInitFromRequest) throws bsControllerException,ServletException, UnavailableException{
 
 		Exception beThrowed = null;
-		HashMap request2map = null;
+		HashMap<String,Object> request2map = null;
 		boolean isRemoteEjb=false;
 		
 		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-				request2map = (HashMap)
-						util_reflect.findDeclaredMethod(
-							action_instance.asAction().getClass(),
-							"convertRequest2Map", new Class[]{HttpServletRequest.class})
-						.invoke(null, new Object[]{context.getRequest()});
+				request2map = convertRequestToMap(action_instance.asAction().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{context.getRequest()});
+				
+//				request2map = (HashMap<String,Object>)
+//						util_reflect.findDeclaredMethod(
+//							action_instance.asAction().getClass(),
+//							"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//						.invoke(null, new Object[]{context.getRequest()});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}
 			if(request2map==null)
-				request2map = new HashMap();
+				request2map = new HashMap<String, Object>();
 		}
 		
 //20160419
@@ -1182,7 +1183,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 					}
 				}else{
-					final List searchErrors = new ArrayList();
+					final List<Exception> searchErrors = new ArrayList<Exception>();
 						if(iCallMethod==null){
 							try{
 								if(!isRemoteEjb)
@@ -1282,7 +1283,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 			Method iActionMethod = null;
 			if(action_instance.get_infoaction().getMethod()!=null && !action_instance.get_infoaction().getMethod().equals("")){
-				final List searchErrors = new ArrayList();
+				final List<Exception> searchErrors = new ArrayList<Exception>();
 					if(iActionMethod==null){
 						try{
 							if(!isRemoteEjb)
@@ -1787,24 +1788,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(	prev_action_instance.get_infoaction().getReloadAfterAction().equalsIgnoreCase("true") &&
 			!id_action.equals(id_current)){
 			if(bean_instance!=null){
-				HashMap request2map=null;
+				HashMap<String,Object> request2map=null;
 				boolean isRemoteEjb=false;
 				
 				if(bean_instance.getInfo_context()!=null && bean_instance.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)
-								util_reflect.findDeclaredMethod(
-										bean_instance.asBean().getClass(),
-									"convertRequest2Map", new Class[]{HttpServletRequest.class})
-								.invoke(null, new Object[]{context.getRequest()});
+						request2map = convertRequestToMap(bean_instance.asBean().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{context.getRequest()});
+
+//						request2map = (HashMap<String,Object>)
+//								util_reflect.findDeclaredMethod(
+//										bean_instance.asBean().getClass(),
+//									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//								.invoke(null, new Object[]{context.getRequest()});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch (Throwable e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = new HashMap();
+						request2map = new HashMap<String, Object>();
 
 				}
 
@@ -1900,7 +1903,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}else{
 			i_bean bean_instance_clone = null;
 			if(bean_instance==null){
-				final info_bean iBean = (info_bean)getAction_config().get_beans().get(prev_action_instance.get_infoaction().getName());
+				final info_bean iBean = load_actions.get_beans().get(prev_action_instance.get_infoaction().getName());
 				if(	prev_action_instance instanceof i_bean &&
 						(
 							prev_action_instance.get_infoaction().getName().equals("") ||
@@ -1941,24 +1944,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 
 			if(bean_instance_clone!=null){
-				HashMap request2map = null;
+				HashMap<String,Object> request2map = null;
 				boolean isRemoteEjb=false;
 				
 				if(bean_instance_clone.getInfo_context()!=null && bean_instance_clone.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)
-								util_reflect.findDeclaredMethod(
-										bean_instance_clone.asBean().getClass(),
-									"convertRequest2Map", new Class[]{HttpServletRequest.class})
-								.invoke(null, new Object[]{context.getRequest()});
+						request2map = convertRequestToMap(bean_instance_clone.asBean().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{context.getRequest()});
+
+//						request2map = (HashMap<String,Object>)
+//								util_reflect.findDeclaredMethod(
+//										bean_instance_clone.asBean().getClass(),
+//									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//								.invoke(null, new Object[]{context.getRequest()});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch (Throwable e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = new HashMap();
+						request2map = new HashMap<String, Object>();
 
 				}
 
@@ -2106,24 +2111,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 					try{
 						
-						HashMap request2map = null;
+						HashMap<String,Object> request2map = null;
 						boolean isRemoteEjb=false;
 						
 						if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 							isRemoteEjb=true;
 							try{
-								request2map = (HashMap)
-										util_reflect.findDeclaredMethod(
-												action_instance.asAction().getClass(),
-											"convertRequest2Map", new Class[]{HttpServletRequest.class})
-										.invoke(null, new Object[]{context.getRequest()});
+								request2map = convertRequestToMap(action_instance.asAction().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{context.getRequest()});
+
+//								request2map = (HashMap<String,Object>)
+//										util_reflect.findDeclaredMethod(
+//												action_instance.asAction().getClass(),
+//											"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//										.invoke(null, new Object[]{context.getRequest()});
 							}catch (Exception e) {
 								new bsControllerException(e, iStub.log_ERROR);
 							}catch (Throwable e) {
 								new bsControllerException(e, iStub.log_ERROR);
 							}
 							if(request2map==null)
-								request2map = new HashMap();
+								request2map = new HashMap<String, Object>();
 
 						}
 						
@@ -2334,10 +2341,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static Object[] prepareMethod(Method method, i_action action_instance, HttpServletRequest request, HttpServletResponse response){
 		return prepareMethod(method, action_instance, null, request, response);
 	}
-	public static Object[] prepareMethod(Method method, i_action action_instance, Map restParametersMapped, HttpServletRequest request, HttpServletResponse response){
+	public static Object[] prepareMethod(Method method, i_action action_instance, Map<String,String> restParametersMapped, HttpServletRequest request, HttpServletResponse response){
 		return prepareMethod(method, action_instance, restParametersMapped, new bsContext(request,response));
 	}
-	public static Object[] prepareMethod(Method method, i_action action_instance, Map restParametersMapped, iContext context){
+	public static Object[] prepareMethod(Method method, i_action action_instance, Map<String,String> restParametersMapped, iContext context){
 		if(method==null || method.getParameterTypes()==null || method.getParameterTypes().length==0)
 			return new Object[0];
 		final Object[] result = new Object[method.getParameterTypes().length];
@@ -2354,7 +2361,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			charset = (context.getRequest().getCharacterEncoding()==null || context.getRequest().getCharacterEncoding().equals(""))?"UTF-8":context.getRequest().getCharacterEncoding();
 		}
 		for(int i=0;i<method.getParameterTypes().length;i++){
-			final Class current = method.getParameterTypes()[i];
+			final Class<?> current = method.getParameterTypes()[i];
 			Parameter annotationParameter = null;
 			if(method.getParameterAnnotations()!=null && method.getParameterAnnotations()[i]!=null){
 				for(int j=0;j<method.getParameterAnnotations()[i].length;j++){
@@ -2831,27 +2838,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 			throw ex;
 		}
 		
-		HashMap request2map = null;
+		HashMap<String,Object> request2map = null;
 		boolean isRemoteEjb=false;
 		
 		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-//				request2map = (HashMap)action_instance.asAction().getClass()
-//									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//									.invoke(null, new Object[]{request});
-				request2map = (HashMap)
-						util_reflect.findDeclaredMethod(
-								action_instance.asAction().getClass(),
-							"convertRequest2Map", new Class[]{HttpServletRequest.class})
-						.invoke(null, new Object[]{context.getRequest()});
+				request2map = convertRequestToMap(action_instance.asAction().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{context.getRequest()});
+
+//				request2map = (HashMap<String,Object>)
+//						util_reflect.findDeclaredMethod(
+//								action_instance.asAction().getClass(),
+//							"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//						.invoke(null, new Object[]{context.getRequest()});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}
 			if(request2map==null)
-				request2map = new HashMap();
+				request2map = new HashMap<String, Object>();
 //			request2map = util_supportbean.request2map(request);
 
 		}		
@@ -2957,7 +2963,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		RequestDispatcher rd =  null;
 		
 
-		HashMap request2map = null;
+		HashMap<String,Object> request2map = null;
 		boolean isRemoteEjb=false;
 		
 		info_redirect fake = null;
@@ -3017,21 +3023,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-//				request2map = (HashMap)currentStream.asStream().getClass()
-//									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//									.invoke(null, new Object[]{request});
-				request2map = (HashMap)
-						util_reflect.findDeclaredMethod(
-								currentStream.asStream().getClass(),
-							"convertRequest2Map", new Class[]{HttpServletRequest.class})
-						.invoke(null, new Object[]{request});
+				request2map = convertRequestToMap(currentStream.asStream().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{request});
+
+//				request2map = (HashMap<String,Object>)
+//						util_reflect.findDeclaredMethod(
+//								currentStream.asStream().getClass(),
+//							"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//						.invoke(null, new Object[]{request});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}
 			if(request2map==null)
-				request2map = new HashMap();
+				request2map = new HashMap<String, Object>();
 //			request2map = util_supportbean.request2map(request);
 
 		}
@@ -3099,22 +3104,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 	}
 
-	public static Vector getActionStreams(String id_action){
-		Vector _streams = null;
-		final info_action iActionMapped = (info_action)getAction_config().get_actions().get(id_action);
+	public static Vector<info_stream> getActionStreams(String id_action){
+		Vector<info_stream> _streams = null;
+		final info_action iActionMapped = load_actions.get_actions().get(id_action);
 		if(iActionMapped==null)
-			return new Vector();
+			return new Vector<info_stream>();
 		else if(iActionMapped.getVm_streams()!=null)
 			_streams = iActionMapped.getVm_streams();
 		else{
-			_streams = new Vector();
-			final Vector _streams_orig = (Vector)getAction_config().get_streams_apply_to_actions().get("*");
+			_streams = new Vector<info_stream>();
+			final Vector<info_stream> _streams_orig = getAction_config().get_streams_apply_to_actions().get("*");
 
 			if(_streams_orig!=null) _streams.addAll(_streams_orig);
-			final Vector _streams4action = (Vector)getAction_config().get_streams_apply_to_actions().get(id_action);
+			final Vector<info_stream> _streams4action = getAction_config().get_streams_apply_to_actions().get(id_action);
 			if(_streams4action!=null){
-				final Vector _4add = new Vector();
-				final HashMap _4remove = new HashMap();
+				final Vector<info_stream> _4add = new Vector<info_stream>();
+				final HashMap<String,String> _4remove = new HashMap<String, String>();
 				for(int i=0;i<_streams4action.size();i++){
 					final info_stream currentis = (info_stream)_streams4action.get(i);
 					if(currentis.get_apply_to_action()!=null){
@@ -3133,7 +3138,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						else i++;
 					}
 				}
-				_streams = new util_sort().sort(_streams,"int_order","A");
+				_streams = Util_sort.sort(_streams,"int_order","A");
 			}
 			iActionMapped.setVm_streams(_streams);
 		}
@@ -3141,9 +3146,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	}
 
-	public static Vector getActionStreams_(String id_action){
+	public static Vector<info_stream> getActionStreams_(String id_action){
 
-		final Vector _streams_orig = (Vector)getAction_config().get_streams_apply_to_actions().get("*");
+		final Vector<info_stream> _streams_orig = getAction_config().get_streams_apply_to_actions().get("*");
 
 
 //Modifica 20100521 Warning
@@ -3153,26 +3158,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}catch(Exception e){
 		}
 */
-		final Vector _streams4action = (Vector)getAction_config().get_streams_apply_to_actions().get(id_action);
-		if(_streams4action==null) return (_streams_orig==null)?new Vector():_streams_orig;
+		final Vector<info_stream> _streams4action = getAction_config().get_streams_apply_to_actions().get(id_action);
+		if(_streams4action==null) 
+			return (_streams_orig==null)?new Vector<info_stream>():_streams_orig;
 		else{
-			Vector _streams = new Vector();
+			Vector<info_stream> _streams = new Vector<info_stream>();
 			if(_streams_orig!=null) _streams.addAll(_streams_orig);
 			
-			final Vector _4add = new Vector();
-			final HashMap _4remove = new HashMap();
-/*			
-			for(int i=0;i<_streams.size();i++){
-				info_stream currentis = (info_stream)_streams.get(i);
-				if(currentis.get_apply_to_action()!=null){
-					info_apply_to_action currentiata = (info_apply_to_action)currentis.get_apply_to_action().get(id_action);
-					if(currentiata==null)
-						currentiata = (info_apply_to_action)currentis.get_apply_to_action().get("*");
-					if(currentiata!=null && currentiata.getExcluded()!=null && currentiata.getExcluded().equalsIgnoreCase("true"))
-						_4remove.put(currentis.getName(),currentis.getName());
-				}
-			}
-*/			
+			final Vector<info_stream> _4add = new Vector<info_stream>();
+			final HashMap<String,String> _4remove = new HashMap<String, String>();
+		
 			for(int i=0;i<_streams4action.size();i++){
 				final info_stream currentis = (info_stream)_streams4action.get(i);
 				if(currentis.get_apply_to_action()!=null){
@@ -3193,7 +3188,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					else i++;
 				}
 			}
-			_streams = new util_sort().sort(_streams,"int_order","A");
+			_streams = Util_sort.sort(_streams,"int_order","A");
 			return _streams;
 		}
 	}
@@ -3267,7 +3262,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			i_action action_instance = null;
 
 			try{
-				final Vector _streams = getActionStreams_(id_action);
+				final Vector<info_stream> _streams = getActionStreams_(id_action);
 
 				final info_stream blockStreamEnter = performStream_EnterRS(_streams, id_action,action_instance, servletContext, request, response);
 				if(blockStreamEnter!=null){
@@ -3305,8 +3300,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 
 				if(request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL)==null)
-					request.setAttribute(CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
-				final HashMap included_pool = (HashMap)request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL);
+					request.setAttribute(CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap<String,i_action>());
+				@SuppressWarnings("unchecked")
+				final HashMap<String,i_action> included_pool = (HashMap<String, i_action>)request.getAttribute(CONST_BEAN_$INSTANCEACTIONPOOL);
 				if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getName()!=null)
 					included_pool.put(action_instance.get_infoaction().getName(),action_instance);
 				else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getPath()!=null)
@@ -3389,12 +3385,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 
+	@SuppressWarnings("unchecked")
 	public static void addAsMessage(Throwable ex, HttpServletRequest request){
 		if(ex!=null && request.getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)!=null){
 			final message mess = new message();
 			mess.setDESC_MESS(ex.toString());
 			mess.setTYPE("E");
-			((Vector)request.getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)).add(mess);
+			((Vector<message>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$LISTMESSAGE)).add(mess);
 		}
 	}
 	public static void isException(i_action action_instance, HttpServletRequest request){
@@ -3466,23 +3463,25 @@ public class bsController extends HttpServlet implements bsConstants  {
 //		20180909 UPDATE	START			
 		if(action_instance!=null && id_prev!=null && prev_action_instance!=null && !id_action.equals(id_prev)) {
 			try{
-				HashMap request2map = null;
+				HashMap<String,Object> request2map = null;
 				boolean isRemoteEjb=false;
 				if(prev_action_instance.getInfo_context()!=null && prev_action_instance.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-						request2map = (HashMap)
-								util_reflect.findDeclaredMethod(
-										prev_action_instance.asBean().getClass(),
-									"convertRequest2Map", new Class[]{HttpServletRequest.class})
-								.invoke(null, new Object[]{context.getRequest()});
+						request2map = convertRequestToMap(prev_action_instance.asBean().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{context.getRequest()});
+
+//						request2map = (HashMap<String,Object>)
+//								util_reflect.findDeclaredMethod(
+//										prev_action_instance.asBean().getClass(),
+//									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//								.invoke(null, new Object[]{context.getRequest()});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch (Throwable e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = new HashMap();
+						request2map = new HashMap<String, Object>();
 				}
 
 				if(!isRemoteEjb) {					
@@ -3501,38 +3500,37 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return payload;
 	}
 
-	public static boolean performStream_Enter(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+	public static boolean performStream_Enter(Vector<info_stream> _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 		if(performStream_EnterRS(_streams, id_action, action_instance, servletContext, request, response)!=null) return false;
 		return true;
 	}
 
-	public static info_stream performStream_EnterRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+	public static info_stream performStream_EnterRS(Vector<info_stream> _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 
 		for(int i=0;i<_streams.size();i++){
 			final info_stream iStream = (info_stream)_streams.get(i);
 			final i_stream currentStream = getAction_config().streamFactory(iStream.getName(),request.getSession(), servletContext);
 			if(currentStream!=null){	
-				HashMap request2map = null;
+				HashMap<String,Object> request2map = null;
 				boolean isRemoteEjb=false;
 				
 				if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-//						request2map = (HashMap)currentStream.asStream().getClass()
-//											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//											.invoke(null, new Object[]{request});
-						request2map = (HashMap)
-								util_reflect.findDeclaredMethod(
-										currentStream.asStream().getClass(),
-									"convertRequest2Map", new Class[]{HttpServletRequest.class})
-								.invoke(null, new Object[]{request});
+						request2map = convertRequestToMap(currentStream.asStream().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{request});
+
+//						request2map = (HashMap<String,Object>)
+//								util_reflect.findDeclaredMethod(
+//										currentStream.asStream().getClass(),
+//									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//								.invoke(null, new Object[]{request});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch (Throwable e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = new HashMap();
+						request2map = new HashMap<String, Object>();
 //					request2map = util_supportbean.request2map(request);
 
 				}
@@ -3572,38 +3570,37 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return null;
 	}
 
-	public static boolean performStream_Exit(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+	public static boolean performStream_Exit(Vector<info_stream> _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 		if(performStream_ExitRS(_streams, id_action, action_instance, servletContext, request, response)!=null) return false;
 		return true;
 	}
 
-	public static info_stream performStream_ExitRS(Vector _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
+	public static info_stream performStream_ExitRS(Vector<info_stream> _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 
 		for(int i=_streams.size()-1;i>-1;i--){
 			final info_stream iStream = (info_stream)_streams.get(i);
 			final i_stream currentStream = getAction_config().streamFactory(iStream.getName(), request.getSession(), servletContext);
 			if(currentStream!=null){
-				HashMap request2map = null;
+				HashMap<String,Object> request2map = null;
 				boolean isRemoteEjb=false;
 				
 				if(currentStream!=null && currentStream.getInfo_context()!=null && currentStream.getInfo_context().isRemote()){
 					isRemoteEjb=true;
 					try{
-//						request2map = (HashMap)currentStream.asStream().getClass()
-//											.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//											.invoke(null, new Object[]{request});
-						request2map = (HashMap)
-								util_reflect.findDeclaredMethod(
-										currentStream.asStream().getClass(),
-									"convertRequest2Map", new Class[]{HttpServletRequest.class})
-								.invoke(null, new Object[]{request});
+						request2map = convertRequestToMap(currentStream.asStream().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{request});
+
+//						request2map = (HashMap<String,Object>)
+//								util_reflect.findDeclaredMethod(
+//										currentStream.asStream().getClass(),
+//									"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//								.invoke(null, new Object[]{request});
 					}catch (Exception e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}catch (Throwable e) {
 						new bsControllerException(e, iStub.log_ERROR);
 					}
 					if(request2map==null)
-						request2map = new HashMap();
+						request2map = new HashMap<String, Object>();
 //					request2map = util_supportbean.request2map(request);
 
 				}
@@ -3656,7 +3653,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					content.onGetFromNavigation();
 				
 				if(content==null) {
-					final info_action infoAction = (info_action)getAction_config().get_actions().get(id_current);				
+					final info_action infoAction = load_actions.get_actions().get(id_current);				
 					if(infoAction!=null && infoAction.getNavigatedMemoryContent()!=null && infoAction.getNavigatedMemoryContent().equalsIgnoreCase("false")) {
 					}else
 						return content;
@@ -3665,7 +3662,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 		try{
-			final info_action infoAction = (info_action)getAction_config().get_actions().get(id_current);
+			final info_action infoAction = load_actions.get_actions().get(id_current);
 			
 			if(	infoAction.getMemoryInSession().equalsIgnoreCase("true")){
 				final i_bean content = (i_bean)getFromOnlySession(infoAction.getPath(), request);
@@ -3705,9 +3702,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	
-	public static Map getCurrentForm(Class reference, HttpServletRequest request){
+	public static Map<String,i_bean> getCurrentForm(Class<?> reference, HttpServletRequest request){
 		if(reference==null) return null;
-		Map result = new HashMap();
+		Map<String,i_bean> result = new HashMap<String, i_bean>();
 		info_navigation fromNav = getFromInfoNavigation(null, request);
 		if(fromNav!=null){
 			while(fromNav!=null) {
@@ -3719,25 +3716,33 @@ public class bsController extends HttpServlet implements bsConstants  {
 			}
 		}
 		try{
-			Map instanceSession = checkOnlySession(request);
-			if(instanceSession==null)
-				instanceSession = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			Map<String,i_bean> instanceSession = checkOnlySession(request);
+			if(instanceSession==null) {
+				@SuppressWarnings("unchecked")
+				Map<String,i_bean> attribute = 
+						 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+				instanceSession = attribute;
+			}
 			if(instanceSession!=null){
-				Iterator entry = instanceSession.entrySet().iterator();
+				Iterator<Map.Entry<String,i_bean>> entry = instanceSession.entrySet().iterator();
 				while (entry.hasNext()) {
-					Map.Entry current = (Map.Entry)entry.next();
+					Map.Entry<String,i_bean> current = (Map.Entry<String,i_bean>)entry.next();
 					if(current.getValue()!=null && (current.getValue().getClass().isAssignableFrom(reference) || isAssignableFromInterface(current.getValue().getClass().getInterfaces(),reference)))
 						result.put(current.getKey().toString(),current.getValue());
 				}
 			}
 			
-			Map instanceServletContext = checkOnlyServletContext(request);
-			if(instanceServletContext==null)
-				instanceServletContext = (Map)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+			Map<String,i_bean> instanceServletContext = checkOnlyServletContext(request);
+			if(instanceServletContext==null) {
+				@SuppressWarnings("unchecked")
+				Map<String,i_bean> attribute = 
+						 (Map<String,i_bean>)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+				instanceServletContext = attribute;			
+			}
 			if(instanceServletContext!=null){
-				Iterator entry = instanceServletContext.entrySet().iterator();
+				Iterator<Map.Entry<String,i_bean>> entry = instanceServletContext.entrySet().iterator();
 				while (entry.hasNext()) {
-					Map.Entry current = (Map.Entry)entry.next();
+					Map.Entry<String,i_bean> current = (Map.Entry<String,i_bean>)entry.next();
 					if(current.getValue()!=null && (current.getValue().getClass().isAssignableFrom(reference) || isAssignableFromInterface(current.getValue().getClass().getInterfaces(),reference)))
 						result.put(current.getKey().toString(),current.getValue());
 				}
@@ -3765,10 +3770,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return result;
 	}
 	
-	public static boolean isAssignableFromInterface(Class[] interfaces, Class interf) {
+	public static boolean isAssignableFromInterface(Class<?>[] interfaces, Class<?> interf) {
 		if(interfaces==null || interf==null)
 			return false;
-		for(Class current:interfaces) {
+		for(Class<?> current:interfaces) {
 			if(current==interf)
 				return true;
 		}
@@ -4085,8 +4090,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static void writeLogS(HttpServletRequest request, String mess){
 		if(request!=null){
-			Vector s_log = (Vector)request.getSession().getAttribute(bsConstants.CONST_SESSION_LOG);
-			if(s_log==null) s_log = new Vector();
+			@SuppressWarnings("unchecked")
+			Vector<String> attribute = 
+					 (Vector<String>)request.getSession().getAttribute(bsConstants.CONST_SESSION_LOG);
+			Vector<String> s_log = attribute;
+			if(s_log==null) s_log = new Vector<String>();
 			if(mess!=null && !mess.equals(""))  s_log.add(mess);
 			request.getSession().setAttribute(bsConstants.CONST_SESSION_LOG, s_log);
 		}
@@ -4125,7 +4133,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 
-	public static String writeLabel(String lang, String cd_mess, String def, HashMap parameters) {
+	public static String writeLabel(String lang, String cd_mess, String def, HashMap<String,String> parameters) {
 		if(lang==null || cd_mess==null) 
 			return message.decodeParameters(def,parameters);
 		try{
@@ -4141,7 +4149,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 	}
 
-	public static String writeLabel(HttpServletRequest request, String cd_mess, String def, HashMap parameters) {
+	public static String writeLabel(HttpServletRequest request, String cd_mess, String def, HashMap<String,String> parameters) {
 		if(request==null || cd_mess==null)
 			return message.decodeParameters(def,parameters);
 		String lang="IT";
@@ -5107,11 +5115,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			
 		}
+/*			
 		if(retTLinkedProvider==null){
 			tLinkedProvider = new TLinkedProvider_Simple();
 			return tLinkedProvider;
 		}
-		
+*/		
 		return retTLinkedProvider;
 
 	}
@@ -5129,7 +5138,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			int only_app=0;
 			try{
 				log_detail+="     ServletContext: \n";
-				Enumeration en = request.getSession().getServletContext().getAttributeNames();
+				Enumeration<?> en = request.getSession().getServletContext().getAttributeNames();
 				while(en.hasMoreElements()){
 					final String key = (String)en.nextElement();
 					final int dim=calc(request.getSession().getServletContext().getAttribute(key));
@@ -5538,7 +5547,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		
 	}		
 
-	public static Map checkOnlySession(HttpServletRequest request){
+	public static Map<String,i_bean> checkOnlySession(HttpServletRequest request){
 		i_ProviderWrapper wrapper = null;
 		if(!canBeProxed)
 			return null;
@@ -5600,19 +5609,29 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 			}
 		
-			if(wrapper!=null)
-				return (Map)wrapper.getInstance();
+			if(wrapper!=null) {
+				final Object fromWrapper = wrapper.getInstance();
+				if(fromWrapper!=null && fromWrapper instanceof Map<?,?>) {
+					@SuppressWarnings("unchecked")
+					final Map<String,i_bean> fromWrapper2 = (Map<String,i_bean>)fromWrapper;
+					return fromWrapper2;
+				}
+
+			}
 
 		return null;
 	}
 
-	public static Object getFromOnlySession(String id,HttpServletRequest request){
-		Map instance = checkOnlySession(request);
+	public static i_bean getFromOnlySession(String id,HttpServletRequest request){
+		Map<String,i_bean> instance = checkOnlySession(request);
 
-		if(instance==null)
-			instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
-		if(instance==null){
-			instance = new HashMap();
+		if(instance==null) {
+			@SuppressWarnings("unchecked")
+			final Map<String,i_bean> attribute = 
+					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			instance = attribute; 		
+		}if(instance==null){
+			instance = new HashMap<String, i_bean>();
 			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
 		}
 		return instance.get(id);
@@ -5620,12 +5639,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	public static boolean setToOnlySession(String id,i_bean obj,HttpServletRequest request){
 		try{
-			Map instance = checkOnlySession(request);
+			Map<String,i_bean> instance = checkOnlySession(request);
 
-			if(instance==null)
-				instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			if(instance==null) {
+				@SuppressWarnings("unchecked")
+				final Map<String,i_bean> attribute = 
+						 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+				instance = attribute; 		
+			}
 			if(instance==null){
-				instance = new HashMap();
+				instance = new HashMap<String, i_bean>();
 				request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
 			}
 			if(obj!=null){
@@ -5642,44 +5665,52 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 	}
 
-	public static Object removeFromOnlySession(String id,HttpServletRequest request){
-			Map instance = checkOnlySession(request);
-			if(instance!=null)
-				util_provider.destroyInstanceFromProvider(instance.get(id), null);
+	public static i_bean removeFromOnlySession(String id,HttpServletRequest request){
+		Map<String,i_bean> instance = checkOnlySession(request);
+		if(instance!=null)
+			util_provider.destroyInstanceFromProvider(instance.get(id), null);
 
-			if(instance==null)
-				instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
-			if(instance==null){
-				instance = new HashMap();
-				request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
-			}
-			return instance.remove(id);
+		if(instance==null) {
+			@SuppressWarnings("unchecked")
+			final Map<String,i_bean> attribute = 
+					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			instance = attribute; 		
+		}if(instance==null){
+				instance = new HashMap<String, i_bean>();
+			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
+		}
+		return instance.remove(id);
 	}
 
-	public static Map getOnlySession(HttpServletRequest request){
-		Map instance = checkOnlySession(request);
+	public static Map<String,i_bean> getOnlySession(HttpServletRequest request){
+		Map<String,i_bean> instance = checkOnlySession(request);
 
+		if(instance==null) {
+			@SuppressWarnings("unchecked")
+			final Map<String,i_bean> attribute = 
+					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			instance = attribute; 		
+		}
 		if(instance==null){
-			try{
-				instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
-			}catch(Exception e){
-			}
-		}if(instance==null){
-			instance = new HashMap();
+			instance = new HashMap<String, i_bean>();
 			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
 		}
 		return instance;
 	}
 
-	public static boolean setOnlySession(Map newInstance, HttpServletRequest request){
+	public static boolean setOnlySession(Map<String,i_bean> newInstance, HttpServletRequest request){
 
 		if(newInstance == null)
 			return false;
 
-		Map instance = checkOnlySession(request);
+		Map<String,i_bean> instance = checkOnlySession(request);
 
-		if(instance==null)
-			instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+		if(instance==null) {
+			@SuppressWarnings("unchecked")
+			final Map<String,i_bean> attribute = 
+					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			instance = attribute; 		
+		}
 		if(instance==null){
 			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,newInstance);
 		}else{
@@ -5691,23 +5722,27 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 
 	public static void clearOnlySession(HttpServletRequest request){
-		Map instance = checkOnlySession(request);
+		Map<String,i_bean> instance = checkOnlySession(request);
 		if(instance!=null){
-			Iterator it = instance.values().iterator();
+			Iterator<i_bean> it = instance.values().iterator();
 			while(it.hasNext())
 				util_provider.destroyInstanceFromProvider(it.next(), null);
 		}
-		if(instance==null)
-			instance = (Map)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+		if(instance==null) {
+			@SuppressWarnings("unchecked")
+			final Map<String,i_bean> attribute = 
+					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
+			instance = attribute; 		
+		}
 		if(instance==null){
-			instance = new HashMap();
+			instance = new HashMap<String, i_bean>();
 			request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION,instance);
 		}
 		instance.clear();
 
 	}
 	
-	public static Map checkOnlyServletContext(HttpServletRequest request){
+	public static Map<String,i_bean> checkOnlyServletContext(HttpServletRequest request){
 		i_ProviderWrapper wrapper = null;
 		if(!canBeProxed)
 			return null;
@@ -5769,13 +5804,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 			}
 		
-			if(wrapper!=null)
-				return (Map)wrapper.getInstance();
+			if(wrapper!=null) {
+				@SuppressWarnings("unchecked")
+				final Map<String,i_bean> instance = (Map<String,i_bean>)wrapper.getInstance();
+				return instance;
+			}
 
 		return null;
 	}
 	
-	public static Map checkOnlyServletContext(ServletContext servletContext){
+	public static Map<String,i_bean> checkOnlyServletContext(ServletContext servletContext){
 		i_ProviderWrapper wrapper = null;
 		if(!canBeProxed)
 			return null;
@@ -5816,33 +5854,44 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 			}
 	
-			if(wrapper!=null)
-				return (Map)wrapper.getInstance();
+			if(wrapper!=null) {
+				@SuppressWarnings("unchecked")
+				final Map<String,i_bean> instance = (Map<String,i_bean>)wrapper.getInstance();
+				return instance;
+			}
 
 		return null;
 	}
 
 	
-	public static Object getFromOnlyServletContext(String id, HttpServletRequest request){
-		Map instance = checkOnlyServletContext(request);
+	public static i_bean getFromOnlyServletContext(String id, HttpServletRequest request){
+		Map<String,i_bean> instance = checkOnlyServletContext(request);
 
-		if(instance==null)
-			instance = (Map)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+		if(instance==null) {
+			@SuppressWarnings("unchecked")
+			final Map<String,i_bean> attribute = 
+					 (Map<String,i_bean>)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+			instance = attribute;		
+		}
 		if(instance==null){
-			instance = new HashMap();
+			instance = new HashMap<String, i_bean>();
 			request.getSession().getServletContext().setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
 		}
 		return instance.get(id);
 	}
 	
 	
-	public static Object getFromOnlyServletContext(String id, ServletContext servletContext){
-		Map instance = checkOnlyServletContext(servletContext);
+	public static i_bean getFromOnlyServletContext(String id, ServletContext servletContext){
+		Map<String,i_bean> instance = checkOnlyServletContext(servletContext);
 
-		if(instance==null)
-			instance = (Map)servletContext.getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+		if(instance==null) {
+			@SuppressWarnings("unchecked")
+			final Map<String,i_bean> attribute = 
+					 (Map<String,i_bean>)servletContext.getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+			instance = attribute;		
+		}		
 		if(instance==null){
-			instance = new HashMap();
+			instance = new HashMap<String, i_bean>();
 			servletContext.setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
 		}
 		return instance.get(id);
@@ -5850,12 +5899,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	public static boolean setToOnlyServletContext(String id,i_bean obj,HttpServletRequest request){
 		try{
-			Map instance = checkOnlyServletContext(request);
+			Map<String,i_bean> instance = checkOnlyServletContext(request);
 
-			if(instance==null)
-				instance = (Map)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+			if(instance==null) {
+				@SuppressWarnings("unchecked")
+				final Map<String,i_bean> attribute = 
+						 (Map<String,i_bean>)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+				instance = attribute;		
+			}
 			if(instance==null){
-				instance = new HashMap();
+				instance = new HashMap<String, i_bean>();
 				request.getSession().getServletContext().setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
 			}
 			if(obj!=null){
@@ -5874,12 +5927,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	public static boolean setToOnlyServletContext(String id,i_bean obj,ServletContext servletContext){
 		try{
-			Map instance = checkOnlyServletContext(servletContext);
+			Map<String,i_bean> instance = checkOnlyServletContext(servletContext);
 
-			if(instance==null)
-				instance = (Map)servletContext.getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+			if(instance==null) {
+				@SuppressWarnings("unchecked")
+				final Map<String,i_bean> attribute = 
+						 (Map<String,i_bean>)servletContext.getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
+				instance = attribute;		
+			}	
 			if(instance==null){
-				instance = new HashMap();
+				instance = new HashMap<String, i_bean>();
 				servletContext.setAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT,instance);
 			}
 			if(obj!=null){
@@ -5963,18 +6020,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static info_navigation getFromInfoNavigation(String id,HttpServletRequest request){
 		final info_navigation nav = getInfoNavigation(request);
-/*		
-		i_ProviderWrapper inw = checkInfoNavigationWrapper(request);
-		if(inw!=null)
-			nav = (info_navigation)inw.getInstance();
-
-		if(nav==null){
-			try{
-				nav = (info_navigation)request.getSession().getAttribute(bsConstants.CONST_BEAN_$NAVIGATION);
-			}catch(Exception e){
-			}
-		}
-*/		
+	
 		if(nav==null || id==null)
 			return nav;
 		return nav.find(id);
@@ -6013,7 +6059,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	
-	public static Map checkLocalContainer(){
+	public static Map<String,Object> checkLocalContainer(){
 		if(!canBeProxed)
 			return local_container;
 		
@@ -6039,7 +6085,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container.clear();
 							local_container=null;
 						}
-						return (Map)wrapper.getInstance();
+						@SuppressWarnings("unchecked")
+						final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+						return instance;
 					}catch(Exception e){
 					}
 				} 
@@ -6051,7 +6099,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container.clear();
 							local_container=null;
 						}
-						return (Map)wrapper.getInstance();
+						@SuppressWarnings("unchecked")
+						final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+						return instance;
 					}catch(Exception e){
 					}
 				}
@@ -6063,7 +6113,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container.clear();
 							local_container=null;
 						}
-						return (Map)wrapper.getInstance();
+						@SuppressWarnings("unchecked")
+						final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+						return instance;
 					}catch(Exception e){
 					}
 				}
@@ -6075,7 +6127,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container.clear();
 							local_container=null;
 						}
-						return (Map)wrapper.getInstance();
+						@SuppressWarnings("unchecked")
+						final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+						return instance;
 					}catch(Exception e){
 					}
 				}
@@ -6088,8 +6142,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container.clear();
 							local_container=null;
 						}
-						if(wrapper!=null)
-							return (Map)wrapper.getInstance();
+						if(wrapper!=null) {
+							@SuppressWarnings("unchecked")
+							final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+							return instance;
+						}
 					}catch(Exception e){
 					}
 				}
@@ -6102,8 +6159,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container.clear();
 							local_container=null;
 						}
-						if(wrapper!=null)
-							return (Map)wrapper.getInstance();
+						if(wrapper!=null) {
+							@SuppressWarnings("unchecked")
+							final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+							return instance;
+						}
 					}catch(Exception e){
 					}
 				}
@@ -6190,7 +6250,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}	
 
 	public static Object getFromLocalContainer(String key) {
-		final Map container = checkLocalContainer();
+		final Map<String,Object> container = checkLocalContainer();
 		if(container!=null)
 			return container.get(key);
 		if(local_container!=null)
@@ -6199,7 +6259,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static Object removeFromLocalContainer(String key) {
-		final Map container = checkLocalContainer();
+		final Map<String,Object> container = checkLocalContainer();
 		if(container!=null){
 			util_provider.destroyInstanceFromProvider(container.get(key), null);
 			return container.remove(key);
@@ -6210,10 +6270,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static void setToLocalContainer(String key, Object value) {
-		final Map container = checkLocalContainer();
+		final Map<String,Object> container = checkLocalContainer();
 		if(container!=null){
-			if(container instanceof ConcurrentHashMap)
-				((ConcurrentHashMap)container).putIfAbsent(key,value);
+			if(container instanceof ConcurrentHashMap<?,?>)
+				((ConcurrentHashMap<String,Object>)container).putIfAbsent(key,value);
 			else
 				container.put(key,value);
 		}
@@ -6222,15 +6282,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static void putToLocalContainer(String key, Object value) {
-		final Map container = checkLocalContainer();
+		final Map<String,Object> container = checkLocalContainer();
 		if(container!=null)
 			container.put(key,value);
 		if(local_container!=null)
 			local_container.put(key,value);
 	}
 
-	public static Map getLocalContainer(){
-		final Map container = checkLocalContainer();
+	public static Map<String,Object> getLocalContainer(){
+		final Map<String,Object> container = checkLocalContainer();
 		if(container!=null)
 			return container;
 		if(local_container!=null)
@@ -6238,10 +6298,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return null;
 	}
 
-	public static boolean setLocalContainer(Map newInstance){
+	public static boolean setLocalContainer(Map<String,Object> newInstance){
 		if(newInstance==null)
 			return false;
-		final Map container = checkLocalContainer();
+		final Map<String,Object> container = checkLocalContainer();
 		if(container!=null){
 			container.clear();
 			container.putAll(newInstance);
@@ -6256,9 +6316,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 	}
 
 	public static boolean clearLocalContainer(){
-		final Map container = checkLocalContainer();
+		final Map<String,Object> container = checkLocalContainer();
 		if(container!=null){
-			final Iterator it = container.values().iterator();
+			final Iterator<Object> it = container.values().iterator();
 			while(it.hasNext())
 				util_provider.destroyInstanceFromProvider(it.next(), null);
 
@@ -6287,9 +6347,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	
 	public static i_stream getStreamFromContainer(String id_stream){
-		HashMap container_streams_instance = (HashMap)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		@SuppressWarnings("unchecked")
+		final Map<String,Object> fromLocalContainer = 
+				 (Map<String,Object>)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		Map<String,Object> container_streams_instance = fromLocalContainer;
 		if(container_streams_instance==null){
-			container_streams_instance = new HashMap();
+			container_streams_instance = new HashMap<String, Object>();
 			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
 		}
 		return (i_stream)container_streams_instance.get(id_stream);
@@ -6298,9 +6361,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static void putStreamIntoContainer(String id_stream, i_stream rStream){
 		if(id_stream==null)
 			return;
-		HashMap container_streams_instance = (HashMap)bsController.getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		@SuppressWarnings("unchecked")
+		final Map<String,Object> fromLocalContainer = 
+				 (Map<String,Object>)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		Map<String,Object> container_streams_instance = fromLocalContainer;
 		if(container_streams_instance==null){
-			container_streams_instance = new HashMap();
+			container_streams_instance = new HashMap<String, Object>();
 			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
 		}
 		container_streams_instance.put(id_stream, rStream);
@@ -6328,11 +6394,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return isInitialized(null,null,null);
 	}
 	
-	public static boolean isInitialized(Properties appInitProperty, Map othersProperties) {
+	public static boolean isInitialized(Properties appInitProperty, Map<String,Object> othersProperties) {
 		return isInitialized(appInitProperty, othersProperties, null);
 	}
 	
-	public static boolean isInitialized(Properties appInitProperty, Map othersProperties, ServletContext servletContext) {
+	public static boolean isInitialized(Properties appInitProperty, Map<String,Object> othersProperties, ServletContext servletContext) {
 		if(!initialized){
 			try{
 				initialized = true;
@@ -6425,5 +6491,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static i_provider getTagComponentRender() {
 		return tagComponentRender;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static HashMap<String,Object> convertRequestToMap(Class<?> clazz,  Class<?>[] types, Object[] paramiters) throws Exception {
+		return
+				(HashMap<String,Object>)
+					util_reflect.findDeclaredMethod(
+							clazz,
+							"convertRequest2Map",
+							types)
+					.invoke(null, paramiters);
 	}
 }

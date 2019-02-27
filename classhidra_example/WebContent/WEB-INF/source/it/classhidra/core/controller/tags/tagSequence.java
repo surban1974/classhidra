@@ -62,7 +62,7 @@ public class tagSequence extends  ClTagSupport implements DynamicAttributes  {
 
 
 	
-	protected Map tagAttributes = new HashMap();
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
 
 	
 	
@@ -89,8 +89,9 @@ public class tagSequence extends  ClTagSupport implements DynamicAttributes  {
 				bean=checkParametersIfDynamic(bean, null);
 			
 			if(bean!=null){
-				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
-				if(pool!=null) formAction = (i_action)pool.get(bean);
+				@SuppressWarnings("unchecked")
+				HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+				if(pool!=null) formAction = pool.get(bean);
 			}
 			if(formAction!=null) bean = null;
 			else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
@@ -135,7 +136,7 @@ public class tagSequence extends  ClTagSupport implements DynamicAttributes  {
 				else{
 					try{
 						sequence = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,null);
-						size=((List)sequence).size();
+						size=((List<?>)sequence).size();
 					}catch(Exception e){
 					}
 				}	
@@ -169,10 +170,11 @@ public class tagSequence extends  ClTagSupport implements DynamicAttributes  {
 				}				
 				
 				if(startSeq!=-1 && finishSeq!=-1 && startSeq<finishSeq){
-					sequence = new ArrayList();
+					List<Integer> tmp = new ArrayList<Integer>();
 					for(int i=startSeq;i<=finishSeq;i++)
-						((ArrayList)sequence).add(new Integer(i));
-					size=((List)sequence).size();
+						tmp.add(new Integer(i));
+					size=tmp.size();
+					sequence = tmp;
 				}
 				
 			}
@@ -206,22 +208,22 @@ public class tagSequence extends  ClTagSupport implements DynamicAttributes  {
 		finishIndex=null;
 		finishIndexFromBean=null;		
 		toBean=null;
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 		
 	}
 	
 	private boolean condition(HttpServletRequest request) throws JspException{
 		if(sequence==null) return false;
 		try{
-			if(((Collection)sequence).size()>index){
+			if(((Collection<?>)sequence).size()>index){
 				if(toBean!=null)
-					request.setAttribute(toBean, ((Collection)sequence).toArray()[index]);
+					request.setAttribute(toBean, ((Collection<?>)sequence).toArray()[index]);
 				return true;			
 			}
 		}catch(Exception e){
 		}
 		try{
-			if(((Map)sequence).size()>index) return true;			
+			if(((Map<?,?>)sequence).size()>index) return true;			
 		}catch(Exception e){
 		}
 		return false;

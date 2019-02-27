@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+@SuppressWarnings("all")
 public class util_find {
 
 	public static Object findElementFromListASText(Vector elements, Object obj_value, String key){

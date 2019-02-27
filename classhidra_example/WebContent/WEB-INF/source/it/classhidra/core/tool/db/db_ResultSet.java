@@ -80,16 +80,18 @@ public ResultSet getInstance() {
 	}
 
 public void addToRegister(){
-	HashMap rs_l_c = (HashMap)util_container.getContentAsObject(CONST_RS_LOCAL_CONTAINER);
-	if(rs_l_c==null) rs_l_c=new HashMap();
+	@SuppressWarnings("unchecked")
+	HashMap<String,entity_ResultSet> rs_l_c = (HashMap<String,entity_ResultSet>)util_container.getContentAsObject(CONST_RS_LOCAL_CONTAINER);
+	if(rs_l_c==null) rs_l_c=new HashMap<String, db_ResultSet.entity_ResultSet>();
 	entity_ResultSet ers = new entity_ResultSet(instance);
 		rs_l_c.put(ers.getEntity_id(),ers);
 	util_container.setContentAsObject(CONST_RS_LOCAL_CONTAINER, rs_l_c);
 }
 
 public void removeFromRegister(){
-	HashMap rs_l_c = (HashMap)util_container.getContentAsObject(CONST_RS_LOCAL_CONTAINER);
-	if(rs_l_c==null) rs_l_c=new HashMap();
+	@SuppressWarnings("unchecked")
+	HashMap<String,entity_ResultSet> rs_l_c = (HashMap<String,entity_ResultSet>)util_container.getContentAsObject(CONST_RS_LOCAL_CONTAINER);
+	if(rs_l_c==null) rs_l_c=new HashMap<String, db_ResultSet.entity_ResultSet>();
 	rs_l_c.remove(Integer.valueOf(instance.hashCode()).toString());
 	util_container.setContentAsObject(CONST_RS_LOCAL_CONTAINER, rs_l_c);
 }
@@ -541,7 +543,7 @@ public Statement getStatement() throws SQLException{
 	return instance.getStatement();
 }
 
-public Object getObject(int paramInt, Map paramMap) throws SQLException{
+public Object getObject(int paramInt, Map<String,Class<?>> paramMap) throws SQLException{
 	return instance.getObject(paramInt, paramMap);
 }
 
@@ -561,7 +563,7 @@ public Array getArray(int paramInt) throws SQLException{
 	return instance.getArray(paramInt);
 }
 
-public Object getObject(String paramString, Map paramMap) throws SQLException{
+public Object getObject(String paramString, Map<String,Class<?>> paramMap) throws SQLException{
 	return instance.getObject(paramString,paramMap);
 }
 

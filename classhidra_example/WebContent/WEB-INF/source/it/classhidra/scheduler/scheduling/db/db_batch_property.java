@@ -32,7 +32,7 @@ public void reInit(java.sql.ResultSet rs) {
 	if(rs==null) return;
 	try{
 		java.sql.ResultSetMetaData rsmd = rs.getMetaData();
-		HashMap rsmdH = new HashMap();
+		HashMap<String,String> rsmdH = new HashMap<String, String>();
 		for(int i=1;i<=rsmd.getColumnCount();i++) rsmdH.put(rsmd.getColumnLabel(i).toLowerCase(),rsmd.getColumnLabel(i));
 		if(rsmdH.get("cd_ist")!=null) this.setCd_ist(new Short(rs.getShort("cd_ist")));
 		if(rsmdH.get("cd_btch")!=null && rs.getString("cd_btch")!=null) this.setCd_btch(new String(rs.getString("cd_btch")));
@@ -143,11 +143,11 @@ public void setCd_property(String value) {
 public String getValue() {
     return value;
 }
-public void setValue(String value) {
-    if(value==null) value=value;
+public void setValue(String input) {
+    if(input==null) value=input;
     else{
-        if(value.length()>1000) value = value.substring(0,1000);
-        else value = value;
+        if(input.length()>1000) value = input.substring(0,1000);
+        else value = input;
     }
 }
 }

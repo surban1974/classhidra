@@ -40,7 +40,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 @Local(i_ProviderWrapper.class)
 public class Wrapper_EjbLocal_container extends bsProvidedWrapper implements i_ProviderWrapper{
 	private static final long serialVersionUID = 1L;
-	private  ConcurrentHashMap instance = new ConcurrentHashMap();
+	private  ConcurrentHashMap<Object,Object> instance = new ConcurrentHashMap<Object, Object>();
 	
 	public Wrapper_EjbLocal_container(){
 		super();		
@@ -57,7 +57,7 @@ public class Wrapper_EjbLocal_container extends bsProvidedWrapper implements i_P
 	public boolean setInstance(Object _instance) {
 		if(instance!=null){
 			if(_instance!=null && _instance instanceof Map)
-				instance.putAll((Map)_instance);
+				instance.putAll((Map<?,?>)_instance);
 		}
 		return true;
 	}

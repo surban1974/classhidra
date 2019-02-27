@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 public class stream implements i_stream, Serializable{
 	private static final long serialVersionUID = -1;
 	private HttpServletRequest _request;
-	private HashMap _content;
+	private HashMap<String,Object> _content;
 	private i_stream _stream;
 	private info_stream _infostream;
 	private listener_stream listener_s;
@@ -61,7 +61,7 @@ public class stream implements i_stream, Serializable{
 			_stream.onPostInit(_request, response);
 		}
 	}
-	public void init(HashMap content) throws bsControllerException{
+	public void init(HashMap<String,Object> content) throws bsControllerException{
 		_content = content;
 		if(_stream!=null){
 			_stream.onPreInit(_content);
@@ -75,10 +75,10 @@ public class stream implements i_stream, Serializable{
 	public redirects streamservice_exit(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		return null;
 	}
-	public redirects streamservice_enter(HashMap wsParameters) throws bsControllerException{
+	public redirects streamservice_enter(HashMap<String,Object> wsParameters) throws bsControllerException{
 		return null;
 	}
-	public redirects streamservice_exit(HashMap wsParameters) throws bsControllerException{
+	public redirects streamservice_exit(HashMap<String,Object> wsParameters) throws bsControllerException{
 		return null;
 	}
 
@@ -111,8 +111,7 @@ public class stream implements i_stream, Serializable{
 	}
 	
 
-	public info_action redirect(HashMap wsParameters, redirects _redirect, String id_action) throws ServletException,	UnavailableException {
-		RequestDispatcher rd=null;
+	public info_action redirect(HashMap<String,Object> wsParameters, redirects _redirect, String id_action) throws ServletException,	UnavailableException {
 
 		if(_infostream==null) return null;
 		if(_infostream.get_apply_to_action().size()==0 || _infostream.get_apply_to_action().get("*")!=null){
@@ -122,8 +121,8 @@ public class stream implements i_stream, Serializable{
 			return iAction;
 		}else{
 
-//			info_action iAction = (info_action)bsController.getAction_config().get_actions().get(id_action);
-			info_action iAction = (info_action)load_actions.get_actions().get(id_action);
+
+//			info_action iAction = (info_action)load_actions.get_actions().get(id_action);
 
 //			if(iAction!=null) rd = _redirect.redirect(scontext, iAction);
 		}
@@ -181,19 +180,19 @@ public class stream implements i_stream, Serializable{
 		if(listener_s!=null) listener_s.onPreRedirect(redirect, idAction);
 	}
 
-	public void onPostEnter(redirects redirect, HashMap content) {
+	public void onPostEnter(redirects redirect, HashMap<String,Object> content) {
 		if(listener_s!=null) listener_s.onPostEnter(redirect,content);
 	}
 
-	public void onPostExit(redirects redirect, HashMap content) {
+	public void onPostExit(redirects redirect, HashMap<String,Object> content) {
 		if(listener_s!=null) listener_s.onPostExit(redirect,content);
 	}
 
-	public void onPreEnter(HashMap content) {
+	public void onPreEnter(HashMap<String,Object> content) {
 		if(listener_s!=null) listener_s.onPreEnter(content);
 	}
 
-	public void onPreExit(HashMap content) {
+	public void onPreExit(HashMap<String,Object> content) {
 		if(listener_s!=null) listener_s.onPreExit(content);
 	}
 
@@ -205,11 +204,11 @@ public class stream implements i_stream, Serializable{
 		if(listener_s!=null) listener_s.onPostInstanceFromProvider();
 	}
 
-	public void onPreInit(HashMap _content) {
+	public void onPreInit(HashMap<String,Object> _content) {
 		if(listener_s!=null) listener_s.onPreInit(_content);
 	}
 
-	public void onPostInit(HashMap _content) {
+	public void onPostInit(HashMap<String,Object> _content) {
 		if(listener_s!=null) listener_s.onPostInit(_content);
 	}
 

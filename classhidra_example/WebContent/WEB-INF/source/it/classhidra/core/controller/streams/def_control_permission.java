@@ -9,6 +9,7 @@ import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
 import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.info_action;
+import it.classhidra.core.controller.load_actions;
 import it.classhidra.core.controller.stream;
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
@@ -30,7 +31,7 @@ public class def_control_permission extends stream implements i_stream{
 
 		String id_action = (String)request.getAttribute(bsController.CONST_ID);
 
-		info_action i_a = (info_action)bsController.getAction_config().get_actions().get(id_action);
+		info_action i_a = load_actions.get_actions().get(id_action);
 		if(i_a!=null && (i_a.getProperty("allway").equalsIgnoreCase("public") || i_a.getProperty("always").equalsIgnoreCase("public")))
 			return super.streamservice_enter(request, response);
 

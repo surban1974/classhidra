@@ -1,16 +1,14 @@
 package it.classhidra.core.tool.db.pool; 
 
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.init.db_init;
-import it.classhidra.core.tool.exception.bsException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_format;
-
 import java.sql.Connection;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
+
+import it.classhidra.core.init.db_init;
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
 
 public class db_pool_servlet extends HttpServlet   {
 	private static final long serialVersionUID = 1L;

@@ -51,7 +51,7 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 	protected String domelement = null;
 	protected String rendering = null;
 
-	protected Map tagAttributes = new HashMap();
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
 
 	
 	public int doEndTag() throws JspException {		
@@ -111,8 +111,9 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 			i_action formAction=null;
 			i_bean formBean=null;
 			if(bean!=null){
-				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
-				if(pool!=null) formAction = (i_action)pool.get(bean);
+				@SuppressWarnings("unchecked")
+				HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+				if(pool!=null) formAction = pool.get(bean);
 			}
 			if(formAction!=null) bean = null;
 			else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
@@ -159,7 +160,7 @@ public class tagComponent extends ClTagSupport implements DynamicAttributes {
 		bean=null;
 		domelement=null;
 		rendering=null;
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 	}
   
 	protected String createTagBody() {

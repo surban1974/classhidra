@@ -60,7 +60,7 @@ public boolean sql_getFromResultSet(java.sql.ResultSet rs);
 public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd);
 public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd, String prefisso);
 public boolean sql_getFromResultSet(java.sql.ResultSet rs, java.sql.ResultSetMetaData rsmd, boolean log);
-public HashMap getFields();
-public void setFields(HashMap fields);
+public HashMap<String,Object> getFields();
+public void setFields(HashMap<String,Object> fields);
 public i_elementDBBase load_use_itself() throws Exception;
 public i_elementDBBase load_use_sql(String sql) throws Exception;}

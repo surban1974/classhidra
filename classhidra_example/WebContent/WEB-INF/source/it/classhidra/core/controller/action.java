@@ -61,6 +61,7 @@ public class action extends bean implements i_action, Serializable{
 		super();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void init(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
 		i_bean bean4init = null;
 //setCurrent_redirect(null);		
@@ -79,14 +80,11 @@ public class action extends bean implements i_action, Serializable{
 		}
 		if(bean4init!=null){
 			boolean isRemoteEjb=false;
-			HashMap request2map = null;
+			HashMap<String,Object> request2map = null;
 			if(bean4init.getInfo_context()!=null && bean4init.getInfo_context().isRemote()){
 				isRemoteEjb=true;
 				try{
-//					request2map = (HashMap)bean4init.asBean().getClass()
-//							.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//							.invoke(null, new Object[]{request});
-					request2map = (HashMap)
+					request2map = (HashMap<String,Object>)
 							util_reflect.findDeclaredMethod(
 								bean4init.asBean().getClass(),
 								"convertRequest2Map", new Class[]{HttpServletRequest.class})
@@ -98,7 +96,7 @@ public class action extends bean implements i_action, Serializable{
 					new bsControllerException(e, iStub.log_ERROR);
 				}
 				if(request2map==null)
-					request2map = new HashMap();
+					request2map = new HashMap<String,Object>();
 	//			request2map = util_supportbean.request2map(request);
 	
 			}
@@ -129,7 +127,7 @@ public class action extends bean implements i_action, Serializable{
 
 		
 	}
-	public void init(HashMap wsParameters) throws bsControllerException{
+	public void init(HashMap<String,Object> wsParameters) throws bsControllerException{
 		if(bsController.getAppInit().get_ejb_avoid_loop_reentrant()==null || !bsController.getAppInit().get_ejb_avoid_loop_reentrant().equals("true")){
 			if(getRealBean()!=null){
 				getRealBean().onPreInit(wsParameters);
@@ -156,10 +154,10 @@ public class action extends bean implements i_action, Serializable{
 	public synchronized redirects syncroservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException{
 		return actionservice(request, response);
 	}
-	public redirects actionservice(HashMap wsParameters) throws  bsControllerException{
+	public redirects actionservice(HashMap<String,Object> wsParameters) throws  bsControllerException{
 		return new redirects(_infoaction.getRedirect());
 	}
-	public synchronized redirects syncroservice(HashMap wsParameters) throws  bsControllerException{
+	public synchronized redirects syncroservice(HashMap<String,Object> wsParameters) throws  bsControllerException{
 		return actionservice(wsParameters);
 	}
 	public void actionBeforeRedirect(HttpServletRequest request, HttpServletResponse response) throws bsControllerException{
@@ -312,7 +310,7 @@ public class action extends bean implements i_action, Serializable{
 				if(local!=null){
 					info_redirect global = null;
 					try{
-						global = (info_redirect)bsController.getAction_config().get_redirects().get(uri);
+						global = (info_redirect)load_actions.get_redirects().get(uri);
 					}catch(Exception e){
 					}
 					if(global==null)
@@ -340,7 +338,7 @@ public class action extends bean implements i_action, Serializable{
 				}else{
 					info_redirect global = null;
 					try{
-						global = (info_redirect)bsController.getAction_config().get_redirects().get(uri);
+						global = (info_redirect)load_actions.get_redirects().get(uri);
 					}catch(Exception e){
 					}
 					if(global!=null)
@@ -383,7 +381,7 @@ public class action extends bean implements i_action, Serializable{
 		return getMethodAndCall(this.getClass(), annotation_name);
 	}
 
-	private Object[] getMethodAndCall(Class cls, String annotation_name){
+	private Object[] getMethodAndCall(Class<?> cls, String annotation_name){
 		info_call call=null;
 		java.lang.reflect.Method[] mtds = cls.getMethods();
 		for(int i=0;i<mtds.length;i++){
@@ -450,19 +448,19 @@ public class action extends bean implements i_action, Serializable{
 		if(listener_a!=null) listener_a.onPreInit(request, response);
 	}
 
-	public void onPostActionservice(redirects redirect,HashMap content) {
+	public void onPostActionservice(redirects redirect,HashMap<String,Object> content) {
 		if(listener_a!=null) listener_a.onPostActionservice(redirect,content);
 	}
 
-	public void onPostSyncroservice(redirects redirect,HashMap content) {
+	public void onPostSyncroservice(redirects redirect,HashMap<String,Object> content) {
 		if(listener_a!=null) listener_a.onPostSyncroservice(redirect,content);
 	}
 
-	public void onPreActionservice(HashMap content) {
+	public void onPreActionservice(HashMap<String,Object> content) {
 		if(listener_a!=null) listener_a.onPreActionservice(content);
 	}
 
-	public void onPreSyncroservice(HashMap content) {
+	public void onPreSyncroservice(HashMap<String,Object> content) {
 		if(listener_a!=null) listener_a.onPreSyncroservice(content);
 	}
 
@@ -522,15 +520,15 @@ public class action extends bean implements i_action, Serializable{
 		if(listener_a!=null) listener_a.onPostInstanceFromProvider();
 	}
 	
-	public void onPreActionCall(String id_call, HashMap _content) {
+	public void onPreActionCall(String id_call, HashMap<String,Object> _content) {
 		if(listener_a!=null) listener_a.onPreActionCall(id_call, _content);
 	}
 
-	public void onPostActionCall(redirects redirect, String id_call, HashMap _content) {
+	public void onPostActionCall(redirects redirect, String id_call, HashMap<String,Object> _content) {
 		if(listener_a!=null) listener_a.onPostActionCall(redirect, id_call, _content);
 	}
 
-	public void actionBeforeRedirect(HashMap wsParameters) throws bsControllerException {
+	public void actionBeforeRedirect(HashMap<String,Object> wsParameters) throws bsControllerException {
 
 	}	
 
@@ -550,7 +548,7 @@ public class action extends bean implements i_action, Serializable{
 	}
 
 
-	public static Map convertRequest2Map(HttpServletRequest request){
+	public static Map<String,Object> convertRequest2Map(HttpServletRequest request){
 		return util_supportbean.request2map(request);
 	}
 
@@ -561,13 +559,13 @@ public class action extends bean implements i_action, Serializable{
 	public void enterActionContext(i_action oldAction, HttpServletRequest request, HttpServletResponse response) {
 	}
 
-	public void enterActionContext(i_action oldAction, HashMap _content) {
+	public void enterActionContext(i_action oldAction, HashMap<String,Object> _content) {
 	}	
 
 	public void leaveActionContext(i_action newAction, HttpServletRequest request, HttpServletResponse response) {
 	}
 
-	public void leaveActionContext(i_action newAction, HashMap _content) {
+	public void leaveActionContext(i_action newAction, HashMap<String,Object> _content) {
 	}	
 
 	public action_payload delegatePayloadProcess(String id_call, iContext context, boolean beanInitFromRequest)

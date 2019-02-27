@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.surban1974.classhidra</groupId>
   <artifactId>classhidra-base-example</artifactId>
-  <version>1.5.5</version>
+  <version>1.5.6</version>
   <packaging>war</packaging>
 	<name>ClassHidra Framework Example</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Distributed Apache Tomcat v7.0.62.</description>

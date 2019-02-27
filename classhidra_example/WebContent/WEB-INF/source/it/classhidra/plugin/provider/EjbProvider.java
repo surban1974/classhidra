@@ -47,6 +47,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 @Local(i_ProviderWrapper.class)
 public class EjbProvider implements i_provider, i_ProviderWrapper {
 
+	private static final long serialVersionUID = 1L;
 	private static final String LOOKUP_EJBCONTEXT = 		"java:comp/EJBContext";
 	private static final String LOOKUP_ENV_EJBCONTEXT = 	"java:comp/env/EJBContext";
 	private static final String LOOKUP_MAPPED_EJBCONTEXT = 	"java:module/WrapperEjbContext";
@@ -60,8 +61,8 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	private static String correct_ejb_jndi_name;
 	private static EJBContext ejbContext;
 //	private static InitialContext initialContext;
-	private static ConcurrentHashMap cacheNamingMap;
-	private static LinkedHashSet cacheJavaGlobalNames;
+	private static ConcurrentHashMap<String,String> cacheNamingMap;
+	private static LinkedHashSet<String> cacheJavaGlobalNames;
 	
 
 	@Resource
@@ -241,7 +242,7 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	   			if(class_bean.lastIndexOf(".")>-1)
 	   				id_class_bean = class_bean.substring(class_bean.lastIndexOf("."),class_bean.length()).replace(".", "");
 	   		}
-	   		Iterator it = cacheJavaGlobalNames.iterator();
+	   		Iterator<String> it = cacheJavaGlobalNames.iterator();
 	   		while(it.hasNext()){
 				String key = (String)it.next();
 				if(id_bean!=null){
@@ -355,7 +356,7 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
         	}
     	}
     	
-    	Class clazz=null;
+    	Class<?> clazz=null;
     	if(obj!=null){
     		clazz=obj.getClass();
     	}else if(class_bean!=null && !class_bean.equals("")){
@@ -688,7 +689,7 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 
 
     
-    public static Object resolveReference(int type, Class clazz) {
+    public static Object resolveReference(int type, Class<?> clazz) {
        	if(type==1){    	
 	    	EJBContext ejbc = getEjbContext();
 	        try{
@@ -970,9 +971,9 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 */ 		
  	}
 
-	public static ConcurrentHashMap getNamingMap() {
+	public static ConcurrentHashMap<String,String> getNamingMap() {
 		if(cacheNamingMap==null)
-			cacheNamingMap = new ConcurrentHashMap();
+			cacheNamingMap = new ConcurrentHashMap<String, String>();
 		return cacheNamingMap;
 	}	
 
@@ -1093,12 +1094,12 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
     		 cacheNamingMap = null;
     	 }
     	 try{
-    		 List firstPart_ear = new ArrayList();
-    		 NamingEnumeration root = null;
+    		 List<String> firstPart_ear = new ArrayList<String>();
+    		 NamingEnumeration<?> root = null;
     		 try{
     			 Context rootCtx = (Context)initialContext.lookup("java:global");
     			 if(rootCtx!=null)
-    				 root = (NamingEnumeration)rootCtx.list("");
+    				 root = (NamingEnumeration<?>)rootCtx.list("");
     		 }catch(Exception e){    			 
     		 }
     		 if(root==null){
@@ -1114,13 +1115,13 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
 	    			);
 	    		 if(firstPart_ear!=null && firstPart_ear.size()>0){
 	    			 for(int i=0;i<firstPart_ear.size();i++){
-	    				 NamingEnumeration ne = initialContext.list(LOOKUP_GLOBAL_NAMES+"/"+firstPart_ear.get(i));
+	    				 NamingEnumeration<NameClassPair> ne = initialContext.list(LOOKUP_GLOBAL_NAMES+"/"+firstPart_ear.get(i));
 		        		 while(ne.hasMore()){
 		        			 String secondPart_war = ((NameClassPair)ne.next()).getName();	    			 
 			           		 String key = LOOKUP_GLOBAL_NAMES + ((firstPart_ear.get(i)==null)?"":"/"+firstPart_ear.get(i))+((secondPart_war==null)?"":"/"+secondPart_war);
-			           		 NamingEnumeration ne2 = initialContext.list(key);
+			           		 NamingEnumeration<NameClassPair> ne2 = initialContext.list(key);
 			           		 if(cacheJavaGlobalNames==null)
-			           			cacheJavaGlobalNames = new LinkedHashSet();
+			           			cacheJavaGlobalNames = new LinkedHashSet<String>();
 			           		 try{
 				        		 while(ne2.hasMore())
 				        			 cacheJavaGlobalNames.add(key+"/"+((NameClassPair)ne2.next()).getName());
@@ -1166,7 +1167,7 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
     		info = new info_context();
     	if(bean!=null){
     		try{
-    			Class clazz = bean.getClass();
+    			Class<?> clazz = bean.getClass();
          		if(clazz.getAnnotation(Stateless.class)!=null)
          			info.setStateless(true);
          		if(clazz.getAnnotation(Stateful.class)!=null)
@@ -1188,7 +1189,7 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
      public static void setInfoContext(i_bean bean) {
     	if(bean!=null){
     		try{
-    			Class clazz = bean.getClass();
+    			Class<?> clazz = bean.getClass();
     			bean.getInfo_context().setProxiedEjb(true);
          		if(clazz.getAnnotation(Stateless.class)!=null)
          			bean.getInfo_context().setStateless(true);
@@ -1206,7 +1207,7 @@ public class EjbProvider implements i_provider, i_ProviderWrapper {
      public static void setInfoContext(i_stream stream) {
     	if(stream!=null){
     		try{
-    			Class clazz = stream.getClass();
+    			Class<?> clazz = stream.getClass();
     			stream.getInfo_context().setProxiedEjb(true);
          		if(clazz.getAnnotation(Stateless.class)!=null)
          			stream.getInfo_context().setStateless(true);

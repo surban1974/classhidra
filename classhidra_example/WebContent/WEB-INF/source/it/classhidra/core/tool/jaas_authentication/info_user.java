@@ -34,7 +34,7 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -56,10 +56,10 @@ public class info_user extends info_entity implements i_elementBase{
 	private String description;
 	private String currentGroup;
 	private String email;
-	private HashMap _groups;
-	private HashMap _targets;
-	private Vector v_info_groups;
-	private Vector v_info_targets;
+	private HashMap<String,info_group> _groups;
+	private HashMap<String,info_target> _targets;
+	private Vector<info_group> v_info_groups;
+	private Vector<info_target> v_info_targets;
 	
 
 
@@ -112,10 +112,10 @@ public class info_user extends info_entity implements i_elementBase{
 		description="";
 		currentGroup="";
 		email="";		
-		_groups=new HashMap();
-		_targets=new HashMap();
-		v_info_groups=new Vector();
-		v_info_targets=new Vector();
+		_groups=new HashMap<String, info_group>();
+		_targets=new HashMap<String, info_target>();
+		v_info_groups=new Vector<info_group>();
+		v_info_targets=new Vector<info_target>();
 
 
 	}
@@ -157,19 +157,19 @@ public class info_user extends info_entity implements i_elementBase{
 					_groups.put(key, iGroup);
 				}			
 			}
-			v_info_groups = (new Vector(_groups.values()));
-			v_info_groups = new util_sort().sort(v_info_groups,"name");
+			v_info_groups = new Vector<info_group>(_groups.values());
+			v_info_groups = Util_sort.sort(v_info_groups,"name");
 
 		}
 	}
 
 	public void refreshV_info_groups(){
-		v_info_groups = (new Vector(_groups.values()));
-		v_info_groups = new util_sort().sort(v_info_groups,"name");
+		v_info_groups = new Vector<info_group>(_groups.values());
+		v_info_groups = Util_sort.sort(v_info_groups,"name");
 	}
 	public void refreshV_info_targets(){
-		v_info_targets = (new Vector(_targets.values()));
-		v_info_targets = new util_sort().sort(v_info_targets,"name");
+		v_info_targets = new Vector<info_target>(_targets.values());
+		v_info_targets = Util_sort.sort(v_info_targets,"name");
 	}	
 	
 	
@@ -195,8 +195,8 @@ public class info_user extends info_entity implements i_elementBase{
 					_targets.put(key, iTarget);
 				}			
 			}
-			v_info_targets = (new Vector(_targets.values()));
-			v_info_targets = new util_sort().sort(v_info_targets,"name");
+			v_info_targets = new Vector<info_target>(_targets.values());
+			v_info_targets = Util_sort.sort(v_info_targets,"name");
 
 		}
 		
@@ -292,19 +292,19 @@ public class info_user extends info_entity implements i_elementBase{
 		this.email = email;
 	}
 
-	public Vector getV_info_groups() {
+	public Vector<info_group> getV_info_groups() {
 		return v_info_groups;
 	}
 
-	public void setV_info_groups(Vector vInfoGroups) {
+	public void setV_info_groups(Vector<info_group> vInfoGroups) {
 		v_info_groups = vInfoGroups;
 	}
 
-	public HashMap get_groups() {
+	public HashMap<String,info_group> get_groups() {
 		return _groups;
 	}
 
-	public void set_groups(HashMap groups) {
+	public void set_groups(HashMap<String,info_group> groups) {
 		_groups = groups;
 	}
 
@@ -316,19 +316,19 @@ public class info_user extends info_entity implements i_elementBase{
 		pass_expired = passExpired;
 	}
 
-	public HashMap get_targets() {
+	public HashMap<String,info_target> get_targets() {
 		return _targets;
 	}
 
-	public void set_targets(HashMap targets) {
+	public void set_targets(HashMap<String,info_target> targets) {
 		_targets = targets;
 	}
 
-	public Vector getV_info_targets() {
+	public Vector<info_target> getV_info_targets() {
 		return v_info_targets;
 	}
 
-	public void setV_info_targets(Vector vInfoTargets) {
+	public void setV_info_targets(Vector<info_target> vInfoTargets) {
 		v_info_targets = vInfoTargets;
 	}
 

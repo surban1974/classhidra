@@ -61,10 +61,11 @@ public class util_tag {
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static boolean addTagExecutorObject(final String className, Object pageObject) {
 		if(bsController.getTagComponentRender()!=null) {
 			try {
-				((Map)bsController.getTagComponentRender().get_bean(i_tag_helper.CONST_TAG_EXECUTORS))
+				((Map<String,Object>)bsController.getTagComponentRender().get_bean(i_tag_helper.CONST_TAG_EXECUTORS))
 						.put(className, pageObject);
 				return true;
 			}catch(Exception e) {

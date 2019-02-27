@@ -72,7 +72,7 @@ public class db_init implements Serializable{
 	private String _local_pool_provider;
 
 
-	private HashMap _another_db_init;
+	private HashMap<String,db_init> _another_db_init;
 
 	private String loadedFrom="";
 
@@ -89,7 +89,7 @@ public db_init() {
 }
 
 public void init() {
-	if(_another_db_init==null) _another_db_init=new HashMap();
+	if(_another_db_init==null) _another_db_init=new HashMap<String, db_init>();
 	Properties property = null;
 	String app_path="";
 	app_init ainit = bsController.getAppInit();
@@ -172,7 +172,7 @@ public void init() {
 }
 
 public boolean init(Properties property, String prefix) {
-	if(_another_db_init==null) _another_db_init=new HashMap();
+	if(_another_db_init==null) _another_db_init=new HashMap<String, db_init>();
 	if(prefix.equals("")){
 		_id = (_id==null)?property.getProperty(id):_id;
 		_connectiontype = (_connectiontype==null)?property.getProperty(id_connectiontype):_connectiontype;
@@ -265,11 +265,11 @@ public void set_url(String string) {
 public void set_user(String string) {
 	_user = string;
 }
-	public HashMap get_another_db_init() {
+	public HashMap<String,db_init> get_another_db_init() {
 		return _another_db_init;
 	}
 
-	public void set_another_db_init(HashMap map) {
+	public void set_another_db_init(HashMap<String,db_init> map) {
 		_another_db_init = map;
 	}
 

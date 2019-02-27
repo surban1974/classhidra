@@ -40,11 +40,11 @@ public class showErrorsMessages extends TagSupport{
 	private static final long serialVersionUID = -219781416727117100L;
 	protected String style = null;
 	protected String styleClass = null;
-	protected HashMap parameters=null;
+	protected HashMap<String,String> parameters=null;
 
 
 	public int doStartTag() throws JspException {
-		parameters=new HashMap();
+		parameters=new HashMap<String, String>();
 		return EVAL_BODY_INCLUDE;
 	}
 
@@ -71,9 +71,11 @@ public class showErrorsMessages extends TagSupport{
 	protected String createTagBody() {
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 		final StringBuffer results = new StringBuffer("");
-		Vector $listmessages = new Vector();
+		Vector<message> $listmessages = new Vector<message>();
 		try{
-			$listmessages = (Vector)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			@SuppressWarnings("unchecked")
+			Vector<message> attribute = (Vector<message>)request.getSession().getAttribute(bsController.CONST_BEAN_$LISTMESSAGE);
+			$listmessages = attribute;
 		}catch(Exception e){
 		}
 		for(int i=0;i<$listmessages.size();i++){
@@ -125,7 +127,7 @@ public class showErrorsMessages extends TagSupport{
 		style = string;
 	}
 
-	public HashMap getParameters() {
+	public HashMap<String,String> getParameters() {
 		return parameters;
 	}
 

@@ -27,7 +27,6 @@ import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.util.util_format;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -52,23 +51,23 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	protected String lookup;
 	protected int enabled=1;
 
-	protected HashMap properties;
-	protected HashMap access_allowed;
-	protected HashMap access_forbidden;
+	protected HashMap<String,Object> properties;
+	protected HashMap<String,info_relation> access_allowed;
+	protected HashMap<String,info_relation> access_forbidden;
 	
 	protected boolean annotationLoaded=false;
 	protected info_entity parent;
 	
-	private Class[] mappedMethodParameterTypes;
+	private Class<?>[] mappedMethodParameterTypes;
 
 
 
 	public info_entity(){
 		super();
 		provider="";
-		properties=new HashMap();
-		access_allowed=new HashMap();
-		access_forbidden=new HashMap();
+		properties=new HashMap<String,Object>();
+		access_allowed=new HashMap<String,info_relation>();
+		access_forbidden=new HashMap<String,info_relation>();
 		property="";
 		order="";
 		comment="";
@@ -95,7 +94,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	public void setProperty(String property) {
 		if(property==null) return;
 		this.property = property;
-		properties=new HashMap();
+		properties=new HashMap<String,Object>();
 		StringTokenizer st = new StringTokenizer(property,";");
 		while(st.hasMoreTokens()){
 			String currToken = st.nextToken();
@@ -118,7 +117,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 		if(iRelation!=null && iRelation.getTargets()!=null && !iRelation.getTargets().equals("") && iRelation.getGroups()!=null && !iRelation.getGroups().equals("")){
 			String key = iRelation.getTargets()+"|"+iRelation.getGroups();
 			
-			HashMap access = null;
+			HashMap<String,info_relation> access = null;
 			if(iRelation.getType().equalsIgnoreCase(info_relation.TYPE_ALLOWED))
 				access = access_allowed;
 			if(iRelation.getType().equalsIgnoreCase(info_relation.TYPE_FORBIDDEN))
@@ -129,13 +128,13 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 				if(iRelationExist!=null){
 					if(iRelation.get_elements()!=null){
 						if(iRelationExist.get_elements()==null)
-							iRelationExist.set_elements(new HashMap());
+							iRelationExist.set_elements(new HashMap<String, HashMap<String,HashMap<String,String>>>());
 						iRelationExist.get_elements().putAll(iRelation.get_elements());
 						iRelationExist.refreshV_elements();
 					}
 					if(iRelation.get_middleactions()!=null){
 						if(iRelationExist.get_middleactions()==null)
-							iRelationExist.set_middleactions(new HashMap());
+							iRelationExist.set_middleactions(new HashMap<String, HashMap<String,String>>());
 						iRelationExist.get_middleactions().putAll(iRelation.get_middleactions());
 						iRelationExist.refreshV_middleactions();
 					}
@@ -189,7 +188,7 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 		if(properties==null){
 			prop=property;
 		}else{
-			Vector tmp = new Vector(properties.keySet());
+			Vector<String> tmp = new Vector<String>(properties.keySet());
 			for(int i=0;i<tmp.size();i++){
 				String key=(String)tmp.get(i);
 				String value="";
@@ -260,12 +259,12 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	}
 
 
-	public HashMap getProperties() {
+	public HashMap<String,Object> getProperties() {
 		return properties;
 	}
 
 
-	public void setProperties(HashMap properties) {
+	public void setProperties(HashMap<String,Object> properties) {
 		this.properties = properties;
 	}
 
@@ -300,22 +299,22 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	}
 
 
-	public HashMap getAccess_allowed() {
+	public HashMap<String,info_relation> getAccess_allowed() {
 		return access_allowed;
 	}
 
 
-	public void setAccess_allowed(HashMap access_allowed) {
+	public void setAccess_allowed(HashMap<String,info_relation> access_allowed) {
 		this.access_allowed = access_allowed;
 	}
 
 
-	public HashMap getAccess_forbidden() {
+	public HashMap<String,info_relation> getAccess_forbidden() {
 		return access_forbidden;
 	}
 
 
-	public void setAccess_forbidden(HashMap access_forbidden) {
+	public void setAccess_forbidden(HashMap<String,info_relation> access_forbidden) {
 		this.access_forbidden = access_forbidden;
 	}
 
@@ -330,12 +329,12 @@ public abstract class info_entity extends elementBase implements i_elementBase{
 	}
 
 
-	public Class[] getMappedMethodParameterTypes() {
+	public Class<?>[] getMappedMethodParameterTypes() {
 		return mappedMethodParameterTypes;
 	}
 
 
-	public void setMappedMethodParameterTypes(Class[] mappedMethodParameterTypes) {
+	public void setMappedMethodParameterTypes(Class<?>[] mappedMethodParameterTypes) {
 		this.mappedMethodParameterTypes = mappedMethodParameterTypes;
 	}
 

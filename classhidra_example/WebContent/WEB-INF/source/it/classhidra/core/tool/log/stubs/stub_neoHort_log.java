@@ -39,7 +39,7 @@ public class stub_neoHort_log implements iStub{
 		super();
 	}
 
-public void write(HashMap hm){
+public void write(HashMap<String,Object> hm){
 	try{
 		Object mess = hm.get(iStub.log_stub_mess);
 		Object exc = hm.get(iStub.log_stub_exception);

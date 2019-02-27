@@ -1,41 +1,17 @@
 package it.classhidra.plugin.was.jboss;
 
-import it.classhidra.annotation.i_annotation_scanner;
-import it.classhidra.annotation.elements.Action;
-import it.classhidra.annotation.elements.ActionCall;
-import it.classhidra.annotation.elements.ActionMapping;
-import it.classhidra.annotation.elements.Apply_to_action;
-import it.classhidra.annotation.elements.Bean;
-import it.classhidra.annotation.elements.Entity;
-import it.classhidra.annotation.elements.Redirect;
-import it.classhidra.annotation.elements.Section;
-import it.classhidra.annotation.elements.Stream;
-import it.classhidra.annotation.elements.Transformation;
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.controller.info_action;
-import it.classhidra.core.controller.info_apply_to_action;
-import it.classhidra.core.controller.info_bean;
-import it.classhidra.core.controller.info_call;
-import it.classhidra.core.controller.info_entity;
-import it.classhidra.core.controller.info_redirect;
-import it.classhidra.core.controller.info_section;
-import it.classhidra.core.controller.info_stream;
-import it.classhidra.core.controller.info_transformation;
-import it.classhidra.core.tool.exception.bsException;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_classes;
-import it.classhidra.core.tool.util.util_sort;
-
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
+
+import it.classhidra.annotation.i_annotation_scanner;
+import it.classhidra.core.tool.exception.bsException;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_classes;
 
 
 
@@ -120,7 +96,7 @@ public class annotation_scanner extends it.classhidra.annotation.annotation_scan
 					}
 					if(vFile!=null){
 						if (vFile.exists() && vFile.getChildren().size()>0) {
-							List files = vFile.getChildren();
+							List<VirtualFile> files = vFile.getChildren();
 							for(int i=0;i<files.size();i++){
 								String package_path = ((VirtualFile)files.get(i)).getPathName();
 //								package_path=package_annotated+package_path;
@@ -165,8 +141,8 @@ public class annotation_scanner extends it.classhidra.annotation.annotation_scan
 	}
 	
 	
-	private List checkBranchVFile(VirtualFile file_){
-		List array = new ArrayList();
+	private List<VirtualFile> checkBranchVFile(VirtualFile file_){
+		List<VirtualFile> array = new ArrayList<VirtualFile>();
 		try{
 			array = file_.getChildren();
 		}catch(Exception e){

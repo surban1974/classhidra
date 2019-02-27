@@ -27,8 +27,9 @@ import it.classhidra.core.tool.log.stubs.iStub;
 
 
 public class TagComponentRenderingProvider implements i_provider {
-	private ServletContext servletContext=null;
-	private Map components = new ConcurrentHashMap();
+	private static final long serialVersionUID = 1L;
+	protected ServletContext servletContext=null;
+	private Map<String,Object> components = new ConcurrentHashMap<String, Object>();
 	
 	
 	
@@ -68,8 +69,9 @@ public class TagComponentRenderingProvider implements i_provider {
 			try{
 				
 				if(request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL)==null)
-					request.setAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
-				final HashMap included_pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+					request.setAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap<String,i_action>());
+				@SuppressWarnings("unchecked")
+				final HashMap<String,i_action> included_pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
 				if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getName()!=null)
 					included_pool.put(action_instance.get_infoaction().getName(),action_instance);
 				else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getPath()!=null)
@@ -80,7 +82,7 @@ public class TagComponentRenderingProvider implements i_provider {
 				final ClPageContext clPageContext = new ClPageContext(request, new ResponseWrapper(response) );
 				
 				final Object o_provider = components.get(arrayOfString[0]);
-				final Class c_provider = o_provider.getClass();
+				final Class<?> c_provider = o_provider.getClass();
 
 				
 				Method m_getInstance = null;
@@ -94,7 +96,7 @@ public class TagComponentRenderingProvider implements i_provider {
 					boolean setPC = false;
 					final Object[] parameters = new Object[m_getInstance.getParameterTypes().length];
 					for(int i=0;i<m_getInstance.getParameterTypes().length;i++) {
-						final Class parameter = m_getInstance.getParameterTypes()[i];
+						final Class<?> parameter = m_getInstance.getParameterTypes()[i];
 						if(parameter.isAssignableFrom(PageContext.class)) {						
 							parameters[i]= clPageContext;
 							setPC=true;

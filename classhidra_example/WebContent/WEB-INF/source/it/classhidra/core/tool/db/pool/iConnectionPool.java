@@ -17,6 +17,6 @@ public interface iConnectionPool {
 
 	public abstract void returnConnection(Connection conn);
 
-	public abstract Vector getConnections();
+	public abstract Vector<Connection> getConnections();
 
 }

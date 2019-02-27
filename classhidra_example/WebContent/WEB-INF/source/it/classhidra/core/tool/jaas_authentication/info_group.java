@@ -26,22 +26,22 @@ package it.classhidra.core.tool.jaas_authentication;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 import it.classhidra.core.controller.info_entity;
 import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
-
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 public class info_group extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -1L;
 	private String name;
-	private HashMap _users;
-	private Vector v_info_users;
+	private HashMap<String,info_user> _users;
+	private Vector<info_user> v_info_users;
 
 	
 	
@@ -76,14 +76,14 @@ public class info_group extends info_entity implements i_elementBase{
 	
 	public void reimposta(){
 		name="";
-		_users=new HashMap();
-		v_info_users=new Vector();
+		_users=new HashMap<String, info_user>();
+		v_info_users=new Vector<info_user>();
 
 	}
 	
 	public void refreshV_info_users(){
-		v_info_users = (new Vector(_users.values()));
-		v_info_users = new util_sort().sort(v_info_users,"name");
+		v_info_users = new Vector<info_user>(_users.values());
+		v_info_users = Util_sort.sort(v_info_users,"name");
 	}
 	
 	public String toString(){
@@ -112,19 +112,19 @@ public class info_group extends info_entity implements i_elementBase{
 		this.name = name;
 	}
 
-	public HashMap get_users() {
+	public HashMap<String,info_user> get_users() {
 		return _users;
 	}
 
-	public void set_users(HashMap users) {
+	public void set_users(HashMap<String,info_user> users) {
 		_users = users;
 	}
 
-	public Vector getV_info_users() {
+	public Vector<info_user> getV_info_users() {
 		return v_info_users;
 	}
 
-	public void setV_info_users(Vector vInfoUsers) {
+	public void setV_info_users(Vector<info_user> vInfoUsers) {
 		v_info_users = vInfoUsers;
 	}
 

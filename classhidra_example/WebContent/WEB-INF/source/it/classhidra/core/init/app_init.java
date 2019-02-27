@@ -134,8 +134,8 @@ public class app_init implements Serializable{
 
 	
 	
-	public HashMap content;
-	public List _list_package_annotated;
+	public HashMap<String,String> content;
+	public List<String> _list_package_annotated;
 	
 	public static String _rows_on_page="20";
 	
@@ -160,7 +160,7 @@ public class app_init implements Serializable{
 	}
 	public void init() {
 		
-		if(_list_package_annotated==null) _list_package_annotated=new ArrayList();
+		if(_list_package_annotated==null) _list_package_annotated=new ArrayList<String>();
 		Properties property = null;
 
 		String property_name = System.getProperty(bsConstants.app_id_property);
@@ -168,7 +168,7 @@ public class app_init implements Serializable{
 			
 			if(property_name==null || property_name.equals("")) property_name = id_property;
 			ResourceBundle rb = ResourceBundle.getBundle(property_name);
-			Enumeration en = rb.getKeys();
+			Enumeration<String> en = rb.getKeys();
 		
 			while(en.hasMoreElements()){
 				if(property==null) property = new Properties();
@@ -269,7 +269,7 @@ public class app_init implements Serializable{
 			if(_permit_redirect_resource==null) _permit_redirect_resource="false";
 			if(_statistic==null) _statistic="false";
 		}		
-		content = new HashMap();
+		content = new HashMap<String,String>();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?
 			(System.getProperty(CONST_PAGESIZE)==null)?"10":System.getProperty(CONST_PAGESIZE)
 			:(String)content.get(CONST_PAGESIZE));
@@ -279,7 +279,7 @@ public class app_init implements Serializable{
 	}
 	
 	public void init(Properties property) {
-		if(_list_package_annotated==null) _list_package_annotated=new ArrayList();
+		if(_list_package_annotated==null) _list_package_annotated=new ArrayList<String>();
 		_path=(_path==null)?property.getProperty(id_path):_path;
 		_path_root=(_path_root==null)?property.getProperty(bsConstants.CONST_ID_PATHROOT):_path_root;
 
@@ -355,7 +355,7 @@ public class app_init implements Serializable{
 		if(_debug==null) _debug="false";
 		if(_permit_redirect_resource==null) _permit_redirect_resource="false";
 		if(_statistic==null) _statistic="false";
-		content = new HashMap();
+		content = new HashMap<String,String>();
 		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?property.getProperty(CONST_PAGESIZE):(String)content.get(CONST_PAGESIZE));
 	
 
@@ -554,7 +554,7 @@ public class app_init implements Serializable{
 
 
 
-	public List get_list_package_annotated() {
+	public List<String> get_list_package_annotated() {
 		return _list_package_annotated;
 	}
 

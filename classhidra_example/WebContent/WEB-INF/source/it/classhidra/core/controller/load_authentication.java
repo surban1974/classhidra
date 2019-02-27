@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -48,12 +49,12 @@ import it.classhidra.core.tool.util.util_xml;
 public class load_authentication extends elementBase{
 	private static final long serialVersionUID = -1L;
 
-	private HashMap _targets;
-	private HashMap _targets_allowed;
-	private HashMap _area;
+	private HashMap<String,Map<String, Map<String,Map<String,Map<String,Boolean>>>>> _targets;
+	private HashMap<String,Map<String, Map<String,Map<String,Map<String,Boolean>>>>> _targets_allowed;
+	private HashMap<String,Boolean> _area;
 	
-	private HashMap _mtargets;
-	private HashMap _mtargets_allowed;
+	private HashMap<String,Map<String, Map<String,Map<String,String>>>> _mtargets;
+	private HashMap<String,Map<String, Map<String,Map<String,String>>>> _mtargets_allowed;
 	
 	
 	private boolean readOk_Resource=false;
@@ -67,8 +68,8 @@ public class load_authentication extends elementBase{
 	private String xmlEncoding;
 	private String loadedFrom="";
 
-	private Vector v_info_relations;
-	private Vector v_info_mactions;
+	private Vector<info_relation> v_info_relations;
+	private Vector<String> v_info_mactions;
 
 
 
@@ -79,12 +80,12 @@ public load_authentication(){
 
 }
 public void reimposta(){
-	_targets = new HashMap();
-	_targets_allowed = new HashMap();
-	_mtargets = new HashMap();
-	_mtargets_allowed = new HashMap();
+	_targets = new HashMap<String, Map<String,Map<String,Map<String,Map<String,Boolean>>>>>();
+	_targets_allowed = new HashMap<String, Map<String,Map<String,Map<String,Map<String,Boolean>>>>>();
+	_mtargets = new HashMap<String, Map<String,Map<String,Map<String,String>>>>();
+	_mtargets_allowed = new HashMap<String, Map<String,Map<String,Map<String,String>>>>();
 	
-	_area = new HashMap();
+	_area = new HashMap<String, Boolean>();
 	readOk_Resource=false;
 	readOk_Folder=false;
 	readOk_File=false;
@@ -93,9 +94,10 @@ public void reimposta(){
 	externalloader="";
 	area="";
 	xmlEncoding="";
-	v_info_relations=new Vector();
+	v_info_relations=new Vector<info_relation>();
 }
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public void reInit(i_externalloader _externalloader){
 	if(_externalloader==null) return;
 	boolean loaded=false;
@@ -336,9 +338,9 @@ public void initTop(Node node) throws bsControllerException{
 private boolean readDocumentXml(Document documentXML) throws Exception{
 	if(documentXML!=null){
 		if(_targets==null)
-			_targets = new HashMap();
+			_targets = new HashMap<String, Map<String,Map<String,Map<String,Map<String,Boolean>>>>>();
 		if(_targets_allowed==null)
-			_targets_allowed = new HashMap();
+			_targets_allowed = new HashMap<String, Map<String,Map<String,Map<String,Map<String,Boolean>>>>>();
 		Node node = null;
 
 
@@ -371,7 +373,7 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 							}
 
 							StringTokenizer st = new StringTokenizer(sArea,";");
-							if(_area==null) _area=new HashMap();
+							if(_area==null) _area=new HashMap<String, Boolean>();
 							while(st.hasMoreTokens()) _area.put(st.nextToken(),Boolean.valueOf(true));
 						}
 
@@ -379,7 +381,7 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 				}
 
 		}catch(Exception e){}
-		if(node==null) return false;
+
 		int order=1;
 		for(int i=0;i<node.getChildNodes().getLength();i++){
 			if(node.getChildNodes().item(i).getNodeType()== Node.ELEMENT_NODE){
@@ -423,7 +425,7 @@ public void addIRelation(info_relation iRelation) throws Exception{
 
 			if(!sTargets.equals("") && !sGroups.equals("") && !sElements.equals("")){
 
-				HashMap _type_targets = null;
+				HashMap<String,Map<String, Map<String,Map<String,Map<String,Boolean>>>>> _type_targets = null;
 				if(iRelation.getType().equals(info_relation.TYPE_FORBIDDEN))
 					_type_targets = _targets;
 				if(iRelation.getType().equals(info_relation.TYPE_ALLOWED))
@@ -432,25 +434,25 @@ public void addIRelation(info_relation iRelation) throws Exception{
 				StringTokenizer st_targets = new StringTokenizer(sTargets,";");
 				while(st_targets.hasMoreTokens()){
 					String target = st_targets.nextToken();
-					if(_type_targets.get(target)==null) _type_targets.put(target,new HashMap());
-					HashMap current_groups = (HashMap)_type_targets.get(target);
+					if(_type_targets.get(target)==null) _type_targets.put(target,new HashMap<String, Map<String,Map<String,Map<String,Boolean>>>>());
+					HashMap<String, Map<String,Map<String,Map<String,Boolean>>>> current_groups = (HashMap<String, Map<String,Map<String,Map<String,Boolean>>>>)_type_targets.get(target);
 					StringTokenizer st_groups = new StringTokenizer(sGroups,";");
 					while(st_groups.hasMoreTokens()){
 						String group = st_groups.nextToken();
-						if(current_groups.get(group)==null) current_groups.put(group,new HashMap());
-						HashMap current_actions = (HashMap)current_groups.get(group);
+						if(current_groups.get(group)==null) current_groups.put(group,new HashMap<String, Map<String,Map<String,Boolean>>>());
+						HashMap<String, Map<String,Map<String,Boolean>>> current_actions = (HashMap<String, Map<String,Map<String,Boolean>>>)current_groups.get(group);
 						StringTokenizer st_elements = new StringTokenizer(sElements,";");
 						while(st_elements.hasMoreTokens()){
 							String element = st_elements.nextToken();
 							StringTokenizer st_actions =new StringTokenizer(element,".");
 							if(st_actions.hasMoreTokens()){
 								String action = st_actions.nextToken();
-								if(current_actions.get(action)==null) current_actions.put(action,new HashMap());
-								HashMap redirects = (HashMap)current_actions.get(action);
+								if(current_actions.get(action)==null) current_actions.put(action,new HashMap<String, Map<String,Boolean>>());
+								HashMap<String, Map<String,Boolean>> redirects = (HashMap<String, Map<String,Boolean>>)current_actions.get(action);
 								if(st_actions.hasMoreTokens()){
 									String redirect = st_actions.nextToken();
-									if(redirects.get(redirect)==null) redirects.put(redirect,new HashMap());
-									HashMap sections = (HashMap)redirects.get(redirect);
+									if(redirects.get(redirect)==null) redirects.put(redirect,new HashMap<String, Boolean>());
+									HashMap<String, Boolean> sections = (HashMap<String, Boolean>)redirects.get(redirect);
 									if(st_actions.hasMoreTokens()){
 									
 										String section = st_actions.nextToken();
@@ -459,7 +461,7 @@ public void addIRelation(info_relation iRelation) throws Exception{
 										sections.put("*",Boolean.valueOf(true));
 									}
 								}else{
-									HashMap sections = new HashMap();
+									HashMap<String, Boolean> sections = new HashMap<String, Boolean>();
 									sections.put("*",Boolean.valueOf(true));
 									redirects.put("*",sections);
 								}
@@ -472,7 +474,7 @@ public void addIRelation(info_relation iRelation) throws Exception{
 			
 			if(!sTargets.equals("") && !sGroups.equals("") && !sMiddleactions.equals("")){
 
-				HashMap _type_targets = null;
+				HashMap<String,Map<String, Map<String,Map<String,String>>>> _type_targets = null;
 				if(iRelation.getType().equals(info_relation.TYPE_FORBIDDEN))
 					_type_targets = _mtargets;
 				if(iRelation.getType().equals(info_relation.TYPE_ALLOWED))
@@ -481,21 +483,21 @@ public void addIRelation(info_relation iRelation) throws Exception{
 				StringTokenizer st_targets = new StringTokenizer(sTargets,";");
 				while(st_targets.hasMoreTokens()){
 					String target = st_targets.nextToken();
-					if(_type_targets.get(target)==null) _type_targets.put(target,new HashMap());
-					HashMap current_groups = (HashMap)_type_targets.get(target);
+					if(_type_targets.get(target)==null) _type_targets.put(target,new HashMap<String, Map<String,Map<String,String>>>());
+					HashMap<String, Map<String,Map<String,String>>> current_groups = (HashMap<String, Map<String,Map<String,String>>>)_type_targets.get(target);
 					StringTokenizer st_groups = new StringTokenizer(sGroups,";");
 					while(st_groups.hasMoreTokens()){
 						String group = st_groups.nextToken();
-						if(current_groups.get(group)==null) current_groups.put(group,new HashMap());
-						HashMap current_actions = (HashMap)current_groups.get(group);
+						if(current_groups.get(group)==null) current_groups.put(group,new HashMap<String, Map<String,String>>());
+						HashMap<String, Map<String,String>> current_actions = (HashMap<String, Map<String,String>>)current_groups.get(group);
 						StringTokenizer st_elements = new StringTokenizer(sMiddleactions,";");
 						while(st_elements.hasMoreTokens()){
 							String element = st_elements.nextToken();
 							StringTokenizer st_actions =new StringTokenizer(element,".");
 							if(st_actions.hasMoreTokens()){
 								String action = st_actions.nextToken();
-								if(current_actions.get(action)==null) current_actions.put(action,new HashMap());
-								HashMap mactions = (HashMap)current_actions.get(action);
+								if(current_actions.get(action)==null) current_actions.put(action,new HashMap<String, String>());
+								HashMap<String, String> mactions = (HashMap<String, String>)current_actions.get(action);
 								if(st_actions.hasMoreTokens()){
 									String maction = st_actions.nextToken();
 									mactions.put(maction,maction);
@@ -524,138 +526,12 @@ private void readGroupElements(Node node, int order) throws Exception{
 		}
 	}
 }
-/*
-private void readGroupElements(Node node, int order) throws Exception{
-	if(node==null) return;
-
-	if(node.getNodeName().equals("relation")){
-		if(node.getNodeType()== Node.ELEMENT_NODE){
-
-			info_relation iRelation = new info_relation();
-			iRelation.init(node);
-			iRelation.setOrder(Integer.valueOf(order).toString());
-			if(iRelation.getName()==null || iRelation.getName().equals(""))
-				iRelation.setName("relation: "+iRelation.getOrder());
-			v_info_relations.add(iRelation);
-
-			String sTargets=iRelation.getTargets();
-			String sGroups=iRelation.getGroups();
-			String sElements=iRelation.getElements();
-			String sMiddleactions=iRelation.getMiddleactions();
 
 
-			if(sTargets!=null){
-				sTargets=sTargets.replace('\n', ' ').replace('\r', ' ');
-				sTargets = util_format.replace(sTargets, " ", "");
-			}
-			if(sGroups!=null){
-				sGroups=sGroups.replace('\n', ' ').replace('\r', ' ');
-				sGroups = util_format.replace(sGroups, " ", "");
-			}
-			if(sElements!=null){
-				sElements=sElements.replace('\n', ' ').replace('\r', ' ');
-				sElements = util_format.replace(sElements, " ", "");
-			}
-			if(sMiddleactions!=null){
-				sMiddleactions=sMiddleactions.replace('\n', ' ').replace('\r', ' ');
-				sMiddleactions = util_format.replace(sMiddleactions, " ", "");
-			}
-			
-
-			if(!sTargets.equals("") && !sGroups.equals("") && !sElements.equals("")){
-
-				HashMap _type_targets = null;
-				if(iRelation.getType().equals(info_relation.TYPE_FORBIDDEN))
-					_type_targets = _targets;
-				if(iRelation.getType().equals(info_relation.TYPE_ALLOWED))
-					_type_targets = _targets_allowed;
-
-				StringTokenizer st_targets = new StringTokenizer(sTargets,";");
-				while(st_targets.hasMoreTokens()){
-					String target = st_targets.nextToken();
-					if(_type_targets.get(target)==null) _type_targets.put(target,new HashMap());
-					HashMap current_groups = (HashMap)_type_targets.get(target);
-					StringTokenizer st_groups = new StringTokenizer(sGroups,";");
-					while(st_groups.hasMoreTokens()){
-						String group = st_groups.nextToken();
-						if(current_groups.get(group)==null) current_groups.put(group,new HashMap());
-						HashMap current_actions = (HashMap)current_groups.get(group);
-						StringTokenizer st_elements = new StringTokenizer(sElements,";");
-						while(st_elements.hasMoreTokens()){
-							String element = st_elements.nextToken();
-							StringTokenizer st_actions =new StringTokenizer(element,".");
-							if(st_actions.hasMoreTokens()){
-								String action = st_actions.nextToken();
-								if(current_actions.get(action)==null) current_actions.put(action,new HashMap());
-								HashMap redirects = (HashMap)current_actions.get(action);
-								if(st_actions.hasMoreTokens()){
-									String redirect = st_actions.nextToken();
-									if(redirects.get(redirect)==null) redirects.put(redirect,new HashMap());
-									HashMap sections = (HashMap)redirects.get(redirect);
-									if(st_actions.hasMoreTokens()){
-									
-										String section = st_actions.nextToken();
-										sections.put(section,Boolean.valueOf(true));
-									}else{
-										sections.put("*",Boolean.valueOf(true));
-									}
-								}else{
-									HashMap sections = new HashMap();
-									sections.put("*",Boolean.valueOf(true));
-									redirects.put("*",sections);
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			
-			if(!sTargets.equals("") && !sGroups.equals("") && !sMiddleactions.equals("")){
-
-				HashMap _type_targets = null;
-				if(iRelation.getType().equals(info_relation.TYPE_FORBIDDEN))
-					_type_targets = _mtargets;
-				if(iRelation.getType().equals(info_relation.TYPE_ALLOWED))
-					_type_targets = _mtargets_allowed;
-
-				StringTokenizer st_targets = new StringTokenizer(sTargets,";");
-				while(st_targets.hasMoreTokens()){
-					String target = st_targets.nextToken();
-					if(_type_targets.get(target)==null) _type_targets.put(target,new HashMap());
-					HashMap current_groups = (HashMap)_type_targets.get(target);
-					StringTokenizer st_groups = new StringTokenizer(sGroups,";");
-					while(st_groups.hasMoreTokens()){
-						String group = st_groups.nextToken();
-						if(current_groups.get(group)==null) current_groups.put(group,new HashMap());
-						HashMap current_actions = (HashMap)current_groups.get(group);
-						StringTokenizer st_elements = new StringTokenizer(sMiddleactions,";");
-						while(st_elements.hasMoreTokens()){
-							String element = st_elements.nextToken();
-							StringTokenizer st_actions =new StringTokenizer(element,".");
-							if(st_actions.hasMoreTokens()){
-								String action = st_actions.nextToken();
-								if(current_actions.get(action)==null) current_actions.put(action,new HashMap());
-								HashMap mactions = (HashMap)current_actions.get(action);
-								if(st_actions.hasMoreTokens()){
-									String maction = st_actions.nextToken();
-									mactions.put(maction,maction);
-								}else{
-									mactions.put("*","*");
-								}
-							}
-						}
-					}
-				}
-			}			
-		}
-	}
-}
-*/
-public HashMap get_targets() {
+public HashMap<String,Map<String, Map<String,Map<String,Map<String,Boolean>>>>> get_targets() {
 	return _targets;
 }
-public void set_targets(HashMap map) {
+public void set_targets(HashMap<String,Map<String, Map<String,Map<String,Map<String,Boolean>>>>> map) {
 	_targets = map;
 }
 public String toString(){
@@ -680,7 +556,7 @@ public String toXml(){
 
 	return result;
 }
-public HashMap get_area() {
+public HashMap<String,Boolean> get_area() {
 	return _area;
 }
 
@@ -825,10 +701,10 @@ private boolean load_from_resources(ServletContext ctx, String property_name) {
 	public void setXmlEncoding(String xmlEncoding) {
 		this.xmlEncoding = xmlEncoding;
 	}
-	public Vector getV_info_relations() {
+	public Vector<info_relation> getV_info_relations() {
 		return v_info_relations;
 	}
-	public void setV_info_relations(Vector vInfoRelations) {
+	public void setV_info_relations(Vector<info_relation> vInfoRelations) {
 		v_info_relations = vInfoRelations;
 	}
 	public void setReadOk_File(boolean readOkFile) {
@@ -852,28 +728,28 @@ private boolean load_from_resources(ServletContext ctx, String property_name) {
 	public void setReadOk_Db(boolean readOkDb) {
 		readOk_Db = readOkDb;
 	}
-	public void set_targets_allowed(HashMap targetsAllowed) {
+	public void set_targets_allowed(HashMap<String,Map<String, Map<String,Map<String,Map<String,Boolean>>>>> targetsAllowed) {
 		_targets_allowed = targetsAllowed;
 	}
-	public HashMap get_mtargets() {
+	public HashMap<String,Map<String, Map<String,Map<String,String>>>> get_mtargets() {
 		return _mtargets;
 	}
-	public void set_mtargets(HashMap _mtargets) {
+	public void set_mtargets(HashMap<String,Map<String, Map<String,Map<String,String>>>> _mtargets) {
 		this._mtargets = _mtargets;
 	}
-	public HashMap get_mtargets_allowed() {
+	public HashMap<String,Map<String, Map<String,Map<String,String>>>> get_mtargets_allowed() {
 		return _mtargets_allowed;
 	}
-	public void set_mtargets_allowed(HashMap _mtargets_allowed) {
+	public void set_mtargets_allowed(HashMap<String,Map<String, Map<String,Map<String,String>>>> _mtargets_allowed) {
 		this._mtargets_allowed = _mtargets_allowed;
 	}
-	public Vector getV_info_mactions() {
+	public Vector<String> getV_info_mactions() {
 		return v_info_mactions;
 	}
-	public void setV_info_mactions(Vector v_info_mactions) {
+	public void setV_info_mactions(Vector<String> v_info_mactions) {
 		this.v_info_mactions = v_info_mactions;
 	}
-	public HashMap get_targets_allowed() {
+	public HashMap<String,Map<String, Map<String,Map<String,Map<String,Boolean>>>>> get_targets_allowed() {
 		return _targets_allowed;
 	}
 	public boolean isReadOk_ExtLoader() {

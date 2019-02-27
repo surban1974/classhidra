@@ -36,8 +36,9 @@ public class util_classes {
 			return PATH_VFS_PLUGIN;
 	}
 	
-	public  static Class[] getClasses(String pckgname) throws ClassNotFoundException {
-		ArrayList classes = new ArrayList();
+	@SuppressWarnings("rawtypes")
+	public  static Class<?>[] getClasses(String pckgname) throws ClassNotFoundException {
+		ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
 		URL resource = null;
 		URL resourceMETA = null;
 		String path = "";
@@ -107,7 +108,7 @@ public class util_classes {
 						JarURLConnection jarUrlConnection = (JarURLConnection)resource.openConnection(); 
 						JarEntry rootEntry = jarUrlConnection.getJarEntry();
 
-						Enumeration en = null;
+						Enumeration<JarEntry> en = null;
 						try{
 							en = jarUrlConnection.getJarFile().entries();
 						}catch(Exception e){
@@ -147,7 +148,7 @@ public class util_classes {
 				if(directory!=null && resourceMETA.toURI().getScheme().equalsIgnoreCase("jar")){
 					String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
 				    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-				    Enumeration entries = jar.entries();
+				    Enumeration<JarEntry> entries = jar.entries();
 				    while(entries.hasMoreElements()) {
 				    	try{
 					    	String name = ((JarEntry)entries.nextElement()).getName();
@@ -180,17 +181,18 @@ public class util_classes {
 
 		}
 		
-		if(resource==null && resourceMETA==null )
-			throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
+//		if(resource==null && resourceMETA==null )
+//			throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
 
 		
-		Class[] classesA = new Class[classes.size()];
+		Class<?>[] classesA = new Class[classes.size()];
 		classes.toArray(classesA);
 		return classesA;
 	}
 	
-	public static ArrayList getResources(String pckgname) throws ClassNotFoundException {
-		ArrayList res = new ArrayList();
+	@SuppressWarnings("unchecked")
+	public static ArrayList<String> getResources(String pckgname) throws ClassNotFoundException {
+		ArrayList<String> res = new ArrayList<String>();
 		URL resource = null;
 		URL resourceMETA = null;
 		String path = "";
@@ -230,7 +232,7 @@ public class util_classes {
 					arr = util_reflect.execStaticMethod(PATH_VFS_PLUGIN, "getResources", new Class[]{URL.class}, new Object[]{resource});
 
 				if(arr!=null && arr instanceof ArrayList)
-					return (ArrayList)arr;
+					return (ArrayList<String>)arr;
 					
 			}else{
 				File directory = convertUrl2File(resource);
@@ -245,7 +247,7 @@ public class util_classes {
 						if(directory!=null && resource.toURI().getScheme().equalsIgnoreCase("jar")){
 							String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
 						    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-						    Enumeration entries = jar.entries();
+						    Enumeration<JarEntry> entries = jar.entries();
 						    while(entries.hasMoreElements()) {
 						    	try{
 							    	String name = ((JarEntry)entries.nextElement()).getName();
@@ -290,7 +292,7 @@ public class util_classes {
 				if(directory!=null && resourceMETA.toURI().getScheme().equalsIgnoreCase("jar")){
 					String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
 				    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-				    Enumeration entries = jar.entries();
+				    Enumeration<JarEntry> entries = jar.entries();
 				    while(entries.hasMoreElements()) {
 				    	try{
 					    	String name = ((JarEntry)entries.nextElement()).getName();
@@ -330,8 +332,8 @@ public class util_classes {
 	}	
 	
 	
-	public  static ArrayList getResourcesAsFile(String pckgname) throws ClassNotFoundException {
-		ArrayList res = new ArrayList();
+	public  static ArrayList<File> getResourcesAsFile(String pckgname) throws ClassNotFoundException {
+		ArrayList<File> res = new ArrayList<File>();
 		// Get a File object for the package
 		File directory = null;
 		try {
@@ -548,7 +550,7 @@ public class util_classes {
 	}
 	
 	public static byte[] readInputStream2Byte(InputStream openStream) throws Exception{
-		Vector buf_v = new Vector();
+		Vector<byte[]> buf_v = new Vector<byte[]>();
 		long size=0;
 		int read;
 		byte[] buf = new byte[8 * 1024];
@@ -628,11 +630,11 @@ public class util_classes {
 	    return result;
 	}	
 	
-	public static ArrayList getResourcesAsByte(String rsname, byte[] separator) throws ClassNotFoundException { 
+	public static ArrayList<byte[]> getResourcesAsByte(String rsname, byte[] separator) throws ClassNotFoundException { 
 		if(rsname==null || rsname.trim().equals("")) return null;
-		ArrayList result = new ArrayList();
+		ArrayList<byte[]> result = new ArrayList<byte[]>();
 		
-		ArrayList array = new ArrayList();
+		ArrayList<String> array = new ArrayList<String>();
 
 		try{
 			array = util_classes.getResources(rsname);

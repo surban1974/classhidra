@@ -40,10 +40,10 @@ public interface i_action extends listener_action, i_bean, Serializable{
 	redirects actionservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
 	redirects syncroservice(HttpServletRequest request, HttpServletResponse response) throws ServletException, UnavailableException, bsControllerException;
 	void actionBeforeRedirect(HttpServletRequest request, HttpServletResponse response) throws bsControllerException;
-	void actionBeforeRedirect(HashMap wsParameters) throws bsControllerException;
-	void init(HashMap wsParameters) throws bsControllerException;
-	redirects actionservice(HashMap wsParameters) throws  bsControllerException;
-	redirects syncroservice(HashMap wsParameters) throws  bsControllerException;
+	void actionBeforeRedirect(HashMap<String,Object> wsParameters) throws bsControllerException;
+	void init(HashMap<String,Object> wsParameters) throws bsControllerException;
+	redirects actionservice(HashMap<String,Object> wsParameters) throws  bsControllerException;
+	redirects syncroservice(HashMap<String,Object> wsParameters) throws  bsControllerException;
 	i_bean get_bean();
 	void set_bean(i_bean form);
 	void set_bean(i_bean form, info_context iContext);
@@ -62,9 +62,9 @@ public interface i_action extends listener_action, i_bean, Serializable{
 	i_action asAction();
 	boolean isBeanEqualAction();
 	void enterActionContext(i_action oldAction, HttpServletRequest request, HttpServletResponse response);
-	void enterActionContext(i_action oldAction,HashMap _content);	
+	void enterActionContext(i_action oldAction,HashMap<String,Object> _content);	
 	void leaveActionContext(i_action newAction, HttpServletRequest request, HttpServletResponse response);
-	void leaveActionContext(i_action newAction,HashMap _content);
+	void leaveActionContext(i_action newAction,HashMap<String,Object> _content);
 	
 	action_payload delegatePayloadProcess(String id_call, iContext context, boolean beanInitFromRequest) throws bsControllerException,ServletException, UnavailableException;
 }

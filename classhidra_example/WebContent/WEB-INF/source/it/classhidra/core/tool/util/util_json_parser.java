@@ -54,8 +54,8 @@ public class util_json_parser {
 	}
 
 
-	private static HashMap parseObject(char[] json){
-		HashMap table = new HashMap();
+	private static HashMap<String,Object> parseObject(char[] json){
+		HashMap<String,Object> table = new HashMap<String, Object>();
 		int token;
 
 
@@ -102,8 +102,8 @@ public class util_json_parser {
 		return table;
 	}
 
-	private static ArrayList parseArray(char[] json){
-		ArrayList array = new ArrayList();
+	private static ArrayList<Object> parseArray(char[] json){
+		ArrayList<Object> array = new ArrayList<Object>();
 
 		// [
 		nextToken(json);
@@ -455,9 +455,9 @@ public class util_json_parser {
 		if (value instanceof String) {
 			success = serializeString((String)value, builder);
 		} else if (value instanceof HashMap) {
-			success = serializeObject((HashMap)value, builder);
+			success = serializeObject((HashMap<?,?>)value, builder);
 		} else if (value instanceof ArrayList) {
-			success = serializeArray((ArrayList)value, builder);
+			success = serializeArray((ArrayList<?>)value, builder);
 		} else if ((value instanceof Boolean) && ((Boolean)value == true)) {
 			builder.append("true");
 		} else if ((value instanceof Boolean) && ((Boolean)value == false)) {
@@ -474,10 +474,10 @@ public class util_json_parser {
 		return success;
 	}
 
-	private static boolean serializeObject(HashMap anObject, StringBuilder builder){
+	private static boolean serializeObject(HashMap<?,?> anObject, StringBuilder builder){
 		builder.append("{");
 
-		Iterator it = anObject.keySet().iterator();
+		Iterator<?> it = anObject.keySet().iterator();
 		boolean first = true;
 		while (it.hasNext()) {
 			String key = (String)it.next();
@@ -500,7 +500,7 @@ public class util_json_parser {
 		return true;
 	}
 
-	private static boolean serializeArray(ArrayList anArray, StringBuilder builder){
+	private static boolean serializeArray(ArrayList<?> anArray, StringBuilder builder){
 		builder.append("[");
 
 		boolean first = true;
@@ -556,9 +556,5 @@ public class util_json_parser {
 		return true;
 	}
 
-	private static boolean serializeNumber(double number, StringBuilder builder){
-		builder.append(String.valueOf(number));
-		return true;
-	}
  
 }

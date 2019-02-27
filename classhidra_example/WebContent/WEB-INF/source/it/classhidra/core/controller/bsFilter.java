@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -172,20 +173,20 @@ public class bsFilter implements Filter {
 				
 				String restSupport = config.getInitParameter(CONST_REST_SUPPORT);
 				if(restSupport!=null && restSupport.equalsIgnoreCase("true")){
-					List restmapping = null;
+					Vector<info_rest> restmapping = null;
 					String parameters="";
 					try{
-						Iterator it = bsController.getAction_config().get_restmapping().keySet().iterator();
+						Iterator<String> it = load_actions.get_restmapping().keySet().iterator();
 					    while (it.hasNext()) {
 					        String key = (String)it.next();
 					        if(key!=null && key.length()>0){
 					        	if(url.indexOf(key)>-1){
-					        		restmapping = (List)bsController.getAction_config().get_restmapping().get(key);
+					        		restmapping = load_actions.get_restmapping().get(key);
 					        		parameters = url.substring(url.indexOf(key)+key.length(),url.length());
 					        		break;
 					        	}
 					        	else if(url.indexOf(key.substring(0,key.length()-1))>-1 && url.indexOf(key.substring(0,key.length()-1))+key.substring(0,key.length()-1).length()==url.length()){
-					        		restmapping = (List)bsController.getAction_config().get_restmapping().get(key);
+					        		restmapping = load_actions.get_restmapping().get(key);
 					        		parameters = url.substring(url.indexOf(key.substring(0,key.length()-1))+key.length()-1,url.length());
 					        		break;
 					        	}					        	
@@ -195,8 +196,8 @@ public class bsFilter implements Filter {
 					}
 					
 					if(restmapping!=null){
-						List exposed = new ArrayList(); 
-						List exposed_correctparam = new ArrayList();
+						List<info_rest> exposed = new ArrayList<info_rest>(); 
+						List<info_rest> exposed_correctparam = new ArrayList<info_rest>();
 						for(int i=0;i<restmapping.size();i++){
 							info_rest iRest = (info_rest)restmapping.get(i);
 							if(iRest.isExposed(request.getMethod())){
@@ -644,23 +645,23 @@ public class bsFilter implements Filter {
 								return resultBs;;
 							id_current=f_id_current;
 							
-							if(bsController.getAction_config().get_actions().get(id_current)!=null){
+							if(load_actions.get_actions().get(id_current)!=null){
 								resultBs.id_action = id_current;
 								return resultBs;
 							}else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
 								char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
-								if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
+								if(id_current.indexOf(separator)>0 && load_actions.get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
 									resultBs.id_action = id_current;
 									resultBs.id_complete = id_current;
 									return resultBs;
-								}else if(bsController.getAction_config().get_actioncalls().get(id_current)!=null){
-									info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current);
+								}else if(load_actions.get_actioncalls().get(id_current)!=null){
+									info_call iCall =  load_actions.get_actioncalls().get(id_current);
 									resultBs.id_action = iCall.getOwner();
 									resultBs.id_call = iCall.getName();
 									resultBs.id_complete = id_current;
 									return resultBs;
-								}else if(bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod())!=null){
-									info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod());
+								}else if(load_actions.get_actioncalls().get(id_current+"."+request.getMethod())!=null){
+									info_call iCall =  load_actions.get_actioncalls().get(id_current+"."+request.getMethod());
 									resultBs.id_action = iCall.getOwner();
 									resultBs.id_call = iCall.getName();
 									resultBs.id_complete = id_current;
@@ -678,25 +679,25 @@ public class bsFilter implements Filter {
 						(id_current.equals("") && url.lastIndexOf("/")+1==url.length())
 					){
 						id_current = bsController.getAppInit().get_enterpoint();
-						if(bsController.getAction_config().get_actions().get(id_current)!=null){
+						if(load_actions.get_actions().get(id_current)!=null){
 							resultBs.id_action = id_current;
 							resultBs.id_complete = id_current;
 							return resultBs;
 						}else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
 							char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
-							if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
+							if(id_current.indexOf(separator)>0 && load_actions.get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
 								resultBs.id_action = id_current.substring(0,id_current.indexOf(separator));
 								resultBs.id_call = id_current.substring(id_current.indexOf(separator)+1, id_current.length());
 								resultBs.id_complete = id_current;
 								return resultBs;
-							}else if(bsController.getAction_config().get_actioncalls().get(id_current)!=null){
-								info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current);
+							}else if(load_actions.get_actioncalls().get(id_current)!=null){
+								info_call iCall =  load_actions.get_actioncalls().get(id_current);
 								resultBs.id_action = iCall.getOwner();
 								resultBs.id_call = iCall.getName();
 								resultBs.id_complete = id_current;
 								return resultBs;
-							}else if(bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod())!=null){
-								info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod());
+							}else if(load_actions.get_actioncalls().get(id_current+"."+request.getMethod())!=null){
+								info_call iCall =  load_actions.get_actioncalls().get(id_current+"."+request.getMethod());
 								resultBs.id_action = iCall.getOwner();
 								resultBs.id_call = iCall.getName();
 								resultBs.id_complete = id_current;
@@ -709,25 +710,25 @@ public class bsFilter implements Filter {
 					}
 				}
 			}
-			if(bsController.getAction_config().get_actions().get(id_current)!=null){
+			if(load_actions.get_actions().get(id_current)!=null){
 				resultBs.id_action = id_current;
 				resultBs.id_complete = id_current;
 				return resultBs;
 			}else if(bsController.getAppInit().get_actioncall_separator()!=null && !bsController.getAppInit().get_actioncall_separator().equals("")){
 				char separator=bsController.getAppInit().get_actioncall_separator().charAt(0);
-				if(id_current.indexOf(separator)>0 && bsController.getAction_config().get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
+				if(id_current.indexOf(separator)>0 && load_actions.get_actions().get(id_current.substring(0,id_current.indexOf(separator)))!=null){
 					resultBs.id_action = id_current.substring(0,id_current.indexOf(separator));
 					resultBs.id_call = id_current.substring(id_current.indexOf(separator)+1, id_current.length());
 					resultBs.id_complete = id_current;
 					return resultBs;
-				}else if(bsController.getAction_config().get_actioncalls().get(id_current)!=null){
-					info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current);
+				}else if(load_actions.get_actioncalls().get(id_current)!=null){
+					info_call iCall =  load_actions.get_actioncalls().get(id_current);
 					resultBs.id_action = iCall.getOwner();
 					resultBs.id_call = iCall.getName();
 					resultBs.id_complete = id_current;
 					return resultBs;
-				}else if(bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod())!=null){
-					info_call iCall =  (info_call)bsController.getAction_config().get_actioncalls().get(id_current+"."+request.getMethod());
+				}else if(load_actions.get_actioncalls().get(id_current+"."+request.getMethod())!=null){
+					info_call iCall =  load_actions.get_actioncalls().get(id_current+"."+request.getMethod());
 					resultBs.id_action = iCall.getOwner();
 					resultBs.id_call = iCall.getName();
 					resultBs.id_complete = id_current;
@@ -743,18 +744,18 @@ public class bsFilter implements Filter {
 	public info_async getAsyncInfo(String id_current, String id_call, String id_complete, HttpServletRequest request){
 		info_async iAsync = null;
 		if(id_call!=null){
-			info_call iCall = (info_call)bsController.getAction_config().get_actioncalls().get(id_call);
+			info_call iCall = load_actions.get_actioncalls().get(id_call);
 			if(iCall==null)
-				iCall = (info_call)bsController.getAction_config().get_actioncalls().get(id_call+"."+request.getMethod());
+				iCall = load_actions.get_actioncalls().get(id_call+"."+request.getMethod());
 			if(iCall==null && id_complete!=null)
-				iCall = (info_call)bsController.getAction_config().get_actioncalls().get(id_complete);						
+				iCall = load_actions.get_actioncalls().get(id_complete);						
 			if(iCall==null && id_complete!=null)
-				iCall = (info_call)bsController.getAction_config().get_actioncalls().get(id_complete+"."+request.getMethod());
+				iCall = load_actions.get_actioncalls().get(id_complete+"."+request.getMethod());
 			if(iCall!=null)
 				iAsync=iCall.getiAsync();
 		}
 		if(iAsync==null && id_current!=null){
-			info_action iAction = (info_action)bsController.getAction_config().get_actions().get(id_current);
+			info_action iAction = load_actions.get_actions().get(id_current);
 			if(iAction!=null)
 				iAsync=iAction.getiAsync();
 		}

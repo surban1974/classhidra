@@ -3,6 +3,7 @@ package it.classhidra.core.tool.util.v2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Vector;
 
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
@@ -17,6 +18,12 @@ public class Util_sort {
 		for(int i=0;i<cr_ad.length;i++) cr_ad[i]="A";
 		return sort(dati,cr_array,cr_ad);
 	}
+	
+	public static <T extends Object> Vector<T> sort(Vector<T> dati, String[] cr_array) {
+		String[] cr_ad = new String[cr_array.length];
+		for(int i=0;i<cr_ad.length;i++) cr_ad[i]="A";
+		return sort(dati,cr_array,cr_ad);
+	}	
 	
 	public static <T extends Object> List<T> sort(List<T> dati, String[] cr_array, String[] cr_ad) {
 		if(dati==null || dati.size()<=1) return dati;
@@ -54,9 +61,48 @@ public class Util_sort {
 		}
 		return dati;
 	}
+	public static <T extends Object> Vector<T> sort(Vector<T> dati, String[] cr_array, String[] cr_ad) {
+		if(dati==null || dati.size()<=1) return dati;
+		dati = sort(dati,cr_array[0],cr_ad[0]);
+
+		if(cr_array.length>1){
+			String[] new_cr_array = new String[cr_array.length-1];
+			String[] new_cr_ad = new String[cr_ad.length-1];
+			for(int i=1;i<cr_array.length;i++){
+				new_cr_array[i-1]=cr_array[i];
+				new_cr_ad[i-1]=cr_ad[i];
+			}
+			String keyMethod = cr_array[0];
+			Vector<T> buf = new Vector<T>();
+			int k=0;
+			int kcur=0;
+			Object keyObject = getObject(dati.get(kcur),"get"+keyMethod);
+			while(kcur<dati.size()){
+				while(kcur<dati.size() && keyObject!=null && getObject(dati.get(kcur),"get"+keyMethod)!=null && getObject(dati.get(kcur),"get"+keyMethod).equals(keyObject)){
+					buf.add(dati.get(kcur));
+					kcur++;
+				}
+				if(buf.size()>1){
+					buf = sort(buf,new_cr_array,new_cr_ad);
+					for(int j=k;j<kcur;j++) dati.set(j,buf.get(j-k));
+				}
+				if(buf.size()==0) kcur++;
+				if(kcur<dati.size()){
+					buf=new Vector<T>();
+					k=kcur;
+					keyObject = getObject(dati.get(kcur),"get"+keyMethod);
+				}
+			}
+
+		}
+		return dati;
+	}	
 	public static <T extends Object> List<T> sort(List<T> dati, String cr) {
 		return sort(dati,cr,"A");
 	}
+	public static <T extends Object> Vector<T> sort(Vector<T> dati, String cr) {
+		return sort(dati,cr,"A");
+	}	
 	public static <T extends Object> List<T> sort(List<T> dati, String cr, String ord) {
 		List<T> dati_cr = new ArrayList<T>();
 		for(int i=0;i<dati.size();i++){
@@ -77,6 +123,31 @@ public class Util_sort {
 		_clone_sortSelf(dati,dati_cr,0,dati.size());
 		if(ord.toUpperCase().equals("D")){
 			List<T> dati_b=new ArrayList<T>();
+			for(int i=dati.size()-1;i>-1;i--) dati_b.add(dati.get(i));
+			dati = dati_b;
+		}
+		return dati;
+	}
+	public static <T extends Object> Vector<T> sort(Vector<T> dati, String cr, String ord) {
+		Vector<T> dati_cr = new Vector<T>();
+		for(int i=0;i<dati.size();i++){
+			T current = dati.get(i);
+			if(cr.trim().equals(""))
+				dati_cr.add(current);
+			else{
+				try{
+					T forAdd = invoke(current,cr);
+					if(forAdd!=null)
+						dati_cr.add((T)forAdd);
+					else return dati;
+				}catch(Exception e){
+					return dati;
+				}
+			}
+		}
+		_clone_sortSelf(dati,dati_cr,0,dati.size());
+		if(ord.toUpperCase().equals("D")){
+			Vector<T> dati_b=new Vector<T>();
 			for(int i=dati.size()-1;i>-1;i--) dati_b.add(dati.get(i));
 			dati = dati_b;
 		}

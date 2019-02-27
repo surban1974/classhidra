@@ -26,13 +26,13 @@ public class util_batch {
 	public final static int CONST_APPLICANT_DEF = 0;
 	public final static int CONST_APPLICANT_SCANNER = 1;
 	
-	public static HashMap readInput(String xml){
-		HashMap result = new HashMap();
+	public static HashMap<String,String> readInput(String xml){
+		HashMap<String,String> result = new HashMap<String, String>();
 
 		return result;
 	}
 
-	public static String writeOutput(HashMap out){
+	public static String writeOutput(HashMap<String,String> out){
 		return "";
 	}
 	
@@ -45,7 +45,7 @@ public class util_batch {
 		batch.setCd_btch(cd_btch);
 		
 		batch_init binit = DriverScheduling.getConfiguration();		
-		HashMap form = new HashMap();
+		HashMap<String,Object> form = new HashMap<String, Object>();
 		form.put("selected",batch);
 
 		try{
@@ -84,7 +84,7 @@ public class util_batch {
 		StringTokenizer st_currentTime = new StringTokenizer(currentTime,"-");
 		StringTokenizer st_periodTime = new StringTokenizer(periodTime,"-");
 
-		Vector res=new Vector();
+		Vector<Integer> res=new Vector<Integer>();
 		boolean prevIsMore=false;
 		boolean findFirst=false;
 		while(st_periodTime.hasMoreTokens()){

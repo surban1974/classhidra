@@ -91,7 +91,7 @@ public class info_section extends info_entity implements i_elementBase{
 		return result;
 	}
 	
-	public void syncroWithRelations(HashMap _elements){
+	public void syncroWithRelations(HashMap<String,String> _elements){
 		enabled = CONST_ENABLED;
 		if(_elements==null) return;
 		if(_elements.get("*")!=null){

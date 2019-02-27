@@ -43,13 +43,13 @@ public class showNavigateLast extends TagSupport implements DynamicAttributes {
 	protected String style = null;
 	protected String styleClass = null;
 	protected String img_path = null;
-	protected HashMap parameters=null;
+	protected HashMap<String,String> parameters=null;
 	
-	protected Map tagAttributes = new HashMap();
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
 
 
 	public int doStartTag() throws JspException {
-		parameters=new HashMap();
+		parameters=new HashMap<String, String>();
 		return EVAL_BODY_INCLUDE;
 	}
 
@@ -75,7 +75,7 @@ public class showNavigateLast extends TagSupport implements DynamicAttributes {
 		parameters=null;
 		img_path=null;
 		
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 	}
 
 	protected String createTagBody() {
@@ -88,9 +88,9 @@ public class showNavigateLast extends TagSupport implements DynamicAttributes {
 				formInfoNavigation = new info_navigation();
 
 			info_navigation iN = formInfoNavigation;
-			Vector sub_results = new Vector();
-			Vector sub_results_action = new Vector();
-			Vector sub_results_name = new Vector();
+			Vector<String> sub_results = new Vector<String>();
+			Vector<String> sub_results_action = new Vector<String>();
+			Vector<String> sub_results_name = new Vector<String>();
 
 
 			while(iN!=null){
@@ -183,7 +183,7 @@ public class showNavigateLast extends TagSupport implements DynamicAttributes {
 		style = string;
 	}
 
-	public HashMap getParameters() {
+	public HashMap<String,String> getParameters() {
 		return parameters;
 	}
 

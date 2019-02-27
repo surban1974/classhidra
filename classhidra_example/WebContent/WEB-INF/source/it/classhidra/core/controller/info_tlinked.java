@@ -29,7 +29,7 @@ import it.classhidra.core.tool.elements.i_elementBase;
 public class info_tlinked extends info_entity implements i_elementBase{
 	private static final long serialVersionUID = -1L;
 	private String value;
-	private Class reference;
+	private Class<?> reference;
 	private boolean unlinkAndSetNull;
 	
 	public info_tlinked(){
@@ -68,11 +68,11 @@ public class info_tlinked extends info_entity implements i_elementBase{
 		this.unlinkAndSetNull = unlinkAndSetNull;
 	}
 
-	public Class getReference() {
+	public Class<?> getReference() {
 		return reference;
 	}
 
-	public void setReference(Class reference) {
+	public void setReference(Class<?> reference) {
 		this.reference = reference;
 	}
 

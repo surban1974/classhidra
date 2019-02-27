@@ -35,11 +35,11 @@ public class JsonWriter {
 		return object2json(obj,name,null);
 	}	
 	
-	public static String object2json(Object obj, String name, List filters){
+	public static String object2json(Object obj, String name, List<String> filters){
 		return object2json(obj,name,filters,null);
 	}
 
-	public static String object2json(Object obj, String name, List filters, WriteValidator validator){
+	public static String object2json(Object obj, String name, List<String> filters, WriteValidator validator){
 		String result="{\n";
 		if(obj==null)
 			result+="\"error\":  \"Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL\"";
@@ -53,14 +53,14 @@ public class JsonWriter {
 			else if(name==null)
 				map_name = "item";
 			
-			Stack objList = new Stack();
+			Stack<Object> objList = new Stack<Object>();
 			if(map_name!=null && map_name.equals("")) {
 				result+=generateJsonItemOnlyContent(
 						obj,
 						map_name,
 						0,
 						false,
-						new HashMap(),
+						new HashMap<Integer, String>(),
 						null,
 						(annotation!=null)?annotation.children():false,
 						(annotation!=null)?annotation.depth():0,
@@ -74,7 +74,7 @@ public class JsonWriter {
 						map_name,
 						0,
 						false,
-						new HashMap(),
+						new HashMap<Integer, String>(),
 						null,
 						(annotation!=null)?annotation.children():false,
 						(annotation!=null)?annotation.depth():0,
@@ -88,11 +88,11 @@ public class JsonWriter {
 		return result+"\n}";
 	}	
 
-	public static String object2json(Object obj, String name, List filters, boolean children, int depth){
+	public static String object2json(Object obj, String name, List<String> filters, boolean children, int depth){
 		return object2json(obj, name, filters, children, depth, null);
 	}
 	
-	public static String object2json(Object obj, String name, List filters, boolean children, int depth, WriteValidator validator){
+	public static String object2json(Object obj, String name, List<String> filters, boolean children, int depth, WriteValidator validator){
 		String result="{\n";
 		if(obj==null)
 			result+="\"error\":  \"Object "+((name!=null)?"["+name+"]":"")+" is undefined or NULL\"";
@@ -105,14 +105,14 @@ public class JsonWriter {
 				map_name = "items";
 			else if(name==null)
 				map_name = "item";
-			Stack objList = new Stack();
+			Stack<Object> objList = new Stack<Object>();
 			if(map_name!=null && map_name.equals("")) {
 				result+=generateJsonItemOnlyContent(
 						obj,
 						map_name,
 						0,
 						false,
-						new HashMap(),
+						new HashMap<Integer, String>(),
 						null,
 						(annotation!=null)?(annotation.children() || children):children,
 						(annotation!=null)
@@ -130,7 +130,7 @@ public class JsonWriter {
 						map_name,
 						0,
 						false,
-						new HashMap(),
+						new HashMap<Integer, String>(),
 						null,
 						(annotation!=null)?(annotation.children() || children):children,
 						(annotation!=null)
@@ -149,17 +149,24 @@ public class JsonWriter {
 	}	
 	
 
-	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator, Stack objList){
+	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map<Integer,String> avoidCyclicPointers,
+			Serialized annotation, boolean serializeChildren, int serializeDepth, Map<String,?> treeFilters, WriteValidator validator,
+			Stack<Object> objList){
 		String result="";
 		boolean goAhead = true;
-		Map subTreeFilters = null;
+		Map<String,?> subTreeFilters = null;
 		if(treeFilters!=null){
 			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
 				goAhead=false;
 			else if(name!=null){
-				subTreeFilters = (Map)treeFilters.get(name);
-				if(subTreeFilters==null)
-					subTreeFilters = (Map)treeFilters.get(util_reflect.revAdaptMethodName(name));
+				@SuppressWarnings("unchecked")
+				Map<String,?> map = (Map<String,?>)treeFilters.get(name);
+				subTreeFilters = map;
+				if(subTreeFilters==null){
+					@SuppressWarnings("unchecked")
+					Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(name));
+					subTreeFilters = map2;
+				}
 			}
 		}
 		if(goAhead && validator!=null)
@@ -172,18 +179,24 @@ public class JsonWriter {
 		return result;
 	}
 	
-	private static String generateJsonItemOnlyContent(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator, Stack objList){
+	private static String generateJsonItemOnlyContent(Object sub_obj, String name, int level, boolean notFirst, 
+			Map<Integer,String> avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, 
+			Map<String,?> treeFilters, WriteValidator validator, Stack<Object> objList){
 		String result="";
 		boolean goAhead = true;
-		Map subTreeFilters = null;
+		Map<String,?> subTreeFilters = null;
 		if(treeFilters!=null){
 			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
 				goAhead=false;
 			else if(name!=null){
-				subTreeFilters = (Map)treeFilters.get(name);
-				if(subTreeFilters==null)
-					subTreeFilters = (Map)treeFilters.get(util_reflect.revAdaptMethodName(name));
-			}
+				@SuppressWarnings("unchecked")
+				Map<String,?> map = (Map<String,?>)treeFilters.get(name);
+				subTreeFilters = map;
+				if(subTreeFilters==null){
+					@SuppressWarnings("unchecked")
+					Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(name));
+					subTreeFilters = map2;
+				}			}
 		}
 		if(goAhead && validator!=null)
 			goAhead = validator.isWritable(sub_obj, objList, getOutputName(name, annotation));
@@ -293,16 +306,17 @@ public class JsonWriter {
 	}
 	
 	
-	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers, Serialized annotation, boolean serializeChildren, int serializeDepth, Map treeFilters, WriteValidator validator, Stack objList){
+	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level, Map<Integer,String> avoidCyclicPointers,
+			Serialized annotation, boolean serializeChildren, int serializeDepth, Map<String,?> treeFilters, WriteValidator validator,
+			Stack<Object> objList){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
-		String space=spaceLevel(level);
+
 		String result="";
-		if(sub_obj==null) return result;
 
 		if(sub_obj.getClass().isArray()){
-			Class componentType = sub_obj.getClass().getComponentType();
+			Class<?> componentType = sub_obj.getClass().getComponentType();
 			if(componentType.isPrimitive()){
-				List list = new ArrayList();
+				List<Object> list = new ArrayList<Object>();
 				if (boolean.class.isAssignableFrom(componentType)){ 
 					for(int i=0;i<((boolean[])sub_obj).length;i++)
 						list.add(((boolean[])sub_obj)[i]); 
@@ -385,10 +399,9 @@ public class JsonWriter {
 			    }
 			    return result+result_tmp;
 			}else{
-				Iterator it = Arrays.asList((Object[])sub_obj).iterator(); 
+				Iterator<Object> it = Arrays.asList((Object[])sub_obj).iterator(); 
 				String result_tmp="";
-	
-				int i=0;
+
 			    while (it.hasNext()) {
 	
 					boolean nFirst = true;
@@ -439,7 +452,7 @@ public class JsonWriter {
 												treeFilters,
 												validator,
 												objList);
-					i++;
+
 			    }
 			    return result+result_tmp;
 			}
@@ -450,7 +463,8 @@ public class JsonWriter {
 			String result_tmp="";
 			
 			
-			List list_sub_obj = (List)sub_obj;
+			@SuppressWarnings("unchecked")
+			List<Object> list_sub_obj = (List<Object>)sub_obj;
 			for(int i=0;i<list_sub_obj.size();i++){
 				boolean nFirst = true;
 				if(result_tmp.length()==0) nFirst=false;
@@ -508,10 +522,10 @@ public class JsonWriter {
 		
 		if(sub_obj instanceof Set){
 
-			Iterator it = Arrays.asList(((Set)sub_obj).toArray()).iterator(); 
+			Iterator<Object> it = Arrays.asList(((Set<?>)sub_obj).toArray()).iterator(); 
 			String result_tmp="";
 
-			int i = 0;
+
 		    while (it.hasNext()) {
 
 				boolean nFirst = true;
@@ -562,7 +576,7 @@ public class JsonWriter {
 										treeFilters,
 										validator,
 										objList);
-				i++;			        
+		        
 		    }
 		    return result+result_tmp;
 
@@ -572,9 +586,10 @@ public class JsonWriter {
 		if(sub_obj instanceof Map){
 			String result_tmp="";
 			
-			Iterator it = ((Map)sub_obj).entrySet().iterator(); 
+
+			Iterator<?> it = ((Map<?,?>)sub_obj).entrySet().iterator(); 
 		    while (it.hasNext()) {
-		        Map.Entry pair = (Map.Entry)it.next();
+		        Map.Entry<?,?> pair = (Map.Entry<?,?>)it.next();
 				boolean nFirst = true;
 				if(result_tmp.length()==0) nFirst=false;
 				
@@ -709,11 +724,11 @@ public class JsonWriter {
 
 
 			String result_tmp="";
-			Map name_tmp = new HashMap();
+			Map<String,String> name_tmp = new HashMap<String, String>();
 			try{
 				String[] prefixes = new String[]{"get","is"};
 				
-				SortedMap ordered = new TreeMap();
+				SortedMap<Integer,Object> ordered = new TreeMap<Integer, Object>();
 				
 				for(int p=0;p<prefixes.length;p++){
 					Method[] methods = util_reflect.getMethods(sub_obj,prefixes[p]);
@@ -873,7 +888,7 @@ public class JsonWriter {
 				}					
 
 				if(ordered.size()>0) {
-					Iterator it = ordered.values().iterator();
+					Iterator<Object> it = ordered.values().iterator();
 					 
 					while (it.hasNext()) {
 						OrderContainer oc = (OrderContainer)it.next();

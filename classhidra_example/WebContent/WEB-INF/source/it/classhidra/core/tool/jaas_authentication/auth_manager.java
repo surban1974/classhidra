@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.Principal;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -65,13 +66,13 @@ public class auth_manager implements i_auth_manager {
 		    lc.login();
 
 		    	
-	        Iterator it = lc.getSubject().getPrincipals().iterator();
+	        final Iterator<Principal> it = lc.getSubject().getPrincipals().iterator();
 	        while (it.hasNext()){ 
 	        	bsController.writeLog("Authenticated: " + it.next().toString(), iStub.log_INFO);
 	        }    
 
-	        it = lc.getSubject().getPublicCredentials(Properties.class).iterator();
-	        bsCredential credentials = (bsCredential)it.next();
+	        final Iterator<Properties> it1 = lc.getSubject().getPublicCredentials(Properties.class).iterator();
+	        bsCredential credentials = (bsCredential)it1.next();
 
 	        auth.set_ruolo( credentials.getProperty("_ruolo").replace('^', ';'));
 	        auth.set_language(credentials.getProperty("_language"));
@@ -184,7 +185,7 @@ public class auth_manager implements i_auth_manager {
 		}
 		if(exit){
 			
-			((load_users)bsController.getUser_config()).get_users().put(bsController.getIdApp()+"/"+_user.getName().toUpperCase()+"."+_user.getPassword(),_user.clone());
+			((load_users)bsController.getUser_config()).get_users().put(bsController.getIdApp()+"/"+_user.getName().toUpperCase()+"."+_user.getPassword(),_user.clone(info_user.class));
 			try{
 				((load_users)bsController.getUser_config()).get_users().remove(bsController.getIdApp()+"/"+_user.getName().toUpperCase()+"."+bsController.encrypt((String)bean.get("password_old")));
 			}catch(Exception ex){

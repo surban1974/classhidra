@@ -31,33 +31,33 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface listener_action{
 	void onPreInit(HttpServletRequest request, HttpServletResponse response);
-	void onPreInit(HashMap _content);
+	void onPreInit(HashMap<String,Object> _content);
 	void onPreActionservice(HttpServletRequest request, HttpServletResponse response);
 	void onPreSyncroservice(HttpServletRequest request, HttpServletResponse response);
-	void onPreActionservice(HashMap _content);
-	void onPreSyncroservice(HashMap _content);
+	void onPreActionservice(HashMap<String,Object> _content);
+	void onPreSyncroservice(HashMap<String,Object> _content);
 	void onPreSet_bean();
 	void onPreSetCurrent_redirect();
 	void onPreRedirect();
 	void onPreRedirectError();
 	void onPreTransform(Object input);
 	void onPreActionCall(String id_call, HttpServletRequest request, HttpServletResponse response);
-	void onPreActionCall(String id_call, HashMap _content);
+	void onPreActionCall(String id_call, HashMap<String,Object> _content);
 
 
 	void onPostInit(HttpServletRequest request, HttpServletResponse response);
-	void onPostInit(HashMap _content);
+	void onPostInit(HashMap<String,Object> _content);
 	void onPostActionservice(redirects redirect, HttpServletRequest request, HttpServletResponse response);
 	void onPostSyncroservice(redirects redirect,HttpServletRequest request, HttpServletResponse response);
-	void onPostActionservice(redirects redirect,HashMap _content);
-	void onPostSyncroservice(redirects redirect,HashMap _content);
+	void onPostActionservice(redirects redirect,HashMap<String,Object> _content);
+	void onPostSyncroservice(redirects redirect,HashMap<String,Object> _content);
 	void onPostSet_bean();
 	void onPostSetCurrent_redirect();
 	void onPostRedirect(RequestDispatcher rd);
 	void onPostRedirectError(RequestDispatcher rd);
 	void onPostTransform(Object output);
 	void onPostActionCall(redirects redirect, String id_call, HttpServletRequest request, HttpServletResponse response);
-	void onPostActionCall(redirects redirect, String id_call, HashMap _content);
+	void onPostActionCall(redirects redirect, String id_call, HashMap<String,Object> _content);
 	void onPostInstance();
 	void onPostInstanceFromProvider();
 

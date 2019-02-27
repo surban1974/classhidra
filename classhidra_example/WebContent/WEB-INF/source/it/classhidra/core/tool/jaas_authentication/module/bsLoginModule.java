@@ -25,12 +25,12 @@ public class bsLoginModule implements LoginModule {
     // initial state
     CallbackHandler callbackHandler;
     Subject  subject;
-    Map      sharedState;
-    Map      options;
+    Map<String,?>      sharedState;
+    Map<String,?>      options;
 
     // temporary state
-    Vector   tempCredentials;
-    Vector   tempPrincipals;
+    Vector<bsCredential>   tempCredentials;
+    Vector<bsPrincipal>   tempPrincipals;
 
     // the authentication status
     boolean  success;
@@ -39,15 +39,15 @@ public class bsLoginModule implements LoginModule {
     boolean  debug;
  
     public bsLoginModule() {
-        tempCredentials = new Vector();
-        tempPrincipals  = new Vector();
+        tempCredentials = new Vector<bsCredential>();
+        tempPrincipals  = new Vector<bsPrincipal>();
         success = false;
         debug   = false;
     }
 
  
     public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map sharedState, Map options) {
+            Map<String,?> sharedState, Map<String,?> options) {
 
         // save the initial state
         this.callbackHandler = callbackHandler;
@@ -116,7 +116,7 @@ public class bsLoginModule implements LoginModule {
             }
 
             try {
-                Iterator it = tempPrincipals.iterator();
+                Iterator<bsPrincipal> it = tempPrincipals.iterator();
                 
                 if (debug) {
                     while (it.hasNext())
@@ -174,7 +174,7 @@ public class bsLoginModule implements LoginModule {
             ((PassiveCallbackHandler)callbackHandler).clearPassword();
 
         // remove the principals the login module added
-        Iterator it = subject.getPrincipals(bsPrincipal.class).iterator();
+        final Iterator<bsPrincipal> it = subject.getPrincipals(bsPrincipal.class).iterator();
         while (it.hasNext()) {
             bsPrincipal p = (bsPrincipal)it.next();
             if(debug)
@@ -183,11 +183,11 @@ public class bsLoginModule implements LoginModule {
         }
 
         // remove the credentials the login module added
-        it = subject.getPublicCredentials(bsCredential.class).iterator();
-        while (it.hasNext()) {
-            bsCredential c = (bsCredential)it.next();
+        final Iterator<bsCredential> it1 = subject.getPublicCredentials(bsCredential.class).iterator();
+        while (it1.hasNext()) {
+            bsCredential c = (bsCredential)it1.next();
             if(debug) bsController.writeLog("[bsLoginModule] removing credential "+c.toString(), iStub.log_INFO);
-            subject.getPrincipals().remove(c);
+            subject.getPublicCredentials().remove(c);
         }
 
         return(true);

@@ -1,5 +1,20 @@
 package it.classhidra.annotation;
 
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Vector;
+import java.util.jar.JarEntry;
+
 import it.classhidra.annotation.elements.Access;
 import it.classhidra.annotation.elements.AccessRelation;
 import it.classhidra.annotation.elements.Action;
@@ -43,21 +58,7 @@ import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_reflect;
-import it.classhidra.core.tool.util.util_sort;
-
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.jar.JarEntry;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 
 
@@ -65,15 +66,15 @@ import java.util.jar.JarEntry;
 
 public class annotation_scanner implements i_annotation_scanner {
 	
-	protected HashMap _actions = new HashMap();
-	protected HashMap _streams = new HashMap();
+	protected HashMap<String,info_action> _actions = new HashMap<String,info_action>();
+	protected HashMap<String,info_stream> _streams = new HashMap<String,info_stream>();
 
 
-	protected HashMap _beans = new HashMap();
-	protected HashMap _redirects = new HashMap();
-	protected HashMap _redirectsjustloaded = new HashMap();
-	protected HashMap _transformationoutput = new HashMap();
-	protected List v_permissions = new ArrayList();
+	protected HashMap<String,info_bean> _beans = new HashMap<String,info_bean>();
+	protected HashMap<String,info_redirect> _redirects = new HashMap<String,info_redirect>();
+	protected HashMap<String,info_redirect> _redirectsjustloaded = new HashMap<String,info_redirect>();
+	protected HashMap<String,info_transformation> _transformationoutput = new HashMap<String,info_transformation>();
+	protected List<info_entity> v_permissions = new ArrayList<info_entity>();
 	
 	protected String error;
 	protected String auth_error;
@@ -102,7 +103,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 
 
-	public void loadAllObjects(String _package_annotated,HashMap redirects){
+	public void loadAllObjects(String _package_annotated,HashMap<String,info_redirect> redirects){
 		if(redirects!=null) _redirects=redirects;
 		package_annotated=_package_annotated;
 		bsController.writeLog("Start Load_actions from "+package_annotated,iStub.log_INFO);
@@ -112,14 +113,14 @@ public class annotation_scanner implements i_annotation_scanner {
 	
 
 
-	public void loadAllObjects(HashMap redirects){
+	public void loadAllObjects(HashMap<String,info_redirect> redirects){
 		
 
 
 		
 		if(redirects!=null) _redirects=redirects;
 		
-		List list_package_annotated = bsController.getAppInit().get_list_package_annotated();
+		List<String> list_package_annotated = bsController.getAppInit().get_list_package_annotated();
 				
 		
 		for(int n=0;n<list_package_annotated.size();n++){
@@ -183,14 +184,16 @@ public class annotation_scanner implements i_annotation_scanner {
 					if(resource!=null){
 						if(resource.getProtocol().equalsIgnoreCase("vfs")){
 							
-							List vfsList = (List)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{URL.class}, new Object[]{resource});
+							@SuppressWarnings("unchecked")
+							List<String> vfsList = (List<String>)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{URL.class}, new Object[]{resource});
 							
 
 							if(vfsList!=null){
 								if (vfsList.size()>1) {
 									for(int i=1;i<vfsList.size();i++){
 										String package_path = (String)vfsList.get(i);
-										List vfsChildren = (List)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{String.class}, new Object[]{package_path});
+										@SuppressWarnings("unchecked")
+										List<String> vfsChildren = (List<String>)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{String.class}, new Object[]{package_path});
 										
 										if(vfsChildren.size()>1)
 											checkBranchVFS(vfsChildren);					
@@ -259,7 +262,7 @@ public class annotation_scanner implements i_annotation_scanner {
 									JarURLConnection jarUrlConnection = (JarURLConnection)resource.openConnection(); 
 									JarEntry rootEntry = jarUrlConnection.getJarEntry();
 
-									Enumeration en = null;
+									Enumeration<JarEntry> en = null;
 									try{
 										en = jarUrlConnection.getJarFile().entries();
 									}catch(Exception e){
@@ -303,7 +306,7 @@ public class annotation_scanner implements i_annotation_scanner {
 					if(resourceMETA!=null && resourceMETA.getProtocol().equalsIgnoreCase("jar")){
 						try{
 							JarURLConnection jarUrlConnection = (JarURLConnection)resourceMETA.openConnection(); 
-							Enumeration en = null;
+							Enumeration<JarEntry> en = null;
 							try{
 								en = jarUrlConnection.getJarFile().entries();
 							}catch(Exception e){
@@ -354,12 +357,12 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 	
 	
-	public List checkBranch(String path){
-		List array = new ArrayList();
+	public List<File> checkBranch(String path){
+		List<File> array = new ArrayList<File>();
 		try{
 			array = util_classes.getResourcesAsFile(path);
 		}catch(Exception e){
-			array = new ArrayList();
+			array = new ArrayList<File>();
 		}
 
 		for(int i=0;i<array.size();i++){
@@ -381,11 +384,12 @@ public class annotation_scanner implements i_annotation_scanner {
 		return array;
 	}
 
-	private void checkBranchVFS(List vfsChildren){
+	private void checkBranchVFS(List<String> vfsChildren){
 
 		for(int i=1;i<vfsChildren.size();i++){
 			String package_path = (String)vfsChildren.get(i);
-			List vfsSubChildren = (List)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{String.class}, new Object[]{package_path});
+			@SuppressWarnings("unchecked")
+			List<String> vfsSubChildren = (List<String>)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{String.class}, new Object[]{package_path});
 
 			try{
 				if(vfsSubChildren.size()>1)
@@ -424,8 +428,8 @@ public class annotation_scanner implements i_annotation_scanner {
 		}
 	}
 	
-	public void checkClassAnnotation(Class classType, String class_path, Class checkClassType) {
-		v_permissions = new ArrayList();
+	public void checkClassAnnotation(Class<?> classType, String class_path, Class<?> checkClassType) {
+		v_permissions = new ArrayList<info_entity>();
 		try{
 			if(classType==null)
 				classType = Class.forName(class_path);
@@ -433,7 +437,7 @@ public class annotation_scanner implements i_annotation_scanner {
 			if(classType==null)
 				return;
 			
-			Map subAnnotations = new HashMap();
+			Map<String,Annotation> subAnnotations = new HashMap<String,Annotation>();
 			Annotation subAnnotation = classType.getAnnotation(NavigatedDirective.class);
 				if(subAnnotation!=null){
 					checkClassAnnotation(classType, class_path, subAnnotation, subAnnotations);
@@ -514,8 +518,8 @@ public class annotation_scanner implements i_annotation_scanner {
 			
 			if(i_action.class.isAssignableFrom(classType)){
 					
-					List callMethods = new ArrayList();
-					List actionMethods = new ArrayList();
+					List<Method> callMethods = new ArrayList<Method>();
+					List<Method> actionMethods = new ArrayList<Method>();
 					Method[] mtds = classType.getMethods();
 					for(int i=0;i<mtds.length;i++){
 						Method current = mtds[i];
@@ -545,28 +549,6 @@ public class annotation_scanner implements i_annotation_scanner {
 					if(annotation!=null) 
 						checkClassAnnotation(classType, class_path, annotation, subAnnotations);
 			}
-/*				
-				else if(i_action.class.isAssignableFrom(classType)){
-					
-					List callMethods = new ArrayList();
-					List actionMethods = new ArrayList();
-					Method[] mtds = classType.getMethods();
-					for(int i=0;i<mtds.length;i++){
-						Method current = mtds[i];
-						if(current.getAnnotation(Action.class)!=null)
-							actionMethods.add( mtds[i]);
-						if(current.getAnnotation(ActionCall.class)!=null)
-							callMethods.add( mtds[i]);
-					}
-					for(int i=0;i<actionMethods.size();i++)
-						checkActionAnnotations(classType, class_path, ((Method)actionMethods.get(i)).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
-					
-					for(int i=0;i<callMethods.size();i++)
-						checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), null, (Method)callMethods.get(i), i);
-
-				
-				}
-*/				
 			if(checkClassType==null || (checkClassType!=null && checkClassType.equals(i_stream.class))){
 				annotation = classType.getAnnotation(Stream.class);
 					if(annotation!=null) checkClassAnnotation(classType, class_path, annotation, subAnnotations);
@@ -583,9 +565,9 @@ public class annotation_scanner implements i_annotation_scanner {
 					for(int i=0;i<v_permissions.size();i++){
 						info_entity iEntity = (info_entity)v_permissions.get(i);
 						if(iEntity.getAccess_allowed()!=null && iEntity.getAccess_allowed().size()>0){
-							Iterator it = iEntity.getAccess_allowed().entrySet().iterator();
+							Iterator<Entry<String, info_relation>> it = iEntity.getAccess_allowed().entrySet().iterator();
 						    while (it.hasNext()) {
-						        Map.Entry pair = (Map.Entry)it.next();
+						        Map.Entry<String, info_relation> pair = it.next();
 						        try{
 						        	bsController.getAuth_config().addIRelation((info_relation)pair.getValue());
 						        }catch(Exception e){
@@ -594,9 +576,9 @@ public class annotation_scanner implements i_annotation_scanner {
 						    }
 						}
 						if(iEntity.getAccess_forbidden()!=null && iEntity.getAccess_forbidden().size()>0){
-							Iterator it = iEntity.getAccess_forbidden().entrySet().iterator();
+							Iterator<Entry<String, info_relation>> it = iEntity.getAccess_forbidden().entrySet().iterator();
 						    while (it.hasNext()) {
-						        Map.Entry pair = (Map.Entry)it.next();
+						        Map.Entry<String, info_relation> pair = it.next();
 						        try{
 						        	bsController.getAuth_config().addIRelation((info_relation)pair.getValue());
 						        }catch(Exception e){
@@ -615,7 +597,7 @@ public class annotation_scanner implements i_annotation_scanner {
 				i_bean.class.isAssignableFrom(classType) ||
 				i_stream.class.isAssignableFrom(classType)){
 				
-	    		Class[] interfaces = classType.getInterfaces();
+	    		Class<?>[] interfaces = classType.getInterfaces();
 	    		for(int k=0;k<interfaces.length;k++){
 	    			if(i_action.class.isAssignableFrom(interfaces[k]) && !interfaces[k].equals(i_action.class))
 	    				checkClassAnnotation(interfaces[k], class_path, i_action.class);
@@ -638,7 +620,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	    
 	}
 	
-	private void checkClassAnnotation(Class classType, String class_path, Annotation annotation, Map subAnnotations) {
+	private void checkClassAnnotation(Class<?> classType, String class_path, Annotation annotation, Map<String,Annotation> subAnnotations) {
 		try{
 			
 		    Bean annotationBean = null;
@@ -699,8 +681,9 @@ public class annotation_scanner implements i_annotation_scanner {
     					iRedirect.get_sections().put(iSection.getName(),iSection);
     				}
 
-    				iRedirect.getV_info_sections().addAll(new Vector(iRedirect.get_sections().values()));
-    				iRedirect.setV_info_sections(new util_sort().sort(iRedirect.getV_info_sections(),"int_order"));
+    				iRedirect.getV_info_sections().addAll(new Vector<info_section>(iRedirect.get_sections().values()));
+//   				iRedirect.setV_info_sections(new util_sort().sort(iRedirect.getV_info_sections(),"int_order"));
+    				iRedirect.setV_info_sections(Util_sort.sort(iRedirect.getV_info_sections(),"int_order"));
 
     			}
     			Transformation[] transformations = annotationRedirect.transformations();
@@ -720,9 +703,9 @@ public class annotation_scanner implements i_annotation_scanner {
     					iRedirect.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
     				}
     				
-    				iRedirect.getV_info_transformationoutput().addAll(new Vector(iRedirect.get_transformationoutput().values()));
-    				iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
-
+    				iRedirect.getV_info_transformationoutput().addAll(new Vector<info_transformation>(iRedirect.get_transformationoutput().values()));
+//    				iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
+    				iRedirect.setV_info_transformationoutput(Util_sort.sort(iRedirect.getV_info_transformationoutput(),"int_order"));
     			}
     			_redirects.put(bodyURI(iRedirect.getPath()),iRedirect);
     			_redirectsjustloaded.put(bodyURI(iRedirect.getPath()),iRedirect);
@@ -768,8 +751,9 @@ public class annotation_scanner implements i_annotation_scanner {
 		    			iApply.setAnnotationLoaded(true);
 		    			iStream.get_apply_to_action().put(iApply.getAction(),iApply);		    			
 		    		}
-		    		iStream.getV_info_apply_to_action().addAll(new Vector(iStream.get_apply_to_action().values()));
-		    		iStream.setV_info_apply_to_action(new util_sort().sort(iStream.getV_info_apply_to_action(),"int_order"));
+		    		iStream.getV_info_apply_to_action().addAll(new Vector<info_apply_to_action>(iStream.get_apply_to_action().values()));
+//		    		iStream.setV_info_apply_to_action(new util_sort().sort(iStream.getV_info_apply_to_action(),"int_order"));
+		    		iStream.setV_info_apply_to_action(Util_sort.sort(iStream.getV_info_apply_to_action(),"int_order"));
 		    	}
 				Redirect redirect = annotationStream.Redirect();
 		    	if(redirect!=null){
@@ -800,7 +784,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 	
 	
-	private info_action checkActionAnnotations(Class classType, String class_path, Action annotationAction, Map  subAnnotations, Method method) throws Exception{
+	private info_action checkActionAnnotations(Class<?> classType, String class_path, Action annotationAction, Map<String,Annotation>  subAnnotations, Method method) throws Exception{
 		if(annotationAction==null || annotationAction.path()==null || annotationAction.path().equals(""))
 			return null;
     	info_action iAction = new info_action();
@@ -919,8 +903,9 @@ public class annotation_scanner implements i_annotation_scanner {
     	}
     	
     	if(iAction.get_redirects().size()>0 || redirect!=null){
-    		iAction.getV_info_redirects().addAll(new Vector(iAction.get_redirects().values()));
-    		iAction.setV_info_redirects(new util_sort().sort(iAction.getV_info_redirects(),"int_order"));
+    		iAction.getV_info_redirects().addAll(new Vector<info_redirect>(iAction.get_redirects().values()));
+//    		iAction.setV_info_redirects(new util_sort().sort(iAction.getV_info_redirects(),"int_order"));
+    		iAction.setV_info_redirects(Util_sort.sort(iAction.getV_info_redirects(),"int_order"));
     		
     		Object[] keys = iAction.get_redirects().keySet().toArray();
     		for (int i = 0; i < keys.length; i++){
@@ -951,8 +936,9 @@ public class annotation_scanner implements i_annotation_scanner {
 				iAction.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
 			}
 			
-			iAction.getV_info_transformationoutput().addAll(new Vector(iAction.get_transformationoutput().values()));
-			iAction.setV_info_transformationoutput(new util_sort().sort(iAction.getV_info_transformationoutput(),"int_order"));
+			iAction.getV_info_transformationoutput().addAll(new Vector<info_transformation>(iAction.get_transformationoutput().values()));
+//			iAction.setV_info_transformationoutput(new util_sort().sort(iAction.getV_info_transformationoutput(),"int_order"));
+			iAction.setV_info_transformationoutput(Util_sort.sort(iAction.getV_info_transformationoutput(),"int_order"));
 		}
 
 		
@@ -1008,8 +994,9 @@ public class annotation_scanner implements i_annotation_scanner {
 					}
 				}
 			}
-			iAction.getV_info_calls().addAll(new Vector(iAction.get_calls().values()));
-			iAction.setV_info_calls(new util_sort().sort(iAction.getV_info_calls(),"int_order"));
+			iAction.getV_info_calls().addAll(new Vector<info_call>(iAction.get_calls().values()));
+//			iAction.setV_info_calls(new util_sort().sort(iAction.getV_info_calls(),"int_order"));
+			iAction.setV_info_calls(Util_sort.sort(iAction.getV_info_calls(),"int_order"));
 		}
 		
 		Bean[] beans = annotationAction.beans();
@@ -1021,17 +1008,18 @@ public class annotation_scanner implements i_annotation_scanner {
 			}
 		}
 		if((beans!=null && beans.length>0) || bean!=null){
-			iAction.getV_info_beans().addAll(new Vector(iAction.get_beans().values()));
-			iAction.setV_info_beans(new util_sort().sort(iAction.getV_info_beans(),"int_order"));
+			iAction.getV_info_beans().addAll(new Vector<info_bean>(iAction.get_beans().values()));
+//			iAction.setV_info_beans(new util_sort().sort(iAction.getV_info_beans(),"int_order"));
+			iAction.setV_info_beans(Util_sort.sort(iAction.getV_info_beans(),"int_order"));
 		}
 		
 
 		
 		if(method==null){
 			if(classType!=null){
-				List callMethods = new ArrayList();
-				List actionMethods = new ArrayList();
-				List actionServiceMethods = new ArrayList();
+				List<Method> callMethods = new ArrayList<Method>();
+				List<Method> actionMethods = new ArrayList<Method>();
+				List<Method> actionServiceMethods = new ArrayList<Method>();
 				Method[] mtds = classType.getMethods();
 				for(int i=0;i<mtds.length;i++){
 					Method current = mtds[i];
@@ -1059,12 +1047,12 @@ public class annotation_scanner implements i_annotation_scanner {
     	_actions.put(iAction.getPath(),iAction);
     	
     	if(classType!=null && i_action.class.isAssignableFrom(classType)){
-    		Class[] interfaces = classType.getInterfaces();
+    		Class<?>[] interfaces = classType.getInterfaces();
     		for(int k=0;k<interfaces.length;k++){
     			if(i_action.class.isAssignableFrom(interfaces[k]) && !interfaces[k].equals(i_action.class)){
-					List callMethods = new ArrayList();
-					List actionMethods = new ArrayList();
-					List actionServiceMethods = new ArrayList();
+					List<Method> callMethods = new ArrayList<Method>();
+					List<Method> actionMethods = new ArrayList<Method>();
+					List<Method> actionServiceMethods = new ArrayList<Method>();
 					Method[] mtds = interfaces[k].getMethods();
 					for(int i=0;i<mtds.length;i++){
 						Method current = mtds[i];
@@ -1091,8 +1079,8 @@ public class annotation_scanner implements i_annotation_scanner {
     	return iAction;
 	}
 	
-	private info_action checkActionServiceAnnotations(info_action iAction, Class classType, String class_path, ActionService annotationActionService, Map  subAnnotations, Method method) throws Exception{
-		if(iAction==null || annotationActionService==null || method==null || method.equals(""))
+	private info_action checkActionServiceAnnotations(info_action iAction, Class<?> classType, String class_path, ActionService annotationActionService, Map<String,Annotation>  subAnnotations, Method method) throws Exception{
+		if(iAction==null || annotationActionService==null || method==null)
 			return null;
 		iAction.setMethod(method.getName());
     	iAction.setMappedMethodParameterTypes(method.getParameterTypes());
@@ -1143,7 +1131,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 	
 	
-	private info_bean checkBeanAnnotation(Class classType, info_action iAction, Bean annotationBean, String class_path, int i){
+	private info_bean checkBeanAnnotation(Class<?> classType, info_action iAction, Bean annotationBean, String class_path, int i){
 		if(annotationBean==null || annotationBean.name()==null || annotationBean.name().equals(""))
 			return null;
 		info_bean iBean = new info_bean();
@@ -1222,8 +1210,9 @@ public class annotation_scanner implements i_annotation_scanner {
 				iRedirect.get_sections().put(iSection.getName(),iSection);
 			}
 
-			iRedirect.getV_info_sections().addAll(new Vector(iRedirect.get_sections().values()));
-			iRedirect.setV_info_sections(new util_sort().sort(iRedirect.getV_info_sections(),"int_order"));
+			iRedirect.getV_info_sections().addAll(new Vector<info_section>(iRedirect.get_sections().values()));
+//			iRedirect.setV_info_sections(new util_sort().sort(iRedirect.getV_info_sections(),"int_order"));
+			iRedirect.setV_info_sections(Util_sort.sort(iRedirect.getV_info_sections(),"int_order"));
 
 		}
 		Transformation[] transformations = annotationRedirect1.transformations();
@@ -1243,8 +1232,9 @@ public class annotation_scanner implements i_annotation_scanner {
 				iRedirect.get_transformationoutput().put(iTransformationoutput.getName(),iTransformationoutput);
 			}
 			
-			iRedirect.getV_info_transformationoutput().addAll(new Vector(iRedirect.get_transformationoutput().values()));
-			iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
+			iRedirect.getV_info_transformationoutput().addAll(new Vector<info_transformation>(iRedirect.get_transformationoutput().values()));
+//			iRedirect.setV_info_transformationoutput(new util_sort().sort(iRedirect.getV_info_transformationoutput(),"int_order"));
+			iRedirect.setV_info_transformationoutput(Util_sort.sort(iRedirect.getV_info_transformationoutput(),"int_order"));
 
 		}
 		if(iRedirect.getPath()!=null && !iRedirect.getPath().equals("")){
@@ -1450,28 +1440,28 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 	
 
-	public HashMap get_streams() {
+	public HashMap<String,info_stream> get_streams() {
 		return _streams;
 	}
 
 
 
-	public HashMap get_beans() {
+	public HashMap<String,info_bean> get_beans() {
 		return _beans;
 	}
 
 
-	public HashMap get_redirects() {
+	public HashMap<String,info_redirect> get_redirects() {
 		return _redirects;
 	}
 
 
-	public HashMap get_transformationoutput() {
+	public HashMap<String,info_transformation> get_transformationoutput() {
 		return _transformationoutput;
 	}
 
 
-	public HashMap get_actions() {
+	public HashMap<String,info_action>  get_actions() {
 		return _actions;
 	}
 
@@ -1491,7 +1481,7 @@ public class annotation_scanner implements i_annotation_scanner {
 	}
 
 
-	public HashMap get_redirectsjustloaded() {
+	public HashMap<String,info_redirect> get_redirectsjustloaded() {
 		return _redirectsjustloaded;
 	}
 

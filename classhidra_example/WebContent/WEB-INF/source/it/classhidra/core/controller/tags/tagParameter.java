@@ -50,11 +50,11 @@ public class tagParameter extends ClTagSupport implements DynamicAttributes {
 	protected String property=null;
 	protected String method_prefix=null;
 	protected String value=null;
-	protected List arguments=null;
+	protected List<Object> arguments=null;
 
 	
 	public int doStartTag() throws JspException {
-		arguments = new ArrayList();
+		arguments = new ArrayList<Object>();
 		return EVAL_BODY_INCLUDE;
 	}
 	
@@ -76,7 +76,8 @@ public class tagParameter extends ClTagSupport implements DynamicAttributes {
 				source=checkParametersIfDynamic(source, null);
 			
 			if(source!=null){
-				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+				@SuppressWarnings("unchecked")
+				HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
 				if(pool!=null) formAction = (i_action)pool.get(source);
 			}
 			if(formAction!=null) source = null;
@@ -129,7 +130,8 @@ public class tagParameter extends ClTagSupport implements DynamicAttributes {
 			try{
 				Object obj = getParent();
 				if(obj!=null){
-					Map parameters = (Map)util_reflect.prepareWriteValueForTag(obj,"get","parameters",null);
+					@SuppressWarnings("unchecked")
+					Map<String,Object> parameters = (Map<String,Object>)util_reflect.prepareWriteValueForTag(obj,"get","parameters",null);
 					if(parameters!=null) {
 						if(value!=null) parameters.put(name,value);
 						else  parameters.put(name,"");
@@ -140,7 +142,8 @@ public class tagParameter extends ClTagSupport implements DynamicAttributes {
 			try{
 				Object obj = getParent();
 				if(obj!=null){
-					List arguments = (List)util_reflect.prepareWriteValueForTag(obj,"get","arguments",null);
+					@SuppressWarnings("unchecked")
+					List<Object> arguments = (List<Object>)util_reflect.prepareWriteValueForTag(obj,"get","arguments",null);
 					if(arguments!=null) {
 						if(value!=null) 
 							arguments.add(value);
@@ -205,10 +208,10 @@ public class tagParameter extends ClTagSupport implements DynamicAttributes {
 	public void setMethod_prefix(String method_prefix) {
 		this.method_prefix = method_prefix;
 	}
-	public List getArguments() {
+	public List<Object> getArguments() {
 		return arguments;
 	}
-	public void setArguments(List arguments) {
+	public void setArguments(List<Object> arguments) {
 		this.arguments = arguments;
 	}
 

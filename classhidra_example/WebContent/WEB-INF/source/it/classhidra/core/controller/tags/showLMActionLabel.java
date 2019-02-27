@@ -56,12 +56,12 @@ public class showLMActionLabel extends TagSupport{
 	protected String img_width;
 	protected String img_disable;
 
-	protected HashMap parameters=null;
+	protected HashMap<String,String> parameters=null;
 
 
 
 	public int doStartTag() throws JspException {
-		parameters=new HashMap();
+		parameters=new HashMap<String, String>();
 		return EVAL_BODY_INCLUDE;
 	}
 
@@ -276,7 +276,7 @@ public class showLMActionLabel extends TagSupport{
 		return _parent;
 	}
 
-	public HashMap getParameters() {
+	public HashMap<String,String> getParameters() {
 		return parameters;
 	}
 

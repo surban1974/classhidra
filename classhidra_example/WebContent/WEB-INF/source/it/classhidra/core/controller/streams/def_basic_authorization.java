@@ -61,7 +61,7 @@ public class def_basic_authorization extends stream implements i_stream{
 	
 	private auth_init serviceRest(auth_init auth,  HttpServletRequest request, HttpServletResponse response)throws Exception {
 		PrintWriter out = response.getWriter();
-		Enumeration<String> headerNames = request.getHeaderNames();
+		Enumeration<?> headerNames = request.getHeaderNames();
 		
 		
 		String header_auth = null; 
@@ -94,7 +94,7 @@ public class def_basic_authorization extends stream implements i_stream{
 				String user = st.nextToken();
 				String password = st.nextToken();
 				
-				HashMap form = new HashMap();
+				HashMap<String,Object> form = new HashMap<String, Object>();
 				form.put("user", user);
 				form.put("password", password);
 				form.put("auth", auth);
@@ -130,9 +130,9 @@ public class def_basic_authorization extends stream implements i_stream{
 			public Object operation(String oper, Object form) throws Exception {
 				if(oper!=null && oper.equals(o_FINDFORMLIST)){
 					if(form!=null && form instanceof Map){
-						String user = (String)((Map)form).get("user");
-						String password = (String)((Map)form).get("password");
-						auth_init auth = (auth_init)((Map)form).get("auth");
+						String user = (String)((Map<?,?>)form).get("user");
+						String password = (String)((Map<?,?>)form).get("password");
+						auth_init auth = (auth_init)((Map<?,?>)form).get("auth");
 						
 						if(bsController.getUser_config()==null){
 							bsController.setUser_config(new  load_users());

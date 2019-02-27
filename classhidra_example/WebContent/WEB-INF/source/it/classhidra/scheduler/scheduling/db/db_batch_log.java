@@ -65,7 +65,7 @@ public void reInit(java.sql.ResultSet rs) {
 	if(rs==null) return;
 	try{
 		java.sql.ResultSetMetaData rsmd = rs.getMetaData();
-		HashMap rsmdH = new HashMap();
+		HashMap<String,String> rsmdH = new HashMap<String, String>();
 		for(int i=1;i<=rsmd.getColumnCount();i++) rsmdH.put(rsmd.getColumnLabel(i).toLowerCase(),rsmd.getColumnLabel(i));
 		if(rsmdH.get("cd_btch")!=null) this.setCd_btch(new String(rs.getString("cd_btch")));
 		if(rsmdH.get("tm_start")!=null) this.setTm_start(new java.sql.Timestamp(rs.getTimestamp("tm_start").getTime()));

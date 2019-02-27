@@ -10,6 +10,7 @@ import it.classhidra.core.tool.util.util_format;
 
 @Deprecated
 public class spring implements i_provider {
+	private static final long serialVersionUID = 1L;
 	private ServletContext servletContext=null;
 	public Object get_bean(String id_bean) {
 		Object result=null;

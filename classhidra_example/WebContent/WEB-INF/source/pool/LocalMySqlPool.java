@@ -31,7 +31,7 @@ class ConnectionReaper extends Thread {
 
 public class LocalMySqlPool implements iConnectionPool {
 
-   private Vector connections;
+   private Vector<Connection> connections;
    private long timeout=60000;
    private ConnectionReaper reaper;
    private int poolsize=10;
@@ -62,7 +62,7 @@ public class LocalMySqlPool implements iConnectionPool {
 		  }
 		  
 		  
-	      connections = new Vector(poolsize);
+	      connections = new Vector<Connection>(poolsize);
 	      
 	      long r_delay=-1;
 		  try{
@@ -78,7 +78,7 @@ public class LocalMySqlPool implements iConnectionPool {
 public synchronized void reapConnections() {
 
       long stale = System.currentTimeMillis() - timeout;
-      Enumeration connlist = connections.elements();
+      Enumeration<Connection> connlist = connections.elements();
     
       while((connlist != null) && (connlist.hasMoreElements())) {
           LocalMySqlConnectionForPool conn = (LocalMySqlConnectionForPool)connlist.nextElement();
@@ -93,7 +93,7 @@ public synchronized void reapConnections() {
  
 public synchronized void closeConnections() {
         
-      Enumeration connlist = connections.elements();
+      Enumeration<Connection> connlist = connections.elements();
 
       while((connlist != null) && (connlist.hasMoreElements())) {
           iConnectionForPool conn = (iConnectionForPool)connlist.nextElement();
@@ -150,19 +150,16 @@ System.out.println("POOL:add #"+(connections.size()-1));
        return c;
   } 
 
-   /* (non-Javadoc)
- * @see it.classhidra.core.tool.db.pool.iConnectionPool#returnConnection(it.classhidra.core.tool.db.pool.JDCConnection)
- */
+
 public synchronized void returnConnection(Connection conn) {
       ((LocalMySqlConnectionForPool)conn).expireLease();
    }
 
-/* (non-Javadoc)
- * @see it.classhidra.core.tool.db.pool.iConnectionPool#getConnections()
- */
-public Vector getConnections() {
+public Vector<Connection> getConnections() {
 	return connections;
 }
+
+
    
 
 }

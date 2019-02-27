@@ -43,7 +43,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 	protected String code = null;	
 	protected String styleClass=null;
 	protected String defaultValue=null;
-	protected HashMap parameters=null;
+	protected HashMap<String,String> parameters=null;
 	protected String normalXML=null;
 	protected String normalXML10=null;
 	protected String normalXML11=null;
@@ -53,7 +53,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 	protected String normalHTML=null;
 
 
-	protected Map tagAttributes = new HashMap();
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
 
 	
 	public int doEndTag() throws JspException {
@@ -71,7 +71,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 	}
 
 	public int doStartTag() throws JspException {
-		parameters=new HashMap();
+		parameters=new HashMap<String, String>();
 		return EVAL_BODY_INCLUDE; 
 	}
 
@@ -90,7 +90,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 		normalASCII=null;
 		normalHTML=null;
 
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 	}
   
 	protected String createTagBody() {
@@ -165,7 +165,7 @@ public class tagMessage extends ClTagSupport implements DynamicAttributes {
 		code = string;
 	}
 
-	public HashMap getParameters() {
+	public HashMap<String,String> getParameters() {
 		return parameters;
 	}
 

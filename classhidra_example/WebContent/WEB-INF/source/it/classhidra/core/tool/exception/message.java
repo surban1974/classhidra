@@ -43,7 +43,7 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 	public String CD_LANG;
 	public String DESC_MESS;
 	private String _log_mess;
-	private HashMap parameters;
+	private HashMap<String,String> parameters;
 	public String MESS_ID;
 
 
@@ -63,7 +63,7 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 		DESC_MESS=_DESC_MESS;
 		if(o_parameters!=null && o_parameters.length>0){
 			if(parameters==null)
-				parameters = new HashMap();
+				parameters = new HashMap<String, String>();
 			parameters.putAll(
 					bsControllerMessageException.prepare_hm_parameters(o_parameters)
 			);
@@ -101,7 +101,7 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 			else CD_LANG = value;
 		}
 	}
-	public String getDESC_MESS(HashMap _parameters) {	
+	public String getDESC_MESS(HashMap<String,String> _parameters) {	
 		this.parameters=_parameters;
 		return getDESC_MESS();
 	}
@@ -220,12 +220,12 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 		return result;		
 	}	
 	
-	public void setParameters(HashMap parameters) {
+	public void setParameters(HashMap<String,String> parameters) {
 		this.parameters = parameters;
 	}
-	public static String decodeParameters(String mess_in_desc, HashMap parameters){
+	public static String decodeParameters(String mess_in_desc, HashMap<String,String> parameters){
 		if(parameters!=null){
-			Vector p_keys = new Vector(parameters.keySet());
+			final Vector<String> p_keys = new Vector<String>(parameters.keySet());
 			for(int i=0;i<p_keys.size();i++){
 				String key = (String)p_keys.get(i);
 				String value=(String)parameters.get(key);
@@ -242,7 +242,7 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 		MESS_ID = mess_id;
 	}
 
-	public HashMap getParameters() {
+	public HashMap<String,String> getParameters() {
 		return parameters;
 	}
 }

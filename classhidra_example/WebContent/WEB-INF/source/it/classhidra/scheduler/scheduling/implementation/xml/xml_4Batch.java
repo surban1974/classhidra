@@ -18,7 +18,7 @@ import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
@@ -33,7 +33,7 @@ import it.classhidra.scheduler.util.util_batch;
 
 
 public class xml_4Batch implements i_4Batch  {
-	
+	private static final long serialVersionUID = 1L;
 	protected static List<db_batch> xml_batch = new ArrayList<db_batch>();
 	protected static List<i_batch_log> xml_batch_log = new ArrayList<i_batch_log>();
 	protected static List<db_batch_property> xml_batch_property = new ArrayList<db_batch_property>();
@@ -41,6 +41,7 @@ public class xml_4Batch implements i_4Batch  {
 	protected static final int max_log_size = 20;
 	protected static final String CONST_XML_FOLDER = "xml.data.folder";
 	
+	@SuppressWarnings("unchecked")
 	public xml_4Batch(){
 		super();
 		batch_init bInit = DriverScheduling.getConfiguration();
@@ -152,7 +153,7 @@ public class xml_4Batch implements i_4Batch  {
 	}
 
 
-	public Object operation(String oper, HashMap form) throws Exception {
+	public Object operation(String oper, HashMap<String,?> form) throws Exception {
 		if(oper==null) return null;
 		oper=oper.toUpperCase();
 		
@@ -201,7 +202,7 @@ public class xml_4Batch implements i_4Batch  {
 		return null;
 	}
 
-	private Object operation_FIND(HashMap form) throws Exception{
+	private Object operation_FIND(HashMap<String,?> form) throws Exception{
 
 		
 
@@ -237,7 +238,7 @@ public class xml_4Batch implements i_4Batch  {
 		return null;
 	}
 	
-	private Object operation_FIND_SIMPLE(HashMap form) throws Exception{
+	private Object operation_FIND_SIMPLE(HashMap<String,?> form) throws Exception{
 		db_batch element = (db_batch)form.get("selected");
 		if(element==null)
 			return null;
@@ -254,9 +255,9 @@ public class xml_4Batch implements i_4Batch  {
 	}	
 
 
-	private Object operation_FINDFORMLIST(HashMap form) throws Exception{
+	private Object operation_FINDFORMLIST(HashMap<String,?> form) throws Exception{
 
-		Vector elements = new Vector();
+		Vector<Object> elements = new Vector<Object>();
 		if(form!=null && form.get("operation")!=null && form.get("operation").equals("log")){
 			for(int i=xml_batch_log.size()-1;i>=0;i--){
 				if(elements.size()<(max_log_size+1))
@@ -293,12 +294,12 @@ public class xml_4Batch implements i_4Batch  {
 
 			}
 			
-			elements = new util_sort().sort(elements, new String[]{"ord","cd_btch "});
+			elements = Util_sort.sort(elements, new String[]{"ord","cd_btch "});
 		}
 		return elements;
 	}
 
-	private Object operation_DELETE(HashMap form) throws Exception{
+	private Object operation_DELETE(HashMap<String,?> form) throws Exception{
 
 
 		if(form!=null && form.get("operation")!=null && form.get("operation").equals("log")){			
@@ -308,7 +309,7 @@ public class xml_4Batch implements i_4Batch  {
 
 	}
 
-	private Object operation_UPDATE(HashMap form) throws Exception{
+	private Object operation_UPDATE(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -349,7 +350,7 @@ public class xml_4Batch implements i_4Batch  {
 
 	}
 	
-	private Object operation_UPDATE_STATE(HashMap form) throws Exception{
+	private Object operation_UPDATE_STATE(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -393,11 +394,11 @@ public class xml_4Batch implements i_4Batch  {
 	}	
 	
 	
-	private Object operation_UPDATE_STATES_AND_NEXTEXEC(HashMap form) throws Exception{
+	private Object operation_UPDATE_STATES_AND_NEXTEXEC(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
-		List batch_updated = (List)form.get("list");
+		List<?> batch_updated = (List<?>)form.get("list");
 		
 		if(batch_updated==null || batch_updated.size()==0)
 			return new Boolean(false);
@@ -421,7 +422,7 @@ public class xml_4Batch implements i_4Batch  {
 
 	}		
 	
-	private Object operation_INSERT(HashMap form) throws Exception{
+	private Object operation_INSERT(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -434,7 +435,7 @@ public class xml_4Batch implements i_4Batch  {
 	
 
 
-	private Object operation_CLEAR_STATE(HashMap form) throws Exception{
+	private Object operation_CLEAR_STATE(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -456,7 +457,7 @@ public class xml_4Batch implements i_4Batch  {
 	}
 
 
-	private Object operation_DELETELOG(HashMap form) throws Exception{
+	private Object operation_DELETELOG(HashMap<String,?> form) throws Exception{
 
 		if(form.get("cd_btch")==null)
 			return new Boolean(false);
@@ -470,7 +471,7 @@ public class xml_4Batch implements i_4Batch  {
 		return new Boolean(true);
 	}
 
-	private Object operation_DELETEBATCH(HashMap form) throws Exception{
+	private Object operation_DELETEBATCH(HashMap<String,?> form) throws Exception{
 		
 		if(form.get("cd_btch")==null)
 			return new Boolean(false);
@@ -495,7 +496,7 @@ public class xml_4Batch implements i_4Batch  {
 
 	}
 	
-	private Object operation_CLEAR_BATCH_STATES(HashMap form) throws Exception{
+	private Object operation_CLEAR_BATCH_STATES(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -507,7 +508,7 @@ public class xml_4Batch implements i_4Batch  {
 		return new Boolean(true);
 	}
 	
-	private Object operation_KILL4TIMEOUT(HashMap form) throws Exception{
+	private Object operation_KILL4TIMEOUT(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -537,7 +538,7 @@ public class xml_4Batch implements i_4Batch  {
 
 	}	
 	
-	private Object operation_WRITE_LOG(HashMap form) throws Exception{
+	private Object operation_WRITE_LOG(HashMap<String,?> form) throws Exception{
 
 		if(form==null) return new Boolean(false);
 
@@ -556,7 +557,7 @@ public class xml_4Batch implements i_4Batch  {
 	}		
 	
 	
-	public Object operation_LOAD_BATCH_PROPERTIES(HashMap form){
+	public Object operation_LOAD_BATCH_PROPERTIES(HashMap<String,?> form){
 
 
 	    db_batch batch = (db_batch)form.get("selected");

@@ -26,14 +26,14 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 	private String visibility;
 	private String mess_id;
 	private String description;
-	private HashMap _permitted;
-	private Vector v_permitted;
-	private HashMap _forbiden;
-	private Vector v_forbiden;
+	private HashMap<String,info_nodeorganization> _permitted;
+	private Vector<info_nodeorganization> v_permitted;
+	private HashMap<String,info_nodeorganization> _forbiden;
+	private Vector<info_nodeorganization> v_forbiden;
 	private info_nodeorganization parent;
-	private Vector children;
-	private HashMap _children;
-	private HashMap _children_m;
+	private Vector<info_nodeorganization> children;
+	private HashMap<String,info_nodeorganization> _children;
+	private HashMap<String,info_nodeorganization> _children_m;
 	private int level=0;
 	
 	public info_nodeorganization(){
@@ -47,13 +47,13 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 		visibility="SB";
 		mess_id="";
 		description="";
-		_permitted=new HashMap();
-		_forbiden=new HashMap();
-		v_permitted=new Vector();
-		v_forbiden=new Vector();
-		_children=new HashMap();
-		_children_m=new HashMap();
-		children=new Vector();
+		_permitted=new HashMap<String, info_nodeorganization>();
+		_forbiden=new HashMap<String, info_nodeorganization>();
+		v_permitted=new Vector<info_nodeorganization>();
+		v_forbiden=new Vector<info_nodeorganization>();
+		_children=new HashMap<String, info_nodeorganization>();
+		_children_m=new HashMap<String, info_nodeorganization>();
+		children=new Vector<info_nodeorganization>();
 	}	
 	
 	public void init(Node node) throws bsControllerException{
@@ -124,8 +124,8 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 	}	
 	
 	public void refreshV_elements(){
-		v_forbiden = new Vector(_forbiden.values());
-		v_permitted = new Vector(_permitted.values());
+		v_forbiden = new Vector<info_nodeorganization>(_forbiden.values());
+		v_permitted = new Vector<info_nodeorganization>(_permitted.values());
 	}		
 	
 	public info_nodeorganization find(String _id_node){
@@ -152,8 +152,8 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 		return null;
 	}	
 	
-	public HashMap getElementsVisible(){
-		HashMap result=new HashMap();
+	public HashMap<String,info_nodeorganization> getElementsVisible(){
+		HashMap<String,info_nodeorganization> result=new HashMap<String, info_nodeorganization>();
 		if(visibility.indexOf(VISIBILITY_ONLY_SELF)>-1) result.put(this.getMatriculation(),this);
 		if(visibility.indexOf(VISIBILITY_PARENT)>-1 && parent!=null) result.put(parent.getMatriculation(),parent);
 		if(visibility.indexOf(VISIBILITY_CURRENT_LEVEL)>-1 && parent!=null){
@@ -177,14 +177,14 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 			}
 		}
 		if(_forbiden.size()>0){
-			Vector forbiden = new Vector(_forbiden.keySet());
+			Vector<String> forbiden = new Vector<String>(_forbiden.keySet());
 			for(int i=0;i<forbiden.size();i++){
 				String key = (String)forbiden.get(i);
 				result.remove(key);
 			}
 		}
 		if(_permitted.size()>0){
-			Vector permitted = new Vector(_permitted.keySet());
+			Vector<String> permitted = new Vector<String>(_permitted.keySet());
 			for(int i=0;i<permitted.size();i++){
 				String key = (String)permitted.get(i);
 				if(result.get(key)==null)
@@ -194,7 +194,7 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 		return result;
 	}
 	
-	public HashMap getElementsAll(HashMap result){
+	public HashMap<String,info_nodeorganization> getElementsAll(HashMap<String,info_nodeorganization> result){
 		for(int i=0;i<this.getChildren().size();i++){
 			info_nodeorganization current = (info_nodeorganization)this.getChildren().get(i);
 			result.put(current.getMatriculation(),current);
@@ -235,27 +235,27 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 		this.description = description;
 	}
 
-	public HashMap get_permitted() {
+	public HashMap<String,info_nodeorganization> get_permitted() {
 		return _permitted;
 	}
 
-	public void set_permitted(HashMap permitted) {
+	public void set_permitted(HashMap<String,info_nodeorganization> permitted) {
 		_permitted = permitted;
 	}
 
-	public HashMap get_forbiden() {
+	public HashMap<String,info_nodeorganization> get_forbiden() {
 		return _forbiden;
 	}
 
-	public void set_forbiden(HashMap forbiden) {
+	public void set_forbiden(HashMap<String,info_nodeorganization> forbiden) {
 		_forbiden = forbiden;
 	}
 
-	public Vector getChildren() {
+	public Vector<info_nodeorganization> getChildren() {
 		return children;
 	}
 
-	public void setChildren(Vector children) {
+	public void setChildren(Vector<info_nodeorganization> children) {
 		this.children = children;
 	}
 
@@ -267,19 +267,19 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 		this.parent = parent;
 	}
 
-	public HashMap get_children() {
+	public HashMap<String,info_nodeorganization> get_children() {
 		return _children;
 	}
 
-	public void set_children(HashMap children) {
+	public void set_children(HashMap<String,info_nodeorganization> children) {
 		_children = children;
 	}
 
-	public HashMap get_children_m() {
+	public HashMap<String,info_nodeorganization> get_children_m() {
 		return _children_m;
 	}
 
-	public void set_children_m(HashMap childrenM) {
+	public void set_children_m(HashMap<String,info_nodeorganization> childrenM) {
 		_children_m = childrenM;
 	}
 
@@ -291,7 +291,7 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 		this.level = level;
 	}
 	
-	public String toHTMLList(String classStyleVis,String classStyleDis, String prefix, HashMap visibilityMap, boolean onlyVis){
+	public String toHTMLList(String classStyleVis,String classStyleDis, String prefix, HashMap<String,String> visibilityMap, boolean onlyVis){
 		String result="";
 		String levelnbsp="";
 		if(!onlyVis  || (onlyVis && visibilityMap.get(matriculation)!=null)){
@@ -371,19 +371,19 @@ public class info_nodeorganization extends info_entity implements i_elementBase{
 		mess_id = messId;
 	}
 
-	public Vector getV_permitted() {
+	public Vector<info_nodeorganization> getV_permitted() {
 		return v_permitted;
 	}
 
-	public void setV_permitted(Vector vPermitted) {
+	public void setV_permitted(Vector<info_nodeorganization> vPermitted) {
 		v_permitted = vPermitted;
 	}
 
-	public Vector getV_forbiden() {
+	public Vector<info_nodeorganization> getV_forbiden() {
 		return v_forbiden;
 	}
 
-	public void setV_forbiden(Vector vForbiden) {
+	public void setV_forbiden(Vector<info_nodeorganization> vForbiden) {
 		v_forbiden = vForbiden;
 	}
 }

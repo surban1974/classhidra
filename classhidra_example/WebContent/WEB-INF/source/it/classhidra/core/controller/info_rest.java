@@ -43,8 +43,8 @@ public class info_rest extends info_entity implements i_elementBase{
 	private String path;
 	private String parametermapping;
 	private String expose;
-	private List parameters;
-	private List exposed;
+	private List<String> parameters;
+	private List<String> exposed;
 	private info_entity mapped_entity;
 	
 
@@ -53,8 +53,8 @@ public class info_rest extends info_entity implements i_elementBase{
 		path="";
 		parametermapping="";
 		expose="";
-		parameters=new ArrayList();
-		exposed=new ArrayList();
+		parameters=new ArrayList<String>();
+		exposed=new ArrayList<String>();
 	}
 
 
@@ -88,16 +88,7 @@ public class info_rest extends info_entity implements i_elementBase{
 		String result=System.getProperty("line.separator")+space+"      <restmapping ";
 		if(path!=null && !path.trim().equals("")) result+=" path=\""+util_format.normaliseXMLText(path)+"\"";
 		if(parametermapping!=null && !parametermapping.trim().equals("")) result+=" parametermapping=\""+util_format.normaliseXMLText(parametermapping)+"\"";
-/*
-		if(exposed!=null && exposed.size()>0){
-			result+=" expose=\"";
-			for(int i=0;i<exposed.size();i++){
-				if(i>0) result+=",";
-				result+=exposed.get(i).toString();
-			}
-			result+="\"";
-		}
-*/				
+			
 		result+="/>";
 
 		return result;
@@ -109,29 +100,29 @@ public class info_rest extends info_entity implements i_elementBase{
 	public void setParametermapping(String parametermapping) {
 		if(parametermapping==null) return;
 		this.parametermapping = parametermapping;
-		parameters=new ArrayList();
+		parameters=new ArrayList<String>();
 		StringTokenizer st = new StringTokenizer(parametermapping,"/");
 		while(st.hasMoreTokens())
 			parameters.add(st.nextToken());
 	}
 	
-	public HashMap mapParameterIfCorrect(String extparametermapping){
+	public HashMap<String,String> mapParameterIfCorrect(String extparametermapping){
 		if(extparametermapping==null) 
 			return null;
 		if(extparametermapping.equals("") || extparametermapping.equals("/")){
 			if(parameters==null || parameters.size()==0)
-				return new HashMap();
+				return new HashMap<String,String>();
 			else
 				return null;
 		}
 
-		List extparameters=new ArrayList();
+		List<String> extparameters=new ArrayList<String>();
 		StringTokenizer st = new StringTokenizer(extparametermapping,"/");
 		while(st.hasMoreTokens())
 			extparameters.add(st.nextToken());
 		
 		if(Math.min(parameters.size(),extparameters.size())>0){
-			HashMap map = new HashMap();
+			HashMap<String,String> map = new HashMap<String,String>();
 			for(int i=0;i<Math.min(parameters.size(),extparameters.size());i++)
 				map.put(parameters.get(i), extparameters.get(i));
 			return map;
@@ -139,18 +130,18 @@ public class info_rest extends info_entity implements i_elementBase{
 		return null;
 	}
 	
-	public HashMap mapParameterAnyway(String extparametermapping){
+	public HashMap<String,String> mapParameterAnyway(String extparametermapping){
 		if(extparametermapping==null) 
-			return new HashMap();
+			return new HashMap<String,String>();
 		if(extparametermapping.equals("") || extparametermapping.equals("/"))
-			return new HashMap();
+			return new HashMap<String,String>();
 
-		List extparameters=new ArrayList();
+		List<String> extparameters=new ArrayList<String>();
 		StringTokenizer st = new StringTokenizer(extparametermapping,"/");
 		while(st.hasMoreTokens())
 			extparameters.add(st.nextToken());
 		
-		HashMap map = new HashMap();
+		HashMap<String,String> map = new HashMap<String,String>();
 		for(int i=0;i<Math.min(parameters.size(),extparameters.size());i++)
 			map.put(parameters.get(i), extparameters.get(i));
 		return map;
@@ -168,13 +159,13 @@ public class info_rest extends info_entity implements i_elementBase{
 
 
 
-	public List getParameters() {
+	public List<String> getParameters() {
 		return parameters;
 	}
 
 
 
-	public void setParameters(List parameters) {
+	public void setParameters(List<String> parameters) {
 		this.parameters = parameters;
 	}
 
@@ -191,15 +182,15 @@ public class info_rest extends info_entity implements i_elementBase{
 	}
 
 
-	public List getExposed() {
+	public List<String> getExposed() {
 		if(exposed==null)
-			exposed=new ArrayList();
+			exposed=new ArrayList<String>();
 		return exposed;
 	}
 	
 
 
-	public void setExposed(List expose) {
+	public void setExposed(List<String> expose) {
 		this.exposed = expose;
 	}
 
@@ -221,7 +212,7 @@ public class info_rest extends info_entity implements i_elementBase{
 
 	public void setExpose(String expose) {
 		if(exposed==null)
-			exposed=new ArrayList();
+			exposed=new ArrayList<String>();
 		exposed.clear();
 		if(expose!=null){
 			this.expose = expose;
@@ -232,8 +223,8 @@ public class info_rest extends info_entity implements i_elementBase{
 		
 	}
 
-	public Map getRestParametersMapped(){
-		Map result = new HashMap();
+	public Map<String,String> getRestParametersMapped(){
+		Map<String,String> result = new HashMap<String,String>();
 		if(parameters!=null && parameters.size()>0){
 			for(int i=0;i<parameters.size();i++)
 				result.put(parameters.get(i).toString(), "");

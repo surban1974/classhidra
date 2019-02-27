@@ -17,13 +17,13 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 public class util_multipart {
-	public static HashMap  popolateHashMap(HttpServletRequest req){
-		HashMap parametersMP = null;
+	public static HashMap<String,Object>  popolateHashMap(HttpServletRequest req){
+		HashMap<String,Object> parametersMP = null;
 		int file_counter=0;
 		if(parametersMP==null){
-			parametersMP = new HashMap();
+			parametersMP = new HashMap<String,Object>();
 			parametersMP.put("$REQUEST_CHARSET",req.getCharacterEncoding());
-			Enumeration headerNames = req.getHeaderNames();
+			Enumeration<?> headerNames = req.getHeaderNames();
 			while(headerNames.hasMoreElements()) {
 				String headerName = (String)headerNames.nextElement();
 				parametersMP.put(headerName,req.getHeader(headerName));
@@ -44,7 +44,7 @@ public class util_multipart {
 						String sFilename = filePart.getFileName();
 						if(sFilename!=null){
 			
-							Vector buf_v = new Vector();
+							Vector<byte[]> buf_v = new Vector<byte[]>();
 							
 							long size=0;
 							int read;
@@ -64,7 +64,7 @@ public class util_multipart {
 								System.arraycopy(buf_v.get(i),0,fine,i*8 * 1024,current.length);
 	
 							}
-							HashMap current_file = new HashMap();
+							HashMap<String,Object> current_file = new HashMap<String,Object>();
 							current_file.put("content",fine);
 							current_file.put("contenttype",filePart.getContentType());
 							current_file.put("name",filePart.getFileName());
@@ -83,7 +83,7 @@ public class util_multipart {
 			}
 			
 			try{
-				Enumeration en = req.getParameterNames();
+				Enumeration<?> en = req.getParameterNames();
 				while(en.hasMoreElements()){
 					String key = (String)en.nextElement();
 					String value = req.getParameter(key);

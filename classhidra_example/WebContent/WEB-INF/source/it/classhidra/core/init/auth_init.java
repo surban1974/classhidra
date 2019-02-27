@@ -34,6 +34,7 @@ import it.classhidra.core.i_authentication_filter;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_auth_manager;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.info_action;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.jaas_authentication.info_group;
 import it.classhidra.core.tool.jaas_authentication.info_target;
@@ -91,13 +92,13 @@ public class auth_init implements Serializable{
 
 	private BigDecimal _cd_ist;
 
-	private HashMap requestHeader;
-	private HashMap _actions_allowed;
-	private HashMap _actions_forbidden;
+	private HashMap<String,Object> requestHeader;
+	private HashMap<String,info_action> _actions_allowed;
+	private HashMap<String,info_action> _actions_forbidden;
 	
 
-	private HashMap _target_property;
-	private HashMap _user_property;
+	private HashMap<String,Object> _target_property;
+	private HashMap<String,Object> _user_property;
 
 	private i_auth_manager _manager;
 	private i_authentication_filter _authentication_filter;
@@ -302,11 +303,11 @@ public class auth_init implements Serializable{
 
 
 		_logged = false;
-		requestHeader = new HashMap();
-		_actions_allowed = new HashMap();
-		_actions_forbidden = new HashMap();
-		_target_property = new HashMap();
-		_user_property = new HashMap();
+		requestHeader = new HashMap<String, Object>();
+		_actions_allowed = new HashMap<String, info_action>();
+		_actions_forbidden = new HashMap<String, info_action>();
+		_target_property = new HashMap<String, Object>();
+		_user_property = new HashMap<String, Object>();
 	}
 
 
@@ -392,19 +393,19 @@ public class auth_init implements Serializable{
 		_ruoloDesc = string;
 	}
 
-	public HashMap get_actions_permitted() {
+	public HashMap<String,info_action> get_actions_permitted() {
 		return _actions_allowed;
 	}
 
-	public void set_actions_permited(HashMap map) {
+	public void set_actions_permited(HashMap<String,info_action> map) {
 		_actions_allowed = map;
 	}
 	
-	public HashMap get_actions_allowed() {
+	public HashMap<String,info_action> get_actions_allowed() {
 		return _actions_allowed;
 	}
 
-	public void set_actions_allowed(HashMap map) {
+	public void set_actions_allowed(HashMap<String,info_action> map) {
 		_actions_allowed = map;
 	}
 	
@@ -418,7 +419,7 @@ public class auth_init implements Serializable{
 		_user_ip = string;
 	}
 
-	public HashMap get_actions_forbidden() {
+	public HashMap<String,info_action> get_actions_forbidden() {
 		return _actions_forbidden;
 	}
 
@@ -430,7 +431,7 @@ public class auth_init implements Serializable{
 		this._ticker = _ticker;
 	}
 
-	public void set_actions_forbidden(HashMap map) {
+	public void set_actions_forbidden(HashMap<String,info_action> map) {
 		_actions_forbidden = map;
 	}
 
@@ -483,11 +484,11 @@ public class auth_init implements Serializable{
 		this._authentication_filter = _authentication_filter;
 	}
 
-	public HashMap get_target_property() {
+	public HashMap<String,Object> get_target_property() {
 		return _target_property;
 	}
 
-	public void set_target_property(HashMap _target_property) {
+	public void set_target_property(HashMap<String,Object> _target_property) {
 		this._target_property = _target_property;
 	}
 
@@ -498,11 +499,11 @@ public class auth_init implements Serializable{
 	public void set_userDesc(String desc) {
 		_userDesc = desc;
 	}
-	public HashMap get_user_property() {
+	public HashMap<String,Object> get_user_property() {
 		return _user_property;
 	}
 
-	public void set_user_property(HashMap _user_property) {
+	public void set_user_property(HashMap<String,Object> _user_property) {
 		this._user_property = _user_property;
 	}
 
@@ -512,7 +513,7 @@ public class auth_init implements Serializable{
 		return _manager;
 	}
 
-	public HashMap getRequestHeader() {
+	public HashMap<String,Object> getRequestHeader() {
 		return requestHeader;
 	}
 

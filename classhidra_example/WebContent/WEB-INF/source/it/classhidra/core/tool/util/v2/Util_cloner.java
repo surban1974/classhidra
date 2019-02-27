@@ -6,6 +6,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class Util_cloner {
+
+	
 	static public <T extends Object> T clone(T oldObj, Class<T> type) throws Exception {
 		
 		Object retVal = null;

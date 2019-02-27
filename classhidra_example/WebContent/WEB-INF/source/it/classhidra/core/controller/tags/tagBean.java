@@ -54,10 +54,10 @@ public class tagBean extends ClTagSupport{
 	protected String method_prefix=null;
 	
 	protected String prefixName=null;
-	protected List arguments=null;
+	protected List<Object> arguments=null;
 
 	public int doStartTag() throws JspException {
-		arguments = new ArrayList();
+		arguments = new ArrayList<Object>();
 		return EVAL_BODY_INCLUDE;
 	}
 	
@@ -79,8 +79,9 @@ public class tagBean extends ClTagSupport{
 				source=checkParametersIfDynamic(source, null);
 			
 			if(source!=null){
-				HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
-				if(pool!=null) formAction = (i_action)pool.get(source);
+				@SuppressWarnings("unchecked")
+				HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+				if(pool!=null) formAction = pool.get(source);
 			}
 			if(formAction!=null) source = null;
 			else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
@@ -108,8 +109,8 @@ public class tagBean extends ClTagSupport{
 					if(arg.length==0)
 						anotherBean = Class.forName(constructor).newInstance();
 					else {
-						Constructor found = null;
-						for(Constructor currentConstructor:Class.forName(constructor).getConstructors()) {
+						Constructor<?> found = null;
+						for(Constructor<?> currentConstructor:Class.forName(constructor).getConstructors()) {
 							if(currentConstructor.getParameterTypes().length==arg.length) {
 								boolean equal = true;
 								for(int i=0;i<currentConstructor.getParameterTypes().length;i++) 
@@ -143,7 +144,8 @@ public class tagBean extends ClTagSupport{
 				
 				if(anotherBean!=null){
 					
-					HashMap pool_seq = (HashMap)request.getAttribute(CONST_HEAP_BEANS);
+					@SuppressWarnings("unchecked")
+					HashMap<String, String> pool_seq = (HashMap<String, String>)request.getAttribute(CONST_HEAP_BEANS);
 					if(pool_seq!=null){
 						String foundedPrefixName = (String)pool_seq.get(source);
 						if(foundedPrefixName!=null)
@@ -160,11 +162,12 @@ public class tagBean extends ClTagSupport{
 				if(index!=null && index.equalsIgnoreCase("SEQUENCE") && getParent()!=null && getParent() instanceof tagSequence){
 					try{
 
-						request.setAttribute(name,((List)((tagSequence)getParent()).getSequence()).get(((tagSequence)getParent()).getIndex()));
+						request.setAttribute(name,((List<?>)((tagSequence)getParent()).getSequence()).get(((tagSequence)getParent()).getIndex()));
 						if(prefixName!=null){
-							HashMap pool_seq = (HashMap)request.getAttribute(CONST_HEAP_BEANS);
+							@SuppressWarnings("unchecked")
+							HashMap<String, String> pool_seq = (HashMap<String, String>)request.getAttribute(CONST_HEAP_BEANS);
 							if(pool_seq==null){
-								pool_seq=new HashMap();
+								pool_seq=new HashMap<String, String>();
 								request.setAttribute(CONST_HEAP_BEANS,pool_seq);
 							}
 							pool_seq.put(name, prefixName);	
@@ -210,7 +213,7 @@ public class tagBean extends ClTagSupport{
 				try{
 					par[0]=Integer.valueOf(index);
 					if(obj instanceof HashMap)
-						second_obj=util_reflect.getValue(new Vector(((HashMap)obj).values()), "get",par);
+						second_obj=util_reflect.getValue(new Vector<Object>(((HashMap<?,?>)obj).values()), "get",par);
 
 					else second_obj=util_reflect.getValue(obj, "get",par);
 				}catch(Exception ex){}
@@ -219,7 +222,7 @@ public class tagBean extends ClTagSupport{
 					try{
 						par[0]=index;
 						if(obj instanceof HashMap)
-							second_obj=util_reflect.getValue(new Vector(((HashMap)obj).values()), "get",par);
+							second_obj=util_reflect.getValue(new Vector<Object>(((HashMap<?,?>)obj).values()), "get",par);
 						else second_obj=util_reflect.getValue(obj, "get",par);
 					}catch(Exception ex){}
 					if(second_obj!=null) obj = second_obj;
@@ -227,9 +230,10 @@ public class tagBean extends ClTagSupport{
 			}
 			request.setAttribute(name,obj);
 			if(prefixName!=null){
-				HashMap pool_seq = (HashMap)request.getAttribute(CONST_HEAP_BEANS);
+				@SuppressWarnings("unchecked")
+				HashMap<String, String> pool_seq = (HashMap<String, String>)request.getAttribute(CONST_HEAP_BEANS);
 				if(pool_seq==null){
-					pool_seq=new HashMap();
+					pool_seq=new HashMap<String, String>();
 					request.setAttribute(CONST_HEAP_BEANS,pool_seq);
 				}
 				pool_seq.put(name, prefixName);	
@@ -294,11 +298,11 @@ public class tagBean extends ClTagSupport{
 		this.prefixName = prefixName;
 	}
 
-	public List getArguments() {
+	public List<Object> getArguments() {
 		return arguments;
 	}
 
-	public void setArguments(List arguments) {
+	public void setArguments(List<Object> arguments) {
 		this.arguments = arguments;
 	}
 

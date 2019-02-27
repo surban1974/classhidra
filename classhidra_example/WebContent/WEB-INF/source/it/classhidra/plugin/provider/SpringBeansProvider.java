@@ -32,13 +32,14 @@ import it.classhidra.core.tool.util.util_format;
 @Scope(value="singleton")
 //public class SpringBeansProvider implements i_provider, ApplicationContextAware {
 public class SpringBeansProvider implements i_provider {
+	private static final long serialVersionUID = 1L;
 
 	private static SpringBeansProvider instanceProvider;
 	
 	@Autowired
 	private ApplicationContext applicationContext;	
 	
-	private static ConcurrentHashMap cacheNamingMap;
+	private static ConcurrentHashMap<String,String> cacheNamingMap;
 	
 	private static final String CONST_NULL = "NULL";
 
@@ -107,7 +108,7 @@ public class SpringBeansProvider implements i_provider {
 		}
 		if(instance==null && class_bean!=null){
 			try{
-				Class clazz = Class.forName(class_bean);
+				Class<?> clazz = Class.forName(class_bean);
 				try{
 					instance = _applicationContext.getBean(clazz);	
 					getNamingMap().put(id_bean, clazz.getName());
@@ -247,11 +248,12 @@ public class SpringBeansProvider implements i_provider {
     		 return true;
      }
 
-     public static ConcurrentHashMap getNamingMap() {
- 		if(instanceProvider.cacheNamingMap==null)
- 			instanceProvider.cacheNamingMap = new ConcurrentHashMap();
- 		return instanceProvider.cacheNamingMap;
+     public static ConcurrentHashMap<String,String> getNamingMap() {
+ 		if(SpringBeansProvider.cacheNamingMap==null)
+ 			SpringBeansProvider.cacheNamingMap = new ConcurrentHashMap<String, String>();
+ 		return SpringBeansProvider.cacheNamingMap;
  	}	
 
+     
 
 }

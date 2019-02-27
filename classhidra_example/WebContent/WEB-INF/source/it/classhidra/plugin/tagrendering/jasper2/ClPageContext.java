@@ -18,6 +18,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.el.ExpressionEvaluator;
 import javax.servlet.jsp.el.VariableResolver;
 
+@SuppressWarnings("deprecation")
 public class ClPageContext extends PageContext{
 	
 	private HttpServletRequest request;

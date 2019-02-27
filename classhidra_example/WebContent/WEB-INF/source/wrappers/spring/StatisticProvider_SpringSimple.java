@@ -43,8 +43,8 @@ import org.springframework.stereotype.Component;
 @Component(app_init.id_statistic_provider)
 @Scope(value="singleton")
 public class StatisticProvider_SpringSimple implements I_StatisticProvider {
-	
-	private static LinkedList stack = new LinkedList();
+	private static final long serialVersionUID = 1L;
+	private static LinkedList<StatisticEntity> stack = new LinkedList<StatisticEntity>();
 	
 	public StatisticProvider_SpringSimple(){
 		super();
@@ -61,21 +61,21 @@ public class StatisticProvider_SpringSimple implements I_StatisticProvider {
 		stack.addFirst(stat);
 	}
 
-	public List getAllEntities() {
+	public List<StatisticEntity> getAllEntities() {
 		if(stack==null){
-			stack = new LinkedList();
+			stack = new LinkedList<StatisticEntity>();
 		}
 		return stack;
 	}
 
 	public String getAllEntitiesAsXml() {
 		if(stack==null){
-			stack = new LinkedList();
+			stack = new LinkedList<StatisticEntity>();
 			return "";
 		} 
 		else{
 			String result="";
-			ListIterator  it = stack.listIterator();
+			ListIterator<StatisticEntity>  it = stack.listIterator();
 		    while(it.hasNext()){
 		    	try{
 		    		result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
@@ -86,11 +86,11 @@ public class StatisticProvider_SpringSimple implements I_StatisticProvider {
 		}
 	}
 
-	public List getLastEntities(int quantity) {
+	public List<StatisticEntity> getLastEntities(int quantity) {
 		if(stack==null){
-			stack = new LinkedList();
+			stack = new LinkedList<StatisticEntity>();
 		} 
-		LinkedList stackQ = new LinkedList();
+		LinkedList<StatisticEntity> stackQ = new LinkedList<StatisticEntity>();
 		int q=0;
 		while(q<quantity && q<stack.size()){
 			stackQ.addFirst(stack.get(q));
@@ -100,14 +100,14 @@ public class StatisticProvider_SpringSimple implements I_StatisticProvider {
 	}
 
 	public String getLastEntitiesAsXml(int quantity) {
-		LinkedList stack = (LinkedList)getLastEntities(quantity);
+		LinkedList<StatisticEntity> stack = (LinkedList<StatisticEntity>)getLastEntities(quantity);
 		if(stack==null){
-			stack = new LinkedList();
+			stack = new LinkedList<StatisticEntity>();
 			return "";
 		} 
 		else{
 			String result="";
-		    ListIterator  it = stack.listIterator();
+		    ListIterator<StatisticEntity>  it = stack.listIterator();
 		    while(it.hasNext()){
 		    	try{
 		    		result= ((StatisticEntity)it.next()).toXml()+"\n"+result;
@@ -120,7 +120,7 @@ public class StatisticProvider_SpringSimple implements I_StatisticProvider {
 
 	public void clearAll(){
 		if(stack==null){
-			stack = new LinkedList();
+			stack = new LinkedList<StatisticEntity>();
 		} 
 		stack.clear();		
 	}
@@ -128,7 +128,7 @@ public class StatisticProvider_SpringSimple implements I_StatisticProvider {
 	public void syncroAll(){
 	}
 
-	public List getEntities(String commandDefinedIntoProviderRelise) {
+	public List<StatisticEntity> getEntities(String commandDefinedIntoProviderRelise) {
 		return null;
 	}
 

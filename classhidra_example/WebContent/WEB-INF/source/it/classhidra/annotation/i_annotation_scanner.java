@@ -2,26 +2,32 @@ package it.classhidra.annotation;
 
 import java.util.HashMap;
 
+import it.classhidra.core.controller.info_action;
+import it.classhidra.core.controller.info_bean;
+import it.classhidra.core.controller.info_redirect;
+import it.classhidra.core.controller.info_stream;
+import it.classhidra.core.controller.info_transformation;
+
 public interface i_annotation_scanner {
 
 	void loadAllObjects(String _package_annotated,
-			HashMap redirects);
+			HashMap<String,info_redirect> redirects);
 
-	void loadAllObjects(HashMap redirects);
+	void loadAllObjects(HashMap<String,info_redirect> redirects);
 
 	void loadObject();
 
-	HashMap get_streams();
+	HashMap<String,info_stream> get_streams();
 
-	HashMap get_beans();
+	HashMap<String,info_bean> get_beans();
 
-	HashMap get_redirects();
+	HashMap<String,info_redirect> get_redirects();
 	
-	HashMap get_redirectsjustloaded();
+	HashMap<String,info_redirect> get_redirectsjustloaded();
 
-	HashMap get_transformationoutput();
+	HashMap<String,info_transformation> get_transformationoutput();
 
-	HashMap get_actions();
+	HashMap<String,info_action> get_actions();
 
 	String getError();
 

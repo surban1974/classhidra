@@ -65,7 +65,7 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 	protected String additionalAttr = null;
 
 
-	protected Map tagAttributes = new HashMap();
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
 
 
 
@@ -118,7 +118,7 @@ public class tagLink extends TagSupport implements DynamicAttributes {
 		additionalAttr = null;
 
 		
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 	}
 
 	protected String createTagBody() {

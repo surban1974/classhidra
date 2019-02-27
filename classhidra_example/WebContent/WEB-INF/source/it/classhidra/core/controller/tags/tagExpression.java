@@ -35,11 +35,11 @@ import javax.servlet.jsp.JspException;
 public class tagExpression extends ClTagSupport{
 	private static final long serialVersionUID = -1L;
 	protected String name = null;
-	protected List elements = null;
+	protected List<Object> elements = null;
 	
 	
 	public int doStartTag() throws JspException {
-		elements = new Vector();
+		elements = new Vector<Object>();
 		return EVAL_BODY_INCLUDE; 
 	}
 	public int doEndTag() throws JspException {
@@ -66,7 +66,7 @@ public class tagExpression extends ClTagSupport{
 				if(elements.get(i) instanceof tagOperation){
 					int arguments_count = countArguments((tagOperation)elements.get(i));
 					if(i>arguments_count-1){
-						final Vector param = new Vector();
+						final Vector<Object> param = new Vector<Object>();
 						for(int j=i-1;j>i-1-arguments_count;j--)
 							param.add(elements.get(j));					
 						final IExpressionArgument result = calcOperation((tagOperation)elements.get(i),param);
@@ -95,7 +95,7 @@ public class tagExpression extends ClTagSupport{
 	}
 	
 	
-	private tagOperand calcOperation(final tagOperation operation, final Vector param){
+	private tagOperand calcOperation(final tagOperation operation, final Vector<Object> param){
 		
 		if(operation==null || operation.getName()==null || operation.getName().equals(""))
 			return null;
@@ -169,12 +169,12 @@ public class tagExpression extends ClTagSupport{
 	}
 
 
-	public List getElements() {
+	public List<Object> getElements() {
 		return elements;
 	}
 
 
-	public void setElements(List elements) {
+	public void setElements(List<Object> elements) {
 		this.elements = elements;
 	}
 

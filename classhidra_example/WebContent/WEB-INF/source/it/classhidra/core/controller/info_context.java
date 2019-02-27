@@ -29,9 +29,9 @@ public class info_context implements Serializable, i_info_context{
 	private String description;
 	private String mappedName;
 	
-	private Class proxiedClass;
-	private Class ownerClass;
-	private Class[] value;
+	private Class<?> proxiedClass;
+	private Class<?> ownerClass;
+	private Class<?>[] value;
 	private Object proxy;
 	
 	
@@ -39,7 +39,7 @@ public class info_context implements Serializable, i_info_context{
 		
 	}
 	
-	public info_context(Class _ownerClass) {
+	public info_context(Class<?> _ownerClass) {
 		if(_ownerClass!=null) 
 			this.ownerClass=_ownerClass;
 	}	
@@ -115,7 +115,7 @@ public class info_context implements Serializable, i_info_context{
 			result+="	@Remote: "+remote+System.getProperty("line.separator");
 		if(value!=null && value.length>0){
 			result+="	value: ";
-			for(Class clazz: value)
+			for(Class<?> clazz: value)
 				result+=clazz.getName()+";";			
 		}
 		if(localBean)
@@ -187,7 +187,7 @@ public class info_context implements Serializable, i_info_context{
 		this.proxiedCdi = proxiedCdi;
 	}
 
-	public Class getOwnerClass() {
+	public Class<?> getOwnerClass() {
 		return ownerClass;
 	}
 
@@ -231,11 +231,11 @@ public class info_context implements Serializable, i_info_context{
 		this.mappedName = mappedName;
 	}
 
-	public Class[] getValue() {
+	public Class<?>[] getValue() {
 		return value;
 	}
 
-	public void setValue(Class[] value) {
+	public void setValue(@SuppressWarnings("rawtypes") Class[] value) {
 		this.value = value;
 	}
 	
@@ -263,11 +263,11 @@ public class info_context implements Serializable, i_info_context{
 		this.startup = startup;
 	}
 
-	public Class getProxiedClass() {
+	public Class<?> getProxiedClass() {
 		return proxiedClass;
 	}
 
-	public void setProxiedClass(Class proxiedClass) {
+	public void setProxiedClass(@SuppressWarnings("rawtypes") Class proxiedClass) {
 		this.proxiedClass = proxiedClass;
 	}
 

@@ -186,7 +186,7 @@ public class MultipartParser {
 		// Content-Disposition: form-data; name="field1"; filename="file1.txt"
 		// Content-Type: type/subtype
 		// Content-Transfer-Encoding: binary
-		Vector headers = new Vector();
+		Vector<String> headers = new Vector<String>();
 
 		String line = readLine();
 		if (line == null) {
@@ -230,7 +230,7 @@ public class MultipartParser {
 		String origname = null;
 		String contentType = "text/plain";  // rfc1867 says this is the default
 
-		Enumeration en = headers.elements();
+		Enumeration<String> en = headers.elements();
 		while (en.hasMoreElements()) {
 			String headerline = (String) en.nextElement();
 			if (headerline.toLowerCase().startsWith("content-disposition:")) {

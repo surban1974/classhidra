@@ -58,10 +58,26 @@ public Object clone() {
 	}	
 	return clone;
 }
+
+public <T extends Object> T clone(Class<T> type) {
+	Object clone = null;
+	try{
+		clone = super.clone();
+	}catch(Exception e){
+		new bsException(e,iStub.log_DEBUG);
+		try{
+			clone = util_cloner.clone(this);
+		}catch(Exception ex){
+			new bsException(ex,iStub.log_ERROR);
+		}
+		
+	}	
+	return type.cast(clone);
+}
 public void setCampoValue_light(String nome, Object value) throws Exception{
 	if (nome == null || nome.trim().length()==0 || value == null) return; 
 		java.lang.reflect.Method mtd = null;
-		Class[] cl = new Class[1];
+		Class<?>[] cl = new Class[1];
 		cl[0] = value.getClass();	
 		mtd = this.getClass().getMethod(nome,cl);
 		if(mtd!=null){
@@ -211,7 +227,7 @@ public boolean setValueMapped(Object requested, String prefix, String nome, Obje
 		final String fkey = nome;
 		Field[] alldf = util_reflect.getAllDeclaredFields(
 				requested.getClass(),
-				new Comparable() {
+				new Comparable<Object>() {
 					public int compareTo(Object field) {
 						if(field instanceof Field){
 							Serialized annotation = ((Field)field).getAnnotation(Serialized.class);
@@ -231,7 +247,7 @@ public boolean setValueMapped(Object requested, String prefix, String nome, Obje
 		final String fkey = nome;
 		Method[] alldm = util_reflect.getAllDeclaredMethods(
 				requested.getClass(),
-				new Comparable() {
+				new Comparable<Object>() {
 					public int compareTo(Object method) {
 						if(method instanceof Method){
 							Serialized annotation = ((Method)method).getAnnotation(Serialized.class);

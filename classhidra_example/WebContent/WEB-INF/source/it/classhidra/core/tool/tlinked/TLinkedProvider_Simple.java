@@ -20,7 +20,7 @@ import it.classhidra.core.tool.log.stubs.iStub;
 
 public class TLinkedProvider_Simple implements I_TLinkedProvider {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L; 
 
 
 	public i_action link(i_action instance, HttpServletRequest request, HttpServletResponse response) {
@@ -29,9 +29,9 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 				if(instance.get_infoaction().getCheckTLinked()==-1 || instance.get_infoaction().get_tlinked()==null) {
 					instance.get_infoaction().setCheckTLinked(0);
 					if(instance.get_infoaction().get_tlinked()==null)
-						instance.get_infoaction().set_tlinked(new HashMap());
+						instance.get_infoaction().set_tlinked(new HashMap<String,info_tlinked>());
 					instance.get_infoaction().get_tlinked().clear();
-					Map fields = new HashMap();
+					Map<String,Field> fields = new HashMap<String,Field>();
 					fields = getAllFields(fields, instance.getClass());
 					for(Object obj: fields.values()) {
 //					for(Field field: instance.getClass().getDeclaredFields() ) {
@@ -46,11 +46,11 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 					}
 				}
 				if(instance.get_infoaction().getCheckTLinked()==1 && instance.get_infoaction().get_tlinked()!=null && instance.get_infoaction().get_tlinked().size()>0) {
-					Map fields = new HashMap();
+					Map<String,Field> fields = new HashMap<String,Field>();
 					fields = getAllFields(fields, instance.getClass());
-					Iterator it = instance.get_infoaction().get_tlinked().entrySet().iterator();
+					Iterator<Map.Entry<String, info_tlinked>> it = instance.get_infoaction().get_tlinked().entrySet().iterator();
 				    while (it.hasNext()) {
-				        Map.Entry pair = (Map.Entry)it.next();
+				        Map.Entry<String, info_tlinked> pair = it.next();
 				        try {
 //				        	Field field = instance.getClass().getDeclaredField(pair.getKey().toString());
 				        	Field field = (Field)fields.get(pair.getKey().toString());
@@ -76,7 +76,7 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 				        			if(pair.getValue() instanceof info_tlinked) {
 				        				info_tlinked tlinked = (info_tlinked)pair.getValue();
 					        			if(tlinked.getReference()!=null && tlinked.getReference()!=void.class) {
-				        					Map references = bsController.getCurrentForm(tlinked.getReference(), request);
+				        					Map<String,i_bean> references = bsController.getCurrentForm(tlinked.getReference(), request);
 				        					boolean isAccessible = field.isAccessible();
 						        			if(!isAccessible)
 						        				field.setAccessible(true);			        			
@@ -133,9 +133,9 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 		try {
 			if(instance!=null && instance.get_infoaction()!=null) {
 				if(instance.get_infoaction().getCheckTLinked()==1 && instance.get_infoaction().get_tlinked()!=null && instance.get_infoaction().get_tlinked().size()>0) {
-					Iterator it = instance.get_infoaction().get_tlinked().entrySet().iterator();
+					Iterator<Map.Entry<String, info_tlinked>> it = instance.get_infoaction().get_tlinked().entrySet().iterator();
 				    while (it.hasNext()) {
-				        Map.Entry pair = (Map.Entry)it.next();
+				        Map.Entry<String, info_tlinked> pair = it.next();
 				        try {
 				        	Field field = instance.getClass().getDeclaredField(pair.getKey().toString());
 				        	if(field!=null) {
@@ -172,17 +172,17 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 		return instance;
 	}
 
-	private boolean checkInterfaces(Class clazz, Class[] interfaces_) {
+	private boolean checkInterfaces(Class<?> clazz, Class<?>[] interfaces_) {
 		if(clazz==null || interfaces_.length==0) 
 			return false;
-		for(Class interface_:interfaces_) {
+		for(Class<?> interface_:interfaces_) {
 			if(interface_.isAssignableFrom(clazz))
 				return true;
 		}
 		return false;
 	}
 	
-	private Map getAllFields(Map fields, Class type) {
+	private Map<String,Field> getAllFields(Map<String,Field> fields, Class<?> type) {
 		for(Field field: type.getDeclaredFields() ) {
 			if(field.getAnnotation(TemporaryLinked.class)!=null && fields.get(field.getName())==null)
 				fields.put(field.getName(),field);

@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServlet;
 
 public class util_container_servlet extends HttpServlet   {
 	private static final long serialVersionUID = 1959097983289925130L;
-	private static ConcurrentHashMap local_container;
+	private static ConcurrentHashMap<String,Object> local_container;
 
 	public void init() throws ServletException, UnavailableException {
-		local_container = new ConcurrentHashMap();
+		local_container = new ConcurrentHashMap<String, Object>();
 	}
 	public static Object getFromLocalContainer(String key) {		
 		return local_container.get(key);
@@ -24,23 +24,23 @@ public class util_container_servlet extends HttpServlet   {
 			local_container.put(key,value);
 	}
 	
-	public static Vector getContainerKeys() {		
+	public static Vector<String> getContainerKeys() {		
 		if(local_container!=null) 
-			return new Vector(local_container.keySet());
-		else return new Vector();
+			return new Vector<String>(local_container.keySet());
+		else return new Vector<String>();
 	}	
 	
-	public static Vector getContainerElements() {		
+	public static Vector<Object> getContainerElements() {		
 		if(local_container!=null) 
-			return new Vector(local_container.entrySet());
-		else return new Vector();
+			return new Vector<Object>(local_container.entrySet());
+		else return new Vector<Object>();
 	}	
 	
 	public static void removeFromLocalContainer(String key) {		
 		if(local_container!=null) 
 			local_container.remove(key);
 	}
-	public static ConcurrentHashMap getLocal_container() {
+	public static ConcurrentHashMap<String,Object> getLocal_container() {
 		return local_container;
 	}
 }

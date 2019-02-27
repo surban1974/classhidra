@@ -84,7 +84,7 @@ public class bsResources extends HttpServlet implements bsConstants  {
 	
 			try{
 				byte[] output = null;
-				ArrayList resources = null;
+				ArrayList<byte[]> resources = null;
 				if(id.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromResources)){
 					if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
 						resources = util_classes.getResourcesAsByte("it/classhidra/core/controller/resources/"+loadSrc, null);

@@ -28,7 +28,7 @@ package it.classhidra.core.tool.log;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.init.*;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -216,9 +216,9 @@ public String getRealPathName(){
 	if(list==null) return null;
 	if(list.length == 0) return pathLogsDirectory + "_0.log";
 
-	Vector vList = new Vector();
+	Vector<log_element> vList = new Vector<log_FileManager.log_element>();
 	for(int i=0;i<list.length;i++) vList.add(new log_element(list[i].getAbsolutePath(),String.valueOf(list[i].lastModified())));
-	vList = new util_sort().sort(vList,"Mod","D");
+	vList = Util_sort.sort(vList,"Mod","D");
 
 	log_element maxEl = (log_element)vList.get(0);
 	int index = -1;

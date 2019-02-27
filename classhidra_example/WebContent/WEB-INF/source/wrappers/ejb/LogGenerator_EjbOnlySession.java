@@ -52,7 +52,7 @@ import it.classhidra.core.tool.util.util_provider;
 public class LogGenerator_EjbOnlySession implements i_log_generator {
 	private log_init init;
 	private iStub logStub;
-	private List instance = new ArrayList();
+	private List<String> instance = new ArrayList<String>();
 	private i_log_pattern_web pattern;
 	
 	private boolean readError=false;
@@ -160,7 +160,7 @@ private  iStub stubFactory(log_init _init){
 	return logStub;
 }
 
-public  HashMap prepare4stub(
+public  HashMap<String,Object> prepare4stub(
 		String mess,
 		Exception exception,
 		Throwable throwable,
@@ -169,7 +169,7 @@ public  HashMap prepare4stub(
 		String level,
 		String user){
 	
-	HashMap result = new HashMap();
+	HashMap<String,Object> result = new HashMap<String, Object>();
 		result.put(iStub.log_stub_mess,mess);
 		result.put(iStub.log_stub_exception,exception);
 		result.put(iStub.log_stub_throwable,throwable);

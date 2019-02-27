@@ -27,7 +27,7 @@ import it.classhidra.core.tool.elements.i_elementBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
-import it.classhidra.core.tool.util.util_sort;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -44,8 +44,8 @@ public class info_stream extends info_entity implements i_elementBase{
 	private String listener;
 	private info_redirect iRedirect;
 
-	private HashMap _apply_to_action;
-	private Vector v_info_apply_to_action;
+	private HashMap<String,info_apply_to_action> _apply_to_action;
+	private Vector<info_apply_to_action> v_info_apply_to_action;
 
 
 
@@ -61,7 +61,7 @@ public class info_stream extends info_entity implements i_elementBase{
 		init(node,null);
 	}
 
-	public void init(Node node, HashMap glob_redirects) throws bsControllerException{
+	public void init(Node node, HashMap<String,info_redirect> glob_redirects) throws bsControllerException{
 		if(node==null) return;
 		try{
 			NamedNodeMap nnm = node.getAttributes();
@@ -108,8 +108,9 @@ public class info_stream extends info_entity implements i_elementBase{
 				}
 			}
 		}
-		v_info_apply_to_action.addAll(new Vector(_apply_to_action.values()));
-		v_info_apply_to_action = new util_sort().sort(v_info_apply_to_action,"int_order");
+		v_info_apply_to_action.addAll(new Vector<info_apply_to_action>(_apply_to_action.values()));
+//		v_info_apply_to_action = new util_sort().sort(v_info_apply_to_action,"int_order");
+		v_info_apply_to_action = Util_sort.sort(v_info_apply_to_action,"int_order");
 
 
 	}
@@ -119,8 +120,8 @@ public class info_stream extends info_entity implements i_elementBase{
 		type="";
 		name="";
 		listener="";
-		_apply_to_action=new HashMap();
-		v_info_apply_to_action=new Vector();
+		_apply_to_action=new HashMap<String, info_apply_to_action>();
+		v_info_apply_to_action=new Vector<info_apply_to_action>();
 
 
 
@@ -137,7 +138,7 @@ public class info_stream extends info_entity implements i_elementBase{
 	public void setType(String string) {
 		type = string;
 	}
-	public HashMap get_apply_to_action() {
+	public HashMap<String,info_apply_to_action> get_apply_to_action() {
 		return _apply_to_action;
 	}
 
@@ -179,11 +180,11 @@ public class info_stream extends info_entity implements i_elementBase{
 		return result;
 	}
 
-	public Vector getV_info_apply_to_action() {
+	public Vector<info_apply_to_action> getV_info_apply_to_action() {
 		return v_info_apply_to_action;
 	}
 
-	public void setV_info_apply_to_action(Vector vInfoApplyToAction) {
+	public void setV_info_apply_to_action(Vector<info_apply_to_action> vInfoApplyToAction) {
 		v_info_apply_to_action = vInfoApplyToAction;
 	}
 

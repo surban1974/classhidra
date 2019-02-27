@@ -110,12 +110,12 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 	protected String component=null;
 	protected String rendering = null;
 	
-	protected Map tagAttributes = new HashMap();
-	protected List arguments=null;
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
+	protected List<Object> arguments=null;
 
 
 	public int doStartTag() throws JspException {
-		arguments = new ArrayList();
+		arguments = new ArrayList<Object>();
 		return EVAL_BODY_INCLUDE;
 	}
 
@@ -129,7 +129,8 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 			bean=checkParametersIfDynamic(bean, null);
 		
 		if(bean!=null){
-			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			@SuppressWarnings("unchecked")
+			HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
 			if(pool!=null) formAction = (i_action)pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
@@ -144,13 +145,13 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 			renderComponent(formBean, formAction, this.getClass().getName(), (objId),
 					(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 		}
-		List iterator = null;
+		List<?> iterator = null;
 		if(property!=null)
 			property=checkParametersIfDynamic(property, null);
 		final StringBuffer results = new StringBuffer();
 		try{
 			if(bean==null){
-				iterator = (List)util_reflect.prepareWriteValueForTag(formBean,"get",property,null);
+				iterator = (List<?>)util_reflect.prepareWriteValueForTag(formBean,"get",property,null);
 			}else{
 				Object anotherBean = null;
 				if(anotherBean==null) anotherBean = request.getAttribute(bean);
@@ -166,8 +167,8 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 				if(anotherBean==null) anotherBean = bsController.getProperty(bean,request);
 				
 				if(property!=null)
-					iterator = (List)util_reflect.prepareWriteValueForTag(anotherBean,"get",property,null);
-				else iterator = (List)anotherBean;
+					iterator = (List<?>)util_reflect.prepareWriteValueForTag(anotherBean,"get",property,null);
+				else iterator = (List<?>)anotherBean;
 			}
 		}catch(Exception e){
 			results.append("<!--"+e.toString()+"-->");
@@ -266,7 +267,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		normalASCII=null;
 		normalHTML=null;	
 		
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 		arguments=null;
 
 	}
@@ -845,11 +846,11 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		tagAttributes.put(localName, value);
 	}
 
-	public List getArguments() {
+	public List<Object> getArguments() {
 		return arguments;
 	}
 
-	public void setArguments(List arguments) {
+	public void setArguments(List<Object> arguments) {
 		this.arguments = arguments;
 	}
 

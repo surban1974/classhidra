@@ -45,6 +45,6 @@ public interface iStub {
 	public static String log_FATAL = 				"FATAL";
 	public static String log_OFF = 					"OFF";
 	
-	public void write(HashMap hm);
+	public void write(HashMap<String,Object> hm);
 	
 }

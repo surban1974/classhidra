@@ -22,7 +22,7 @@ public class util_provider {
 	public static i_provider checkDeafaultCdiProvider(String cdi_jndi_name, ServletContext servletContext){
 //		i_provider provider  = null;
 		try{
-			Class c_provider = Class.forName("it.classhidra.plugin.provider.DependencyInjectionProvider");
+			Class<?> c_provider = Class.forName("it.classhidra.plugin.provider.DependencyInjectionProvider");
 			try{
 //				Method m_getInstance = c_provider.getDeclaredMethod("checkInitialContext", new Class[]{String.class, ServletContext.class});
 				Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInitialContext", new Class[]{String.class, ServletContext.class});
@@ -42,7 +42,7 @@ public class util_provider {
 	public static i_provider checkDeafaultEjbProvider(String ejb_jndi_name, ServletContext servletContext){
 //		i_provider provider  = null;
 		try{
-			Class c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
+			Class<?> c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
 			try{
 //				Method m_getInstance = c_provider.getDeclaredMethod("checkInitialContext", new Class[]{String.class, ServletContext.class});
 				Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInitialContext", new Class[]{String.class, ServletContext.class});
@@ -63,7 +63,7 @@ public class util_provider {
 	public static boolean clearkDeafaultEjbProviderNamingMap(){
 //		i_provider provider  = null;
 		try{
-			Class c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
+			Class<?> c_provider = Class.forName("it.classhidra.plugin.provider.EjbProvider");
 			try{
 //				Method m_getInstance = c_provider.getDeclaredMethod("clearNamingMap", new Class[]{});
 				Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "clearNamingMap", new Class[]{});
@@ -142,7 +142,7 @@ public class util_provider {
 		try{		
 			i_provider provider  = null;
 			try{
-				Class c_provider = Class.forName(id_provider);
+				Class<?> c_provider = Class.forName(id_provider);
 				try{
 //					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{String.class,String.class,ServletContext.class});
 					Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "getInstance", new Class[]{String.class,String.class,ServletContext.class});
@@ -174,7 +174,7 @@ public class util_provider {
 		try{		
 			i_provider provider  = null;
 			try{
-				Class c_provider = _provider.getClass();
+				Class<?> c_provider = _provider.getClass();
 				try{
 //					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{String.class,String.class,ServletContext.class});
 					Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "getInstance", new Class[]{String.class,String.class,ServletContext.class});
@@ -256,7 +256,7 @@ public class util_provider {
 		return instance;
 	}
 
-	public static Object getInstanceFromProvider(String[] providers, String class_name, Class[] arg, Object[] par) throws Exception{
+	public static Object getInstanceFromProvider(String[] providers, String class_name, Class<?>[] arg, Object[] par) throws Exception{
 		Object instance = null;
 		boolean isBreak=false;
 		if(providers!=null && providers.length>0){
@@ -306,7 +306,7 @@ public class util_provider {
 				class_name);
 	}
 
-	public static Object getInstanceFromProvider(info_action i_action, String class_name, Class[] arg, Object[] par) throws Exception{
+	public static Object getInstanceFromProvider(info_action i_action, String class_name, Class<?>[] arg, Object[] par) throws Exception{
 		if(class_name==null) 
 			return null;
 		if(i_action==null)
@@ -456,7 +456,7 @@ public class util_provider {
 	public static boolean destroyInstanceFromProvider(String id_provider, String id_bean, String class_bean, ServletContext servletContext){
 		try{		
 			try{
-				Class c_provider = Class.forName(id_provider);
+				Class<?> c_provider = Class.forName(id_provider);
 				try{
 //					Method m_destroyInstance = c_provider.getDeclaredMethod("destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
 					Method m_destroyInstance = util_reflect.findDeclaredMethod(c_provider, "destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
@@ -479,7 +479,7 @@ public class util_provider {
 	public static boolean destroyInstanceFromProvider(i_provider _provider, String id_bean, String class_bean, ServletContext servletContext){
 		try{		
 			try{
-				Class c_provider = _provider.getClass();
+				Class<?> c_provider = _provider.getClass();
 				try{
 //					Method m_destroyInstance = c_provider.getDeclaredMethod("destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
 					Method m_destroyInstance = util_reflect.findDeclaredMethod(c_provider, "destroyInstance", new Class[]{String.class,String.class,ServletContext.class});
@@ -505,7 +505,7 @@ public class util_provider {
 		try{		
 //			i_provider provider  = null;
 			try{
-				Class c_provider = _provider.getClass();
+				Class<?> c_provider = _provider.getClass();
 				try{
 //					Method m_getInstance = c_provider.getDeclaredMethod("getInstance", new Class[]{Object.class, String.class, String.class,ServletContext.class});
 					Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "getInstance", new Class[]{Object.class, String.class, String.class,ServletContext.class});
@@ -533,7 +533,7 @@ public class util_provider {
 		if(_provider==null)
 			return info;
 		try{		
-			Class c_provider = _provider.getClass();
+			Class<?> c_provider = _provider.getClass();
 //			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoEjb", new Class[]{info_context.class, i_bean.class});
 			Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInfoEjb", new Class[]{info_context.class, i_bean.class});
 
@@ -554,7 +554,7 @@ public class util_provider {
 			return info;
 
 		try{		
-			Class c_provider = Class.forName(id_provider);
+			Class<?> c_provider = Class.forName(id_provider);
 //			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoCdi", new Class[]{info_context.class, i_bean.class});
 			Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInfoCdi", new Class[]{info_context.class, i_bean.class});
 
@@ -575,7 +575,7 @@ public class util_provider {
 			return info;
 
 		try{		
-			Class c_provider = _provider.getClass();
+			Class<?> c_provider = _provider.getClass();
 //			Method m_getInstance = c_provider.getDeclaredMethod("checkInfoCdi", new Class[]{info_context.class, i_bean.class});
 			Method m_getInstance = util_reflect.findDeclaredMethod(c_provider, "checkInfoCdi", new Class[]{info_context.class, i_bean.class});
 

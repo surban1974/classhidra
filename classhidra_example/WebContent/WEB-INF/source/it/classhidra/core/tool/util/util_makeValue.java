@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
+
 
 import it.classhidra.serialize.Serialized;
 
@@ -17,7 +17,7 @@ public class util_makeValue {
 		Object resultObject = null;
 		Field fld = null;
 		Method ret_fld = null;
-		Class ret_class = null;
+		Class<?> ret_class = null;
 		try{
 			fld=req.getClass().getDeclaredField(key);
 		}catch(Exception ex){
@@ -33,11 +33,11 @@ public class util_makeValue {
 				ret_fld = req.getClass().getMethod("get"+util_reflect.adaptMethodName(key),new Class[0]);
 			}catch(Exception e){
 				if(	req instanceof HashMap &&
-					((HashMap)req).get(key)!=null) {
-					ret_class = ((HashMap)req).get(key).getClass();
+					((HashMap<?,?>)req).get(key)!=null) {
+					ret_class = ((HashMap<?,?>)req).get(key).getClass();
 				}
 				if(	req instanceof HashMap &&
-						((HashMap)req).get(key)==null) {
+						((HashMap<?,?>)req).get(key)==null) {
 						ret_class = new String().getClass();
 					}
 			}
@@ -51,7 +51,7 @@ public class util_makeValue {
 			final String fkey = key;
 			Field[] alldf = util_reflect.getAllDeclaredFields(
 					req.getClass(),
-					new Comparable() {
+					new Comparable<Object>() {
 						public int compareTo(Object field) {
 							if(field instanceof Field){
 								Serialized annotation = ((Field)field).getAnnotation(Serialized.class);
@@ -73,7 +73,7 @@ public class util_makeValue {
 			final String fkey = key;
 			Method[] alldm = util_reflect.getAllDeclaredMethods(
 					req.getClass(),
-					new Comparable() {
+					new Comparable<Object>() {
 						public int compareTo(Object method) {
 							if(method instanceof Method){
 								Serialized annotation = ((Method)method).getAnnotation(Serialized.class);
@@ -152,13 +152,13 @@ public class util_makeValue {
 		}else{
 			try{
 				Object[] prs = new Object[1];
-				Class[] cls = new Class[1];
+				Class<?>[] cls = new Class[1];
 					cls[0]=value.getClass();
 					prs[0]=value;
-				Class cl = ret_class;
+				Class<?> cl = ret_class;
 				if(value!=null && value.equals("")){
 					boolean superIsNumber=false;
-					Class cl_super = cl.getSuperclass();
+					Class<?> cl_super = cl.getSuperclass();
 					while(cl_super!=null){
 						if(cl_super.getName().indexOf(".Number")>0) superIsNumber=true;
 						cl_super = cl_super.getSuperclass();
@@ -231,10 +231,10 @@ public class util_makeValue {
 		if(ref.getClass().isPrimitive()) return resultObject;
 		try{
 			Object[] prs = new Object[1];
-			Class[] cls = new Class[1];
+			Class<?>[] cls = new Class[1];
 				cls[0]=value.getClass();
 				prs[0]=value;
-			Class cl = ref.getClass();
+			Class<?> cl = ref.getClass();
 			resultObject = cl.getConstructor(cls).newInstance(prs);
 			return resultObject;
 		}catch(Exception e){
@@ -282,7 +282,7 @@ public class util_makeValue {
 		Object resultObject = null;
 		Field fld = null;
 		Method ret_fld = null;
-		Class ret_class = null;
+		Class<?> ret_class = null;
 		try{
 			fld=req.getClass().getDeclaredField(key);
 		}catch(Exception ex){
@@ -304,14 +304,14 @@ public class util_makeValue {
 		if(fld==null && ret_fld!=null) ret_class = ret_fld.getReturnType();
 
 		if(ret_class==null && req instanceof HashMap){
-			ret_class = ((HashMap)req).get(key).getClass();
+			ret_class = ((HashMap<?,?>)req).get(key).getClass();
 		}
 		
 		if(ret_class==null){
 			final String fkey = key;
 			Field[] alldf = util_reflect.getAllDeclaredFields(
 					req.getClass(),
-					new Comparable() {
+					new Comparable<Object>() {
 						public int compareTo(Object field) {
 							if(field instanceof Field){
 								Serialized annotation = ((Field)field).getAnnotation(Serialized.class);
@@ -331,7 +331,7 @@ public class util_makeValue {
 			final String fkey = key;
 			Method[] alldm = util_reflect.getAllDeclaredMethods(
 					req.getClass(),
-					new Comparable() {
+					new Comparable<Object>() {
 						public int compareTo(Object method) {
 							if(method instanceof Method){
 								Serialized annotation = ((Method)method).getAnnotation(Serialized.class);
@@ -434,7 +434,7 @@ public class util_makeValue {
 					}catch(Exception e){}
 
 					Object[] prs = new Object[1];
-					Class[] cls = new Class[1];
+					Class<?>[] cls = new Class[1];
 					cls[0]=value.getClass();
 					prs[0]=value;
 //					Class cl = resultObject.getClass();
@@ -507,7 +507,7 @@ public class util_makeValue {
 	}
 	
 	
-	public static Object makeFormatedValue1(Class ret_class, String value, String format) throws Exception{
+	public static Object makeFormatedValue1(Class<?> ret_class, String value, String format) throws Exception{
 		Object resultObject = null;
 
 		if(ret_class.isPrimitive()){
@@ -578,7 +578,7 @@ public class util_makeValue {
 					}catch(Exception e){}
 
 					Object[] prs = new Object[1];
-					Class[] cls = new Class[1];
+					Class<?>[] cls = new Class[1];
 					cls[0]=value.getClass();
 					prs[0]=value;
 //					Class cl = resultObject.getClass();
@@ -662,10 +662,10 @@ public class util_makeValue {
 				}catch(Exception e){}
 
 				Object[] prs = new Object[1];
-				Class[] cls = new Class[1];
+				Class<?>[] cls = new Class[1];
 				cls[0]=value.getClass();
 				prs[0]=value;
-				Class cl = ref.getClass();
+				Class<?> cl = ref.getClass();
 				resultObject = cl.getConstructor(cls).newInstance(prs);
 				return resultObject;
 			}catch(Exception e){

@@ -331,8 +331,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 
 	}
 
-	public Vector getAllChildReversIRedirect(){
-		Vector result = new Vector();
+	public Vector<info_navigation> getAllChildReversIRedirect(){
+		Vector<info_navigation> result = new Vector<info_navigation>();
 		info_navigation parent = this;
 		while(parent!=null){
 			if(parent.iRedirect!=null){				
@@ -343,8 +343,8 @@ public class info_navigation extends elementBase implements i_elementBase{
 		return result;
 	}	
 	
-	public Vector getAllChildRevers(){
-		Vector result = new Vector();
+	public Vector<info_navigation> getAllChildRevers(){
+		Vector<info_navigation> result = new Vector<info_navigation>();
 		info_navigation parent = this;
 		while(parent!=null){
 			result.add(parent);
@@ -353,16 +353,16 @@ public class info_navigation extends elementBase implements i_elementBase{
 		return result;
 	}
 
-	public Vector getAllChildIRedirect(){
-		Vector result = getAllChildReversIRedirect();
-		Vector rev = new Vector(result.size());
+	public Vector<info_navigation> getAllChildIRedirect(){
+		Vector<info_navigation> result = getAllChildReversIRedirect();
+		Vector<info_navigation> rev = new Vector<info_navigation>(result.size());
 		for(int i=result.size()-1;i>=0;i--) rev.add(result.get(i));
 		return rev;
 	}	
 	
-	public Vector getAllChild(){
-		Vector result = getAllChildRevers();
-		Vector rev = new Vector(result.size());
+	public Vector<info_navigation> getAllChild(){
+		Vector<info_navigation> result = getAllChildRevers();
+		Vector<info_navigation> rev = new Vector<info_navigation>(result.size());
 		for(int i=result.size()-1;i>=0;i--) rev.add(result.get(i));
 		return rev;
 	}

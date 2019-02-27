@@ -138,7 +138,7 @@ public static iStub stubFactory(log_init _init){
 	return element;
 }
 
-public static HashMap prepare4stub(
+public static HashMap<String,Object> prepare4stub(
 		String class_info,
 		String mess,
 		Exception exception,
@@ -148,7 +148,7 @@ public static HashMap prepare4stub(
 		String level,
 		String user){
 	
-	HashMap result = new HashMap();
+	HashMap<String,Object> result = new HashMap<String, Object>();
 		result.put(iStub.log_class_info,class_info);
 		result.put(iStub.log_stub_mess,mess);
 		result.put(iStub.log_stub_exception,exception);

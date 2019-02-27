@@ -51,7 +51,7 @@ public class util_beanMessageFactory {
 		return message2bean(xml_byte,null);
 	}
 
-	public static Object message2bean(byte[] xml_byte, Class itemClass) throws Exception{
+	public static Object message2bean(byte[] xml_byte, Class<?> itemClass) throws Exception{
 		Object result=null;
 
 
@@ -94,7 +94,7 @@ public class util_beanMessageFactory {
 	}
 	
 	public static String bean2xml(Object obj, String name, boolean lowerCase1char, boolean avoidCheckPermission, String textencoding){
-		Map avoidCyclicPointers = new HashMap();
+		Map<Integer,String> avoidCyclicPointers = new HashMap<Integer,String>();
 		
 		boolean showInXml = true;
 		if(!avoidCheckPermission){
@@ -129,7 +129,7 @@ public class util_beanMessageFactory {
 	}	
 
 	public static String bean2json(Object obj, String name, boolean avoidCheckPermission, String textencoding){
-		Map avoidCyclicPointers = new HashMap();		
+		Map<Integer,String> avoidCyclicPointers = new HashMap<Integer,String>();		
 		
 		boolean showInJson = true;
 		if(!avoidCheckPermission){
@@ -158,7 +158,7 @@ public class util_beanMessageFactory {
 	}
 
 	public static String bean2message(Object obj, String name, boolean lowerCase1char,String textencoding){
-		Map avoidCyclicPointers = new HashMap();
+		Map<Integer,String> avoidCyclicPointers = new HashMap<Integer,String>();
 		String result="";
 		result+=generateXmlItem(obj,name,0,false,lowerCase1char,avoidCyclicPointers,textencoding);
 		return result;
@@ -174,7 +174,7 @@ public class util_beanMessageFactory {
 	}
 	
 	public static String bean2messageNormalized(Object obj, String name, boolean lowerCase1char,String textencoding){
-		Map avoidCyclicPointers = new HashMap();
+		Map<Integer,String> avoidCyclicPointers = new HashMap<Integer,String>();
 		String result="";
 		result+=generateXmlItem(obj,name,0, true,lowerCase1char,avoidCyclicPointers,textencoding);
 		return result;
@@ -185,7 +185,8 @@ public class util_beanMessageFactory {
 
 
 
-	private static Object generateObject(Node node, Class itemClass){
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Object generateObject(Node node, Class<?> itemClass){
 		Object result=null;
 
 		if(node==null) return null;
@@ -255,7 +256,7 @@ public class util_beanMessageFactory {
 							valueTxt=adaptValueForNumber(valueTxt);
 
 						Object prm[] = new Object[]{valueTxt};
-						Class[] cls = new Class[]{String.class};
+						Class<?>[] cls = new Class[]{String.class};
 						result =  itemClass.getConstructor(cls).newInstance(prm);
 						return result;
 					}catch (Exception e) {
@@ -271,7 +272,7 @@ public class util_beanMessageFactory {
 							long time = util_format.stringToTimestamp(valueTxt).getTime();
 
 							Object prm[] = new Object[]{Long.valueOf(time)};
-							Class[] cls = new Class[]{Long.class};
+							Class<?>[] cls = new Class[]{Long.class};
 							result =  itemClass.getConstructor(cls).newInstance(prm);
 							return result;
 						}catch (Exception e) {
@@ -285,7 +286,7 @@ public class util_beanMessageFactory {
 				for (int i=0;i<node.getChildNodes().getLength();i++) {
 					if (node.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE){
 						String subitemName = getNodeAttr(node.getChildNodes().item(i),"name");
-						Class subitemClass = null;
+						Class<?> subitemClass = null;
 
 						try{
 							subitemClass = util_reflect.getValue(itemObj, "get" + util_reflect.adaptMethodName(subitemName),null).getClass();
@@ -303,8 +304,8 @@ public class util_beanMessageFactory {
 								if(itemObj instanceof i_bean){
 									((i_bean)itemObj).put(subitemName, result_sub_node);
 								}
-								if(itemObj instanceof Map){
-									((Map)itemObj).put(subitemName, result_sub_node);
+								if(itemObj instanceof Map<?,?>){
+									((Map<String,Object>)itemObj).put(subitemName, result_sub_node);
 								}
 
 							}
@@ -361,9 +362,9 @@ public class util_beanMessageFactory {
 		return value;
 	}
 
-	private static boolean checkSuperClass(Class current, Class forCheck){
+	private static boolean checkSuperClass(Class<?> current, Class<?> forCheck){
 		boolean result=false;
-		Class parent = current;
+		Class<?> parent = current;
 		while(parent!=null ){
 			if(parent.equals(forCheck)) return true;
 			else parent = parent.getSuperclass();
@@ -387,7 +388,7 @@ public class util_beanMessageFactory {
 		return result;
 	}
 
-	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map avoidCyclicPointers, String textencoding ){
+	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map<Integer,String> avoidCyclicPointers, String textencoding ){
 		String result="";
 		result+=generateJsonItemTag_Start(sub_obj, name,level, notFirst);
 		result+=generateJsonItemTag_Content(sub_obj, name,level,avoidCyclicPointers, textencoding);
@@ -451,15 +452,14 @@ public class util_beanMessageFactory {
 	}
 	
 	
-	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level, Map avoidCyclicPointers, String textencoding){
+	private static String generateJsonItemTag_Content(Object sub_obj, String name, int level, Map<Integer,String> avoidCyclicPointers, String textencoding){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		
 		String result="";
-		if(sub_obj==null) return result;
 
 		if(sub_obj instanceof List){
 			String result_tmp="";
-			List list_sub_obj = (List)sub_obj;
+			List<?> list_sub_obj = (List<?>)sub_obj;
 			for(int i=0;i<list_sub_obj.size();i++){
 				boolean nFirst = true;
 				if(result_tmp.length()==0) nFirst=false;
@@ -488,9 +488,9 @@ public class util_beanMessageFactory {
 		if(sub_obj instanceof Map){
 			String result_tmp="";
 			
-			Iterator it = ((Map)sub_obj).entrySet().iterator(); 
+			Iterator<?> it = ((Map<?,?>)sub_obj).entrySet().iterator(); 
 		    while (it.hasNext()) {
-		        Map.Entry pair = (Map.Entry)it.next();
+		        Map.Entry<?,?> pair = (Map.Entry<?,?>)it.next();
 				boolean nFirst = true;
 				if(result_tmp.length()==0) nFirst=false;
 				
@@ -596,9 +596,7 @@ public class util_beanMessageFactory {
 									result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers,textencoding);
 									avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 								}
-							}else
-								result_tmp+=generateJsonItem(sub_obj2, methodName,level+1,nFirst,avoidCyclicPointers,textencoding);
-								
+							}								
 						}
 					}
 				}
@@ -640,7 +638,7 @@ public class util_beanMessageFactory {
 	
 	
 	
-	private static String generateXmlItem(Object sub_obj, String name, int level, boolean normalized, boolean lowerCase1char,Map avoidCyclicPointer,String textencoding){
+	private static String generateXmlItem(Object sub_obj, String name, int level, boolean normalized, boolean lowerCase1char,Map<Integer,String> avoidCyclicPointer,String textencoding){
 		String result="";
 		result+=generateXmlItemTag_Start(sub_obj, name,level,normalized,lowerCase1char);
 		result+=generateXmlItemTag_Content(sub_obj, name,level,normalized,lowerCase1char,avoidCyclicPointer,textencoding);
@@ -689,13 +687,12 @@ public class util_beanMessageFactory {
 		return result;
 	}
 
-	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, boolean normalized, boolean lowerCase1char, Map avoidCyclicPointers, String textencoding){
+	private static String generateXmlItemTag_Content(Object sub_obj, String name, int level, boolean normalized, boolean lowerCase1char, Map<Integer,String> avoidCyclicPointers, String textencoding){
 		if(sub_obj==null || (name!=null && name.equals("Class"))) return "";
 		String result="";
-		if(sub_obj==null) return result;
 
 		if(sub_obj instanceof List){
-			List list_sub_obj = (List)sub_obj;
+			List<?> list_sub_obj = (List<?>)sub_obj;
 			for(int i=0;i<list_sub_obj.size();i++){
 				
 				Object sub_obj2=list_sub_obj.get(i);
@@ -719,9 +716,9 @@ public class util_beanMessageFactory {
 
 		if(sub_obj instanceof Map){
 			
-			Iterator it = ((Map)sub_obj).entrySet().iterator();
+			Iterator<?> it = ((Map<?,?>)sub_obj).entrySet().iterator();
 		    while (it.hasNext()) {
-		        Map.Entry pair = (Map.Entry)it.next();
+		        Map.Entry<?,?> pair = (Map.Entry<?,?>)it.next();
 		        
 				Object sub_obj2=pair.getValue();
 				if(sub_obj2!=null){								
@@ -809,9 +806,7 @@ public class util_beanMessageFactory {
 									result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,lowerCase1char,avoidCyclicPointers,textencoding);
 									avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
 								}
-							}else
-								result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,lowerCase1char,avoidCyclicPointers,textencoding);
-							
+							}
 //							result+=generateXmlItem(sub_obj2, methodName,level+1,normalized,checkConvert2xml,lowerCase1char);
 						}
 					}

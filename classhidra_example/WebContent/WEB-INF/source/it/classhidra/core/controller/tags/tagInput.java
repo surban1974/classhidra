@@ -155,11 +155,11 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 	protected String component=null;
 	protected String rendering = null;
 	
-	protected Map tagAttributes = new HashMap();
-	protected List arguments=null;
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
+	protected List<Object> arguments=null;
 
 	public int doStartTag() throws JspException {
-		arguments = new ArrayList();
+		arguments = new ArrayList<Object>();
 		return EVAL_BODY_INCLUDE;
 	}
 	
@@ -300,7 +300,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		component=null;
 		rendering=null;
 		
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 		arguments=null;
 	}
 
@@ -321,8 +321,9 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			bean=checkParametersIfDynamic(bean, null);
 		
 		if(bean!=null){
-			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
-			if(pool!=null) formAction = (i_action)pool.get(bean);
+			@SuppressWarnings("unchecked")
+			HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
 		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
@@ -344,8 +345,11 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		
 		String prefixName=null;
 		
-		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null && ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean)!=null){
-			prefixName = ((HashMap)request.getAttribute(tagBean.CONST_HEAP_BEANS)).get(bean).toString();
+		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null) {
+			@SuppressWarnings("unchecked")
+			final HashMap<String, String> hashMap = (HashMap<String,String>)request.getAttribute(tagBean.CONST_HEAP_BEANS);
+			if(hashMap!=null && hashMap.get(bean)!=null)
+					prefixName = hashMap.get(bean);
 		}
 		if(prefixName==null)
 			prefixName=name;
@@ -1623,11 +1627,11 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		tagAttributes.put(localName, value);
 	}
 
-	public List getArguments() {
+	public List<Object> getArguments() {
 		return arguments;
 	}
 
-	public void setArguments(List arguments) {
+	public void setArguments(List<Object> arguments) {
 		this.arguments = arguments;
 	}
 

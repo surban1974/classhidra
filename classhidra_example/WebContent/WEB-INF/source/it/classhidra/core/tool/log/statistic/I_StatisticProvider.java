@@ -6,13 +6,13 @@ import java.util.List;
 public interface I_StatisticProvider extends Serializable{
 	void addStatictic(StatisticEntity stat);
 	
-	List getAllEntities();
+	List<StatisticEntity> getAllEntities();
 	String getAllEntitiesAsXml();
 	
-	List getLastEntities(int quantity);
+	List<StatisticEntity> getLastEntities(int quantity);
 	String getLastEntitiesAsXml(int quantity);
 	
-	List getEntities(String commandDefinedIntoProviderRelise);
+	List<StatisticEntity> getEntities(String commandDefinedIntoProviderRelise);
 	String getEntitiesAsXml(String commandDefinedIntoProviderRelise);
 	
 

@@ -80,7 +80,7 @@ public class log_init implements Serializable{
 	
 	private boolean changed=false;
 	
-	public static Map logLevels = new HashMap() {
+	public static Map<String,Integer> logLevels = new HashMap<String, Integer>() {
 		private static final long serialVersionUID = 1L;
 	{
 		put(iStub.log_ALL,0);

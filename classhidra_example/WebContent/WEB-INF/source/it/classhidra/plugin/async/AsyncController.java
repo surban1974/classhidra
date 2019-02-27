@@ -193,7 +193,7 @@ public class AsyncController extends HttpServlet {
 			i_action action_instance = null;
 
 			try{
-				Vector _streams = bsController.getActionStreams_(id_action);
+				Vector<info_stream> _streams = bsController.getActionStreams_(id_action);
 
 				info_stream blockStreamEnter = bsController.performStream_EnterRS(_streams, id_action,action_instance, asyncContainer.getRequest().getServletContext(), asyncContainer.getRequest(), asyncContainer.getResponse());
 				if(blockStreamEnter!=null){
@@ -227,8 +227,9 @@ public class AsyncController extends HttpServlet {
 
 
 				if(asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL)==null)
-					asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap());
-				HashMap included_pool = (HashMap)asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL);
+					asyncContainer.getRequest().setAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL,new HashMap<String,i_action>());
+				@SuppressWarnings("unchecked")
+				HashMap<String,i_action> included_pool = (HashMap<String,i_action>)asyncContainer.getRequest().getAttribute(bsConstants.CONST_BEAN_$INSTANCEACTIONPOOL);
 				if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getName()!=null)
 					included_pool.put(action_instance.get_infoaction().getName(),action_instance);
 				else if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getPath()!=null)
@@ -369,27 +370,26 @@ public class AsyncController extends HttpServlet {
 			throw ex;
 		}
 		
-		HashMap request2map = null;
+		HashMap<String,Object> request2map = null;
 		boolean isRemoteEjb=false;
 		
 		if(action_instance!=null && action_instance.getInfo_context()!=null && action_instance.getInfo_context().isRemote()){
 			isRemoteEjb=true;
 			try{
-//				request2map = (HashMap)action_instance.asAction().getClass()
-//									.getDeclaredMethod("convertRequest2Map", new Class[]{HttpServletRequest.class})
-//									.invoke(null, new Object[]{request});
-				request2map = (HashMap)
-						util_reflect.findDeclaredMethod(
-							action_instance.asAction().getClass(),
-							"convertRequest2Map", new Class[]{HttpServletRequest.class})
-						.invoke(null, new Object[]{asyncContainer.getRequest()});
+				request2map = convertRequestToMap(action_instance.asAction().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{asyncContainer.getRequest()});
+
+//				request2map = (HashMap)
+//						util_reflect.findDeclaredMethod(
+//							action_instance.asAction().getClass(),
+//							"convertRequest2Map", new Class[]{HttpServletRequest.class})
+//						.invoke(null, new Object[]{asyncContainer.getRequest()});
 			}catch (Exception e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}catch (Throwable e) {
 				new bsControllerException(e, iStub.log_ERROR);
 			}
 			if(request2map==null)
-				request2map = new HashMap();
+				request2map = new HashMap<String, Object>();
 
 		}		
 		
@@ -469,4 +469,14 @@ public class AsyncController extends HttpServlet {
 		}
 	}	
 	
+	@SuppressWarnings("unchecked")
+	public static HashMap<String,Object> convertRequestToMap(Class<?> clazz,  Class<?>[] types, Object[] paramiters) throws Exception {
+		return
+				(HashMap<String,Object>)
+					util_reflect.findDeclaredMethod(
+							clazz,
+							"convertRequest2Map",
+							types)
+					.invoke(null, paramiters);
+	}
 }

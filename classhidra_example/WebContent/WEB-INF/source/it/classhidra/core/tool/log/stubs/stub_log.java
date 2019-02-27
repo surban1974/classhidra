@@ -33,7 +33,7 @@ public class stub_log implements iStub{
 		super();
 	}
 
-public void write(HashMap hm){
+public void write(HashMap<String,Object> hm){
 	try{
 		Object class_info = hm.get(iStub.log_class_info);
 		Object mess = hm.get(iStub.log_stub_mess);

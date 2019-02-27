@@ -131,7 +131,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 	protected String component=null;
 	protected String rendering = null;
 
-	protected Map tagAttributes = new HashMap();
+	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
 
 
 
@@ -170,8 +170,8 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 
 		results.append(createDIV_TagBodyStart());
 		if(body_as_first_row!=null && body_as_first_row.toUpperCase().equals("TRUE")){
-			Vector v_td_width = new Vector();
-			Vector v_propertys = new Vector();
+			Vector<String> v_td_width = new Vector<String>();
+			Vector<String> v_propertys = new Vector<String>();
 			int count_propertys=0;
 
 			if(propertys!=null){
@@ -224,8 +224,9 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		i_action formAction=null;
 		i_bean formBean=null;
 		if(bean!=null){
-			HashMap pool = (HashMap)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
-			if(pool!=null) formAction = (i_action)pool.get(bean);
+			@SuppressWarnings("unchecked")
+			HashMap<String,i_action> pool = (HashMap<String,i_action>)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTIONPOOL);
+			if(pool!=null) formAction = pool.get(bean);
 		}
 		if(formAction!=null) bean = null;
 		else formAction 	= (i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);
@@ -241,15 +242,15 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 					(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 		}
 
-		List iterator = null;
+		List<?> iterator = null;
 
-		Vector v_propertys = new Vector();
-		Vector v_values = new Vector();
-		Vector v_formatsOutput = new Vector();
-		Vector v_replaceOnBlank = new Vector();
-		Vector v_td_width = new Vector();
-		Vector v_td_styleClassOutput = new Vector();
-		Vector v_key_values = new Vector();
+		Vector<String> v_propertys = new Vector<String>();
+		Vector<String> v_values = new Vector<String>();
+		Vector<String> v_formatsOutput = new Vector<String>();
+		Vector<String> v_replaceOnBlank = new Vector<String>();
+		Vector<String> v_td_width = new Vector<String>();
+		Vector<String> v_td_styleClassOutput = new Vector<String>();
+		Vector<String> v_key_values = new Vector<String>();
 
 		if(method_prefix==null) method_prefix="get";
 
@@ -303,8 +304,8 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 				}
 				if(list!=null)
 //					iterator = (List)util_reflect.getValue(anotherBean,"get"+util_reflect.adaptMethodName(list),null);
-					iterator = (List)util_reflect.prepareWriteValueForTag(anotherBean,"get",list,null);
-				else iterator = (List)anotherBean;
+					iterator = (List<?>)util_reflect.prepareWriteValueForTag(anotherBean,"get",list,null);
+				else iterator = (List<?>)anotherBean;
 
 				int count_propertys=0;
 				if(propertys!=null){
@@ -483,7 +484,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		component=null;
 		rendering=null;
 
-		tagAttributes = new HashMap();
+		tagAttributes = new HashMap<String, Object>();
 		
 		scroll_row_height="16";
 	}
@@ -620,19 +621,19 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 		return results.toString();
 	}
 
-	protected String createDIV_TagBodyTable( Vector v_td_width) {
+	protected String createDIV_TagBodyTable( Vector<String> v_td_width) {
 		final StringBuffer results = new StringBuffer("");
 
 
 
-		int table_width=0;
-		try{
-			for(int w=0;w<v_td_width.size();w++){
-				table_width+= Integer.valueOf((String)v_td_width.get(w)).intValue();
-			}
-		}catch(Exception e){
-			table_width=0;
-		}
+//		int table_width=0;
+//		try{
+//			for(int w=0;w<v_td_width.size();w++){
+//				table_width+= Integer.valueOf((String)v_td_width.get(w)).intValue();
+//			}
+//		}catch(Exception e){
+//			table_width=0;
+//		}
 
 		results.append("<table id=\""+table_id+"\"");
 		if(tb_width!=null){
@@ -678,7 +679,8 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 		return results.toString();
 	}
 
-	protected String createDIV_TagBodyFinish(List iterator, Vector v_propertys, Vector v_values, Vector v_formatsOutput, Vector v_replaceOnBlank, Vector v_td_width, Vector v_td_styleClassOutput, Vector v_key_values) {
+	protected String createDIV_TagBodyFinish(List<?> iterator, Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput, 
+			Vector<String> v_replaceOnBlank, Vector<String> v_td_width, Vector<String> v_td_styleClassOutput, Vector<String> v_key_values) {
 		final StringBuffer results = new StringBuffer("");
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
 
@@ -745,7 +747,8 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 		return results.toString();
 	}
 
-	protected String createTR_TagBody(int current_position, Object current,Vector v_propertys, Vector v_values, Vector v_formatsOutput, Vector v_replaceOnBlank, Vector v_td_width,Vector v_td_styleClassOutput, Vector v_key_values, String stylePariDispari) {
+	protected String createTR_TagBody(int current_position, Object current,Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput,
+			Vector<String> v_replaceOnBlank, Vector<String> v_td_width,Vector<String> v_td_styleClassOutput, Vector<String> v_key_values, String stylePariDispari) {
 		final StringBuffer results = new StringBuffer("");
 		Object writeObject = null;
 
@@ -1021,7 +1024,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 		return results.toString();
 	}
 
-	protected String createSCRIPT_TagBody(Vector v_values) {
+	protected String createSCRIPT_TagBody(Vector<String> v_values) {
 		final StringBuffer results = new StringBuffer("");
 		results.append("<script>"+System.getProperty("line.separator"));
 

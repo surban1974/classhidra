@@ -1,12 +1,5 @@
 package it.classhidra.plugin.was.jboss.loader;
 
-import it.classhidra.core.controller.bsController;
-import it.classhidra.core.tool.elements.elementBase;
-import it.classhidra.core.tool.exception.bsControllerException;
-import it.classhidra.core.tool.exception.message;
-import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.core.tool.util.util_format;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,14 +9,19 @@ import java.util.List;
 
 import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
-import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
+import it.classhidra.core.controller.bsController;
+import it.classhidra.core.tool.elements.elementBase;
+import it.classhidra.core.tool.exception.bsControllerException;
+import it.classhidra.core.tool.exception.message;
+import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_format;
 
 public class messages_loader  extends elementBase{
 	private static final long serialVersionUID = 1L;
-	private HashMap _messages;
+	private HashMap<String,message> _messages;
 
 	
 	public void load_Messages() {
@@ -62,7 +60,7 @@ public class messages_loader  extends elementBase{
 
 
 		try{
-			List array = vFile.getChildren();
+			List<VirtualFile> array = vFile.getChildren();
 				for(int i=0;i<array.size();i++){
 					String property_name0 =  ((VirtualFile)array.get(i)).getName();
 					if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1){
@@ -132,39 +130,11 @@ public class messages_loader  extends elementBase{
 			new bsControllerException(e,iStub.log_DEBUG);
 		}
 	}
-	private boolean readDocumentXml(Document documentXML) throws Exception{
-		if(documentXML!=null){
-			Node node = null;
-			try{
-				int first=0;
-				while(node==null && first < documentXML.getChildNodes().getLength()){
-					if(documentXML.getChildNodes().item(first).getNodeType()== Node.ELEMENT_NODE)
-						node = documentXML.getChildNodes().item(first);
-					first++;
-				}
-			}catch(Exception e){}
-			if(node==null) return false;
-			if(node.getNodeName().equals("messages")){
-				this.initTop(node);
-			}
 
-			NodeList list = node.getChildNodes();
-			for(int i=0;i<list.getLength();i++){
-				Node child_node = list.item(i);
-				if(child_node.getNodeType()== Node.ELEMENT_NODE){
-
-					message mess = new message();
-					mess.init(child_node);
-					_messages.put(mess.getCD_LANG()+"."+mess.getCD_MESS(),mess);
-				}
-			}
-		}else return false;
-		return true;
-	}
-	public HashMap get_messages() {
+	public HashMap<String,message> get_messages() {
 		return _messages;
 	}
-	public void set_messages(HashMap _messages) {
+	public void set_messages(HashMap<String,message> _messages) {
 		this._messages = _messages;
 	}	
 

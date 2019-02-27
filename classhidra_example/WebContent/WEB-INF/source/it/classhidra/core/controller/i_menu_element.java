@@ -14,7 +14,7 @@ public interface i_menu_element extends i_elementBase{
 
 	public abstract void reimposta();
 
-	public abstract void authentication_clear(HashMap forbiden);
+	public abstract void authentication_clear(HashMap<String,info_action> forbiden);
 
 	public abstract void init(Node node) throws bsControllerException;
 
@@ -32,9 +32,9 @@ public interface i_menu_element extends i_elementBase{
 
 	public abstract void setVisibilityAllChildren(boolean vis);
 
-	public abstract Vector getChildren();
+	public abstract Vector<i_menu_element> getChildren();
 
-	public abstract HashMap getChildren_info();
+	public abstract HashMap<String,i_menu_element> getChildren_info();
 
 	public abstract info_menu_element getInfo_menu();
 
@@ -62,9 +62,9 @@ public interface i_menu_element extends i_elementBase{
 
 	public abstract void setPotential_elements(int i);
 
-	public abstract void setChildren(Vector children);
+	public abstract void setChildren(Vector<i_menu_element> children);
 
-	public abstract void setChildren_info(HashMap children_info);
+	public abstract void setChildren_info(HashMap<String,i_menu_element> children_info);
 
 	public abstract void setInfo_menu(info_menu_element info_menu);
 

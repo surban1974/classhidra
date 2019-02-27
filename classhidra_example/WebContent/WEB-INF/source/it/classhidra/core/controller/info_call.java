@@ -51,9 +51,9 @@ public class info_call extends info_entity implements i_elementBase{
 	private String expose;
 	private info_redirect iRedirect;
 	private info_async iAsync;
-	private List exposed;
-	private List restmapping;
-	private Map restParametersMapped;
+	private List<String> exposed;
+	private List<info_rest> restmapping;
+	private Map<String,String> restParametersMapped;
 
 	private boolean R_R = true;
 	
@@ -62,7 +62,7 @@ public class info_call extends info_entity implements i_elementBase{
 		reimposta();
 	}
 
-	public info_call init(Node node, HashMap glob_redirects) throws bsControllerException{
+	public info_call init(Node node, HashMap<String,info_redirect> glob_redirects) throws bsControllerException{
 		if(node==null) return this;
 		try{
 			NamedNodeMap nnm = node.getAttributes();	 		
@@ -121,8 +121,8 @@ public class info_call extends info_entity implements i_elementBase{
 		method="";
 		navigated="";
 		expose="";
-		exposed=new ArrayList();
-		restmapping=new ArrayList();
+		exposed=new ArrayList<String>();
+		restmapping=new ArrayList<info_rest>();
 	}
 	public String getName() {
 		return name;
@@ -176,32 +176,6 @@ public class info_call extends info_entity implements i_elementBase{
 		}
 		
 		result+= (ls)?(System.getProperty("line.separator")+space+"      </call>"):"</call>";
-/*		
-		if(iRedirect==null){
-			if(restmapping!=null && restmapping.size()>0){
-				for(int i=0;i<restmapping.size();i++){
-					info_rest iRest = (info_rest)restmapping.get(i);
-					if(iRest!=null){
-						result+=iRest.toXml(space+"            ");
-					}
-				}
-				result+=System.getProperty("line.separator")+space+"      </call>";
-			}else			
-				result+="/>";
-		}else{
-			result+=">";
-			result+=iRedirect.toXml(space+"            ");
-			if(restmapping!=null && restmapping.size()>0){
-				for(int i=0;i<restmapping.size();i++){
-					info_rest iRest = (info_rest)restmapping.get(i);
-					if(iRest!=null){
-						result+=iRest.toXml(space+"            ");
-					}
-				}
-			}
-			result+=System.getProperty("line.separator")+space+"      </call>";
-		}
-*/		
 		return result;
 	}
 	
@@ -257,9 +231,9 @@ public class info_call extends info_entity implements i_elementBase{
 		return this;
 	}
 
-	public List getExposed() {
+	public List<String> getExposed() {
 		if(exposed==null)
-			exposed=new ArrayList();
+			exposed=new ArrayList<String>();
 		return exposed;
 	}
 	
@@ -277,7 +251,7 @@ public class info_call extends info_entity implements i_elementBase{
 		return this;
 	}	
 
-	public void setExposed(List expose) {
+	public void setExposed(List<String> expose) {
 		this.exposed = expose;
 	}
 
@@ -307,7 +281,7 @@ public class info_call extends info_entity implements i_elementBase{
 
 	public void setExpose(String expose) {
 		if(exposed==null)
-			exposed=new ArrayList();
+			exposed=new ArrayList<String>();
 		exposed.clear();
 		if(expose!=null){
 			this.expose = expose;
@@ -318,9 +292,9 @@ public class info_call extends info_entity implements i_elementBase{
 		
 	}
 	
-	public Map getRestParametersMapped(){
+	public Map<String,String> getRestParametersMapped(){
 		if(restParametersMapped==null){
-			restParametersMapped = new HashMap();
+			restParametersMapped = new HashMap<String, String>();
 			if(restmapping!=null && restmapping.size()>0){
 				for(int i=0;i<restmapping.size();i++){
 					info_rest iRest = (info_rest)restmapping.get(i);
@@ -331,11 +305,11 @@ public class info_call extends info_entity implements i_elementBase{
 		return restParametersMapped;
 	}
 
-	public List getRestmapping() {
+	public List<info_rest> getRestmapping() {
 		return restmapping;
 	}
 
-	public info_call setRestmapping(List restmapping) {
+	public info_call setRestmapping(List<info_rest> restmapping) {
 		this.restmapping = restmapping;
 		return this;
 	}

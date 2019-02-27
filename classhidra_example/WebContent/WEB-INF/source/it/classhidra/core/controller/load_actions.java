@@ -36,8 +36,9 @@ import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_find;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_provider;
-import it.classhidra.core.tool.util.util_sort;
+//import it.classhidra.core.tool.util.util_sort;
 import it.classhidra.core.tool.util.util_xml;
+import it.classhidra.core.tool.util.v2.Util_sort;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -76,22 +77,22 @@ public class load_actions extends elementBase{
 	private String instance_servletcontext;
 
 
-	private Vector  v_info_actions;
-	private Vector  v_info_streams;
-	private Vector  v_info_beans;
-	private Vector  v_info_redirects;
-	private Vector  v_info_transformationoutput;
+	private Vector<info_action>  v_info_actions;
+	private Vector<info_stream>  v_info_streams;
+	private Vector<info_bean>  v_info_beans;
+	private Vector<info_redirect>  v_info_redirects;
+	private Vector<info_transformation>  v_info_transformationoutput;
 
 
-	private static HashMap _actions;
-	private static HashMap _actioncalls;
-	private static HashMap _restmapping;
-	private static HashMap _streams;
-	private static HashMap _streams_apply_to_actions;
+	private static HashMap<String,info_action> _actions;
+	private static HashMap<String,info_call> _actioncalls;
+	private static HashMap<String,Vector<info_rest>> _restmapping;
+	private static HashMap<String,info_stream> _streams;
+	private static HashMap<String,Vector<info_stream>> _streams_apply_to_actions;
 
-	private static HashMap _beans;
-	private static HashMap _redirects;
-	private static HashMap _transformationoutput;
+	private static HashMap<String,info_bean> _beans;
+	private static HashMap<String,info_redirect> _redirects;
+	private static HashMap<String,info_transformation> _transformationoutput;
 	
 	
 
@@ -204,6 +205,7 @@ public void init() throws bsControllerException{
 }
 
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public void reInit(i_externalloader _externalloader){
 	if(_externalloader==null) return;
 	boolean loaded = false;
@@ -316,19 +318,19 @@ public void reInit(i_externalloader _externalloader){
 		loadedFrom+=" "+_externalloader.getClass().getName();
 	
 	v_info_streams = (new Vector(_streams.values()));
-	v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+	v_info_streams = Util_sort.sort(v_info_streams,"int_order");
 
 	v_info_actions = (new Vector(_actions.values()));
-	v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+	v_info_actions = Util_sort.sort(v_info_actions,"int_order");
 	
 	v_info_beans = (new Vector(_beans.values()));
-	v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+	v_info_beans = Util_sort.sort(v_info_beans,"int_order");
 
 	v_info_redirects = (new Vector(_redirects.values()));
-	v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+	v_info_redirects = Util_sort.sort(v_info_redirects,"int_order");
 
 	v_info_transformationoutput = (new Vector(_transformationoutput.values()));
-	v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+	v_info_transformationoutput = Util_sort.sort(v_info_transformationoutput,"int_order");
 //	readOk_ExtLoader=true;
 	
 
@@ -336,26 +338,26 @@ public void reInit(i_externalloader _externalloader){
 
 public void reimposta(){
 
-	if(v_info_actions==null) v_info_actions=new Vector();
-	if(v_info_streams==null) v_info_streams=new Vector();
-	if(v_info_beans==null) v_info_beans=new Vector();
-	if(v_info_redirects==null) v_info_redirects=new Vector();
-	if(v_info_transformationoutput==null) v_info_transformationoutput=new Vector();
+	if(v_info_actions==null) v_info_actions=new Vector<info_action>();
+	if(v_info_streams==null) v_info_streams=new Vector<info_stream>();
+	if(v_info_beans==null) v_info_beans=new Vector<info_bean>();
+	if(v_info_redirects==null) v_info_redirects=new Vector<info_redirect>();
+	if(v_info_transformationoutput==null) v_info_transformationoutput=new Vector<info_transformation>();
 
-	if(_actions==null) _actions = new HashMap();
-	if(_actioncalls==null) _actioncalls = new HashMap();
-	if(_restmapping==null) _restmapping = new HashMap();
+	if(_actions==null) _actions = new HashMap<String, info_action>();
+	if(_actioncalls==null) _actioncalls = new HashMap<String, info_call>();
+	if(_restmapping==null) _restmapping = new HashMap<String, Vector<info_rest>>();
 	if(_streams==null){
-		_streams = new HashMap();
+		_streams = new HashMap<String, info_stream>();
 		readDef = false;
 	}else readDef = true;
 	if(_streams_apply_to_actions==null){
-		_streams_apply_to_actions = new HashMap();
-		_streams_apply_to_actions.put("*",new Vector());
+		_streams_apply_to_actions = new HashMap<String, Vector<info_stream>>();
+		_streams_apply_to_actions.put("*",new Vector<info_stream>());
 	}
-	if(_beans==null) _beans = new HashMap();
-	if(_redirects==null) _redirects = new HashMap();
-	if(_transformationoutput==null) _transformationoutput = new HashMap();
+	if(_beans==null) _beans = new HashMap<String, info_bean>();
+	if(_redirects==null) _redirects = new HashMap<String, info_redirect>();
+	if(_transformationoutput==null) _transformationoutput = new HashMap<String, info_transformation>();
 
 
 	if(error==null) error="";
@@ -484,19 +486,19 @@ public void load_def_actions() {
 
 public void loadFromAnnotations(){
 	
-	if(_actions==null) _actions = new HashMap();
-	if(_actioncalls==null) _actioncalls = new HashMap();
-	if(_restmapping==null) _restmapping = new HashMap();
+	if(_actions==null) _actions = new HashMap<String, info_action>();
+	if(_actioncalls==null) _actioncalls = new HashMap<String, info_call>();
+	if(_restmapping==null) _restmapping = new HashMap<String, Vector<info_rest>>();
 	if(_streams==null){
-		_streams = new HashMap();
+		_streams = new HashMap<String, info_stream>();
 		readDef = false;
 	}
 	if(_streams_apply_to_actions==null){
-		_streams_apply_to_actions = new HashMap();
-		_streams_apply_to_actions.put("*",new Vector());
+		_streams_apply_to_actions = new HashMap<String, Vector<info_stream>>();
+		_streams_apply_to_actions.put("*",new Vector<info_stream>());
 	}
-	if(_beans==null) _beans = new HashMap();
-	if(_redirects==null) _redirects = new HashMap();
+	if(_beans==null) _beans = new HashMap<String, info_bean>();
+	if(_redirects==null) _redirects = new HashMap<String, info_redirect>();
 
 	app_init ainit = bsController.getAppInit();
 	i_annotation_scanner l_annotated = null;
@@ -575,10 +577,10 @@ public void loadFromAnnotations(){
 	if(l_annotated.getInstance_servletcontext()!=null && !l_annotated.getInstance_servletcontext().equals(""))
 		instance_servletcontext = l_annotated.getInstance_servletcontext();
 	
-	Vector a_streams = new Vector(l_annotated.get_streams().values());
+	Vector<info_stream> a_streams = new Vector<info_stream>(l_annotated.get_streams().values());
 	if(a_streams.size()>0){
 		int stream_order=0;
-		HashMap _streams_order = new HashMap();
+		HashMap<Integer,String> _streams_order = new HashMap<Integer,String>();
 		for(int k=0;k<a_streams.size();k++){
 			info_stream iStream = (info_stream)a_streams.get(k);
 			info_stream old_stream = (info_stream)_streams.get(iStream.getName());
@@ -588,21 +590,21 @@ public void loadFromAnnotations(){
 				info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
 				if(fromVinfo!=null)
 					v_info_streams.remove(fromVinfo);
-				Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+				Vector<String> app_action = new Vector<String>(old_stream.get_apply_to_action().keySet());
 				if(app_action.size()==0){
 					int l=0;
-					while(l< ((Vector)_streams_apply_to_actions.get("*")).size()){
-						info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get("*")).get(l);
-						if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get("*")).remove(l);
+					while(l< _streams_apply_to_actions.get("*").size()){
+						info_stream current = _streams_apply_to_actions.get("*").get(l);
+						if(old_stream.getName().equals(current.getName())) _streams_apply_to_actions.get("*").remove(l);
 						else l++;
 					}
 				}else{
 					for(int j=0;j<app_action.size();j++){
 						String key=(String)app_action.get(j);
 						int l=0;
-						while(l< ((Vector)_streams_apply_to_actions.get(key)).size()){
-							info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get(key)).get(l);
-							if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get(key)).remove(l);
+						while(l< _streams_apply_to_actions.get(key).size()){
+							info_stream current = _streams_apply_to_actions.get(key).get(l);
+							if(old_stream.getName().equals(current.getName())) _streams_apply_to_actions.get(key).remove(l);
 							else l++;
 						}
 					}
@@ -621,30 +623,30 @@ public void loadFromAnnotations(){
 			}
 		}
 	
-		Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
+		Vector<Integer> v_streams_order = Util_sort.sort(new  Vector<Integer>(_streams_order.keySet()),"");
 		for(int i=0;i<v_streams_order.size();i++){
 			info_stream current = (info_stream)_streams.get(_streams_order.get(v_streams_order.get(i)));
 			if(current!=null){
-				Vector app_action = new Vector(current.get_apply_to_action().keySet());
+				Vector<String> app_action = new Vector<String>(current.get_apply_to_action().keySet());
 				if(app_action.size()==0){
 					String key="*";
-					((Vector)_streams_apply_to_actions.get(key)).add(current);
+					_streams_apply_to_actions.get(key).add(current);
 				}else{
 					for(int j=0;j<app_action.size();j++){
 						String key=(String)app_action.get(j);
-						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector());
-						((Vector)_streams_apply_to_actions.get(key)).add(current);
+						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector<info_stream>());
+						_streams_apply_to_actions.get(key).add(current);
 					}
 				}
 			}
 		}
 		
 		//v_info_streams.addAll(new Vector(_streams.values()));
-		v_info_streams = (new Vector(_streams.values()));
-		v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+		v_info_streams = new Vector<info_stream>(_streams.values());
+		v_info_streams = Util_sort.sort(v_info_streams,"int_order");
 	}
 	
-	Vector a_beans = new Vector(l_annotated.get_beans().values());
+	Vector<info_bean> a_beans = new Vector<info_bean>(l_annotated.get_beans().values());
 	if(a_beans.size()>0){
 		int max_int_order = -1;
 		if(v_info_beans!=null && v_info_beans.size()>0){
@@ -654,38 +656,38 @@ public void loadFromAnnotations(){
 			}
 		}
 		if(max_int_order>-1)
-			a_beans = new util_sort().sort(a_beans,"int_order");
+			a_beans = Util_sort.sort(a_beans,"int_order");
 			
 		for(int i=0;i<a_beans.size();i++){
 			if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_beans.put(((info_bean)a_beans.get(i)).getName(), a_beans.get(i));
 		}
-		v_info_beans = (new Vector(_beans.values()));
-		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+		v_info_beans = new Vector<info_bean>(_beans.values());
+		v_info_beans = Util_sort.sort(v_info_beans,"int_order");
 	}
 	
 	
-	Vector a_redirects = new Vector(l_annotated.get_redirects().values());
+	Vector<info_redirect> a_redirects = new Vector<info_redirect>(l_annotated.get_redirects().values());
 	if(a_redirects.size()>0){
 		int max_int_order = -1;
 		if(v_info_redirects!=null && v_info_redirects.size()>0){
 			try{
-				max_int_order = ((info_bean)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
+				max_int_order = ((info_entity)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
 			}catch(Exception e){			
 			}
 		}
 		if(max_int_order>-1)
-			a_redirects = new util_sort().sort(a_redirects,"int_order");
+			a_redirects = Util_sort.sort(a_redirects,"int_order");
 			
 		for(int i=0;i<a_redirects.size();i++){
 			if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_redirects.put(((info_redirect)a_redirects.get(i)).getPath(), a_redirects.get(i));
 		}
-		v_info_redirects = (new Vector(_redirects.values()));
-		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+		v_info_redirects = new Vector<info_redirect>(_redirects.values());
+		v_info_redirects = Util_sort.sort(v_info_redirects,"int_order");
 	}
 
-	Vector a_actions = new Vector(l_annotated.get_actions().values());
+	Vector<info_action> a_actions = new Vector<info_action>(l_annotated.get_actions().values());
 	if(a_actions.size()>0){
 		int max_int_order = -1;
 		if(v_info_actions!=null && v_info_actions.size()>0){
@@ -695,13 +697,13 @@ public void loadFromAnnotations(){
 			}
 		}
 		if(max_int_order>-1)
-			a_actions = new util_sort().sort(a_actions,"int_order");
+			a_actions = Util_sort.sort(a_actions,"int_order");
 			
 		for(int i=0;i<a_actions.size();i++){
 			if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
 			if(((info_action)a_actions.get(i)).get_calls().size()>0){
-				Vector a_actioncalls = new Vector(((info_action)a_actions.get(i)).get_calls().values());
+				Vector<info_call> a_actioncalls = new Vector<info_call>(((info_action)a_actions.get(i)).get_calls().values());
 				for(int j=0;j<a_actioncalls.size();j++){
 					if(((info_call)a_actioncalls.get(j)).getExposed()==null || ((info_call)a_actioncalls.get(j)).getExposed().size()==0){
 						_actioncalls.put(
@@ -733,8 +735,8 @@ public void loadFromAnnotations(){
 						for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
 							info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
 							if(_restmapping.get(iRest.getPath())==null)
-								_restmapping.put(iRest.getPath(), new Vector());
-							((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+								_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+							_restmapping.get(iRest.getPath()).add(iRest);
 						}
 					}
 				}
@@ -744,16 +746,16 @@ public void loadFromAnnotations(){
 				for(int r=0;r<((info_action)a_actions.get(i)).getRestmapping().size();r++){
 					info_rest iRest = (info_rest)((info_action)a_actions.get(i)).getRestmapping().get(r);
 					if(_restmapping.get(iRest.getPath())==null)
-						_restmapping.put(iRest.getPath(), new Vector());
-					((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+						_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+					_restmapping.get(iRest.getPath()).add(iRest);
 				}
 			}
 		}
-		v_info_actions = (new Vector(_actions.values()));
-		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+		v_info_actions = new Vector<info_action>(_actions.values());
+		v_info_actions = Util_sort.sort(v_info_actions,"int_order");
 	}
 	
-	Vector a_transformations = new Vector(l_annotated.get_transformationoutput().values());
+	Vector<info_transformation> a_transformations = new Vector<info_transformation>(l_annotated.get_transformationoutput().values());
 	if(a_transformations.size()>0){
 	int max_int_order = -1;
 		if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
@@ -763,14 +765,14 @@ public void loadFromAnnotations(){
 			}
 		}
 		if(max_int_order>-1)
-			a_transformations = new util_sort().sort(a_transformations,"int_order");
+			a_transformations = Util_sort.sort(a_transformations,"int_order");
 			
 		for(int i=0;i<a_transformations.size();i++){
 			if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_transformationoutput.put(((info_transformation)a_transformations.get(i)).getName(), a_transformations.get(i));
 		}
-		v_info_transformationoutput = (new Vector(_transformationoutput.values()));
-		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+		v_info_transformationoutput = new Vector<info_transformation>(_transformationoutput.values());
+		v_info_transformationoutput = Util_sort.sort(v_info_transformationoutput,"int_order");
 	}
 	
 	
@@ -869,10 +871,10 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 		instance_servletcontext = l_annotated.getInstance_servletcontext();
 	
 
-	Vector a_streams = new Vector(l_annotated.get_streams().values());
+	Vector<info_stream> a_streams = new Vector<info_stream>(l_annotated.get_streams().values());
 	if(a_streams.size()>0){
 		int stream_order=0;
-		HashMap _streams_order = new HashMap();
+		HashMap<Integer,String> _streams_order = new HashMap<Integer, String>();
 		for(int k=0;k<a_streams.size();k++){
 			info_stream iStream = (info_stream)a_streams.get(k);
 			info_stream old_stream = (info_stream)_streams.get(iStream.getName());
@@ -882,21 +884,21 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 				info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
 				if(fromVinfo!=null)
 					v_info_streams.remove(fromVinfo);
-				Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+				Vector<String> app_action = new Vector<String>(old_stream.get_apply_to_action().keySet());
 				if(app_action.size()==0){
 					int l=0;
-					while(l< ((Vector)_streams_apply_to_actions.get("*")).size()){
-						info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get("*")).get(l);
-						if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get("*")).remove(l);
+					while(l< _streams_apply_to_actions.get("*").size()){
+						info_stream current = _streams_apply_to_actions.get("*").get(l);
+						if(old_stream.getName().equals(current.getName())) _streams_apply_to_actions.get("*").remove(l);
 						else l++;
 					}
 				}else{
 					for(int j=0;j<app_action.size();j++){
 						String key=(String)app_action.get(j);
 						int l=0;
-						while(l< ((Vector)_streams_apply_to_actions.get(key)).size()){
-							info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get(key)).get(l);
-							if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get(key)).remove(l);
+						while(l< _streams_apply_to_actions.get(key).size()){
+							info_stream current = _streams_apply_to_actions.get(key).get(l);
+							if(old_stream.getName().equals(current.getName())) _streams_apply_to_actions.get(key).remove(l);
 							else l++;
 						}
 					}
@@ -915,30 +917,30 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 			}
 		}
 	
-		Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
+		Vector<Integer> v_streams_order = Util_sort.sort(new  Vector<Integer>(_streams_order.keySet()),"");
 		for(int i=0;i<v_streams_order.size();i++){
 			info_stream current = (info_stream)_streams.get(_streams_order.get(v_streams_order.get(i)));
 			if(current!=null){
-				Vector app_action = new Vector(current.get_apply_to_action().keySet());
+				Vector<String> app_action = new Vector<String>(current.get_apply_to_action().keySet());
 				if(app_action.size()==0){
 					String key="*";
-					((Vector)_streams_apply_to_actions.get(key)).add(current);
+					_streams_apply_to_actions.get(key).add(current);
 				}else{
 					for(int j=0;j<app_action.size();j++){
 						String key=(String)app_action.get(j);
-						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector());
-						((Vector)_streams_apply_to_actions.get(key)).add(current);
+						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector<info_stream>());
+						_streams_apply_to_actions.get(key).add(current);
 					}
 				}
 			}
 		}
 		
 		//v_info_streams.addAll(new Vector(_streams.values()));
-		v_info_streams = (new Vector(_streams.values()));
-		v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+		v_info_streams = new Vector<info_stream>(_streams.values());
+		v_info_streams = Util_sort.sort(v_info_streams,"int_order");
 	}
 	
-	Vector a_beans = new Vector(l_annotated.get_beans().values());
+	Vector<info_bean> a_beans = new Vector<info_bean>(l_annotated.get_beans().values());
 	if(a_beans.size()>0){
 		int max_int_order = -1;
 		if(v_info_beans!=null && v_info_beans.size()>0){
@@ -948,42 +950,42 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 			}
 		}
 		if(max_int_order>-1)
-			a_beans = new util_sort().sort(a_beans,"int_order");
+			a_beans = Util_sort.sort(a_beans,"int_order");
 			
 		for(int i=0;i<a_beans.size();i++){
 			if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_beans.put(((info_bean)a_beans.get(i)).getName(), a_beans.get(i));
 		}
-		v_info_beans = (new Vector(_beans.values()));
-		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+		v_info_beans = new Vector<info_bean>(_beans.values());
+		v_info_beans = Util_sort.sort(v_info_beans,"int_order");
 	}
 	
 	
 	
-	Vector a_redirects_loaded = new Vector(l_annotated.get_redirectsjustloaded().values());
+	Vector<info_redirect> a_redirects_loaded = new Vector<info_redirect>(l_annotated.get_redirectsjustloaded().values());
 	if(a_redirects_loaded.size()>0){
-		Vector a_redirects = new Vector(l_annotated.get_redirects().values());
+		Vector<info_redirect> a_redirects = new Vector<info_redirect>(l_annotated.get_redirects().values());
 		
 		int max_int_order = -1;
 		if(v_info_redirects!=null && v_info_redirects.size()>0){
 			try{
-				max_int_order = ((info_bean)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
+				max_int_order = ((info_entity)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
 			}catch(Exception e){			
 			}
 		}
 		if(max_int_order>-1)
-			a_redirects = new util_sort().sort(a_redirects,"int_order");
+			a_redirects = Util_sort.sort(a_redirects,"int_order");
 			
 		for(int i=0;i<a_redirects.size();i++){
 			if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_redirects.put(((info_redirect)a_redirects.get(i)).getPath(), a_redirects.get(i));
 		}
-		v_info_redirects = (new Vector(_redirects.values()));
-		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+		v_info_redirects = new Vector<info_redirect>(_redirects.values());
+		v_info_redirects = Util_sort.sort(v_info_redirects,"int_order");
 	}
 
 
-	Vector a_actions = new Vector(l_annotated.get_actions().values());
+	Vector<info_action> a_actions = new Vector<info_action>(l_annotated.get_actions().values());
 	if(a_actions.size()>0){
 		int max_int_order = -1;
 		if(v_info_actions!=null && v_info_actions.size()>0){
@@ -993,25 +995,14 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 			}
 		}
 		if(max_int_order>-1)
-			a_actions = new util_sort().sort(a_actions,"int_order");
+			a_actions = Util_sort.sort(a_actions,"int_order");
 			
 		for(int i=0;i<a_actions.size();i++){
 			if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
 			if(((info_action)a_actions.get(i)).get_calls().size()>0){
-				Vector a_actioncalls = new Vector(((info_action)a_actions.get(i)).get_calls().values());
+				Vector<info_call> a_actioncalls = new Vector<info_call>(((info_action)a_actions.get(i)).get_calls().values());
 				for(int j=0;j<a_actioncalls.size();j++){
-/*
-					_actioncalls.put(
-							((info_call)a_actioncalls.get(j)).getOwner()+
-							((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
-							((info_call)a_actioncalls.get(j)).getName(),
-							a_actioncalls.get(j));
-					if(((info_call)a_actioncalls.get(j)).getPath()!=null && !((info_call)a_actioncalls.get(j)).getPath().equals(""))
-						_actioncalls.put(
-								((info_call)a_actioncalls.get(j)).getPath(),
-								a_actioncalls.get(j));
-*/					
 					if(((info_call)a_actioncalls.get(j)).getExposed()==null || ((info_call)a_actioncalls.get(j)).getExposed().size()==0){
 						_actioncalls.put(
 								((info_call)a_actioncalls.get(j)).getOwner()+
@@ -1041,8 +1032,8 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 						for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
 							info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
 							if(_restmapping.get(iRest.getPath())==null)
-								_restmapping.put(iRest.getPath(), new Vector());
-							((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+								_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+							_restmapping.get(iRest.getPath()).add(iRest);
 						}
 					}
 				}
@@ -1052,17 +1043,17 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 				for(int r=0;r<((info_action)a_actions.get(i)).getRestmapping().size();r++){
 					info_rest iRest = (info_rest)((info_action)a_actions.get(i)).getRestmapping().get(r);
 					if(_restmapping.get(iRest.getPath())==null)
-						_restmapping.put(iRest.getPath(), new Vector());
-					((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+						_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+					_restmapping.get(iRest.getPath()).add(iRest);
 				}
 			}
 
 		}
-		v_info_actions = (new Vector(_actions.values()));
-		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+		v_info_actions = new Vector<info_action>(_actions.values());
+		v_info_actions = Util_sort.sort(v_info_actions,"int_order");
 	}
 	
-	Vector a_transformations = new Vector(l_annotated.get_transformationoutput().values());
+	Vector<info_transformation> a_transformations = new Vector<info_transformation>(l_annotated.get_transformationoutput().values());
 	if(a_transformations.size()>0){
 		int max_int_order = -1;
 		if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
@@ -1072,14 +1063,14 @@ public info_entity loadFromAnnotations(info_entity iEntity){
 			}
 		}
 		if(max_int_order>-1)
-			a_transformations = new util_sort().sort(a_transformations,"int_order");
+			a_transformations = Util_sort.sort(a_transformations,"int_order");
 			
 		for(int i=0;i<a_transformations.size();i++){
 			if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_transformationoutput.put(((info_transformation)a_transformations.get(i)).getName(), a_transformations.get(i));
 		}
-		v_info_transformationoutput = (new Vector(_transformationoutput.values()));
-		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+		v_info_transformationoutput = new Vector<info_transformation>(_transformationoutput.values());
+		v_info_transformationoutput = Util_sort.sort(v_info_transformationoutput,"int_order");
 	}
 	if(iEntity instanceof info_action)
 		return (info_entity)_actions.get(((info_action)iEntity).getPath());
@@ -1107,7 +1098,7 @@ public void load_from_resources() {
 
 
 	try{
-		List array = util_classes.getResources(property_name);
+		List<String> array = util_classes.getResources(property_name);
 		for(int i=0;i<array.size();i++){
 			String property_name0 =  bsController.CONST_XML_ACTIONS_FOLDER+"/"+array.get(i);
 			if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
@@ -1302,19 +1293,19 @@ public boolean initDB(app_init ainit) throws bsControllerException, Exception{
 
 private boolean readDocumentXml(Document documentXML) throws Exception{
 	if(documentXML!=null){
-		if(_actions==null) _actions = new HashMap();
-		if(_actioncalls==null) _actioncalls = new HashMap();
-		if(_restmapping==null) _restmapping = new HashMap();
+		if(_actions==null) _actions = new HashMap<String, info_action>();
+		if(_actioncalls==null) _actioncalls = new HashMap<String, info_call>();
+		if(_restmapping==null) _restmapping = new HashMap<String, Vector<info_rest>>();
 		if(_streams==null){
-			_streams = new HashMap();
+			_streams = new HashMap<String, info_stream>();
 			readDef = false;
 		}
 		if(_streams_apply_to_actions==null){
-			_streams_apply_to_actions = new HashMap();
-			_streams_apply_to_actions.put("*",new Vector());
+			_streams_apply_to_actions = new HashMap<String, Vector<info_stream>>();
+			_streams_apply_to_actions.put("*",new Vector<info_stream>());
 		}
-		if(_beans==null) _beans = new HashMap();
-		if(_redirects==null) _redirects = new HashMap();
+		if(_beans==null) _beans = new HashMap<String, info_bean>();
+		if(_redirects==null) _redirects = new HashMap<String, info_redirect>();
 		Node node = null;
 		try{
 			int first=0;
@@ -1333,11 +1324,13 @@ private boolean readDocumentXml(Document documentXML) throws Exception{
 				readFormElements(node.getChildNodes().item(i));
 		}
 		if(_actions!=null && _actions.get("*")!=null){
-			Object[] keysIn = _actions.keySet().toArray();
-			Object[] keysFor = (((info_action)_actions.get("*")).get_redirects()).keySet().toArray();
+			String[] keysIn = new String[_actions.size()];
+			keysIn = _actions.keySet().toArray(keysIn);
+			String[] keysFor = new String[_actions.get("*").get_redirects().size()];
+			keysFor = _actions.get("*").get_redirects().keySet().toArray(keysFor);
 			for(int i=0;i<keysIn.length;i++){
 				try{
-					HashMap current_redirects = ((info_action)_actions.get((String)keysIn[i])).get_redirects();
+					HashMap<String,info_redirect> current_redirects = ((info_action)_actions.get((String)keysIn[i])).get_redirects();
 					for(int j=0;j<keysFor.length;j++)
 						current_redirects.put(keysFor[j],((((info_action)_actions.get("*")).get_redirects())).get(keysFor[j]));
 				}catch(Exception e){
@@ -1364,7 +1357,7 @@ public i_action actionFactory(String id_action){
 public i_action actionFactory(String id_action, HttpSession session, ServletContext servletContext){
 	i_action rAction = new action();
 	info_action iAction = null;
-	if(_actions==null) _actions = new HashMap();
+	if(_actions==null) _actions = new HashMap<String, info_action>();
 	if(_actions.get(id_action)==null){
 		load_actions session_l_actions = (load_actions)session.getAttribute(bsConstants.CONST_SESSION_ACTIONS_INSTANCE);
 		if(session_l_actions!=null){
@@ -1560,12 +1553,6 @@ public i_action actionFactory(String id_action, HttpSession session, ServletCont
 		else 
 			rAction.asBean().set_infobean(new info_bean());
 //			((bean)rAction).set_infobean(new info_bean());
-	}else{
-		iAction = new info_action();
-		iAction.setPath(id_action);
-		rAction.set_infoaction(iAction);
-//		((bean)rAction).set_infobean(new info_bean());
-		rAction.asBean().set_infobean(new info_bean());
 	}
 	return rAction;
 }
@@ -1747,8 +1734,8 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 												bsController.getAppInit().get_cdi_provider(),
 												bsController.getAppInit().get_ejb_provider()
 										},
-										iBean.getListener());
-						if(lBean!=null) rBean.setListener_b(lBean);;
+										rBean.get_infobean().getListener());
+						if(lBean!=null) rBean.setListener_b(lBean);
 					}catch (Exception e) {
 					}catch(Throwable t) {
 					}				
@@ -1806,39 +1793,7 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 			}
 //		}
 	}
-/*	
-	if(iBean.getProvider()!=null && !iBean.getProvider().equals("")){
-		Object actionFromProvider = util_reflect.providerObjectFactory(iBean.getProvider(), iBean.getName(), iBean.getType(), servletContext);
-		if(actionFromProvider!=null && actionFromProvider instanceof i_bean){
-			rBean = (i_bean)actionFromProvider;
-			loadedFromProvider=true;
-		}
-		if(actionFromProvider!=null && !(actionFromProvider instanceof i_bean)){
-			rBean.setDelegated(actionFromProvider);
-			loadedFromProvider=true;
-		}
-	}else if(getProvider()!=null && !getProvider().equals("")){
-		Object actionFromProvider = util_reflect.providerObjectFactory(getProvider(), iBean.getName(), iBean.getType(), servletContext);
-		if(actionFromProvider!=null && actionFromProvider instanceof i_bean){
-			rBean = (i_bean)actionFromProvider;
-			loadedFromProvider=true;
-		}
-		if(actionFromProvider!=null && !(actionFromProvider instanceof i_bean)){
-			rBean.setDelegated(actionFromProvider);
-			loadedFromProvider=true;
-		}
-	}else if(bsController.getAppInit().get_cdi_provider()!=null && !bsController.getAppInit().get_cdi_provider().equals("")){
-		Object actionFromProvider = util_reflect.providerObjectFactory(bsController.getAppInit().get_cdi_provider(), iBean.getName(), iBean.getType(), servletContext);
-		if(actionFromProvider!=null && actionFromProvider instanceof i_bean){
-			rBean = (i_bean)actionFromProvider;
-			loadedFromProvider=true;
-		}
-		if(actionFromProvider!=null && !(actionFromProvider instanceof i_bean)){
-			rBean.setDelegated(actionFromProvider);
-			loadedFromProvider=true;
-		}
-	}
-*/
+
 
 	if( !loadedFromProvider &&
 		(
@@ -1868,7 +1823,8 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 				String model=iBean.getModel();
 				byte[] xmlModel = util_classes.getResourceAsByte(model);
 				if(xmlModel!=null){
-					HashMap fly = (HashMap)util_beanMessageFactory.message2bean(xmlModel, HashMap.class);
+					@SuppressWarnings("unchecked")
+					HashMap<String,Object> fly = (HashMap<String,Object>)util_beanMessageFactory.message2bean(xmlModel, HashMap.class);
 					rBean.setParametersFly(fly);
 					rBean.setVirtual(true);
 				}
@@ -1885,7 +1841,8 @@ public i_bean beanFactory(String id_bean,HttpSession session,ServletContext serv
 			}
 			xmlModel+=System.getProperty("line.separator")+"</item>";
 			try{
-				HashMap fly = (HashMap)util_beanMessageFactory.message2bean(xmlModel.getBytes(), HashMap.class);
+				@SuppressWarnings("unchecked")
+				HashMap<String,Object> fly = (HashMap<String,Object>)util_beanMessageFactory.message2bean(xmlModel.getBytes(), HashMap.class);
 				rBean.setParametersFly(fly);
 				rBean.setVirtual(true);
 			}catch (Exception e) {
@@ -1955,7 +1912,7 @@ public i_transformation transformationFactory(String transformationName, Servlet
 
 
 
-public static i_transformation transformationFactory(String transformationName, HashMap h_transformationoutput, ServletContext servletContext){
+public static i_transformation transformationFactory(String transformationName, HashMap<String,info_transformation> h_transformationoutput, ServletContext servletContext){
 	i_transformation rTransformation = new transformation();
 	if(h_transformationoutput==null || h_transformationoutput.get(transformationName)==null) return rTransformation;
 
@@ -2071,7 +2028,7 @@ private void readFormElements(Node node) throws Exception{
 			new bsControllerException(e,iStub.log_DEBUG);
 		}		
 		int stream_order=0;
-		HashMap _streams_order = new HashMap();
+		HashMap<Integer,String> _streams_order = new HashMap<Integer,String>();
 		for(int k=0;k<node.getChildNodes().getLength();k++){
 			if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 				info_stream iStream = new info_stream();
@@ -2084,21 +2041,21 @@ private void readFormElements(Node node) throws Exception{
 						info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
 						if(fromVinfo!=null)
 							v_info_streams.remove(fromVinfo);
-						Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+						Vector<String> app_action = new Vector<String>(old_stream.get_apply_to_action().keySet());
 						if(app_action.size()==0){
 							int l=0;
-							while(l< ((Vector)_streams_apply_to_actions.get("*")).size()){
-								info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get("*")).get(l);
-								if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get("*")).remove(l);
+							while(l< _streams_apply_to_actions.get("*").size()){
+								info_stream current = _streams_apply_to_actions.get("*").get(l);
+								if(old_stream.getName().equals(current.getName())) _streams_apply_to_actions.get("*").remove(l);
 								else l++;
 							}
 						}else{
 							for(int j=0;j<app_action.size();j++){
 								String key=(String)app_action.get(j);
 								int l=0;
-								while(l< ((Vector)_streams_apply_to_actions.get(key)).size()){
-									info_stream current = (info_stream)((Vector)_streams_apply_to_actions.get(key)).get(l);
-									if(old_stream.getName().equals(current.getName())) ((Vector)_streams_apply_to_actions.get(key)).remove(l);
+								while(l< _streams_apply_to_actions.get(key).size()){
+									info_stream current = _streams_apply_to_actions.get(key).get(l);
+									if(old_stream.getName().equals(current.getName())) _streams_apply_to_actions.get(key).remove(l);
 									else l++;
 								}
 
@@ -2120,27 +2077,27 @@ private void readFormElements(Node node) throws Exception{
 			}
 		}
 
-		Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
+		Vector<Integer> v_streams_order = Util_sort.sort(new  Vector<Integer>(_streams_order.keySet()),"");
 		for(int i=0;i<v_streams_order.size();i++){
 			info_stream current = (info_stream)_streams.get(_streams_order.get(v_streams_order.get(i)));
 			if(current!=null){
-				Vector app_action = new Vector(current.get_apply_to_action().keySet());
+				Vector<String> app_action = new Vector<String>(current.get_apply_to_action().keySet());
 				if(app_action.size()==0){
 					String key="*";
-					((Vector)_streams_apply_to_actions.get(key)).add(current);
+					_streams_apply_to_actions.get(key).add(current);
 				}else{
 					for(int j=0;j<app_action.size();j++){
 						String key=(String)app_action.get(j);
-						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector());
-						((Vector)_streams_apply_to_actions.get(key)).add(current);
+						if(_streams_apply_to_actions.get(key)==null) _streams_apply_to_actions.put(key,new Vector<info_stream>());
+						_streams_apply_to_actions.get(key).add(current);
 					}
 				}
 			}
 		}
 
 //		v_info_streams.addAll(new Vector(_streams.values()));
-		v_info_streams = (new Vector(_streams.values()));
-		v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+		v_info_streams = new Vector<info_stream>(_streams.values());
+		v_info_streams = Util_sort.sort(v_info_streams,"int_order");
 
 
 	}
@@ -2175,8 +2132,8 @@ private void readFormElements(Node node) throws Exception{
 		}
 
 //		v_info_beans.addAll(new Vector(_beans.values()));
-		v_info_beans = (new Vector(_beans.values()));
-		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+		v_info_beans = new Vector<info_bean>(_beans.values());
+		v_info_beans = Util_sort.sort(v_info_beans,"int_order");
 	}
 	if(node.getNodeName().equals("form-redirects")){
 		int order=0;
@@ -2197,8 +2154,8 @@ private void readFormElements(Node node) throws Exception{
 		}
 
 //		v_info_redirects.addAll(new Vector(_redirects.values()));
-		v_info_redirects = (new Vector(_redirects.values()));
-		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+		v_info_redirects = new Vector<info_redirect>(_redirects.values());
+		v_info_redirects = Util_sort.sort(v_info_redirects,"int_order");
 
 	}
 
@@ -2223,8 +2180,8 @@ private void readFormElements(Node node) throws Exception{
 		}
 
 //		v_info_transformationoutput.addAll(new Vector(_transformationoutput.values()));
-		v_info_transformationoutput = (new Vector(_transformationoutput.values()));
-		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+		v_info_transformationoutput = new Vector<info_transformation>(_transformationoutput.values());
+		v_info_transformationoutput = Util_sort.sort(v_info_transformationoutput,"int_order");
 
 	}
 
@@ -2260,19 +2217,9 @@ private void readFormElements(Node node) throws Exception{
 				if(iAction!=null){
 					_actions.put(iAction.getPath(),iAction);
 					if(iAction.get_calls().size()>0){
-						Vector a_actioncalls = new Vector(iAction.get_calls().values());
+						Vector<info_call> a_actioncalls = new Vector<info_call>(iAction.get_calls().values());
 						for(int j=0;j<a_actioncalls.size();j++){
-/*							
-							_actioncalls.put(
-									((info_call)a_actioncalls.get(j)).getOwner()+
-									((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
-									((info_call)a_actioncalls.get(j)).getName(),
-									a_actioncalls.get(j));
-							if(((info_call)a_actioncalls.get(j)).getPath()!=null && !((info_call)a_actioncalls.get(j)).getPath().equals(""))
-								_actioncalls.put(
-										((info_call)a_actioncalls.get(j)).getPath(),
-										a_actioncalls.get(j));
-*/							
+							
 							if(((info_call)a_actioncalls.get(j)).getExposed()==null || ((info_call)a_actioncalls.get(j)).getExposed().size()==0){
 								_actioncalls.put(
 										((info_call)a_actioncalls.get(j)).getOwner()+
@@ -2302,8 +2249,8 @@ private void readFormElements(Node node) throws Exception{
 								for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
 									info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
 									if(_restmapping.get(iRest.getPath())==null)
-										_restmapping.put(iRest.getPath(), new Vector());
-									((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+										_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+									_restmapping.get(iRest.getPath()).add(iRest);
 								}
 							}
 						}
@@ -2313,8 +2260,8 @@ private void readFormElements(Node node) throws Exception{
 						for(int r=0;r<iAction.getRestmapping().size();r++){
 							info_rest iRest = (info_rest)iAction.getRestmapping().get(r);
 							if(_restmapping.get(iRest.getPath())==null)
-								_restmapping.put(iRest.getPath(), new Vector());
-							((Vector)_restmapping.get(iRest.getPath())).add(iRest);
+								_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+							_restmapping.get(iRest.getPath()).add(iRest);
 						}
 					}
 										
@@ -2322,8 +2269,8 @@ private void readFormElements(Node node) throws Exception{
 			}
 		}
 //		v_info_actions.addAll(new Vector(_actions.values()));
-		v_info_actions = (new Vector(_actions.values()));
-		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+		v_info_actions = new Vector<info_action>(_actions.values());
+		v_info_actions = Util_sort.sort(v_info_actions,"int_order");
 
 	}
 }
@@ -2353,32 +2300,32 @@ public boolean isReadOk() {
 	return readOk_File || readOk_Folder || readOk_Resource || readOk_Db || readOk_ExtLoader;
 }
 
-public static HashMap get_actions() {
+public static HashMap<String,info_action> get_actions() {
 	return _actions;
 }
 
-public void set_actions(HashMap map) {
+public void set_actions(HashMap<String,info_action> map) {
 	_actions = map;
 }
-public static HashMap get_streams() {
+public static HashMap<String,info_stream> get_streams() {
 	return _streams;
 }
-public void set_streams(HashMap _streams) {
+public void set_streams(HashMap<String,info_stream> _streams) {
 	load_actions._streams = _streams;
 }
-public static HashMap get_beans() {
+public static HashMap<String,info_bean> get_beans() {
 	return _beans;
 }
-public void set_beans(HashMap _beans) {
+public void set_beans(HashMap<String,info_bean> _beans) {
 	load_actions._beans = _beans;
 }
-public static HashMap get_redirects() {
+public static HashMap<String,info_redirect> get_redirects() {
 	return _redirects;
 }
-public void set_redirects(HashMap _redirects) {
+public void set_redirects(HashMap<String,info_redirect> _redirects) {
 	load_actions._redirects = _redirects;
 }
-public HashMap get_streams_apply_to_actions() {
+public HashMap<String,Vector<info_stream>> get_streams_apply_to_actions() {
 	return _streams_apply_to_actions;
 }
 public boolean isReadOk_File() {
@@ -2504,51 +2451,51 @@ public String toXml(){
 	return result;
 }
 
-public static HashMap get_transformationoutput() {
+public static HashMap<String,info_transformation> get_transformationoutput() {
 	return _transformationoutput;
 }
 
-public  void set_transformationoutput(HashMap transformationoutput) {
+public  void set_transformationoutput(HashMap<String,info_transformation> transformationoutput) {
 	_transformationoutput = transformationoutput;
 }
 
-public Vector getV_info_actions() {
+public Vector<info_action> getV_info_actions() {
 	return v_info_actions;
 }
 
-public void setV_info_actions(Vector vInfoActions) {
+public void setV_info_actions(Vector<info_action> vInfoActions) {
 	v_info_actions = vInfoActions;
 }
 
-public Vector getV_info_streams() {
+public Vector<info_stream> getV_info_streams() {
 	return v_info_streams;
 }
 
-public void setV_info_streams(Vector vInfoStreams) {
+public void setV_info_streams(Vector<info_stream> vInfoStreams) {
 	v_info_streams = vInfoStreams;
 }
 
-public Vector getV_info_beans() {
+public Vector<info_bean> getV_info_beans() {
 	return v_info_beans;
 }
 
-public void setV_info_beans(Vector vInfoBeans) {
+public void setV_info_beans(Vector<info_bean> vInfoBeans) {
 	v_info_beans = vInfoBeans;
 }
 
-public Vector getV_info_redirects() {
+public Vector<info_redirect> getV_info_redirects() {
 	return v_info_redirects;
 }
 
-public void setV_info_redirects(Vector vInfoRedirects) {
+public void setV_info_redirects(Vector<info_redirect> vInfoRedirects) {
 	v_info_redirects = vInfoRedirects;
 }
 
-public Vector getV_info_transformationoutput() {
+public Vector<info_transformation> getV_info_transformationoutput() {
 	return v_info_transformationoutput;
 }
 
-public void setV_info_transformationoutput(Vector vInfoTransformation) {
+public void setV_info_transformationoutput(Vector<info_transformation> vInfoTransformation) {
 	v_info_transformationoutput = vInfoTransformation;
 }
 
@@ -2556,7 +2503,7 @@ public load_actions_builder getBuilder() {
 	return builder;
 }
 
-public void set_streams_apply_to_actions(HashMap streamsApplyToActions) {
+public void set_streams_apply_to_actions(HashMap<String,Vector<info_stream>> streamsApplyToActions) {
 	_streams_apply_to_actions = streamsApplyToActions;
 }
 
@@ -2694,19 +2641,19 @@ public void setInstance_servletcontext(String instance_servletcontext) {
 }
 
 
-public static HashMap get_actioncalls() {
+public static HashMap<String,info_call> get_actioncalls() {
 	return _actioncalls;
 }
 
-public static HashMap get_restmapping(){
+public static HashMap<String,Vector<info_rest>> get_restmapping(){
 	return _restmapping;
 }
 
-public static void set_actioncalls(HashMap _actioncalls) {
+public static void set_actioncalls(HashMap<String,info_call> _actioncalls) {
 	load_actions._actioncalls = _actioncalls;
 }
 
-public static void set_restmapping(HashMap _restmapping) {
+public static void set_restmapping(HashMap<String,Vector<info_rest>> _restmapping) {
 	load_actions._restmapping = _restmapping;
 }
 
@@ -2721,29 +2668,29 @@ public void setReimposted(boolean reimposted) {
 
 class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	private HashMap _b_actions=null;
-	private HashMap _b_actioncalls=null;
-	private HashMap _b_restmapping=null;
-	private HashMap _b_streams=null;
-	private HashMap _b_streams_apply_to_actions=null;
+	private HashMap<String,info_action> _b_actions=null;
+	private HashMap<String,info_call> _b_actioncalls=null;
+	private HashMap<String,Vector<info_rest>> _b_restmapping=null;
+	private HashMap<String,info_stream> _b_streams=null;
+	private HashMap<String,Vector<info_stream>> _b_streams_apply_to_actions=null;
 
-	private HashMap _b_beans=null;
-	private HashMap _b_redirects=null;
-	private HashMap _b_transformationoutput=null;
+	private HashMap<String,info_bean> _b_beans=null;
+	private HashMap<String,info_redirect> _b_redirects=null;
+	private HashMap<String,info_transformation> _b_transformationoutput=null;
 
 	load_actions_builder(){
 		super();
-		if(_b_actions==null) _b_actions = new HashMap();
-		if(_b_actioncalls==null) _b_actioncalls = new HashMap();
-		if(_b_restmapping==null) _b_restmapping = new HashMap();
-		if(_b_streams==null) _b_streams = new HashMap();
+		if(_b_actions==null) _b_actions = new HashMap<String, info_action>();
+		if(_b_actioncalls==null) _b_actioncalls = new HashMap<String, info_call>();
+		if(_b_restmapping==null) _b_restmapping = new HashMap<String, Vector<info_rest>>();
+		if(_b_streams==null) _b_streams = new HashMap<String, info_stream>();
 		if(_b_streams_apply_to_actions==null){
-			_b_streams_apply_to_actions = new HashMap();
-			_b_streams_apply_to_actions.put("*",new Vector());
+			_b_streams_apply_to_actions = new HashMap<String, Vector<info_stream>>();
+			_b_streams_apply_to_actions.put("*",new Vector<info_stream>());
 		}
-		if(_b_beans==null) _b_beans = new HashMap();
-		if(_b_redirects==null) _b_redirects = new HashMap();
-		if(_b_transformationoutput==null) _b_transformationoutput = new HashMap();
+		if(_b_beans==null) _b_beans = new HashMap<String, info_bean>();
+		if(_b_redirects==null) _b_redirects = new HashMap<String, info_redirect>();
+		if(_b_transformationoutput==null) _b_transformationoutput = new HashMap<String, info_transformation>();
 
 	}
 
@@ -2763,11 +2710,11 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 	}
 	public boolean builder_init(String _xml, boolean load_def_actions) throws bsControllerException, Exception{
 
-		v_info_actions=new Vector();
-		v_info_streams=new Vector();
-		v_info_beans=new Vector();
-		v_info_redirects=new Vector();
-		v_info_transformationoutput=new Vector();
+		v_info_actions=new Vector<info_action>();
+		v_info_streams=new Vector<info_stream>();
+		v_info_beans=new Vector<info_bean>();
+		v_info_redirects=new Vector<info_redirect>();
+		v_info_transformationoutput=new Vector<info_transformation>();
 
 		if(load_def_actions)
 			builder_load_def_actions();
@@ -2834,11 +2781,13 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 					builder_readFormElements(node.getChildNodes().item(i));
 			}
 			if(_b_actions!=null && _b_actions.get("*")!=null){
-				Object[] keysIn = _b_actions.keySet().toArray();
-				Object[] keysFor = (((info_action)_b_actions.get("*")).get_redirects()).keySet().toArray();
+				String[] keysIn = new String[_b_actions.size()];
+				keysIn = _b_actions.keySet().toArray(keysIn);
+				String[] keysFor = new String[_b_actions.get("*").get_redirects().size()];
+				keysFor = _b_actions.get("*").get_redirects().keySet().toArray(keysFor);
 				for(int i=0;i<keysIn.length;i++){
 					try{
-						HashMap current_redirects = ((info_action)_b_actions.get((String)keysIn[i])).get_redirects();
+						HashMap<String,info_redirect> current_redirects = ((info_action)_b_actions.get((String)keysIn[i])).get_redirects();
 						for(int j=0;j<keysFor.length;j++)
 							current_redirects.put(keysFor[j],((((info_action)_b_actions.get("*")).get_redirects())).get(keysFor[j]));
 					}catch(Exception e){
@@ -2891,19 +2840,19 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 
 	private void builder_loadFromAnnotations(){
 		
-		if(_b_actions==null) _b_actions = new HashMap();
-		if(_b_actioncalls==null) _b_actioncalls = new HashMap();
-		if(_b_restmapping==null) _b_restmapping = new HashMap();
+		if(_b_actions==null) _b_actions = new HashMap<String, info_action>();
+		if(_b_actioncalls==null) _b_actioncalls = new HashMap<String, info_call>();
+		if(_b_restmapping==null) _b_restmapping = new HashMap<String, Vector<info_rest>>();
 		if(_b_streams==null){
-			_b_streams = new HashMap();
+			_b_streams = new HashMap<String, info_stream>();
 			readDef = false;
 		}
 		if(_b_streams_apply_to_actions==null){
-			_b_streams_apply_to_actions = new HashMap();
-			_b_streams_apply_to_actions.put("*",new Vector());
+			_b_streams_apply_to_actions = new HashMap<String, Vector<info_stream>>();
+			_b_streams_apply_to_actions.put("*",new Vector<info_stream>());
 		}
-		if(_b_beans==null) _b_beans = new HashMap();
-		if(_b_redirects==null) _b_redirects = new HashMap();
+		if(_b_beans==null) _b_beans = new HashMap<String, info_bean>();
+		if(_b_redirects==null) _b_redirects = new HashMap<String, info_redirect>();
 
 		app_init ainit = bsController.getAppInit();
 		i_annotation_scanner l_annotated = null;
@@ -2960,10 +2909,10 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 		if(l_annotated.getInstance_servletcontext()!=null && !l_annotated.getInstance_servletcontext().equals(""))
 			instance_servletcontext = l_annotated.getInstance_servletcontext();
 		
-		Vector a_streams = new Vector(l_annotated.get_streams().values());
+		Vector<info_stream> a_streams = new Vector<info_stream>(l_annotated.get_streams().values());
 
 		int stream_order=0;
-		HashMap _streams_order = new HashMap();
+		HashMap<Integer,String> _streams_order = new HashMap<Integer, String>();
 		for(int k=0;k<a_streams.size();k++){
 			info_stream iStream = (info_stream)a_streams.get(k);
 			info_stream old_stream = (info_stream)_b_streams.get(iStream.getName());
@@ -2973,21 +2922,21 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 				info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
 				if(fromVinfo!=null)
 					v_info_streams.remove(fromVinfo);
-				Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+				Vector<String> app_action = new Vector<String>(old_stream.get_apply_to_action().keySet());
 				if(app_action.size()==0){
 					int l=0;
-					while(l< ((Vector)_b_streams_apply_to_actions.get("*")).size()){
-						info_stream current = (info_stream)((Vector)_b_streams_apply_to_actions.get("*")).get(l);
-						if(old_stream.getName().equals(current.getName())) ((Vector)_b_streams_apply_to_actions.get("*")).remove(l);
+					while(l< _b_streams_apply_to_actions.get("*").size()){
+						info_stream current = _b_streams_apply_to_actions.get("*").get(l);
+						if(old_stream.getName().equals(current.getName())) _b_streams_apply_to_actions.get("*").remove(l);
 						else l++;
 					}
 				}else{
 					for(int j=0;j<app_action.size();j++){
 						String key=(String)app_action.get(j);
 						int l=0;
-						while(l< ((Vector)_b_streams_apply_to_actions.get(key)).size()){
-							info_stream current = (info_stream)((Vector)_b_streams_apply_to_actions.get(key)).get(l);
-							if(old_stream.getName().equals(current.getName())) ((Vector)_b_streams_apply_to_actions.get(key)).remove(l);
+						while(l< _b_streams_apply_to_actions.get(key).size()){
+							info_stream current = _b_streams_apply_to_actions.get(key).get(l);
+							if(old_stream.getName().equals(current.getName())) _b_streams_apply_to_actions.get(key).remove(l);
 							else l++;
 						}
 					}
@@ -3006,30 +2955,30 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			}
 		}
 
-		Vector v_streams_order = new util_sort().sort(new  Vector(_streams_order.keySet()),"");
+		Vector<Integer> v_streams_order = Util_sort.sort(new  Vector<Integer>(_streams_order.keySet()),"");
 		for(int i=0;i<v_streams_order.size();i++){
 			info_stream current = (info_stream)_b_streams.get(_streams_order.get(v_streams_order.get(i)));
 			if(current!=null){
-				Vector app_action = new Vector(current.get_apply_to_action().keySet());
+				Vector<String> app_action = new Vector<String>(current.get_apply_to_action().keySet());
 				if(app_action.size()==0){
 					String key="*";
-					((Vector)_b_streams_apply_to_actions.get(key)).add(current);
+					_b_streams_apply_to_actions.get(key).add(current);
 				}else{
 					for(int j=0;j<app_action.size();j++){
 						String key=(String)app_action.get(j);
-						if(_b_streams_apply_to_actions.get(key)==null) _b_streams_apply_to_actions.put(key,new Vector());
-						((Vector)_b_streams_apply_to_actions.get(key)).add(current);
+						if(_b_streams_apply_to_actions.get(key)==null) _b_streams_apply_to_actions.put(key,new Vector<info_stream>());
+						_b_streams_apply_to_actions.get(key).add(current);
 					}
 				}
 			}
 		}
 		
 		//v_info_streams.addAll(new Vector(_streams.values()));
-		v_info_streams = (new Vector(_b_streams.values()));
-		v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+		v_info_streams = new Vector<info_stream>(_b_streams.values());
+		v_info_streams = Util_sort.sort(v_info_streams,"int_order");
 		
 		
-		Vector a_beans = new Vector(l_annotated.get_beans().values());
+		Vector<info_bean> a_beans = new Vector<info_bean>(l_annotated.get_beans().values());
 		int max_int_order = -1;
 		if(v_info_beans!=null && v_info_beans.size()>0){
 			try{
@@ -3038,37 +2987,37 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			}
 		}
 		if(max_int_order>-1)
-			a_beans = new util_sort().sort(a_beans,"int_order");
+			a_beans = Util_sort.sort(a_beans,"int_order");
 			
 		for(int i=0;i<a_beans.size();i++){
 			if(max_int_order>-1) ((info_bean)a_beans.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_b_beans.put(((info_bean)a_beans.get(i)).getName(), a_beans.get(i));
 		}
-		v_info_beans = (new Vector(_b_beans.values()));
-		v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+		v_info_beans = new Vector<info_bean>(_b_beans.values());
+		v_info_beans = Util_sort.sort(v_info_beans,"int_order");
 		
 		
 		
-		Vector a_redirects = new Vector(l_annotated.get_redirects().values());
+		Vector<info_redirect> a_redirects = new Vector<info_redirect>(l_annotated.get_redirects().values());
 		max_int_order = -1;
 		if(v_info_redirects!=null && v_info_redirects.size()>0){
 			try{
-				max_int_order = ((info_bean)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
+				max_int_order = ((info_entity)v_info_redirects.get(v_info_redirects.size()-1)).getInt_order();
 			}catch(Exception e){			
 			}
 		}
 		if(max_int_order>-1)
-			a_redirects = new util_sort().sort(a_redirects,"int_order");
+			a_redirects = Util_sort.sort(a_redirects,"int_order");
 			
 		for(int i=0;i<a_redirects.size();i++){
 			if(max_int_order>-1) ((info_redirect)a_redirects.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_b_redirects.put(((info_redirect)a_redirects.get(i)).getPath(), a_redirects.get(i));
 		}
-		v_info_redirects = (new Vector(_b_redirects.values()));
-		v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+		v_info_redirects = new Vector<info_redirect>(_b_redirects.values());
+		v_info_redirects = Util_sort.sort(v_info_redirects,"int_order");
 
 
-		Vector a_actions = new Vector(l_annotated.get_actions().values());
+		Vector<info_action> a_actions = new Vector<info_action>(l_annotated.get_actions().values());
 		max_int_order = -1;
 		if(v_info_actions!=null && v_info_actions.size()>0){
 			try{
@@ -3077,13 +3026,13 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			}
 		}
 		if(max_int_order>-1)
-			a_actions = new util_sort().sort(a_actions,"int_order");
+			a_actions = Util_sort.sort(a_actions,"int_order");
 			
 		for(int i=0;i<a_actions.size();i++){
 			if(max_int_order>-1) ((info_action)a_actions.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_b_actions.put(((info_action)a_actions.get(i)).getPath(), a_actions.get(i));
 			if(((info_action)a_actions.get(i)).get_calls().size()>0){
-				Vector a_actioncalls = new Vector(((info_action)a_actions.get(i)).get_calls().values());
+				Vector<info_call> a_actioncalls = new Vector<info_call>(((info_action)a_actions.get(i)).get_calls().values());
 				for(int j=0;j<a_actioncalls.size();j++){
 /*
 					_b_actioncalls.put(
@@ -3122,8 +3071,8 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 						for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
 							info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
 							if(_b_restmapping.get(iRest.getPath())==null)
-								_b_restmapping.put(iRest.getPath(), new Vector());
-							((Vector)_b_restmapping.get(iRest.getPath())).add(iRest);
+								_b_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+							_b_restmapping.get(iRest.getPath()).add(iRest);
 						}
 					}
 				}
@@ -3133,17 +3082,17 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 				for(int r=0;r<((info_action)a_actions.get(i)).getRestmapping().size();r++){
 					info_rest iRest = (info_rest)((info_action)a_actions.get(i)).getRestmapping().get(r);
 					if(_b_restmapping.get(iRest.getPath())==null)
-						_b_restmapping.put(iRest.getPath(), new Vector());
-					((Vector)_b_restmapping.get(iRest.getPath())).add(iRest);
+						_b_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+					_b_restmapping.get(iRest.getPath()).add(iRest);
 				}
 			}
 		
 		}
-		v_info_actions = (new Vector(_b_actions.values()));
-		v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+		v_info_actions = new Vector<info_action>(_b_actions.values());
+		v_info_actions = Util_sort.sort(v_info_actions,"int_order");
 		
 		
-		Vector a_transformations = new Vector(l_annotated.get_transformationoutput().values());
+		Vector<info_transformation> a_transformations = new Vector<info_transformation>(l_annotated.get_transformationoutput().values());
 		max_int_order = -1;
 		if(v_info_transformationoutput!=null && v_info_transformationoutput.size()>0){
 			try{
@@ -3152,14 +3101,14 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 			}
 		}
 		if(max_int_order>-1)
-			a_transformations = new util_sort().sort(a_transformations,"int_order");
+			a_transformations = Util_sort.sort(a_transformations,"int_order");
 			
 		for(int i=0;i<a_transformations.size();i++){
 			if(max_int_order>-1) ((info_transformation)a_transformations.get(i)).setOrder(String.valueOf(max_int_order+1+i));
 			_b_transformationoutput.put(((info_transformation)a_transformations.get(i)).getName(), a_transformations.get(i));
 		}
-		v_info_transformationoutput = (new Vector(_b_transformationoutput.values()));
-		v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+		v_info_transformationoutput = new Vector<info_transformation>(_b_transformationoutput.values());
+		v_info_transformationoutput = Util_sort.sort(v_info_transformationoutput,"int_order");
 		
 		
 		
@@ -3172,7 +3121,7 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 		}
 		if(node.getNodeName().equals("action-streams")){
 			int stream_order=0;
-			HashMap _b_streams_order = new HashMap();
+			HashMap<Integer,String> _b_streams_order = new HashMap<Integer, String>();
 			for(int k=0;k<node.getChildNodes().getLength();k++){
 				if(node.getChildNodes().item(k).getNodeType()== Node.ELEMENT_NODE){
 					info_stream iStream = new info_stream();
@@ -3185,21 +3134,21 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 							info_stream fromVinfo = (info_stream)util_find.findElementFromList(v_info_streams, old_stream.getName(), "name");
 							if(fromVinfo!=null)
 								v_info_streams.remove(fromVinfo);
-							Vector app_action = new Vector(old_stream.get_apply_to_action().keySet());
+							Vector<String> app_action = new Vector<String>(old_stream.get_apply_to_action().keySet());
 							if(app_action.size()==0){
 								int l=0;
-								while(l< ((Vector)_b_streams_apply_to_actions.get("*")).size()){
-									info_stream current = (info_stream)((Vector)_b_streams_apply_to_actions.get("*")).get(l);
-									if(old_stream.getName().equals(current.getName())) ((Vector)_b_streams_apply_to_actions.get("*")).remove(l);
+								while(l< _b_streams_apply_to_actions.get("*").size()){
+									info_stream current = _b_streams_apply_to_actions.get("*").get(l);
+									if(old_stream.getName().equals(current.getName())) _b_streams_apply_to_actions.get("*").remove(l);
 									else l++;
 								}
 							}else{
 								for(int j=0;j<app_action.size();j++){
 									String key=(String)app_action.get(j);
 									int l=0;
-									while(l< ((Vector)_b_streams_apply_to_actions.get(key)).size()){
-										info_stream current = (info_stream)((Vector)_b_streams_apply_to_actions.get(key)).get(l);
-										if(old_stream.getName().equals(current.getName())) ((Vector)_b_streams_apply_to_actions.get(key)).remove(l);
+									while(l< _b_streams_apply_to_actions.get(key).size()){
+										info_stream current = _b_streams_apply_to_actions.get(key).get(l);
+										if(old_stream.getName().equals(current.getName())) _b_streams_apply_to_actions.get(key).remove(l);
 										else l++;
 									}
 
@@ -3221,27 +3170,27 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 				}
 			}
 
-			Vector v_b_streams_order = new util_sort().sort(new  Vector(_b_streams_order.keySet()),"");
+			Vector<Integer> v_b_streams_order = Util_sort.sort(new  Vector<Integer>(_b_streams_order.keySet()),"");
 			for(int i=0;i<v_b_streams_order.size();i++){
 				info_stream current = (info_stream)_b_streams.get(_b_streams_order.get(v_b_streams_order.get(i)));
 				if(current!=null){
-					Vector app_action = new Vector(current.get_apply_to_action().keySet());
+					Vector<String> app_action = new Vector<String>(current.get_apply_to_action().keySet());
 					if(app_action.size()==0){
 						String key="*";
-						((Vector)_b_streams_apply_to_actions.get(key)).add(current);
+						_b_streams_apply_to_actions.get(key).add(current);
 					}else{
 						for(int j=0;j<app_action.size();j++){
 							String key=(String)app_action.get(j);
-							if(_b_streams_apply_to_actions.get(key)==null) _b_streams_apply_to_actions.put(key,new Vector());
-							((Vector)_b_streams_apply_to_actions.get(key)).add(current);
+							if(_b_streams_apply_to_actions.get(key)==null) _b_streams_apply_to_actions.put(key,new Vector<info_stream>());
+							_b_streams_apply_to_actions.get(key).add(current);
 						}
 					}
 				}
 			}
 
 //			v_info_streams.addAll(new Vector(_b_streams.values()));
-			v_info_streams=(new Vector(_b_streams.values()));
-			v_info_streams = new util_sort().sort(v_info_streams,"int_order");
+			v_info_streams=new Vector<info_stream>(_b_streams.values());
+			v_info_streams = Util_sort.sort(v_info_streams,"int_order");
 
 
 		}
@@ -3257,8 +3206,8 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 				}
 			}
 //			v_info_beans.addAll(new Vector(_b_beans.values()));
-			v_info_beans = (new Vector(_b_beans.values()));
-			v_info_beans = new util_sort().sort(v_info_beans,"int_order");
+			v_info_beans = new Vector<info_bean>(_b_beans.values());
+			v_info_beans = Util_sort.sort(v_info_beans,"int_order");
 		}
 		if(node.getNodeName().equals("form-redirects")){
 			int order=0;
@@ -3272,8 +3221,8 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 				}
 			}
 //			v_info_redirects.addAll(new Vector(_b_redirects.values()));
-			v_info_redirects = (new Vector(_b_redirects.values()));
-			v_info_redirects = new util_sort().sort(v_info_redirects,"int_order");
+			v_info_redirects = new Vector<info_redirect>(_b_redirects.values());
+			v_info_redirects = Util_sort.sort(v_info_redirects,"int_order");
 
 		}
 
@@ -3291,8 +3240,8 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 				}
 			}
 //			v_info_transformationoutput.addAll(new Vector(_b_transformationoutput.values()));
-			v_info_transformationoutput = (new Vector(_b_transformationoutput.values()));
-			v_info_transformationoutput = new util_sort().sort(v_info_transformationoutput,"int_order");
+			v_info_transformationoutput = new Vector<info_transformation>(_b_transformationoutput.values());
+			v_info_transformationoutput = Util_sort.sort(v_info_transformationoutput,"int_order");
 
 		}
 
@@ -3321,19 +3270,8 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 					if(iAction!=null){
 						_b_actions.put(iAction.getPath(),iAction);
 						if(iAction.get_calls().size()>0){
-							Vector a_actioncalls = new Vector(iAction.get_calls().values());
+							Vector<info_call> a_actioncalls = new Vector<info_call>(iAction.get_calls().values());
 							for(int j=0;j<a_actioncalls.size();j++){
-/*								
-								_b_actioncalls.put(
-										((info_call)a_actioncalls.get(j)).getOwner()+
-										((bsController.getAppInit().get_actioncall_separator()!=null)?bsController.getAppInit().get_actioncall_separator():"")  +
-										((info_call)a_actioncalls.get(j)).getName(),
-										a_actioncalls.get(j));
-								if(((info_call)a_actioncalls.get(j)).getPath()!=null && !((info_call)a_actioncalls.get(j)).getPath().equals(""))
-									_b_actioncalls.put(
-											((info_call)a_actioncalls.get(j)).getPath(),
-											a_actioncalls.get(j));
-*/								
 								if(((info_call)a_actioncalls.get(j)).getExposed()==null || ((info_call)a_actioncalls.get(j)).getExposed().size()==0){
 									_b_actioncalls.put(
 											((info_call)a_actioncalls.get(j)).getOwner()+
@@ -3363,8 +3301,8 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 									for(int r=0;r<((info_call)a_actioncalls.get(j)).getRestmapping().size();r++){
 										info_rest iRest = (info_rest)((info_call)a_actioncalls.get(j)).getRestmapping().get(r);
 										if(_b_restmapping.get(iRest.getPath())==null)
-											_b_restmapping.put(iRest.getPath(), new Vector());
-										((Vector)_b_restmapping.get(iRest.getPath())).add(iRest);
+											_b_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+										_b_restmapping.get(iRest.getPath()).add(iRest);
 									}
 								}
 							}
@@ -3374,53 +3312,53 @@ class load_actions_builder  implements  java.io.Serializable, Cloneable {
 							for(int r=0;r<iAction.getRestmapping().size();r++){
 								info_rest iRest = (info_rest)iAction.getRestmapping().get(r);
 								if(_b_restmapping.get(iRest.getPath())==null)
-									_b_restmapping.put(iRest.getPath(), new Vector());
-								((Vector)_b_restmapping.get(iRest.getPath())).add(iRest);
+									_b_restmapping.put(iRest.getPath(), new Vector<info_rest>());
+								_b_restmapping.get(iRest.getPath()).add(iRest);
 							}
 						}
 					}
 				}
 			}
 //			v_info_actions.addAll(new Vector(_b_actions.values()));
-			v_info_actions = (new Vector(_b_actions.values()));
-			v_info_actions = new util_sort().sort(v_info_actions,"int_order");
+			v_info_actions = new Vector<info_action>(_b_actions.values());
+			v_info_actions = Util_sort.sort(v_info_actions,"int_order");
 
 		}
 	}
 
-	public HashMap get_b_beans() {
+	public HashMap<String,info_bean> get_b_beans() {
 		return _b_beans;
 	}
 
-	public void set_b_beans(HashMap bBeans) {
+	public void set_b_beans(HashMap<String,info_bean> bBeans) {
 		_b_beans = bBeans;
 	}
 
-	public HashMap get_b_actions() {
+	public HashMap<String,info_action> get_b_actions() {
 		return _b_actions;
 	}
 
-	public HashMap get_b_streams() {
+	public HashMap<String,info_stream> get_b_streams() {
 		return _b_streams;
 	}
 
-	public HashMap get_b_streams_apply_to_actions() {
+	public HashMap<String,Vector<info_stream>> get_b_streams_apply_to_actions() {
 		return _b_streams_apply_to_actions;
 	}
 
-	public HashMap get_b_redirects() {
+	public HashMap<String,info_redirect> get_b_redirects() {
 		return _b_redirects;
 	}
 
-	public HashMap get_b_transformationoutput() {
+	public HashMap<String,info_transformation> get_b_transformationoutput() {
 		return _b_transformationoutput;
 	}
 
-	public HashMap get_b_actioncalls() {
+	public HashMap<String,info_call> get_b_actioncalls() {
 		return _b_actioncalls;
 	}
 	
-	public HashMap get_b_restmapping() {
+	public HashMap<String,Vector<info_rest>> get_b_restmapping() {
 		return _b_restmapping;
 	}	
 }

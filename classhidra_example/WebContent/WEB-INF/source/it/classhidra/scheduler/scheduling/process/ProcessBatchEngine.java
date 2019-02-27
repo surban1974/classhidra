@@ -34,12 +34,12 @@ public class ProcessBatchEngine implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private boolean scan=false;
 	private Timestamp nextScanTime;
-	private ArrayList container_threadevents;
+	private ArrayList<schedulingThreadEvent> container_threadevents;
 
 
 	public 	ProcessBatchEngine(){
 		super();
-		container_threadevents=new ArrayList();
+		container_threadevents=new ArrayList<schedulingThreadEvent>();
 	}
 
 
@@ -188,7 +188,7 @@ public class ProcessBatchEngine implements Serializable {
 			if(remove){
 				new bsException("Scheduler: BatchEngine:removing "+el.getCd_btch(), iStub.log_INFO);
 				i_4Batch m4b = binit.get4BatchManager();
-				HashMap form = new HashMap();
+				HashMap<String,Object> form = new HashMap<String, Object>();
 		
 	
 				form.put("cd_ist",el.getCd_ist());
@@ -221,7 +221,7 @@ public class ProcessBatchEngine implements Serializable {
 		batch_init binit = DriverScheduling.getConfiguration();
 		
 		i_4Batch m4b = binit.get4BatchManager();
-		HashMap form = new HashMap();		
+		HashMap<String,Object> form = new HashMap<String, Object>();		
 		try{
 			new bsException("Scheduler: BatchEngine:launchSingle "+el.getCd_btch(), iStub.log_INFO);
 			form.put("cd_ist",el.getCd_ist());
@@ -253,21 +253,24 @@ public class ProcessBatchEngine implements Serializable {
 		long delta = nextScanTimeL - currentTimeL;
 
 
-		HashMap h_batchs=new HashMap();
+		HashMap<String,db_batch> h_batchs=new HashMap<String, db_batch>();
 
-		List elementsAll = new ArrayList();
+		List<db_batch> elementsAll = new ArrayList<db_batch>();
 
 		i_4Batch m4b = binit.get4BatchManager();
-		HashMap form = new HashMap();
+		HashMap<String,Object> form = new HashMap<String, Object>();
 
 		try{
-			elementsAll = (List)m4b.operation(i_integration.o_FINDFORMLIST, form);
+			@SuppressWarnings("unchecked")
+			final List<db_batch> operation = 
+					 (List<db_batch>)m4b.operation(i_integration.o_FINDFORMLIST,form);
+			elementsAll = operation;
 		}catch(Exception e){
 			e.toString();
 		}
 
 
-		List elements = new ArrayList();
+		List<db_batch> elements = new ArrayList<db_batch>();
 		for(int i=0;i<elementsAll.size();i++){
 			db_batch el = (db_batch)elementsAll.get(i);
 			if(el.getState().shortValue()==i_batch.STATE_SCHEDULED){
@@ -290,7 +293,7 @@ public class ProcessBatchEngine implements Serializable {
 		}
 
 
-		List batch_updated=new ArrayList();
+		List<db_batch> batch_updated=new ArrayList<db_batch>();
 
 		for(int i=0;i<elements.size();i++){
 			db_batch el = (db_batch)elements.get(i);
@@ -325,7 +328,7 @@ public class ProcessBatchEngine implements Serializable {
 		}
 		
 	
-		form = new HashMap();
+		form = new HashMap<String,Object>();
 		form.put("list",batch_updated);
 
 		try{
@@ -336,9 +339,9 @@ public class ProcessBatchEngine implements Serializable {
 
 		
 		if(h_batchs!=null && h_batchs.size()>0){
-			Iterator it = h_batchs.entrySet().iterator();
+			Iterator<Map.Entry<String, db_batch>> it = h_batchs.entrySet().iterator();
 		    while (it.hasNext()) {
-				db_batch el = (db_batch)((Map.Entry)it.next()).getValue();
+				db_batch el = (db_batch)((Map.Entry<String, db_batch>)it.next()).getValue();
 				schedulingThreadEvent t_ev_old = util_batch.findFromPbe(this, el.getCd_btch());
 				if(t_ev_old!=null){
 					t_ev_old.setStateThread(2);
@@ -361,10 +364,10 @@ public class ProcessBatchEngine implements Serializable {
 		}
 		long delta = nextScanTimeL - currentTimeL;
 
-		HashMap h_batchs=new HashMap();
+		HashMap<String, db_batch> h_batchs=new HashMap<String, db_batch>();
 		
 		i_4Batch m4b = binit.get4BatchManager();
-		HashMap form = new HashMap();
+		HashMap<String,Object> form = new HashMap<String, Object>();
 
 		try{
 			form.put("cd_ist",el.getCd_ist());
@@ -406,7 +409,7 @@ public class ProcessBatchEngine implements Serializable {
 		
 
 
-		List batch_updated=new ArrayList();
+		List<db_batch> batch_updated=new ArrayList<db_batch>();
 
 		if(el_go!=null){
 			boolean updated=false;
@@ -447,9 +450,9 @@ public class ProcessBatchEngine implements Serializable {
 
 		
 		if(h_batchs!=null && h_batchs.size()>0){
-			Iterator it = h_batchs.entrySet().iterator();
+			Iterator<Map.Entry<String,db_batch>> it = h_batchs.entrySet().iterator();
 		    while (it.hasNext()) {
-				db_batch el_upd = (db_batch)((Map.Entry)it.next()).getValue();
+				db_batch el_upd = (db_batch)((Map.Entry<String,db_batch>)it.next()).getValue();
 				schedulingThreadEvent t_ev_old = util_batch.findFromPbe(this, el_upd.getCd_btch());
 				if(t_ev_old!=null){
 					t_ev_old.setStateThread(2);
@@ -473,10 +476,10 @@ public class ProcessBatchEngine implements Serializable {
 		}
 		long delta = nextScanTimeL - currentTimeL;
 
-		HashMap h_batchs=new HashMap();
+		HashMap<String,db_batch> h_batchs=new HashMap<String, db_batch>();
 		
 		i_4Batch m4b = binit.get4BatchManager();
-		HashMap form = new HashMap();
+		HashMap<String,Object> form = new HashMap<String, Object>();
 
 		try{
 			form.put("cd_ist",el.getCd_ist());
@@ -518,7 +521,7 @@ public class ProcessBatchEngine implements Serializable {
 		
 
 
-		List batch_updated=new ArrayList();
+		List<db_batch> batch_updated=new ArrayList<db_batch>();
 
 		if(el_go!=null){
 			boolean updated=false;
@@ -559,9 +562,9 @@ public class ProcessBatchEngine implements Serializable {
 
 		
 		if(h_batchs!=null && h_batchs.size()>0){
-			Iterator it = h_batchs.entrySet().iterator();
+			Iterator<Map.Entry<String,db_batch>> it = h_batchs.entrySet().iterator();
 		    while (it.hasNext()) {
-				db_batch el_upd = (db_batch)((Map.Entry)it.next()).getValue();
+				db_batch el_upd = (db_batch)((Map.Entry<String,db_batch>)it.next()).getValue();
 				schedulingThreadEvent t_ev_old = util_batch.findFromPbe(this, el_upd.getCd_btch());
 				if(t_ev_old!=null){
 					t_ev_old.setStateThread(2);
@@ -582,7 +585,7 @@ public class ProcessBatchEngine implements Serializable {
 	}
 
 
-	public ArrayList getContainer_threadevents() {
+	public ArrayList<schedulingThreadEvent> getContainer_threadevents() {
 		return container_threadevents;
 	}
 	
@@ -625,6 +628,11 @@ public class ProcessBatchEngine implements Serializable {
 
 		}	
 
+	}
+
+
+	public boolean isScan() {
+		return scan;
 	}
 
 
