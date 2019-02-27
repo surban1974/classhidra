@@ -3,11 +3,12 @@
   <groupId>com.github.surban1974.classhidra</groupId>
   <artifactId>classhidra-jboss7-vfs-7</artifactId>
   <versioning>
-    <release>1.5.5</release>
+    <release>1.5.6</release>
     <versions>
       <version>1.5.4</version>
       <version>1.5.5</version>
+      <version>1.5.6</version>
     </versions>
-    <lastUpdated>20190213223202</lastUpdated>
+    <lastUpdated>20190227173905</lastUpdated>
   </versioning>
 </metadata>
