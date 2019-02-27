@@ -142,12 +142,14 @@ public class util_classes {
 		}
 		
 		if(resourceMETA!=null ){
+			JarFile jar = null;
 			try{
 			
 				File directory = convertUrl2File(resourceMETA);
+				
 				if(directory!=null && resourceMETA.toURI().getScheme().equalsIgnoreCase("jar")){
 					String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
-				    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+				    jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
 				    Enumeration<JarEntry> entries = jar.entries();
 				    while(entries.hasMoreElements()) {
 				    	try{
@@ -174,10 +176,18 @@ public class util_classes {
 				    		
 				    	}
 				   }
+				    jar.close();
 				}
 			}catch (Exception e) {
 
-			}	 							
+			}finally {
+				try {
+					if(jar!=null)
+						jar.close();
+				}catch(Exception ex) {
+					
+				}
+			}
 
 		}
 		
@@ -243,10 +253,11 @@ public class util_classes {
 						res.add(files[i].getName());
 					}
 				} else {
+					JarFile jar = null;
 					try{
 						if(directory!=null && resource.toURI().getScheme().equalsIgnoreCase("jar")){
 							String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
-						    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+						    jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
 						    Enumeration<JarEntry> entries = jar.entries();
 						    while(entries.hasMoreElements()) {
 						    	try{
@@ -278,7 +289,15 @@ public class util_classes {
 						
 					}catch(Exception ex){
 						throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
+					}finally {
+						try {
+							if(jar!=null)
+								jar.close();
+						}catch(Exception ex) {
+							
+						}
 					}
+
 					
 				}
 				
@@ -286,12 +305,13 @@ public class util_classes {
 		} 
 		
 		if(resourceMETA!=null ){
+			JarFile jar = null;
 			try{
 			
 				File directory = convertUrl2File(resourceMETA);
 				if(directory!=null && resourceMETA.toURI().getScheme().equalsIgnoreCase("jar")){
 					String jarPath = directory.getPath().substring(5, directory.getPath().indexOf("!")); //strip out only the JAR file
-				    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+				    jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
 				    Enumeration<JarEntry> entries = jar.entries();
 				    while(entries.hasMoreElements()) {
 				    	try{
@@ -319,7 +339,15 @@ public class util_classes {
 				}
 			}catch (Exception e) {
 
+			}finally {
+				try {
+					if(jar!=null)
+						jar.close();
+				}catch(Exception ex) {
+					
+				}
 			}
+
 			 							
 
 		}

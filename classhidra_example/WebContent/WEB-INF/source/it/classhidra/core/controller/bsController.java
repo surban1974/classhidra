@@ -145,9 +145,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	static class LoaderConfigThreadProcessS extends Thread {
 	    private boolean threadDone = false;
-	    private Map<String,Object> othersProperties = null;
+	    private Map<String,Properties> othersProperties = null;
 	    private ServletContext servletContext = null;
-	    public LoaderConfigThreadProcessS(Map<String,Object> othersProperties, ServletContext servletContext) {
+	    public LoaderConfigThreadProcessS(Map<String,Properties> othersProperties, ServletContext servletContext) {
 	        super();
 	        this.othersProperties = othersProperties;
 	        this.servletContext = servletContext;
@@ -277,11 +277,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 		
 	}
 	
-	public static void loadOnInitS(Map<String,Object> othersProperties){
+	public static void loadOnInitS(Map<String,Properties> othersProperties){
 		loadOnInitS(othersProperties, null);
 	}
 	
-	public static void loadOnInitS(Map<String,Object> othersProperties,ServletContext servletContext){
+	public static void loadOnInitS(Map<String,Properties> othersProperties,ServletContext servletContext){
 		logInit = new log_init();
 		if(othersProperties!=null && othersProperties.get(log_init.id_property)!=null && othersProperties.get(log_init.id_property) instanceof Properties)
 			logInit.init((Properties)othersProperties.get(log_init.id_property));
@@ -1521,9 +1521,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map})
+											util_reflect.getValue(action_instance, iActionMethod, new Object[]{context.getRequest(),context.getResponse()})
 										,
 										iActionMethod, action_instance.get_infoaction(),
 										context);
@@ -6394,11 +6394,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return isInitialized(null,null,null);
 	}
 	
-	public static boolean isInitialized(Properties appInitProperty, Map<String,Object> othersProperties) {
+	public static boolean isInitialized(Properties appInitProperty, Map<String,Properties> othersProperties) {
 		return isInitialized(appInitProperty, othersProperties, null);
 	}
 	
-	public static boolean isInitialized(Properties appInitProperty, Map<String,Object> othersProperties, ServletContext servletContext) {
+	public static boolean isInitialized(Properties appInitProperty, Map<String,Properties> othersProperties, ServletContext servletContext) {
 		if(!initialized){
 			try{
 				initialized = true;
