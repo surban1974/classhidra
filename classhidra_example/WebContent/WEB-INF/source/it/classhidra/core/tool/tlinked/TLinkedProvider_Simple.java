@@ -66,7 +66,7 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 				        						boolean isAccessible = field.isAccessible();
 							        			if(!isAccessible)
 							        				field.setAccessible(true);			        			
-							        			field.set(instance, bean);			        			
+							        			field.set(instance, bean.asBean());			        			
 							        			if(!isAccessible)
 							        				field.setAccessible(false);	
 				        					}

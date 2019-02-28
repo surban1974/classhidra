@@ -316,16 +316,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static void loadActionsOnStartup(ServletContext servletContext) {
 		if(getAction_config().getV_info_actions()!=null && getAction_config().getV_info_actions().size()>0) {
 			try {
-			Vector<info_action> info_actions = Util_sort.sort(getAction_config().getV_info_actions(),"loadOnStartup");
-			for(info_action info : info_actions) {
-				if(info.getMemoryInServletContext()!=null && info.getMemoryInServletContext().equalsIgnoreCase("true") && info.getLoadOnStartup()>-1) {
-					try {
-						loadActionOnStartup(info,servletContext);
-					}catch(Throwable e) {
-						new bsException("Load action on startup ["+info.getPath()+"]: "+e.toString(), iStub.log_WARN);
+				Vector<info_action> info_actions = Util_sort.sort(getAction_config().getV_info_actions(),"loadOnStartup");
+				for(info_action info : info_actions) {
+					if(info.getMemoryInServletContext()!=null && info.getMemoryInServletContext().equalsIgnoreCase("true") && info.getLoadOnStartup()>-1) {
+						try {
+							loadActionOnStartup(info,servletContext);
+						}catch(Throwable e) {
+							new bsException("Load action on startup ["+info.getPath()+"]: "+e.toString(), iStub.log_WARN);
+						}
 					}
 				}
-			}
 			}catch(Exception e) {
 				new bsException("Load actions on startup: "+e.toString(), iStub.log_WARN);
 			}
@@ -5782,27 +5782,27 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}catch(Exception e){
 				}
 			}
-			if(wrapper==null && getEjbDefaultProvider()!=null){
-				try{
-				
-					wrapper = (i_ProviderWrapper)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
-					if(wrapper!=null){
-						try{
-							wrapper.getInstance();
-						}catch(Exception e){
-							new bsControllerException(e, iStub.log_ERROR);
-							wrapper=null;
-							request.getSession().removeAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
-						}
-					}
-					if(wrapper==null){
-						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_servletcontext(), (request==null)?null:request.getSession().getServletContext());
-						if(wrapper!=null && request!=null && wrapper.getInfo_context()!=null && wrapper.getInfo_context().isStateful())
-							request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper", wrapper);
-					}
-				}catch(Exception e){
-				}
-			}
+//			if(wrapper==null && getEjbDefaultProvider()!=null){
+//				try{
+//				
+//					wrapper = (i_ProviderWrapper)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
+//					if(wrapper!=null){
+//						try{
+//							wrapper.getInstance();
+//						}catch(Exception e){
+//							new bsControllerException(e, iStub.log_ERROR);
+//							wrapper=null;
+//							request.getSession().removeAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper");
+//						}
+//					}
+//					if(wrapper==null){
+//						wrapper = (i_ProviderWrapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  bean_id.replace("$", "ejb_"), getAction_config().getInstance_servletcontext(), (request==null)?null:request.getSession().getServletContext());
+//						if(wrapper!=null && request!=null && wrapper.getInfo_context()!=null && wrapper.getInfo_context().isStateful())
+//							request.getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION+"$wrapper", wrapper);
+//					}
+//				}catch(Exception e){
+//				}
+//			}
 		
 			if(wrapper!=null) {
 				@SuppressWarnings("unchecked")
