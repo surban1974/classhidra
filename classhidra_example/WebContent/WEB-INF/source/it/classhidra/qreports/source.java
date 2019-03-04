@@ -74,8 +74,7 @@ public class source extends elementBase{
 	        }
 		}
 
-		for(int i=0;i<list.size();i++){
-			source_item si = (source_item)list.get(i);
+		for(source_item si:list){
 			if(si.getLanguagetranslationtable()!=null){
 				si.getLanguagetranslationtable().load4view(st,h_parameters);
 				if(si.getLanguagetranslationtable().getDescription_view()!=null && !si.getLanguagetranslationtable().getDescription_view().equals(""))

@@ -171,7 +171,7 @@ public class ProcessBatchEvent implements Serializable {
 			Date rec = log.getTm_start();
 //System.out.println(rec);
 			String output = "";
-			SortedMap<String,String> h_common_area = new TreeMap<String, String>();
+			SortedMap<String,Object> h_common_area = new TreeMap<String, Object>();
 			try{
 				
 				if(batch.getCls_btch()!=null && !batch.getCls_btch().equals("")){
@@ -239,8 +239,7 @@ public class ProcessBatchEvent implements Serializable {
 					}
 
 					batch.setSt_exec(Integer.valueOf(i_batch.STATE_OK));
-					for(int i=0;i<child_batch.size();i++){
-							db_batch current = (db_batch)child_batch.get(i);
+					for(db_batch current:child_batch){
 							String[] current_eb = executeBatch(current.getCd_ist(), current.getCd_btch(), common_area,false,true,parent_recalc);
 							common_area = current_eb[0];
 							short current_state = Short.parseShort(current_eb[1]);
@@ -381,7 +380,7 @@ public class ProcessBatchEvent implements Serializable {
 			
 
 			String output = "";
-			SortedMap<String,String> h_common_area = new TreeMap<String, String>();
+			SortedMap<String,Object> h_common_area = new TreeMap<String, Object>();
 			try{
 				
 				if(worker==null){

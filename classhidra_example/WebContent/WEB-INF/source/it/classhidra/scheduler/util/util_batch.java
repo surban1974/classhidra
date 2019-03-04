@@ -320,8 +320,7 @@ public class util_batch {
 	
 	public static schedulingThreadEvent findFromPbe(ProcessBatchEngine pbe, String cd_code){
 		if(pbe!=null){
-			for(int i=0;i<pbe.getContainer_threadevents().size();i++){
-				schedulingThreadEvent current = (schedulingThreadEvent)pbe.getContainer_threadevents().get(i);
+			for(schedulingThreadEvent current:pbe.getContainer_threadevents()){
 				if(current!=null && current.getBatch()!=null && current.getBatch().getCd_btch().equalsIgnoreCase(cd_code))
 					return current;
 			}

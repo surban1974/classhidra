@@ -54,8 +54,7 @@ public class sqlTransformer implements Serializable{
 		
 		List<MaskFunction> functions = parsing(input);
 
-		for(int i=0;i<functions.size();i++){
-			MaskFunction func = (MaskFunction)functions.get(i);
+		for(MaskFunction func:functions){
 			switch (func.getType()){
 				case 0: result+=func.getArgument();break;
 				case 1: {

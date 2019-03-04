@@ -28,8 +28,8 @@ public interface i_batch extends listener_batch{
 	public String getDescription();
 	public int getState();
 	public String getExit();
-	public HashMap<String,String> getInput();
-	public HashMap<String,String> getOutput();
+	public HashMap<String,Object> getInput();
+	public HashMap<String,Object> getOutput();
 	public boolean isWriteLog();
 	public void setDb(db_batch db);
 }

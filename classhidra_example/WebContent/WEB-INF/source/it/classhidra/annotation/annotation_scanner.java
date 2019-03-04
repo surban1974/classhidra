@@ -190,8 +190,7 @@ public class annotation_scanner implements i_annotation_scanner {
 
 							if(vfsList!=null){
 								if (vfsList.size()>1) {
-									for(int i=1;i<vfsList.size();i++){
-										String package_path = (String)vfsList.get(i);
+									for(String package_path:vfsList){
 										@SuppressWarnings("unchecked")
 										List<String> vfsChildren = (List<String>)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{String.class}, new Object[]{package_path});
 										
@@ -365,8 +364,7 @@ public class annotation_scanner implements i_annotation_scanner {
 			array = new ArrayList<File>();
 		}
 
-		for(int i=0;i<array.size();i++){
-			File current =  (File)array.get(i);
+		for(File current:array){
 			String package_path = "";
 			if(directory!=null)
 				package_path = current.getAbsolutePath().replace(directory.getAbsolutePath(), "").replace("/", ".").replace("\\", ".");
@@ -386,8 +384,7 @@ public class annotation_scanner implements i_annotation_scanner {
 
 	private void checkBranchVFS(List<String> vfsChildren){
 
-		for(int i=1;i<vfsChildren.size();i++){
-			String package_path = (String)vfsChildren.get(i);
+		for(String package_path:vfsChildren){
 			@SuppressWarnings("unchecked")
 			List<String> vfsSubChildren = (List<String>)util_reflect.execStaticMethod(util_classes.getVFSPluginPath(), "getChildrenPathName", new Class[]{String.class}, new Object[]{package_path});
 
@@ -521,18 +518,17 @@ public class annotation_scanner implements i_annotation_scanner {
 					List<Method> callMethods = new ArrayList<Method>();
 					List<Method> actionMethods = new ArrayList<Method>();
 					Method[] mtds = classType.getMethods();
-					for(int i=0;i<mtds.length;i++){
-						Method current = mtds[i];
+					for(Method current:mtds){
 						if(current.getAnnotation(Action.class)!=null)
-							actionMethods.add( mtds[i]);
+							actionMethods.add(current);
 						if(current.getAnnotation(ActionCall.class)!=null)
-							callMethods.add( mtds[i]);
+							callMethods.add( current);
 					}
 					for(int i=0;i<actionMethods.size();i++)
-						checkActionAnnotations(classType, class_path, ((Method)actionMethods.get(i)).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
+						checkActionAnnotations(classType, class_path, actionMethods.get(i).getAnnotation(Action.class), subAnnotations, (Method)actionMethods.get(i));
 					
 					for(int i=0;i<callMethods.size();i++)
-						checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), null, (Method)callMethods.get(i), i);
+						checkActionCallAnnotation(((Method)callMethods.get(i)).getAnnotation(ActionCall.class), null, callMethods.get(i), i);
 				
 			}
 			
@@ -562,8 +558,7 @@ public class annotation_scanner implements i_annotation_scanner {
 
 			if(bsController.getAuth_config()!=null){
 				if(v_permissions.size()>0){
-					for(int i=0;i<v_permissions.size();i++){
-						info_entity iEntity = (info_entity)v_permissions.get(i);
+					for(info_entity iEntity:v_permissions){
 						if(iEntity.getAccess_allowed()!=null && iEntity.getAccess_allowed().size()>0){
 							Iterator<Entry<String, info_relation>> it = iEntity.getAccess_allowed().entrySet().iterator();
 						    while (it.hasNext()) {

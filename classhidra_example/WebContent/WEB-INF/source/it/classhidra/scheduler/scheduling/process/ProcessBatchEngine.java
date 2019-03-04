@@ -271,8 +271,7 @@ public class ProcessBatchEngine implements Serializable {
 
 
 		List<db_batch> elements = new ArrayList<db_batch>();
-		for(int i=0;i<elementsAll.size();i++){
-			db_batch el = (db_batch)elementsAll.get(i);
+		for(db_batch el:elementsAll){
 			if(el.getState().shortValue()==i_batch.STATE_SCHEDULED){
 				if(DriverScheduling.getThProcess()!=null){
 					schedulingThreadEvent ste = getFromThreadEvents(el);
@@ -295,8 +294,7 @@ public class ProcessBatchEngine implements Serializable {
 
 		List<db_batch> batch_updated=new ArrayList<db_batch>();
 
-		for(int i=0;i<elements.size();i++){
-			db_batch el = (db_batch)elements.get(i);
+		for(db_batch el:elements){
 			boolean updated=false;
 			try{
 				Date rec = new java.util.Date();
@@ -591,8 +589,7 @@ public class ProcessBatchEngine implements Serializable {
 	
 	private schedulingThreadEvent getFromThreadEvents(db_batch el){
 		if(el!=null && DriverScheduling.getThProcess()!=null){
-			for(int i=0;i<DriverScheduling.getThProcess().getPbe().getContainer_threadevents().size();i++){
-				schedulingThreadEvent ste = (schedulingThreadEvent)DriverScheduling.getThProcess().getPbe().getContainer_threadevents().get(i);
+			for(schedulingThreadEvent ste:DriverScheduling.getThProcess().getPbe().getContainer_threadevents()){
 				if(ste.getBatch()!=null && ste.getBatch().getCd_btch().equals(el.getCd_btch())) return ste;
 			}
 		}

@@ -5613,7 +5613,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				final Object fromWrapper = wrapper.getInstance();
 				if(fromWrapper!=null && fromWrapper instanceof Map<?,?>) {
 					@SuppressWarnings("unchecked")
-					final Map<String,i_bean> fromWrapper2 = (Map<String,i_bean>)fromWrapper;
+					Map<String,i_bean> fromWrapper2 = (Map<String,i_bean>)fromWrapper;
 					return fromWrapper2;
 				}
 
@@ -5627,7 +5627,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		if(instance==null) {
 			@SuppressWarnings("unchecked")
-			final Map<String,i_bean> attribute = 
+			Map<String,i_bean> attribute = 
 					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 			instance = attribute; 		
 		}if(instance==null){
@@ -5643,7 +5643,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			if(instance==null) {
 				@SuppressWarnings("unchecked")
-				final Map<String,i_bean> attribute = 
+				Map<String,i_bean> attribute = 
 						 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 				instance = attribute; 		
 			}
@@ -5672,7 +5672,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		if(instance==null) {
 			@SuppressWarnings("unchecked")
-			final Map<String,i_bean> attribute = 
+			Map<String,i_bean> attribute = 
 					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 			instance = attribute; 		
 		}if(instance==null){
@@ -5687,7 +5687,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		if(instance==null) {
 			@SuppressWarnings("unchecked")
-			final Map<String,i_bean> attribute = 
+			Map<String,i_bean> attribute = 
 					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 			instance = attribute; 		
 		}
@@ -5707,7 +5707,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		if(instance==null) {
 			@SuppressWarnings("unchecked")
-			final Map<String,i_bean> attribute = 
+			Map<String,i_bean> attribute = 
 					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 			instance = attribute; 		
 		}
@@ -5730,7 +5730,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}
 		if(instance==null) {
 			@SuppressWarnings("unchecked")
-			final Map<String,i_bean> attribute = 
+			Map<String,i_bean> attribute = 
 					 (Map<String,i_bean>)request.getSession().getAttribute(bsConstants.CONST_BEAN_$ONLYINSSESSION);
 			instance = attribute; 		
 		}
@@ -5806,7 +5806,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		
 			if(wrapper!=null) {
 				@SuppressWarnings("unchecked")
-				final Map<String,i_bean> instance = (Map<String,i_bean>)wrapper.getInstance();
+				Map<String,i_bean> instance = (Map<String,i_bean>)wrapper.getInstance();
 				return instance;
 			}
 
@@ -5856,7 +5856,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 			if(wrapper!=null) {
 				@SuppressWarnings("unchecked")
-				final Map<String,i_bean> instance = (Map<String,i_bean>)wrapper.getInstance();
+				Map<String,i_bean> instance = (Map<String,i_bean>)wrapper.getInstance();
 				return instance;
 			}
 
@@ -5869,7 +5869,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		if(instance==null) {
 			@SuppressWarnings("unchecked")
-			final Map<String,i_bean> attribute = 
+			Map<String,i_bean> attribute = 
 					 (Map<String,i_bean>)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
 			instance = attribute;		
 		}
@@ -5886,7 +5886,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 		if(instance==null) {
 			@SuppressWarnings("unchecked")
-			final Map<String,i_bean> attribute = 
+			Map<String,i_bean> attribute = 
 					 (Map<String,i_bean>)servletContext.getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
 			instance = attribute;		
 		}		
@@ -5903,7 +5903,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			if(instance==null) {
 				@SuppressWarnings("unchecked")
-				final Map<String,i_bean> attribute = 
+				Map<String,i_bean> attribute = 
 						 (Map<String,i_bean>)request.getSession().getServletContext().getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
 				instance = attribute;		
 			}
@@ -5931,7 +5931,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			if(instance==null) {
 				@SuppressWarnings("unchecked")
-				final Map<String,i_bean> attribute = 
+				Map<String,i_bean> attribute = 
 						 (Map<String,i_bean>)servletContext.getAttribute(bsConstants.CONST_BEAN_$SERVLETCONTEXT);
 				instance = attribute;		
 			}	
@@ -6086,7 +6086,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container=null;
 						}
 						@SuppressWarnings("unchecked")
-						final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+						Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
 						return instance;
 					}catch(Exception e){
 					}
@@ -6100,7 +6100,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container=null;
 						}
 						@SuppressWarnings("unchecked")
-						final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+						Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
 						return instance;
 					}catch(Exception e){
 					}
@@ -6114,7 +6114,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container=null;
 						}
 						@SuppressWarnings("unchecked")
-						final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+						Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
 						return instance;
 					}catch(Exception e){
 					}
@@ -6128,7 +6128,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							local_container=null;
 						}
 						@SuppressWarnings("unchecked")
-						final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+						Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
 						return instance;
 					}catch(Exception e){
 					}
@@ -6144,7 +6144,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 						if(wrapper!=null) {
 							@SuppressWarnings("unchecked")
-							final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+							Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
 							return instance;
 						}
 					}catch(Exception e){
@@ -6161,7 +6161,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 						if(wrapper!=null) {
 							@SuppressWarnings("unchecked")
-							final Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
+							Map<String,Object> instance = (Map<String,Object>)wrapper.getInstance();
 							return instance;
 						}
 					}catch(Exception e){
@@ -6348,7 +6348,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	public static i_stream getStreamFromContainer(String id_stream){
 		@SuppressWarnings("unchecked")
-		final Map<String,Object> fromLocalContainer = 
+		Map<String,Object> fromLocalContainer = 
 				 (Map<String,Object>)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
 		Map<String,Object> container_streams_instance = fromLocalContainer;
 		if(container_streams_instance==null){
@@ -6362,7 +6362,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		if(id_stream==null)
 			return;
 		@SuppressWarnings("unchecked")
-		final Map<String,Object> fromLocalContainer = 
+		Map<String,Object> fromLocalContainer = 
 				 (Map<String,Object>)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
 		Map<String,Object> container_streams_instance = fromLocalContainer;
 		if(container_streams_instance==null){

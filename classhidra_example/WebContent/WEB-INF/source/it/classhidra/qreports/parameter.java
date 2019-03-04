@@ -316,8 +316,7 @@ public class parameter extends elementBase{
 			html+="value=\""+value+"\" ";
 			html+=">\n";
 			if(source!=null && source.getList()!=null){
-				for(int i=0;i<source.getList().size();i++){
-					source_item sitem = (source_item)source.getList().get(i);
+				for(source_item sitem:source.getList()){
 					html+="     <option  value=\""+sitem.getValue()+"\" ";
 					if(sitem.getValue().equals(default_value)) html+="selected ";
 					html+=">"+sitem.getDescription_view()+"\n";

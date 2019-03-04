@@ -31,20 +31,17 @@ public class report extends elementBase{
 	
 
 	public void load4view(Statement st, HashMap<String, parameter> h_parameters){
-		for(int i=0;i<parameters.size();i++){
-			parameter current = (parameter)parameters.get(i);
+		for(parameter current:parameters)
 			h_parameters.put(current.getName(), current);
-		}
-		for(int i=0;i<parameters.size();i++){
-			parameter current = (parameter)parameters.get(i);
+		
+		for(parameter current:parameters){			
 			if(current.getExec_type().equals(parameter.EXEC_NORMALLY))
 				current.load4view(st,h_parameters);
 		}
 	}
 	
 	public void refreshParameters(Statement st, HashMap<String, parameter> h_parameters, String type){
-		for(int i=0;i<parameters.size();i++){
-			parameter current = (parameter)parameters.get(i);
+		for(parameter current:parameters){
 			if(current.getExec_type().equals(type))
 				current.loadParameter(st,h_parameters);
 		}
