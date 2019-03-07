@@ -65,6 +65,7 @@ import java.io.DataInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -1389,8 +1390,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 						else
 							current_redirect = action_instance.syncroservice(request2map);
 					}catch(Exception e){
-						new bsControllerException(e, iStub.log_ERROR);
-						beThrowed = e;
+						if(e instanceof InvocationTargetException && ((InvocationTargetException)e).getTargetException()!=null) {
+							new bsControllerException(((InvocationTargetException)e).getTargetException(), iStub.log_ERROR);
+							beThrowed = new Exception(
+									((InvocationTargetException)e).getTargetException()
+								);
+						}else {
+							new bsControllerException(e, iStub.log_ERROR);
+							beThrowed = e;
+						}
+					}catch(Throwable t){
+						new bsControllerException(t, iStub.log_ERROR);
+						beThrowed = new Exception(t);
 					}
 					
 				}else{
@@ -1401,9 +1412,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValueWithEx(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{context.getRequest(),context.getResponse()})
+											util_reflect.getValueWithEx(action_instance.asAction(), iActionMethod, new Object[]{context.getRequest(),context.getResponse()}, null)
 										,										
 										iActionMethod, action_instance.get_infoaction(),
 										context);
@@ -1411,9 +1422,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(
 										(action_instance.get_infoaction()!=null && !action_instance.get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, action_instance.get_infoaction().getRestParametersMapped(), context), action_instance.get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValueWithEx(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, action_instance.get_infoaction().getRestParametersMapped(), context), action_instance.get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance, iActionMethod, new Object[]{context.getRequest(),context.getResponse()})
+											util_reflect.getValueWithEx(action_instance, iActionMethod, new Object[]{context.getRequest(),context.getResponse()}, null)
 										,
 										iActionMethod, action_instance.get_infoaction(),
 										context);
@@ -1422,9 +1433,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValueWithEx(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map})
+											util_reflect.getValueWithEx(action_instance.asAction(), iActionMethod, new Object[]{request2map}, null)
 										,
 										iActionMethod, action_instance.get_infoaction(),
 										context);
@@ -1432,9 +1443,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(										
 										(action_instance.get_infoaction()!=null && !action_instance.get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, action_instance.get_infoaction().getRestParametersMapped(), context), action_instance.get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValueWithEx(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, action_instance.get_infoaction().getRestParametersMapped(), context), action_instance.get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map})
+											util_reflect.getValueWithEx(action_instance, iActionMethod, new Object[]{request2map}, null)
 										,
 										iActionMethod, action_instance.get_infoaction(),
 										context);
@@ -1442,8 +1453,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 
 					}catch(Exception e){
-						new bsControllerException(e, iStub.log_ERROR);
-						beThrowed = e;
+						if(e instanceof InvocationTargetException && ((InvocationTargetException)e).getTargetException()!=null) {
+							new bsControllerException(((InvocationTargetException)e).getTargetException(), iStub.log_ERROR);
+							beThrowed = new Exception(
+									((InvocationTargetException)e).getTargetException()
+								);
+						}else {
+							new bsControllerException(e, iStub.log_ERROR);
+							beThrowed = e;
+						}
 					}catch(Throwable t){
 						new bsControllerException(t, iStub.log_ERROR);
 						beThrowed = new Exception(t);
@@ -1500,8 +1518,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 						else
 							current_redirect = action_instance.actionservice(request2map);
 					}catch(Exception e){
-						new bsControllerException(e, iStub.log_ERROR);
-						beThrowed = e;
+						if(e instanceof InvocationTargetException && ((InvocationTargetException)e).getTargetException()!=null) {
+							new bsControllerException(((InvocationTargetException)e).getTargetException(), iStub.log_ERROR);
+							beThrowed = new Exception(
+									((InvocationTargetException)e).getTargetException()
+								);
+						}else {
+							new bsControllerException(e, iStub.log_ERROR);
+							beThrowed = e;
+						}
+					}catch(Throwable t){
+						new bsControllerException(t, iStub.log_ERROR);
+						beThrowed = new Exception(t);
 					}					
 				}else{
 					
@@ -1511,9 +1539,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValueWithEx(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{context.getRequest(),context.getResponse()})
+											util_reflect.getValueWithEx(action_instance.asAction(), iActionMethod, new Object[]{context.getRequest(),context.getResponse()}, null)
 										,										
 										iActionMethod, action_instance.get_infoaction(),
 										context);
@@ -1521,9 +1549,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValueWithEx(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance, iActionMethod, new Object[]{context.getRequest(),context.getResponse()})
+											util_reflect.getValueWithEx(action_instance, iActionMethod, new Object[]{context.getRequest(),context.getResponse()}, null)
 										,
 										iActionMethod, action_instance.get_infoaction(),
 										context);
@@ -1532,9 +1560,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(
 										(action_instance.asAction().get_infoaction()!=null && !action_instance.asAction().get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValueWithEx(action_instance.asAction(), iActionMethod, prepareMethod(iActionMethod, action_instance.asAction(), action_instance.asAction().get_infoaction().getRestParametersMapped(), context), action_instance.asAction().get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance.asAction(), iActionMethod, new Object[]{request2map})
+											util_reflect.getValueWithEx(action_instance.asAction(), iActionMethod, new Object[]{request2map}, null)
 										,
 										iActionMethod, action_instance.get_infoaction(),
 										context);
@@ -1542,16 +1570,23 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionResponse(
 										(action_instance.get_infoaction()!=null && !action_instance.get_infoaction().isR_R())
 										?
-											util_reflect.getValue(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, action_instance.get_infoaction().getRestParametersMapped(), context), action_instance.get_infoaction().getMappedMethodParameterTypes())
+											util_reflect.getValueWithEx(action_instance, iActionMethod, prepareMethod(iActionMethod, action_instance, action_instance.get_infoaction().getRestParametersMapped(), context), action_instance.get_infoaction().getMappedMethodParameterTypes())
 										:
-											util_reflect.getValue(action_instance, iActionMethod, new Object[]{request2map})
+											util_reflect.getValueWithEx(action_instance, iActionMethod, new Object[]{request2map}, null)
 										,
 										iActionMethod, action_instance.get_infoaction(),
 										context);
 						}
 					}catch(Exception e){
-						new bsControllerException(e, iStub.log_ERROR);
-						beThrowed = e;
+						if(e instanceof InvocationTargetException && ((InvocationTargetException)e).getTargetException()!=null) {
+							new bsControllerException(((InvocationTargetException)e).getTargetException(), iStub.log_ERROR);
+							beThrowed = new Exception(
+									((InvocationTargetException)e).getTargetException()
+								);
+						}else {
+							new bsControllerException(e, iStub.log_ERROR);
+							beThrowed = e;
+						}
 					}catch(Throwable t){
 						new bsControllerException(t, iStub.log_ERROR);
 						beThrowed = new Exception(t);
@@ -1609,11 +1644,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 										?
 												(iCallMethod.getParameterTypes().length==1)
 												?
-												util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{context})
+												util_reflect.getValueWithEx(action_instance.asAction(), iCallMethod, new Object[]{context}, null)
 												:
-												util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{context.getRequest(),context.getResponse()})
+												util_reflect.getValueWithEx(action_instance.asAction(), iCallMethod, new Object[]{context.getRequest(),context.getResponse()}, null)
 										:
-											util_reflect.getValue(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
+											util_reflect.getValueWithEx(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
 										iCallMethod,
 										action_instance.get_infoaction(),
 										iCall,
@@ -1624,11 +1659,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 										?
 												(iCallMethod.getParameterTypes().length==1)
 												?
-												util_reflect.getValue(action_instance, iCallMethod, new Object[]{context})
+												util_reflect.getValueWithEx(action_instance, iCallMethod, new Object[]{context}, null)
 												:
-												util_reflect.getValue(action_instance, iCallMethod, new Object[]{context.getRequest(),context.getResponse()})
+												util_reflect.getValueWithEx(action_instance, iCallMethod, new Object[]{context.getRequest(),context.getResponse()}, null)
 										:
-											util_reflect.getValue(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
+											util_reflect.getValueWithEx(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
 										iCallMethod,
 										action_instance.get_infoaction(),
 										iCall,
@@ -1638,9 +1673,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionCallResponse(
 										(iCall.isR_R())
 										?
-											util_reflect.getValue(action_instance.asAction(), iCallMethod, new Object[]{request2map})
+											util_reflect.getValueWithEx(action_instance.asAction(), iCallMethod, new Object[]{request2map}, null)
 										:
-											util_reflect.getValue(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
+											util_reflect.getValueWithEx(action_instance.asAction(), iCallMethod, prepareMethod(iCallMethod, action_instance.asAction(), iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
 										iCallMethod,
 										action_instance.get_infoaction(),
 										iCall,
@@ -1649,9 +1684,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								current_redirect = prepareActionCallResponse(
 										(iCall.isR_R())
 										?
-											util_reflect.getValue(action_instance, iCallMethod, new Object[]{request2map})
+											util_reflect.getValueWithEx(action_instance, iCallMethod, new Object[]{request2map}, null)
 										:
-											util_reflect.getValue(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
+											util_reflect.getValueWithEx(action_instance, iCallMethod, prepareMethod(iCallMethod, action_instance, iCall.getRestParametersMapped(), context), iCall.getMappedMethodParameterTypes()),
 										iCallMethod,
 										action_instance.get_infoaction(),
 										iCall,
@@ -1667,8 +1702,15 @@ public class bsController extends HttpServlet implements bsConstants  {
 								context);
 					}
 				}catch(Exception e){
-					new bsControllerException(e, iStub.log_ERROR);
-					beThrowed = e;
+					if(e instanceof InvocationTargetException && ((InvocationTargetException)e).getTargetException()!=null) {
+						new bsControllerException(((InvocationTargetException)e).getTargetException(), iStub.log_ERROR);
+						beThrowed = new Exception(
+								((InvocationTargetException)e).getTargetException()
+							);
+					}else {
+						new bsControllerException(e, iStub.log_ERROR);
+						beThrowed = e;
+					}
 				}catch(Throwable t){
 					new bsControllerException(t, iStub.log_ERROR);
 					beThrowed = new Exception(t);
@@ -2644,7 +2686,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 										context.write(((byte[])rWrapper.getContent()));
 									else {
 										if(
-												(iAction!=null && iAction.getRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/json")>-1) ||
+												(iAction!=null && iAction.getIRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/json")>-1) ||
 												(rWrapper.getContentType()!=null && rWrapper.getContentType().indexOf("/json")>-1)
 											){
 												if(context.getResponse()!=null){

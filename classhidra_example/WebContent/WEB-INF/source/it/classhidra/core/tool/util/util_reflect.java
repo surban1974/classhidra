@@ -338,26 +338,42 @@ public static Object getValue(Object requested,Method mtd, Object[] value) throw
 	if(value==null) value = new Object[0];
 	Object resultObject = null;
 	try{
-
-		Class<?>[] cls = new Class[value.length];
-		for(int i=0;i<value.length;i++){
-			if(value[i]!=null)
-				cls[i]=value[i].getClass();
-		}
+//		Class<?>[] cls = new Class[value.length];
+//		for(int i=0;i<value.length;i++){
+//			if(value[i]!=null)
+//				cls[i]=value[i].getClass();
+//		}
 		resultObject =mtd.invoke(requested, value);
 	}catch(Exception e){
+		new bsException(e);
 	}
 	return  resultObject;
 }
 
-public static Object getValue(Object requested,Method mtd, Object[] value, Class<?>[] cls) throws Exception{
+public static Object getValue(Object requested, Method mtd, Object[] value, Class<?>[] cls) throws Exception{
 	if (mtd == null || requested==null) return null;
 	if(value==null) value = new Object[0];
-	if(cls==null) cls = new Class[0];
+//	if(cls==null) cls = new Class[0];
 	Object resultObject = null;
 	try{
 		resultObject =mtd.invoke(requested, value);
 	}catch(Exception e){
+		new bsException(e);
+	}
+	return  resultObject;
+}
+
+
+public static Object getValueWithEx(Object requested,Method mtd, Object[] value, Class<?>[] cls) throws Exception{
+	if (mtd == null || requested==null) return null;
+	Object resultObject = null;
+	try{
+		resultObject =mtd.invoke(requested, value);
+	}catch(Exception e){
+		if(!(e instanceof IllegalArgumentException))
+			throw e;
+		else
+			new bsException(e);
 	}
 	return  resultObject;
 }
