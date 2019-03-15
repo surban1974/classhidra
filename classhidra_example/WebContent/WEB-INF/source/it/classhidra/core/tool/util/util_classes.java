@@ -434,6 +434,14 @@ public class util_classes {
 		return result;
 	}	
 	
+	public static InputStream getResourceAsStream(String rsnamepath)  {
+		ClassLoader cld = Thread.currentThread().getContextClassLoader();
+		if (cld == null)
+			return ClassLoader.getSystemResourceAsStream( rsnamepath );
+		else 
+			return cld.getResourceAsStream(rsnamepath);
+	}
+	
 	public static File convertUrl2File(URL url){	
 		File f = null;
 		try{
