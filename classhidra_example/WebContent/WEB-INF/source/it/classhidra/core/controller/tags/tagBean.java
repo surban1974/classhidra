@@ -106,7 +106,7 @@ public class tagBean extends ClTagSupport{
 				anotherBean = formBean;
 			else if(source==null && constructor!=null && constructor.trim().length()>0) {
 				try {
-					if(arg.length==0)
+					if(arg==null || arg.length==0)
 						anotherBean = Class.forName(constructor).newInstance();
 					else {
 						Constructor<?> found = null;
