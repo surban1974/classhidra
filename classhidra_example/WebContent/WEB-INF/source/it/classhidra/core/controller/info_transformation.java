@@ -14,6 +14,7 @@ public class info_transformation extends info_entity implements i_elementBase{
 	public static final String CONST_INPUTFORMAT_BYTE="BYTE";
 	public static final String CONST_INPUTFORMAT_STRING="STRING";
 	public static final String CONST_INPUTFORMAT_FORM="FORM";
+	public static final String CONST_INPUTFORMAT_TEMPLATE="TEMPLATE";
 	
 	public static final String CONST_EVENT_BEFORE="BEFORE";
 	public static final String CONST_EVENT_AFTER="AFTER";

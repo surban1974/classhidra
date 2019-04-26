@@ -2160,12 +2160,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 							isRemoteEjb=true;
 							try{
 								request2map = convertRequestToMap(action_instance.asAction().getClass(),new Class[]{HttpServletRequest.class}, new Object[]{context.getRequest()});
-
-//								request2map = (HashMap<String,Object>)
-//										util_reflect.findDeclaredMethod(
-//												action_instance.asAction().getClass(),
-//											"convertRequest2Map", new Class[]{HttpServletRequest.class})
-//										.invoke(null, new Object[]{context.getRequest()});
 							}catch (Exception e) {
 								new bsControllerException(e, iStub.log_ERROR);
 							}catch (Throwable e) {
@@ -2201,173 +2195,175 @@ public class bsController extends HttpServlet implements bsConstants  {
 					final byte[] output4BYTE = (byte[])action_instance.get_bean().get(bsConstants.CONST_ID_OUTPUT4BYTE);
 
 
-						boolean isDebug=false;
+					boolean isDebug=false;
+					try{
+						isDebug = System.getProperty("debug").equalsIgnoreCase("true");
+					}catch(Exception e){
 						try{
-							isDebug = System.getProperty("debug").equalsIgnoreCase("true");
-						}catch(Exception e){
-							try{
-								isDebug = bsController.getAppInit().get_debug().equalsIgnoreCase("true");
-							}catch(Exception ex){
-							}
+							isDebug = bsController.getAppInit().get_debug().equalsIgnoreCase("true");
+						}catch(Exception ex){
 						}
-						
-						final boolean avoidCheckPermission = (isDebug)?true:false;
+					}
+					
+					final boolean avoidCheckPermission = (isDebug)?true:false;
 
 
-						if(action_instance.get_bean().getXmloutput()){
-							if(output4SOAP==null)
-								output4SOAP = util_beanMessageFactory.bean2xml(
-										(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
-										(outputserializedname==null || outputserializedname.trim().equals(""))
+					if(action_instance.get_bean().getXmloutput()){
+						if(output4SOAP==null)
+							output4SOAP = util_beanMessageFactory.bean2xml(
+									(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
+									(outputserializedname==null || outputserializedname.trim().equals(""))
+										?
+										(	
+											(outputappliedfor==null || outputappliedfor.trim().equals(""))
 											?
-											(	
-												(outputappliedfor==null || outputappliedfor.trim().equals(""))
+											(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
 												?
-												(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
-													?
-													(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
-													:
-													action_instance.get_bean().get_infobean().getName()
+												(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
 												:
-												outputappliedfor
-											)
+												action_instance.get_bean().get_infobean().getName()
 											:
-										outputserializedname
-										,
-										true,
-										avoidCheckPermission,
-										action_instance.get_bean().getXmloutput_encoding());
+											outputappliedfor
+										)
+										:
+									outputserializedname
+									,
+									true,
+									avoidCheckPermission,
+									action_instance.get_bean().getXmloutput_encoding());
 
-							try{
+						try{
 //								if(action_instance.get_bean().getXmloutput_encoding()!=null && !action_instance.get_bean().getXmloutput_encoding().equals(""))
 //									response.getOutputStream().write(output4SOAP.getBytes(action_instance.get_bean().getXmloutput_encoding()));
 //								else response.getOutputStream().write(output4SOAP.getBytes());
-								context.write(output4SOAP.getBytes());
-								return new Object[]{context.getResponse(), Boolean.valueOf(true)};
-							}catch(Exception e){
-								throw new bsControllerException("Controller generic redirect error. Print Bean as XML. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
-							}
+							context.write(output4SOAP.getBytes());
+							return new Object[]{context.getResponse(), Boolean.valueOf(true)};
+						}catch(Exception e){
+							throw new bsControllerException("Controller generic redirect error. Print Bean as XML. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
 						}
+					}
 
-						if(action_instance.get_bean().getJsonoutput()){
-							if(output4JSON==null)
-								output4JSON = util_beanMessageFactory.bean2json(
-										(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
-										(outputserializedname==null || outputserializedname.trim().equals(""))
+					if(action_instance.get_bean().getJsonoutput()){
+						if(output4JSON==null)
+							output4JSON = util_beanMessageFactory.bean2json(
+									(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
+									(outputserializedname==null || outputserializedname.trim().equals(""))
+										?
+										(	
+											(outputappliedfor==null || outputappliedfor.trim().equals(""))
 											?
-											(	
-												(outputappliedfor==null || outputappliedfor.trim().equals(""))
+											(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
 												?
-												(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
-													?
-													(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
-													:
-													action_instance.get_bean().get_infobean().getName()
+												(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
 												:
-												outputappliedfor
-											)
+												action_instance.get_bean().get_infobean().getName()
 											:
-										outputserializedname
-										,
-										avoidCheckPermission,
-										action_instance.get_bean().getJsonoutput_encoding());
+											outputappliedfor
+										)
+										:
+									outputserializedname
+									,
+									avoidCheckPermission,
+									action_instance.get_bean().getJsonoutput_encoding());
 
-							try{
+						try{
 //								if(action_instance.get_bean().getJsonoutput_encoding()!=null && !action_instance.get_bean().getJsonoutput_encoding().equals(""))
 //									response.getOutputStream().write(output4JSON.getBytes(action_instance.get_bean().getJsonoutput_encoding()));
 //								else response.getOutputStream().write(output4JSON.getBytes());
-								context.write(output4JSON.getBytes());
+							context.write(output4JSON.getBytes());
+							return new Object[]{context.getResponse(), Boolean.valueOf(true)};
+						}catch(Exception e){
+							throw new bsControllerException("Controller generic redirect error. Print Bean as JSON. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
+						}
+					}
+
+
+					if(	current_redirect.get_transformationName()!=null &&
+						!current_redirect.get_transformationName().equals("")
+					){
+
+						i_transformation cTransformation = null;
+
+						if(current_redirect.get_inforedirect()!=null)
+							cTransformation = current_redirect.get_inforedirect().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
+						if(cTransformation==null || cTransformation.get_infotransformation()==null)
+							cTransformation = action_instance.get_infoaction().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
+						if(cTransformation==null)
+							cTransformation = getAction_config().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
+
+
+						if(	cTransformation!=null &&
+							cTransformation.get_infotransformation()!=null &&
+							(
+								cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_AFTER) ||
+								cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BOTH)
+							)
+						){
+							cTransformation.setResponseHeader(context.getRequest(),context.getResponse());
+							context.getRequest().setAttribute(CONST_ID_TRANSFORMATION4WRAPPER, cTransformation);
+
+							return new Object[]{responseWrapperFactory.getWrapper(context.getResponse()),Boolean.valueOf(false)};
+						}
+
+						if(	cTransformation!=null &&
+							cTransformation.get_infotransformation()!=null &&
+							(
+								cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BEFORE) ||
+								cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BOTH)
+							)
+						){
+							byte[] outTransformation = null;
+							if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_BYTE)){
+								action_instance.onPreTransform(output4BYTE);
+								outTransformation = cTransformation.transform(output4BYTE, context.getRequest());
+								action_instance.onPostTransform(outTransformation);
+							}else if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_FORM)){
+								action_instance.onPreTransform(action_instance.get_bean());
+								outTransformation = cTransformation.transform(action_instance.get_bean(), context.getRequest());
+								action_instance.onPostTransform(outTransformation);
+							}else if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_TEMPLATE)){
+								action_instance.onPreTransform(action_instance.get_bean());
+								outTransformation = cTransformation.transform(action_instance, current_redirect, context.getRequest(), context.getResponse());
+								action_instance.onPostTransform(outTransformation);
+							}else if(	cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_STRING) ||
+								cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase("")
+							){
+								if(output4SOAP==null)
+									output4SOAP = util_beanMessageFactory.bean2xml(
+											(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
+											(outputserializedname==null || outputserializedname.trim().equals(""))
+												?
+												(	
+													(outputappliedfor==null || outputappliedfor.trim().equals(""))
+													?
+													(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
+														?
+														(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
+														:
+														action_instance.get_bean().get_infobean().getName()
+													:
+													outputappliedfor
+												)
+												:
+											outputserializedname
+											,
+											true,
+											avoidCheckPermission
+											);
+								action_instance.onPreTransform(output4SOAP);
+								outTransformation = cTransformation.transform(output4SOAP, context.getRequest());
+								action_instance.onPostTransform(outTransformation);
+							}
+
+							try{
+								cTransformation.setResponseHeader(context.getRequest(),context.getResponse());
+								context.write(outTransformation);
 								return new Object[]{context.getResponse(), Boolean.valueOf(true)};
 							}catch(Exception e){
-								throw new bsControllerException("Controller generic redirect error. Print Bean as JSON. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
+								throw new bsControllerException("Controller generic redirect error. Transform BeanAsXML with ["+current_redirect.get_transformationName()+"]. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
 							}
 						}
-
-
-						if(	current_redirect.get_transformationName()!=null &&
-							!current_redirect.get_transformationName().equals("")
-						){
-
-							i_transformation cTransformation = null;
-
-							if(current_redirect.get_inforedirect()!=null)
-								cTransformation = current_redirect.get_inforedirect().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
-							if(cTransformation==null || cTransformation.get_infotransformation()==null)
-								cTransformation = action_instance.get_infoaction().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
-							if(cTransformation==null)
-								cTransformation = getAction_config().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
-
-
-							if(	cTransformation!=null &&
-									cTransformation.get_infotransformation()!=null &&
-									(
-										cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_AFTER) ||
-										cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BOTH)
-									)
-								){
-								cTransformation.setResponseHeader(context.getRequest(),context.getResponse());
-								context.getRequest().setAttribute(CONST_ID_TRANSFORMATION4WRAPPER, cTransformation);
-
-								return new Object[]{responseWrapperFactory.getWrapper(context.getResponse()),Boolean.valueOf(false)};
-							}
-
-							if(	cTransformation!=null &&
-								cTransformation.get_infotransformation()!=null &&
-								(
-									cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BEFORE) ||
-									cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BOTH)
-								)
-							){
-								byte[] outTranformation = null;
-								if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_BYTE)){
-									action_instance.onPreTransform(output4BYTE);
-									outTranformation = cTransformation.transform(output4BYTE, context.getRequest());
-									action_instance.onPostTransform(outTranformation);
-								}
-								if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_FORM)){
-									action_instance.onPreTransform(action_instance.get_bean());
-									outTranformation = cTransformation.transform(action_instance.get_bean(), context.getRequest());
-									action_instance.onPostTransform(outTranformation);
-								}
-								if(	cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_STRING) ||
-									cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase("")
-								){
-									if(output4SOAP==null)
-										output4SOAP = util_beanMessageFactory.bean2xml(
-												(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
-												(outputserializedname==null || outputserializedname.trim().equals(""))
-													?
-													(	
-														(outputappliedfor==null || outputappliedfor.trim().equals(""))
-														?
-														(action_instance.get_bean().get_infobean()==null || action_instance.get_bean().get_infobean().getName()==null || action_instance.get_bean().get_infobean().getName().trim().equals(""))
-															?
-															(action_instance.get_infoaction().getName()==null)?null:action_instance.get_infoaction().getName()
-															:
-															action_instance.get_bean().get_infobean().getName()
-														:
-														outputappliedfor
-													)
-													:
-												outputserializedname
-												,
-												true,
-												avoidCheckPermission
-												);
-									action_instance.onPreTransform(output4SOAP);
-									outTranformation = cTransformation.transform(output4SOAP, context.getRequest());
-									action_instance.onPostTransform(outTranformation);
-								}
-
-								try{
-									cTransformation.setResponseHeader(context.getRequest(),context.getResponse());
-									context.write(outTranformation);
-									return new Object[]{context.getResponse(), Boolean.valueOf(true)};
-								}catch(Exception e){
-									throw new bsControllerException("Controller generic redirect error. Transform BeanAsXML with ["+current_redirect.get_transformationName()+"]. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
-								}
-							}
-						}
+					}
 
 
 			}
@@ -2505,8 +2501,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 				else if(response_wrapper.class.isAssignableFrom(method.getReturnType())){
 					if(retVal!=null){
 						final response_wrapper rWrapper = (response_wrapper)retVal;
-						if(rWrapper.getRedirect()!=null)
+						if(rWrapper.getRedirect()!=null) {
 							current_redirect = rWrapper.getRedirect();
+							
+							current_redirect.setWrapper(rWrapper);
+							if(rWrapper.getContent()!=null)
+								context.getRequest().setAttribute(CONST_RW_CONTENT, rWrapper.getContent());
+						}
 						else{
 							final info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
 							if(iCall!=null && iCall.getIRedirect()!=null){
@@ -2665,9 +2666,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 				else if(response_wrapper.class.isAssignableFrom(method.getReturnType())){
 					if(retVal!=null){
 						final response_wrapper rWrapper = (response_wrapper)retVal;
-						if(rWrapper.getRedirect()!=null)
+						if(rWrapper.getRedirect()!=null) {
 							current_redirect = rWrapper.getRedirect();
-						else{
+							
+							current_redirect.setWrapper(rWrapper);
+							if(rWrapper.getContent()!=null)
+								context.getRequest().setAttribute(CONST_RW_CONTENT, rWrapper.getContent());
+						}else{
 							final info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
 							if(iAction!=null && iAction.getIRedirect()!=null){
 								if(iAction.getIRedirect().getContentType()!=null && !iAction.getIRedirect().getContentType().equals(""))

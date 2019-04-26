@@ -26,48 +26,43 @@ public class transformation implements i_transformation, Serializable {
 	}
 	
 	public byte[] transform(String input, HttpServletRequest request){
-		byte[] result = null;
-		return result;
+		return null;
 	}
 	
 	public byte[] transform(byte[] input, HttpServletRequest request){
-		byte[] result = null;
-		return result;
+		return null;
 	}
 
 	public byte[] transform(i_bean form, HttpServletRequest request){
-		byte[] result = null;
-		return result;
+		return null;
 	}	
 
 	public byte[] transform(String input, HttpServletRequest request, HttpServletResponse response){
-		byte[] result = null;
-		return result;
+		return null;
 	}	
 	
 	public byte[] transform(i_action input, HttpServletRequest request, HttpServletResponse response){
-		byte[] result = null;
-		return result;
+		return null;
 	}	
 	
 	public byte[] transform(i_bean input, HttpServletRequest request, HttpServletResponse response){
-		byte[] result = null;
-		return result;
+		return null;
 	}	
 	
 	public byte[] transform(i_stream input, HttpServletRequest request, HttpServletResponse response){
-		byte[] result = null;
-		return result;
+		return null;
 	}	
 	
 	public byte[] transform(i_transformation input, HttpServletRequest request, HttpServletResponse response){
-		byte[] result = null;
-		return result;
+		return null;
 	}	
 	
 	public byte[] transform(redirects input, HttpServletRequest request, HttpServletResponse response){
-		byte[] result = null;
-		return result;
+		return null;
+	}		
+	
+	public byte[] transform(i_action _action, redirects _redirect, HttpServletRequest request, HttpServletResponse response){
+		return null;
 	}		
 	
 	public info_transformation get_infotransformation() {
