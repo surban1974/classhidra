@@ -2286,14 +2286,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 						if(current_redirect.get_inforedirect()!=null)
 							cTransformation = current_redirect.get_inforedirect().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
-						if(cTransformation==null || cTransformation.get_infotransformation()==null)
+						if(cTransformation==null || cTransformation.get_infotransformation()==null || !cTransformation.get_infotransformation().getName().equals(current_redirect.get_transformationName()))
 							cTransformation = action_instance.get_infoaction().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
-						if(cTransformation==null)
+						if(cTransformation==null || cTransformation.get_infotransformation()==null || !cTransformation.get_infotransformation().getName().equals(current_redirect.get_transformationName()))
 							cTransformation = getAction_config().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
 
+						if(	cTransformation!=null &&
+							(	
+								cTransformation.get_infotransformation()==null ||
+								!cTransformation.get_infotransformation().getName().equals(current_redirect.get_transformationName()) ||
+								cTransformation.get_infotransformation().getEvent()==null
+							)
+						)
+							cTransformation=null;
+						
 
 						if(	cTransformation!=null &&
-							cTransformation.get_infotransformation()!=null &&
 							(
 								cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_AFTER) ||
 								cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BOTH)
@@ -2306,7 +2314,6 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 
 						if(	cTransformation!=null &&
-							cTransformation.get_infotransformation()!=null &&
 							(
 								cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BEFORE) ||
 								cTransformation.get_infotransformation().getEvent().equalsIgnoreCase(info_transformation.CONST_EVENT_BOTH)
@@ -2360,7 +2367,14 @@ public class bsController extends HttpServlet implements bsConstants  {
 								context.write(outTransformation);
 								return new Object[]{context.getResponse(), Boolean.valueOf(true)};
 							}catch(Exception e){
-								throw new bsControllerException("Controller generic redirect error. Transform BeanAsXML with ["+current_redirect.get_transformationName()+"]. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
+								final String exp = "Controller generic redirect error. Transformation ["+current_redirect.get_transformationName()+"]. Action: ["+action_instance.get_infoaction().getPath()+"] ->" + e.toString();
+								new bsControllerException(exp, iStub.log_ERROR);
+								try {
+									context.write(exp.getBytes());
+									return new Object[]{context.getResponse(), Boolean.valueOf(true)};
+								}catch(Exception ex) {
+									
+								}
 							}
 						}
 					}
@@ -2507,6 +2521,24 @@ public class bsController extends HttpServlet implements bsConstants  {
 							current_redirect.setWrapper(rWrapper);
 							if(rWrapper.getContent()!=null)
 								context.getRequest().setAttribute(CONST_RW_CONTENT, rWrapper.getContent());
+							
+							boolean updateContentHeader=false;
+							final info_redirect fake = new info_redirect();
+
+							if(rWrapper.getContentType()!=null && !rWrapper.getContentType().equals("")) {
+								fake.setContentType(rWrapper.getContentType());
+								updateContentHeader|=true;
+							}
+							if(rWrapper.getContentName()!=null && !rWrapper.getContentName().equals("")) {
+								fake.setContentName(rWrapper.getContentName());	
+								updateContentHeader|=true;
+							}
+							if(rWrapper.getContentEncoding()!=null && !rWrapper.getContentEncoding().equals("")) {
+								fake.setContentEncoding(rWrapper.getContentEncoding());	
+								updateContentHeader|=true;
+							}
+							if(updateContentHeader)
+								updateResponseContentType(fake, context.getResponse(), rWrapper.getResponseStatus());
 						}
 						else{
 							final info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
@@ -2672,6 +2704,26 @@ public class bsController extends HttpServlet implements bsConstants  {
 							current_redirect.setWrapper(rWrapper);
 							if(rWrapper.getContent()!=null)
 								context.getRequest().setAttribute(CONST_RW_CONTENT, rWrapper.getContent());
+							
+							boolean updateContentHeader=false;
+							final info_redirect fake = new info_redirect();
+
+							if(rWrapper.getContentType()!=null && !rWrapper.getContentType().equals("")) {
+								fake.setContentType(rWrapper.getContentType());
+								updateContentHeader|=true;
+							}
+							if(rWrapper.getContentName()!=null && !rWrapper.getContentName().equals("")) {
+								fake.setContentName(rWrapper.getContentName());	
+								updateContentHeader|=true;
+							}
+							if(rWrapper.getContentEncoding()!=null && !rWrapper.getContentEncoding().equals("")) {
+								fake.setContentEncoding(rWrapper.getContentEncoding());	
+								updateContentHeader|=true;
+							}
+							if(updateContentHeader)
+								updateResponseContentType(fake, context.getResponse(), rWrapper.getResponseStatus());
+
+							
 						}else{
 							final info_redirect fake = new info_redirect().setContentType(rWrapper.getContentType()).setContentName(rWrapper.getContentName()).setContentEncoding(rWrapper.getContentEncoding());
 							if(iAction!=null && iAction.getIRedirect()!=null){
