@@ -691,6 +691,7 @@ public class annotation_scanner implements i_annotation_scanner {
     					iTransformationoutput.setPath(annotationTransf.path());
     					iTransformationoutput.setEvent(annotationTransf.event());
     					iTransformationoutput.setInputformat(annotationTransf.inputformat());
+    					iTransformationoutput.setMemoryInContainer(String.valueOf(annotationTransf.memoryInContainer()));
 
     					setEntity(iTransformationoutput,annotationTransf.entity());
     					if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(j+1).toString());
@@ -719,6 +720,7 @@ public class annotation_scanner implements i_annotation_scanner {
 				iTransformationoutput.setPath(annotationTransformation.path());
 				iTransformationoutput.setEvent(annotationTransformation.event());
 				iTransformationoutput.setInputformat(annotationTransformation.inputformat());
+				iTransformationoutput.setMemoryInContainer(String.valueOf(annotationTransformation.memoryInContainer()));
 
 				setEntity(iTransformationoutput,annotationTransformation.entity());
 				iTransformationoutput.setAnnotationLoaded(true);
@@ -925,6 +927,8 @@ public class annotation_scanner implements i_annotation_scanner {
 				iTransformationoutput.setPath(annotationTransf.path());
 				iTransformationoutput.setEvent(annotationTransf.event());
 				iTransformationoutput.setInputformat(annotationTransf.inputformat());
+				iTransformationoutput.setMemoryInContainer(String.valueOf(annotationTransf.memoryInContainer()));
+				
 				setEntity(iTransformationoutput,annotationTransf.entity());
 				if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(i+1).toString());
 				iTransformationoutput.setAnnotationLoaded(true);
@@ -1220,6 +1224,8 @@ public class annotation_scanner implements i_annotation_scanner {
 				iTransformationoutput.setPath(annotationTransf.path());
 				iTransformationoutput.setEvent(annotationTransf.event());
 				iTransformationoutput.setInputformat(annotationTransf.inputformat());
+				iTransformationoutput.setMemoryInContainer(String.valueOf(annotationTransf.memoryInContainer()));
+				
 				iTransformationoutput.setParent(iRedirect);
 				setEntity(iTransformationoutput,annotationTransf.entity());
 				if(iTransformationoutput.getOrder().equals("")) iTransformationoutput.setOrder(Integer.valueOf(j+1).toString());

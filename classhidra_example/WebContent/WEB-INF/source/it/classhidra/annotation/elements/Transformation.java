@@ -15,4 +15,5 @@ public @interface Transformation {
 	String path() default "";
 	String event() default info_transformation.CONST_EVENT_BEFORE;
 	String inputformat() default "string";
+	boolean memoryInContainer() default false;
 }

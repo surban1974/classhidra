@@ -14,6 +14,8 @@ public class info_transformation extends info_entity implements i_elementBase{
 	public static final String CONST_INPUTFORMAT_BYTE="BYTE";
 	public static final String CONST_INPUTFORMAT_STRING="STRING";
 	public static final String CONST_INPUTFORMAT_FORM="FORM";
+	public static final String CONST_INPUTFORMAT_ACTION="ACTION";
+	public static final String CONST_INPUTFORMAT_REDIRECT="REDIRECT";
 	public static final String CONST_INPUTFORMAT_TEMPLATE="TEMPLATE";
 	
 	public static final String CONST_EVENT_BEFORE="BEFORE";
@@ -25,6 +27,7 @@ public class info_transformation extends info_entity implements i_elementBase{
 	private String path;
 	private String event;
 	private String inputformat;
+	private String memoryInContainer;
 	
 	
 	public info_transformation(){
@@ -64,6 +67,7 @@ public class info_transformation extends info_entity implements i_elementBase{
 		path="";
 		event=CONST_EVENT_BEFORE;
 		inputformat="string";
+		memoryInContainer="false";
 	}
 
 	public String getType() {
@@ -122,9 +126,18 @@ public class info_transformation extends info_entity implements i_elementBase{
 		if(path!=null && !path.trim().equals("")) result+=" path=\""+util_format.normaliseXMLText(path)+"\"";
 		if(event!=null && !event.trim().equals("")) result+=" event=\""+util_format.normaliseXMLText(event)+"\"";
 		if(inputformat!=null && !inputformat.trim().equals("")) result+=" inputformat=\""+util_format.normaliseXMLText(inputformat)+"\"";
+		if(memoryInContainer!=null && !memoryInContainer.trim().equals("")) result+=" memoryInContainer=\""+util_format.normaliseXMLText(memoryInContainer)+"\"";
 		result+=super.toXml();
 		result+=" />";
 		return result;
+	}
+
+	public String getMemoryInContainer() {
+		return memoryInContainer;
+	}
+
+	public void setMemoryInContainer(String memoryInContainer) {
+		this.memoryInContainer = memoryInContainer;
 	}
 
 

@@ -179,6 +179,7 @@ public interface bsConstants {
 	
 	public final static String CONST_CONTAINER_REFMETHODS				=	"$container_refmethods";
 	public final static String CONST_CONTAINER_STREAMS_INSTANCE			=	"$container_streams_instance";
+	public final static String CONST_CONTAINER_TRANSFORMATIONS_INSTANCE	=	"$container_transformations_instance";
 	public final static String CONST_BEAN_$SCHEDULER_CONTAINER 			=	"$scheduler_container";
 	public final static String CONST_REST_URLMAPPEDPARAMETERS			=	"$restUrlMappedParameters";
 	

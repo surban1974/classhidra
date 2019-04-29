@@ -1917,6 +1917,13 @@ public static i_transformation transformationFactory(String transformationName, 
 	if(h_transformationoutput==null || h_transformationoutput.get(transformationName)==null) return rTransformation;
 
 	info_transformation iTransformation = (info_transformation)h_transformationoutput.get(transformationName);
+	
+	if(iTransformation.getMemoryInContainer()!=null && iTransformation.getMemoryInContainer().equalsIgnoreCase("true")) {
+		rTransformation = bsController.getTransformationFromContainer(transformationName);
+		if(rTransformation!=null) return rTransformation;
+	}
+	
+	
 	boolean loadedFromProvider=false;
 	
 	
@@ -1947,6 +1954,10 @@ public static i_transformation transformationFactory(String transformationName, 
 		}
 	}
 	rTransformation.set_infotransformation(iTransformation);
+	
+	if(iTransformation.getMemoryInContainer()!=null && iTransformation.getMemoryInContainer().equalsIgnoreCase("true")) 
+		bsController.putTransformationIntoContainer(iTransformation.getName(), rTransformation);
+	
 	return rTransformation;
 }
 

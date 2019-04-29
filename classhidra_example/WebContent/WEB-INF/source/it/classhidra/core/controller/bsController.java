@@ -2328,9 +2328,17 @@ public class bsController extends HttpServlet implements bsConstants  {
 								action_instance.onPreTransform(action_instance.get_bean());
 								outTransformation = cTransformation.transform(action_instance.get_bean(), context.getRequest());
 								action_instance.onPostTransform(outTransformation);
+							}else if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_ACTION)){
+								action_instance.onPreTransform(action_instance.get_bean());
+								outTransformation = cTransformation.transform(action_instance, context.getRequest());
+								action_instance.onPostTransform(outTransformation);								
+							}else if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_REDIRECT)){
+								action_instance.onPreTransform(action_instance.get_bean());
+								outTransformation = cTransformation.transform(current_redirect, context.getRequest());
+								action_instance.onPostTransform(outTransformation);
 							}else if(cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_TEMPLATE)){
 								action_instance.onPreTransform(action_instance.get_bean());
-								outTransformation = cTransformation.transform(action_instance, current_redirect, context.getRequest(), context.getResponse());
+								outTransformation = cTransformation.transform(null, action_instance, current_redirect, context.getRequest(), context.getResponse());
 								action_instance.onPostTransform(outTransformation);
 							}else if(	cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase(info_transformation.CONST_INPUTFORMAT_STRING) ||
 								cTransformation.get_infotransformation().getInputformat().equalsIgnoreCase("")
@@ -6447,31 +6455,55 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	public static i_stream getStreamFromContainer(String id_stream){
 		@SuppressWarnings("unchecked")
-		Map<String,Object> fromLocalContainer = 
-				 (Map<String,Object>)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
-		Map<String,Object> container_streams_instance = fromLocalContainer;
+		Map<String,i_stream> fromLocalContainer = 
+				 (Map<String,i_stream>)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		Map<String,i_stream> container_streams_instance = fromLocalContainer;
 		if(container_streams_instance==null){
-			container_streams_instance = new HashMap<String, Object>();
+			container_streams_instance = new HashMap<String, i_stream>();
 			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
 		}
-		return (i_stream)container_streams_instance.get(id_stream);
+		return container_streams_instance.get(id_stream);
 	}
 	
 	public static void putStreamIntoContainer(String id_stream, i_stream rStream){
 		if(id_stream==null)
 			return;
 		@SuppressWarnings("unchecked")
-		Map<String,Object> fromLocalContainer = 
-				 (Map<String,Object>)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
-		Map<String,Object> container_streams_instance = fromLocalContainer;
+		Map<String,i_stream> fromLocalContainer = 
+				 (Map<String,i_stream>)getFromLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE);
+		Map<String,i_stream> container_streams_instance = fromLocalContainer;
 		if(container_streams_instance==null){
-			container_streams_instance = new HashMap<String, Object>();
+			container_streams_instance = new HashMap<String, i_stream>();
 			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_STREAMS_INSTANCE, container_streams_instance);				
 		}
 		container_streams_instance.put(id_stream, rStream);
 	}
 	
-
+	public static i_transformation getTransformationFromContainer(String id_transformation){
+		@SuppressWarnings("unchecked")
+		Map<String,i_transformation> fromLocalContainer = 
+				 (Map<String,i_transformation>)getFromLocalContainer(bsConstants.CONST_CONTAINER_TRANSFORMATIONS_INSTANCE);
+		Map<String,i_transformation> container_transformations_instance = fromLocalContainer;
+		if(container_transformations_instance==null){
+			container_transformations_instance = new HashMap<String, i_transformation>();
+			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_TRANSFORMATIONS_INSTANCE, container_transformations_instance);				
+		}
+		return container_transformations_instance.get(id_transformation);
+	}
+	
+	public static void putTransformationIntoContainer(String id_transformation, i_transformation rTransformation){
+		if(id_transformation==null)
+			return;
+		@SuppressWarnings("unchecked")
+		Map<String,i_transformation> fromLocalContainer = 
+				 (Map<String,i_transformation>)getFromLocalContainer(bsConstants.CONST_CONTAINER_TRANSFORMATIONS_INSTANCE);
+		Map<String,i_transformation> container_transformations_instance = fromLocalContainer;
+		if(container_transformations_instance==null){
+			container_transformations_instance = new HashMap<String, i_transformation>();
+			bsController.putToLocalContainer(bsConstants.CONST_CONTAINER_TRANSFORMATIONS_INSTANCE, container_transformations_instance);				
+		}
+		container_transformations_instance.put(id_transformation, rTransformation);
+	}
 
 	public static void setReInit(boolean reInit) {
 		bsController.reInit = reInit;
