@@ -64,6 +64,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 	protected String formatOutput=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
+	protected String formatLocationFromUserAuth=null;
 	protected String method_prefix=null;
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
@@ -129,6 +130,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		showKeyAsDefaultValue=null;
 		styleClass=null;
 		formatOutput=null;
+		formatLocationFromUserAuth=null;
 		method_prefix=null;
 		replaceOnBlank=null;
 		formatLanguage=null;
@@ -350,7 +352,13 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 				results.append(">");
 			}
 			try{
-				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true")) {
+					auth=bsController.checkAuth_init(request);
+					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+				}else
+					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
+
+				
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
 			}catch(Exception e){}
@@ -608,6 +616,14 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 
 	public void setNormalXMLCDATA(String normalXMLCDATA) {
 		this.normalXMLCDATA = normalXMLCDATA;
+	}
+
+	public String getFormatLocationFromUserAuth() {
+		return formatLocationFromUserAuth;
+	}
+
+	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
+		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
 	}	
 }
 

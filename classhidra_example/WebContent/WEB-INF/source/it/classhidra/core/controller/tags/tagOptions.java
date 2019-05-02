@@ -62,6 +62,10 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 	protected String dir=null;//"ltr"
 
 	protected String formatOutput=null;
+	protected String formatLanguage=null;
+	protected String formatCountry=null;
+	protected String formatLocationFromUserAuth=null;
+
 
 	protected String onclick=null;
 	protected String ondblclick=null;
@@ -174,8 +178,10 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 			results.append("<!--"+e.toString()+"-->");
 		}
 
-		if ( iterator != null)
-		{
+		
+		if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
+			auth=bsController.checkAuth_init(request);
+		if ( iterator != null){
 			for(int i=0;i<iterator.size();i++){
 				results.append(this.createTagBody(iterator.get(i)));
 			}
@@ -223,6 +229,10 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		styleClass=null;
 		dir=null;//"ltr"
 		formatOutput=null;
+		formatLocationFromUserAuth=null;
+		formatLanguage=null;
+		formatCountry=null;
+		
 		formatInput=null;
 
 		onclick=null;
@@ -528,7 +538,11 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		results.append('>');
 		if (currentLabel != null){
 			try{
-				currentLabel=util_format.makeFormatedString(formatOutput,currentLabel);
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
+					currentLabel=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), currentLabel);
+				else
+					currentLabel=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, currentLabel);
+//				currentLabel=util_format.makeFormatedString(formatOutput,currentLabel);
 			}catch(Exception e){}
 			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
 				results.append(util_xml.normalXML((currentLabel==null)?"":currentLabel.toString(),charset));	
@@ -924,6 +938,30 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	public void setNormalXMLCDATA(String normalXMLCDATA) {
 		this.normalXMLCDATA = normalXMLCDATA;
+	}
+
+	public String getFormatLanguage() {
+		return formatLanguage;
+	}
+
+	public void setFormatLanguage(String formatLanguage) {
+		this.formatLanguage = formatLanguage;
+	}
+
+	public String getFormatCountry() {
+		return formatCountry;
+	}
+
+	public void setFormatCountry(String formatCountry) {
+		this.formatCountry = formatCountry;
+	}
+
+	public String getFormatLocationFromUserAuth() {
+		return formatLocationFromUserAuth;
+	}
+
+	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
+		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
 	}
 
 }

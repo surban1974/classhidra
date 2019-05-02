@@ -18,12 +18,14 @@ import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
 
 public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttributes {
 	private static final long serialVersionUID = 1L;
+	protected auth_init auth=null;
 
 
 	protected String checkParametersIfDynamic(String input, i_bean formBean){
@@ -154,6 +156,12 @@ public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttr
 	}
 
 	public void setDynamicAttribute(String arg0, String arg1, Object arg2) throws JspException {
+	}
+
+
+	public void release() {
+		super.release();
+		auth=null;
 	}
 
 }

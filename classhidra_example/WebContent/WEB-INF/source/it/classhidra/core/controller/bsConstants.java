@@ -47,6 +47,7 @@ public interface bsConstants {
 	public final static String CONST_XML_AUTHENTIFICATIONS_FOLDER		=	"authentications";
 	public final static String CONST_XML_MESSAGES 						=	"messages.xml";
 	public final static String CONST_XML_MESSAGES_FOLDER				=	"messages";
+	public final static String CONST_I18N_MESSAGES_FOLDER				=	"i18n";
 	public final static String CONST_XML_ACTIONS_FOLDER 				=	"actions";
 	public final static String CONST_XML_USERS 							=	"users.xml";
 	public final static String CONST_XML_JAAS 							= 	"jaas.config";

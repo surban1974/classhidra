@@ -52,6 +52,7 @@ public class tagEqual extends  ClTagSupport implements IExpressionArgument{
 	protected String formatOutput=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;	
+	protected String formatLocationFromUserAuth=null;
 	protected String ignoreCase =null;
 	
 	protected Boolean argumentValue;
@@ -83,7 +84,8 @@ public class tagEqual extends  ClTagSupport implements IExpressionArgument{
 		field=null;
 		formatOutput=null;
 		formatLanguage=null;
-		formatCountry=null;		
+		formatCountry=null;	
+		formatLocationFromUserAuth=null;
 		ignoreCase=null;
 		argumentValue=null;
 	}
@@ -199,7 +201,12 @@ public class tagEqual extends  ClTagSupport implements IExpressionArgument{
 		}
 		
 		try{
-			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
+			if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true")) {
+				auth=bsController.checkAuth_init(request);
+				writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+			}
+			else
+				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
 		}catch (Exception e) {
 		}
 		
@@ -308,6 +315,14 @@ public class tagEqual extends  ClTagSupport implements IExpressionArgument{
 			return null;
 		else
 			return argumentValue.toString();
+	}
+
+	public String getFormatLocationFromUserAuth() {
+		return formatLocationFromUserAuth;
+	}
+
+	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
+		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
 	}
 
 }

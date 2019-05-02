@@ -77,6 +77,7 @@ public class auth_init implements Serializable{
 	private String _ruoloDesc;
 	private String _ruoli;
 	private String _language;
+	private String _country;
 	private String _matricola;
 	private String _mail;
 	private String _target;
@@ -252,6 +253,7 @@ public class auth_init implements Serializable{
 		_ruoloDesc = another.get_ruoloDesc();
 		_ruoli = another.get_ruoli();
 		_language = another.get_language();
+		_country = another.get_country();
 		_matricola = another.get_matricola();
 		_mail = another.get_mail();
 		_target = another.get_target();
@@ -292,6 +294,7 @@ public class auth_init implements Serializable{
 		_matricola="";
 		_mail="";
 		_language="EN";
+		_country="";
 		_target="";
 		_user_ip="";
 		_ticker="";
@@ -569,6 +572,14 @@ public class auth_init implements Serializable{
 
 	public void setInfogroup(info_group infogroup) {
 		this.infogroup = infogroup;
+	}
+
+	public String get_country() {
+		return _country;
+	}
+
+	public void set_country(String _country) {
+		this._country = _country;
 	}
 
 }

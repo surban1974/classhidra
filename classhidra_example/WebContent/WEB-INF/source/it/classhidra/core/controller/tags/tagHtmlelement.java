@@ -64,7 +64,10 @@ public class tagHtmlelement extends tagFormelement implements DynamicAttributes 
 				results.append(">");
 			}
 			try{
-				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
+					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+				else
+					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
 			}catch(Exception e){}	

@@ -52,7 +52,7 @@ public class tagMore extends  ClTagSupport implements IExpressionArgument{
 	protected String formatOutput=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
-	
+	protected String formatLocationFromUserAuth=null;
 	protected Boolean argumentValue;
 	
 	public int doStartTag() throws JspException {
@@ -82,6 +82,7 @@ public class tagMore extends  ClTagSupport implements IExpressionArgument{
 		formatOutput=null;
 		formatLanguage=null;
 		formatCountry=null;	
+		formatLocationFromUserAuth=null;
 		argumentValue=null;
 	}
 
@@ -191,8 +192,12 @@ public class tagMore extends  ClTagSupport implements IExpressionArgument{
 			}
 		}
 		try{
-			writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
-		}catch (Exception e) {
+			if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true")) {
+				auth=bsController.checkAuth_init(request);
+				writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+			}
+			else
+				writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);		}catch (Exception e) {
 		}		
 		if(value==null && writeValue!=null){
 			if(getParent()!=null && getParent() instanceof tagSwitch)
@@ -289,6 +294,14 @@ public class tagMore extends  ClTagSupport implements IExpressionArgument{
 			return null;
 		else
 			return argumentValue.toString();
+	}
+
+	public String getFormatLocationFromUserAuth() {
+		return formatLocationFromUserAuth;
+	}
+
+	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
+		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
 	}
 
 }

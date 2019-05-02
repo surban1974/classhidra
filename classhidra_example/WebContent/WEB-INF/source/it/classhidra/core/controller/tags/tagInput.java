@@ -104,6 +104,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 	protected String formatOutput = null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
+	protected String formatLocationFromUserAuth=null;
 	protected String toUpperCase = null;
 	protected String toTrim = null;
 
@@ -234,7 +235,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		formatOutput = null;
 		formatLanguage=null;
 		formatCountry=null;
-
+		formatLocationFromUserAuth=null;
 		autocomplete = null;
 		autofocus = null;
 		form = null;
@@ -392,17 +393,28 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 
 
 			if(anotherBean!=null){
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
+					auth=bsController.checkAuth_init(request);
 				if(name==null){
 					writeValue = anotherBean;
 					name=bean;
 					try{
-						value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, writeValue);
+						if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
+							value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+						else
+							value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, writeValue);
+						
 					}catch(Exception e){
 					}
 				}else{
 					try{
 						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,arg);
-						if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
+						if(writeValue!=null) {
+							if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
+								value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+							else
+								value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, writeValue);
+						}
 					}catch(Exception e){}
 				}
 			}else{
@@ -446,7 +458,12 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
 							asyncUpdateUrl+="$formatCountry_"+prefixName+"="+util_format.normaliseURLParameter(formatCountry)+"&";
 						else asyncUpdateUrl+="$formatCountry_"+name+"="+util_format.normaliseURLParameter(formatCountry)+"&";
-					}					
+					}	
+					if(formatLocationFromUserAuth!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatLocationFromUserAuth_"+prefixName+"="+util_format.normaliseURLParameter(formatLocationFromUserAuth)+"&";
+						else asyncUpdateUrl+="$formatLocationFromUserAuth_"+name+"="+util_format.normaliseURLParameter(formatLocationFromUserAuth)+"&";
+					}
 					if(replaceOnBlank!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
 							asyncUpdateUrl+="$replaceOnBlank_"+prefixName+"="+util_format.normaliseURLParameter(replaceOnBlank)+"&";

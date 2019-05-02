@@ -181,7 +181,14 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			if(bean==null && name!=null){
 				writeValue = formBean.get(name);
 				try{
-					if(writeValue!=null) value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
+					if(writeValue!=null) {
+						if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true")) {
+							auth=bsController.checkAuth_init(request);
+							value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+						}else
+							value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
+						
+					}
 				}catch(Exception e){}
 			}else{
 				Object anotherBean = null;

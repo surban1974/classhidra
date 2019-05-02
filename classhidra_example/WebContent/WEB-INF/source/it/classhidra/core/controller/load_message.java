@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
@@ -45,6 +46,7 @@ import it.classhidra.core.tool.exception.message;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_classes;
+import it.classhidra.core.tool.util.util_file;
 import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.core.tool.util.util_xml;
 
@@ -202,7 +204,6 @@ public void initWithFOLDER(String dir) throws bsControllerException{
 		File[] list = input.listFiles();
 		for(int i=0;i<list.length;i++){
 			try{
-
 				boolean res = initWithFile(list[i].getAbsolutePath());
 				if(res) bsController.writeLog("Load_messages from "+input.getAbsolutePath()+" OK ",iStub.log_INFO);
 				readOk_File=readOk_File || res;
@@ -320,21 +321,76 @@ public void load_from_resources() {
 		load_from_resources("META-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);	
 		load_from_resources("WEB-INF/"+bsController.CONST_XML_PREFIX+bsController.CONST_XML_MESSAGES);
 		
-		String property_name =  "config."+bsController.CONST_XML_MESSAGES_FOLDER;
-		try{
-			List<String> array = util_classes.getResources(property_name);
-			for(int i=0;i<array.size();i++){
-				String property_name0 =  bsController.CONST_XML_MESSAGES_FOLDER+"/"+array.get(i);
-				if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
-					load_from_resources("/config/"+property_name0);
-			}
-		}catch(Exception e){
-			bsController.writeLog("Load_messages from resources Array KO "+e.toString(),iStub.log_WARN);
-		}
-
-
+		load_from_resources_folder("");
+		load_from_resources_folder("config.");
+		load_from_resources_folder("META-INF.");
+		load_from_resources_folder("WEB-INF.");
 
 }
+
+private void load_from_resources_folder(String prefix) {
+	String property_name =  prefix+bsController.CONST_XML_MESSAGES_FOLDER;
+	try{
+		List<String> array = util_classes.getResources(property_name);
+		for(int i=0;i<array.size();i++){
+			String property_name0 =  bsController.CONST_XML_MESSAGES_FOLDER+"/"+array.get(i);
+			if(property_name0!=null && property_name0.toLowerCase().indexOf(".xml")>-1)
+				load_from_resources("/"+((prefix.indexOf('.')>-1)?prefix.replace('.', '/'):prefix)+property_name0);
+			if(property_name0!=null && property_name0.toLowerCase().indexOf(".properties")>-1)
+				load_from_resources_i18n(((prefix.indexOf('.')>-1)?prefix.replace('.', '/'):prefix)+property_name0);
+		}
+	}catch(Exception e){
+		bsController.writeLog("Load_messages from resources "+property_name+" KO "+e.toString(),iStub.log_WARN);
+	}
+	property_name =  prefix+bsController.CONST_I18N_MESSAGES_FOLDER;
+	try{
+		List<String> array = util_classes.getResources(property_name);
+		for(int i=0;i<array.size();i++){
+			String property_name0 =  bsController.CONST_I18N_MESSAGES_FOLDER+"/"+array.get(i);
+			if(property_name0!=null && property_name0.toLowerCase().indexOf(".properties")>-1)
+				load_from_resources_i18n(((prefix.indexOf('.')>-1)?prefix.replace('.', '/'):prefix)+property_name0);
+		}
+	}catch(Exception e){
+		bsController.writeLog("Load_messages from resources "+property_name+" KO "+e.toString(),iStub.log_WARN);
+	}	
+}
+
+private boolean load_from_resources_i18n(String property_name) {
+	if(property_name==null)
+		return false;
+	if(property_name.startsWith("/") || property_name.startsWith("\\"))
+		property_name = property_name.substring(1,property_name.length());
+	if(property_name.endsWith(".properties"))
+		property_name = property_name.substring(0,property_name.lastIndexOf(".properties"));
+	property_name=property_name.replace("/", ".").replace("\\", ".");
+	String language=null;
+//	String country=null;
+	String pName=null;
+	if(property_name.indexOf('.')>-1)
+		pName=property_name.substring(property_name.lastIndexOf('.')+1,property_name.length());
+	else
+		pName=property_name;
+	final String[] parts = pName.split("_");
+	if(parts.length>1)
+		language=parts[1];
+//	if(parts.length>2)
+//		country=parts[2];
+	if(language==null)
+		return false;
+	Properties property=null;
+	try{
+		property = util_file.loadProperty(property_name);
+		for (final String key : property.stringPropertyNames()) {
+			final message mess = new message("I",key,property.getProperty(key));
+			_messages.put(language.toUpperCase()+"."+mess.getCD_MESS(),mess);
+	    }
+		loadedFrom+=" "+property_name;
+		return true;
+	}catch(Exception e){
+		return false;
+	}
+}
+
 private boolean load_from_resources(String property_name) {
 		InputStream is = null;
 	    BufferedReader br = null;
