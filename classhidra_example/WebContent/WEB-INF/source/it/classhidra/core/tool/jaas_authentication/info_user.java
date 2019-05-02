@@ -49,6 +49,7 @@ public class info_user extends info_entity implements i_elementBase{
 	private String pass_expired;
 	private String matriculation;
 	private String language;
+	private String country;
 	private String group;
 	private String target;
 	private String crypted;
@@ -105,6 +106,7 @@ public class info_user extends info_entity implements i_elementBase{
 		pass_expired="";
 		matriculation="";
 		language="";
+		country="";
 		group="";
 		target="";
 		crypted="";
@@ -346,6 +348,14 @@ public class info_user extends info_entity implements i_elementBase{
 
 	public void setOriginalc(String originalc) {
 		this.originalc = originalc;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 
