@@ -16,11 +16,13 @@ public class report extends elementBase{
 	private String sql;
 	private List<parameter> parameters;
 	private List<transport> transports;
+	private String lang;
 	
 	public report(){
 		super();
 		init();
 	}
+
 	
 	public void init(){
 		sql="";
@@ -29,14 +31,17 @@ public class report extends elementBase{
 		filename=new filename();
 	}
 	
-
 	public void load4view(Statement st, HashMap<String, parameter> h_parameters){
+		load4view(st, h_parameters, null);
+	}
+
+	public void load4view(Statement st, HashMap<String, parameter> h_parameters, String lang){
 		for(parameter current:parameters)
 			h_parameters.put(current.getName(), current);
 		
 		for(parameter current:parameters){			
 			if(current.getExec_type().equals(parameter.EXEC_NORMALLY))
-				current.load4view(st,h_parameters);
+				current.load4view(st,h_parameters, lang);
 		}
 	}
 	
@@ -83,5 +88,9 @@ public class report extends elementBase{
 
 	public void setTransports(List<transport> transports) {
 		this.transports = transports;
+	}
+
+	public String getLang() {
+		return lang;
 	}
 }

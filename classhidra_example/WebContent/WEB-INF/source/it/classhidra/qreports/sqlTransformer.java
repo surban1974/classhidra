@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import it.classhidra.core.controller.bsController;
 import it.classhidra.core.tool.util.util_format;
 
 
@@ -20,6 +21,7 @@ public class sqlTransformer implements Serializable{
 		
 		int type;
 		String argument;
+		boolean finisArgument=false;
 		
 		public MaskFunction(){
 			super();
@@ -45,11 +47,21 @@ public class sqlTransformer implements Serializable{
 		public String toString(){
 			return new Integer(type).toString()+"|"+argument;
 		}
+
+		public boolean isFinisArgument() {
+			return finisArgument;
+		}
+
+		public void setFinisArgument(boolean finisArgument) {
+			this.finisArgument = finisArgument;
+		}
 	}	
 
-
-	
 	public static String getTransformed(String input, parameter current, HashMap<String, parameter> h_parameters) throws Exception{
+		return getTransformed(input, current, h_parameters, null);
+	}
+	
+	public static String getTransformed(String input, parameter current, HashMap<String, parameter> h_parameters, String lang) throws Exception{
 		String result="";
 		
 		List<MaskFunction> functions = parsing(input);
@@ -66,6 +78,20 @@ public class sqlTransformer implements Serializable{
 							result+=par.getDefault_value();
 						if(current!=null)
 							par.getDependencies().put(current.getName(), current);
+					}else if(lang!=null) {
+						final String mess = bsController.writeLabel(lang, func.getArgument(), null);
+						if(mess!=null)
+							result+=mess;
+						else {
+							result+=START_ARGUMENTS+func.getArgument();
+							if(func.isFinisArgument())
+								result+=FINISH_ARGUMENTS;					
+						}
+							
+					}else {
+						result+=START_ARGUMENTS+func.getArgument();
+						if(func.isFinisArgument())
+							result+=FINISH_ARGUMENTS;
 					}
 					break;
 				}
@@ -107,7 +133,10 @@ public class sqlTransformer implements Serializable{
 					func.setType(funcTypeStart);
 				}	
 			}else if(funcTypeFinish==func.getType()){ 
-				if(!func.getArgument().equals("")) result.add(func);
+				if(!func.getArgument().equals("")) {
+					func.setFinisArgument(true);
+					result.add(func);
+				}
 				func = new sqlTransformer().new MaskFunction();
 			}else{
 				func.addArgument(current);

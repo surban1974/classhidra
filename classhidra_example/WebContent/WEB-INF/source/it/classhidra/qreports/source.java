@@ -42,6 +42,10 @@ public class source extends elementBase{
 	}
 
 	public void load4view(Statement st, parameter current, HashMap<String, parameter> h_parameters){
+		load4view(st, current, h_parameters, null);
+	}
+	
+	public void load4view(Statement st, parameter current, HashMap<String, parameter> h_parameters, String lang){
 		if(list==null) 
 			list=new ArrayList<source_item>();
 		if(static_list==null){
@@ -52,11 +56,12 @@ public class source extends elementBase{
 		if(!sql.equals("")){
 			list.clear();
 			list.addAll(static_list);
-	       try {
-	    	   	sql_transformed=sqlTransformer.getTransformed(sql, current, h_parameters);
-	            ResultSet rs = st.executeQuery(sql_transformed);
+			ResultSet rs = null;
+			try {	    	   
+	    	   	sql_transformed=sqlTransformer.getTransformed(sql, current, h_parameters, lang);
+	            rs = st.executeQuery(sql_transformed);
 	            if (rs != null) {
-	                while (rs.next()) {
+	            	while (rs.next()) {
 	                	source_item si = new source_item();
 	                	si.setValue(rs.getString(1));
 	                	try{
@@ -65,41 +70,69 @@ public class source extends elementBase{
 	                		si.setDescription("");
 	                	}
 	                	list.add(si);
-	                 }
+	            	}
 	                rs.close();
 	            }
 	        } catch (Exception e) {
 	        	new bsException(e, iStub.log_ERROR);
 	        } finally {
+	        	try {
+	        		if(rs!=null)
+	        			rs.close();
+	        	}catch (Exception e) {
+				}
 	        }
 		}
 
 		for(source_item si:list){
 			if(si.getLanguagetranslationtable()!=null){
-				si.getLanguagetranslationtable().load4view(st,h_parameters);
+				si.getLanguagetranslationtable().load4view(st,h_parameters, lang);
 				if(si.getLanguagetranslationtable().getDescription_view()!=null && !si.getLanguagetranslationtable().getDescription_view().equals(""))
 					si.setDescription_view(si.getLanguagetranslationtable().getDescription_view());
+				else {
+					try{
+						si.setDescription_view(sqlTransformer.getTransformed(si.getDescription_view(), null, h_parameters, lang));
+					}catch(Exception e){	
+						new bsException(e, iStub.log_ERROR);
+					}					
 				}
+			}else {
+				try{
+					si.setDescription_view(sqlTransformer.getTransformed(si.getDescription_view(), null, h_parameters, lang));
+				}catch(Exception e){	
+					new bsException(e, iStub.log_ERROR);
+				}
+			}
 
 		}
 
 	}
 
 	public String loadParameter(Statement st, parameter current, HashMap<String, parameter> h_parameters){
+		return loadParameter(st, current, h_parameters, null);
+	}
+	
+	public String loadParameter(Statement st, parameter current, HashMap<String, parameter> h_parameters, String lang){
 		String result="";
 		if(!sql.equals("")){
-	       try {
-	            String sql_loc=sqlTransformer.getTransformed(sql, current, h_parameters);
-	            ResultSet rs = st.executeQuery(sql_loc);
+			ResultSet rs = null;
+			try {
+	            String sql_loc=sqlTransformer.getTransformed(sql, current, h_parameters, lang);
+	            rs = st.executeQuery(sql_loc);
 	            if (rs != null) {
-	                while (rs.next()) {
-	                	result=rs.getString(1);
-	                 }
+	            	while (rs.next()) 
+	            		result=rs.getString(1);
+	            	
 	                rs.close();
 	            }
 	        } catch (Exception e) {
 	        	new bsException(e, iStub.log_ERROR);
 	        } finally {
+	        	try {
+	        		if(rs!=null)
+	        			rs.close();
+	        	}catch (Exception e) {
+				}
 	        }
 		}
 		return result;

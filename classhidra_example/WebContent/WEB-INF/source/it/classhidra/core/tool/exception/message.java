@@ -230,7 +230,8 @@ public class message extends elementDBBase implements i_elementDBBase, java.io.S
 				String key = (String)p_keys.get(i);
 				String value=(String)parameters.get(key);
 	//			mess_in_desc=mess_in_desc.replace("{"+key+"}", value);
-				mess_in_desc=util_format.replace(mess_in_desc, "{"+key+"}", value);
+				if(mess_in_desc!=null)
+					mess_in_desc=util_format.replace(mess_in_desc, "{"+key+"}", value);
 			}		
 		}	
 		return mess_in_desc;

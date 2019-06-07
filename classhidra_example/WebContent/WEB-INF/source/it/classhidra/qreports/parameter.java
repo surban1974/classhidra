@@ -105,24 +105,37 @@ public class parameter extends elementBase{
 	}	
 	
 	public void load4view(Statement st, HashMap<String, parameter> h_parameters){
+		load4view(st, h_parameters, null);
+	}
+	
+	public void load4view(Statement st, HashMap<String, parameter> h_parameters, String lang){
 		try{
-			default_value = sqlTransformer.getTransformed( default_value, this, h_parameters);
-		}catch(Exception e){
-			
+			default_value = sqlTransformer.getTransformed( default_value, this, h_parameters, lang);
+		}catch(Exception e){		
+			new bsException(e, iStub.log_ERROR);
 		}
+		try{
+			description_view = sqlTransformer.getTransformed( description_view, this, h_parameters, lang);
+		}catch(Exception e){	
+			new bsException(e, iStub.log_ERROR);
+		}		
 //		description_view=description;
 		if(	languagetranslationtable!=null){
-			languagetranslationtable.load4view(st,h_parameters);
+			languagetranslationtable.load4view(st,h_parameters, lang);
 			if(languagetranslationtable.getDescription_view()!=null && !languagetranslationtable.getDescription_view().equals(""))
 				description_view=languagetranslationtable.getDescription_view();
 		}
 		if(source!=null)
-			source.load4view(st,this,h_parameters);
+			source.load4view(st,this,h_parameters, lang);
+	}
+
+	public void loadParameter(Statement st, HashMap<String, parameter> h_parameters){
+		loadParameter(st, h_parameters, null);
 	}
 	
-	public void loadParameter(Statement st, HashMap<String, parameter> h_parameters){
+	public void loadParameter(Statement st, HashMap<String, parameter> h_parameters, String lang){
 		if(source!=null)
-			default_value = source.loadParameter(st, this, h_parameters);
+			default_value = source.loadParameter(st, this, h_parameters, lang);
 	}
 
 	

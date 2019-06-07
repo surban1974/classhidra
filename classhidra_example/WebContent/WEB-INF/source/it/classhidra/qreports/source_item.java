@@ -35,10 +35,10 @@ public class source_item extends elementBase{
 		description_view = "";
 	}
 	
-	public void load4view(Statement dbm, HashMap<String, parameter> h_parameters){
+	public void load4view(Statement dbm, HashMap<String, parameter> h_parameters, String lang){
 		description_view=description;
 		if(	languagetranslationtable!=null){
-			languagetranslationtable.load4view(dbm,h_parameters);
+			languagetranslationtable.load4view(dbm,h_parameters, lang);
 			if(languagetranslationtable.getDescription_view()!=null && !languagetranslationtable.getDescription_view().equals(""))
 				description_view=languagetranslationtable.getDescription_view();
 		}

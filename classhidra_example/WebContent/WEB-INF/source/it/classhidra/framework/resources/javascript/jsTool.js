@@ -3462,3 +3462,10 @@ function updateTagComponentDirect(action,redirect,componentId,componentOuter,onC
 	}
 
 }
+
+function windowScrollTo(x,y){
+	try{
+		window.scrollTo(Math.round(x),Math.round(y));
+	}catch(e){	
+	}
+}

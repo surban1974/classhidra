@@ -4239,6 +4239,21 @@ public class bsController extends HttpServlet implements bsConstants  {
 		}catch(Exception e){}
 	}
 
+	public static String writeLabel(String lang, String cd_mess, HashMap<String,String> parameters) {
+		if(lang==null || cd_mess==null) 
+			return message.decodeParameters(null,parameters);
+		try{
+			if(bsController.getMess_config().get_messages().get(lang+"."+cd_mess)!=null)
+				return ((message)bsController.getMess_config().get_messages().get(lang+"."+cd_mess)).getDESC_MESS(parameters);
+			if(bsController.getMess_config().get_messages().get(lang.toLowerCase()+"."+cd_mess)!=null)
+				return ((message)bsController.getMess_config().get_messages().get(lang.toLowerCase()+"."+cd_mess)).getDESC_MESS(parameters);
+			if(bsController.getMess_config().get_messages().get(lang.toUpperCase()+"."+cd_mess)!=null)
+				return ((message)bsController.getMess_config().get_messages().get(lang.toUpperCase()+"."+cd_mess)).getDESC_MESS(parameters);
+			return null;
+		}catch(Exception e){
+			return null;
+		}
+	}	
 
 	public static String writeLabel(String lang, String cd_mess, String def, HashMap<String,String> parameters) {
 		if(lang==null || cd_mess==null) 

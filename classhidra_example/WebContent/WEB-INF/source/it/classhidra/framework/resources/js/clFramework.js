@@ -1,6 +1,6 @@
 /**
 * Name: jsTool.js
-* Version: 1.5.4 (compatible classHidra 1.5.4)
+* Version: 1.5.6 (compatible classHidra 1.5.6)
 * Creation date: (25/05/2015)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
@@ -3464,4 +3464,11 @@ function updateTagComponentDirect(action,redirect,componentId,componentOuter,onC
 		
 	}
 
+}
+
+function windowScrollTo(x,y){
+	try{
+		window.scrollTo(Math.round(x),Math.round(y));
+	}catch(e){	
+	}
 }

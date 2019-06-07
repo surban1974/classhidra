@@ -99,13 +99,17 @@ public class report_manager implements Serializable{
 	}
 	
 	public void load4view(HashMap<String, parameter> h_parameters) throws Exception{
+		load4view(h_parameters, null);
+	}
+	
+	public void load4view(HashMap<String, parameter> h_parameters, String lang) throws Exception{
 		if(_report==null || _report.getParameters()==null || _report.getParameters().size()==0) return;
 		Connection con = null;
 		Statement st = null;
 		try{
 			con = new db_connection().getContent();
             st = con.createStatement();
-			_report.load4view(st, h_parameters);
+			_report.load4view(st, h_parameters, lang);
 		} catch (Exception e) {
 	        throw e;
 	    } finally {
