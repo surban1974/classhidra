@@ -177,6 +177,9 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 		
 		String asyncUpdateUrl=null;
 
+		if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
+			formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();
+
 //		if(value==null){
 			if(bean==null && name!=null){
 				writeValue = formBean.get(name);

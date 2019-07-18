@@ -50,6 +50,7 @@ import it.classhidra.core.tool.tlinked.TLinkedProvider_Simple;
 import it.classhidra.scheduler.scheduling.IBatchScheduling;
 import it.classhidra.serialize.JsonWriter;
 import it.classhidra.serialize.XmlWriter;
+import it.classhidra.core.tool.util.util_base64;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_classes;
 import it.classhidra.core.tool.util.util_cloner;
@@ -89,7 +90,7 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
+
 
 
 
@@ -2415,7 +2416,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 			inputBase64 = (context.getRequest().getParameter(bsController.CONST_ID_INPUTBASE64)!=null &&
 					(
 							context.getRequest().getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase("true") ||
-							context.getRequest().getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
+							context.getRequest().getParameter(bsController.CONST_ID_INPUTBASE64).equalsIgnoreCase(util_base64.encode("true".getBytes()))
 					)
 				);
 			charset = (context.getRequest().getCharacterEncoding()==null || context.getRequest().getCharacterEncoding().equals(""))?"UTF-8":context.getRequest().getCharacterEncoding();
@@ -2446,7 +2447,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 						ret = context.getRequest().getParameter(annotationParameter.name());
 						if(ret!=null && ret instanceof String && inputBase64){
 							try{
-								ret=new String(DatatypeConverter.parseBase64Binary((String)ret),charset);
+								ret=new String(util_base64.decode((String)ret),charset);
 							}catch(Exception e){}
 						}
 						result[i] = util_makeValue.makeFormatedValue1(current,(ret!=null)?ret.toString():"",null);
@@ -4956,7 +4957,7 @@ public class bsController extends HttpServlet implements bsConstants  {
         md.update(plaintext.getBytes("UTF-8"));
         final byte raw[] = md.digest();
 //		BASE64Encoder encoder = new BASE64Encoder();
-        final String hash = DatatypeConverter.printBase64Binary(raw);
+        final String hash = util_base64.encode(raw);
 //		encoder = null;
         return hash;
     }
@@ -4968,7 +4969,7 @@ public class bsController extends HttpServlet implements bsConstants  {
         md.update(plaintext.getBytes("UTF-8"));
         final byte raw[] = md.digest();
 //		BASE64Encoder encoder = new BASE64Encoder();
-        final String hash = DatatypeConverter.printBase64Binary(raw);
+        final String hash = util_base64.encode(raw);
 //		encoder = null;
         return hash;
     }
@@ -4980,7 +4981,7 @@ public class bsController extends HttpServlet implements bsConstants  {
         md.update(plaintext.getBytes("UTF-8"));
         final byte raw[] = md.digest();
 //		BASE64Encoder encoder = new BASE64Encoder();
-        final String hash = DatatypeConverter.printBase64Binary(raw);
+        final String hash = util_base64.encode(raw); 
 //		encoder = null;
         return hash;
     }

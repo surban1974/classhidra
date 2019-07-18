@@ -111,9 +111,10 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 
 				}
 				request.removeAttribute(i_tag_helper.CONST_TAG_COMPONENT_ID);
-			}
-			
+			}			
 		}
+		if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
+			formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();
 		
 		this.release();
 		return super.doEndTag();
@@ -247,7 +248,9 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 				prefixName=name;
 			else prefixName+="."+name;
 
-		
+			if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
+				formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();
+
 			if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
 				auth=bsController.checkAuth_init(request);
 			String html = drawTagBody(writeValue, prefixName);
@@ -299,7 +302,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
 					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
 				else
-					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage, formatCountry, writeValue);
 					
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");

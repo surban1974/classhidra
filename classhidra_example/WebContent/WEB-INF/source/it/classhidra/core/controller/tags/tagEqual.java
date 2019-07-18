@@ -199,7 +199,8 @@ public class tagEqual extends  ClTagSupport implements IExpressionArgument{
 			}catch(Exception e){
 			}
 		}
-		
+		if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
+			formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();
 		try{
 			if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true")) {
 				auth=bsController.checkAuth_init(request);

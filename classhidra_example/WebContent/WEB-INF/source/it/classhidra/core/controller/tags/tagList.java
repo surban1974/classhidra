@@ -130,6 +130,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 	protected String formatCountry=null;
 	protected String component=null;
 	protected String rendering = null;
+	protected String formatLocationFromUserAuth=null;
 
 	protected Map<String,Object> tagAttributes = new HashMap<String, Object>();
 
@@ -241,6 +242,12 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 			renderComponent(formBean, formAction, this.getClass().getName(), ((objId!=null)?objId:((name!=null)?name:"")),
 					(rendering!=null && rendering.equalsIgnoreCase(i_tag_helper.CONST_TAG_RENDERING_FULL))?true:false);
 		}
+		
+		if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
+			formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();
+		
+		if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
+			auth=bsController.checkAuth_init(request);
 
 		List<?> iterator = null;
 
@@ -483,7 +490,8 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		formatCountry=null;
 		component=null;
 		rendering=null;
-
+		formatLocationFromUserAuth=null;
+		
 		tagAttributes = new HashMap<String, Object>();
 		
 		scroll_row_height="16";
@@ -1000,8 +1008,13 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 			}
 		}
 		try{
-			if(!v_formatsOutput_current.toString().equals(""))
-				writeValue=util_format.makeFormatedString(v_formatsOutput_current.toString(),formatLanguage,formatCountry,writeValue);
+			
+			if(!v_formatsOutput_current.toString().equals("")) {
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
+					writeValue=util_format.makeFormatedString(v_formatsOutput_current.toString(), auth.get_language(), auth.get_country(), writeValue);
+				else
+					writeValue=util_format.makeFormatedString(v_formatsOutput_current.toString(),formatLanguage,formatCountry,writeValue);
+			}
 			if(!v_replaceOnBlank_current.toString().equals("") && v_replaceOnBlank_current.toString().equals(writeValue.toString()))
 				writeValue=util_format.replace(writeValue.toString(),v_replaceOnBlank_current.toString(),"");
 
@@ -1573,6 +1586,16 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 	public void setRendering(String rendering) {
 		this.rendering = rendering;
+	}
+
+
+	public String getFormatLocationFromUserAuth() {
+		return formatLocationFromUserAuth;
+	}
+
+
+	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
+		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
 	}
 }
 

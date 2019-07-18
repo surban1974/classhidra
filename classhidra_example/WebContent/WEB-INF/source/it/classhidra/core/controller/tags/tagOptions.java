@@ -538,6 +538,9 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		results.append('>');
 		if (currentLabel != null){
 			try{
+				if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
+					formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();
+
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
 					currentLabel=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), currentLabel);
 				else

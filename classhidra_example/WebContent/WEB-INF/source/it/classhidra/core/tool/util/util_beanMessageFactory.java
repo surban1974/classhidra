@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.Locale;
 
-import javax.xml.bind.DatatypeConverter;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
@@ -316,7 +316,7 @@ public class util_beanMessageFactory {
 					if (node.getChildNodes().item(i).getNodeType() == Node.CDATA_SECTION_NODE){
 						String valueB64 = ((Text)node.getFirstChild()).getData();
 						try{
-							byte[] byteAsObj = DatatypeConverter.parseBase64Binary(valueB64);
+							byte[] byteAsObj = util_base64.decode(valueB64);
 							itemObj = bytes2object(byteAsObj);
 						}catch(Exception e){
 						}
@@ -823,7 +823,7 @@ public class util_beanMessageFactory {
 				result+="<![CDATA[";
 				try{
 					byte[] objAsByte = object2bytes(sub_obj);
-					result+=DatatypeConverter.printBase64Binary(objAsByte);
+					result+=util_base64.encode(objAsByte);
 				}catch(Exception ex){
 
 				}

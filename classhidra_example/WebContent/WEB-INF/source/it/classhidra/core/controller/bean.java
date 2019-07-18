@@ -39,7 +39,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
+
 
 import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.elements.elementBeanBase;
@@ -47,6 +47,7 @@ import it.classhidra.core.tool.elements.i_elementDBBase;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_base64;
 import it.classhidra.core.tool.util.util_makeValue;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_supportbean;
@@ -227,7 +228,7 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		boolean inputBase64 = (parameters.get(bsController.CONST_ID_INPUTBASE64)!=null &&
 				(
 						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase("true") ||
-						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(DatatypeConverter.printBase64Binary("true".getBytes()))
+						parameters.get(bsController.CONST_ID_INPUTBASE64).toString().equalsIgnoreCase(util_base64.encode("true".getBytes()))
 				)
 			);
 
@@ -248,16 +249,16 @@ public void init(HttpServletRequest request) throws bsControllerException{
 					String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
 
 					try{
-						if(value!=null) value=new String(DatatypeConverter.parseBase64Binary(value),charset);
+						if(value!=null) value=new String(util_base64.decode(value),charset);
 					}catch(Exception e){}
 					try{
-						if(format!=null) format=new String(DatatypeConverter.parseBase64Binary(format),charset);
+						if(format!=null) format=new String(util_base64.decode(format),charset);
 					}catch(Exception e){}
 					try{
-						if(replaceOnBlank!=null) replaceOnBlank=new String(DatatypeConverter.parseBase64Binary(replaceOnBlank),charset);
+						if(replaceOnBlank!=null) replaceOnBlank=new String(util_base64.decode(replaceOnBlank),charset);
 					}catch(Exception e){}
 					try{
-						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(DatatypeConverter.parseBase64Binary(replaceOnErrorFormat),charset);
+						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(util_base64.decode(replaceOnErrorFormat),charset);
 					}catch(Exception e){
 					}
 				}

@@ -31,6 +31,7 @@ import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_base64;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
 import it.classhidra.core.tool.util.util_format;
 
@@ -39,7 +40,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
-import javax.xml.bind.DatatypeConverter;
+
 
 //import sun.misc.BASE64Decoder;
 //import sun.misc.BASE64Encoder;
@@ -54,11 +55,11 @@ public class wsController   {
 		if(isCodedInput!=null && isCodedInput.toUpperCase().equals("TRUE")){
 //			BASE64Decoder decoder = new BASE64Decoder();
 			try{
-				user = new String(DatatypeConverter.parseBase64Binary(user));
+				user = new String(util_base64.decode(user));
 			}catch(Exception e){
 			}
 			try{
-				password = new String(DatatypeConverter.parseBase64Binary(password));
+				password = new String(util_base64.decode(password));
 			}catch(Exception e){
 			}
 
@@ -131,7 +132,7 @@ public class wsController   {
 		if(isCodedInput!=null && isCodedInput.toUpperCase().equals("TRUE")){
 //			BASE64Decoder decoder = new BASE64Decoder();
 			try{
-				inputXML = new String(DatatypeConverter.parseBase64Binary(inputXML));
+				inputXML = new String(util_base64.decode(inputXML));
 			}catch(Exception e){
 			}
 		}
@@ -234,7 +235,7 @@ public class wsController   {
 		if(isCodedOutput!=null && isCodedOutput.toUpperCase().equals("TRUE")){
 //			BASE64Encoder encoder = new BASE64Encoder();
 			try{
-				outputXML = new String(DatatypeConverter.printBase64Binary(outputXML.getBytes()));
+				outputXML = new String(util_base64.encode(outputXML.getBytes()));
 			}catch(Exception e){
 			}
 		}

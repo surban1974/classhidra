@@ -10,7 +10,6 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 
 import it.classhidra.core.controller.bsConstants;
 import it.classhidra.core.controller.bsController;
@@ -24,6 +23,7 @@ import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.util.util_base64;
 import it.classhidra.core.tool.util.util_usersInSession;
 //import sun.misc.BASE64Decoder;
 
@@ -88,7 +88,7 @@ public class def_basic_authorization extends stream implements i_stream{
 		try{			
 			if(header_auth!=null && header_auth.indexOf("Basic ")==0){
 				header_auth=header_auth.replace("Basic ", "");
-				header_auth = new String(DatatypeConverter.parseBase64Binary(header_auth));
+				header_auth = new String(util_base64.decode(header_auth));
 				StringTokenizer st = new StringTokenizer(header_auth,":");
 
 				String user = st.nextToken();

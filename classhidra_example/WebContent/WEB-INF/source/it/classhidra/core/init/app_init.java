@@ -89,6 +89,8 @@ public class app_init implements Serializable{
 	
 	public final static String id_temporary_linked_provider	= 	"application.temporary_linked.provider";
 	
+	public final static String id_tag_format_user_auth		= 	"application.tag.format.user.auth";
+	
 	private String _path;
 	private String _path_root;
 	private String _path_config;
@@ -106,6 +108,7 @@ public class app_init implements Serializable{
 	private String _ejb_jndi_name_prefix;
 	private String _ejb_avoid_loop_reentrant;
 	private String _tag_component_render;
+	private String _tag_format_user_auth;
 	private String _pin;
 	
 	private String _db_name;
@@ -217,6 +220,7 @@ public class app_init implements Serializable{
 			_ejb_avoid_loop_reentrant=(_ejb_avoid_loop_reentrant==null)?System.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
 			
 			_tag_component_render=(_tag_component_render==null)?System.getProperty(id_tag_component_render):_tag_component_render;
+			_tag_format_user_auth=(_tag_format_user_auth==null)?System.getProperty(id_tag_format_user_auth):_tag_format_user_auth;
 			
 			_async_provider_servlet=(_async_provider_servlet==null)?System.getProperty(id_async_provider_servlet):_async_provider_servlet;
 			_temporary_linked_provider=(_temporary_linked_provider==null)?System.getProperty(id_temporary_linked_provider):_temporary_linked_provider;
@@ -309,6 +313,7 @@ public class app_init implements Serializable{
 		_ejb_avoid_loop_reentrant=(_ejb_avoid_loop_reentrant==null)?property.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
 
 		_tag_component_render=(_tag_component_render==null)?property.getProperty(id_tag_component_render):_tag_component_render;
+		_tag_format_user_auth=(_tag_format_user_auth==null)?property.getProperty(id_tag_format_user_auth):_tag_format_user_auth;
 		
 		_async_provider_servlet=(_async_provider_servlet==null)?property.getProperty(id_async_provider_servlet):_async_provider_servlet;
 		_temporary_linked_provider=(_temporary_linked_provider==null)?property.getProperty(id_temporary_linked_provider):_temporary_linked_provider;
@@ -670,5 +675,9 @@ public class app_init implements Serializable{
 
 	public String get_temporary_linked_provider() {
 		return _temporary_linked_provider;
+	}
+
+	public String get_tag_format_user_auth() {
+		return _tag_format_user_auth;
 	}
 }

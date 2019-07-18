@@ -391,6 +391,8 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 				}
 			}
 
+			if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
+				formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();
 
 			if(anotherBean!=null){
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
