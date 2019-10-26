@@ -5,26 +5,33 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class util_file {
 	public static boolean writeByteToFile( byte[] bytes, String path ) throws Exception {
-		boolean result = false;
-			FileOutputStream fileOutputStream = new FileOutputStream(path, false);
+		FileOutputStream fileOutputStream = null;
+		try {
+			fileOutputStream = new FileOutputStream(path, false);		
 			fileOutputStream.write(bytes);
-			fileOutputStream.close();
-			result=true;
-		return result;
+		} finally {
+			if(fileOutputStream!=null)
+				fileOutputStream.close();
+		}
+		return true;
 	}
 	public static boolean appendByteToFile( byte[] bytes, String path ) throws Exception {
-		boolean result = false;
-			FileOutputStream fileOutputStream = new FileOutputStream(path, true);
+		FileOutputStream fileOutputStream = null;
+		try {
+			fileOutputStream = new FileOutputStream(path, true);
 			fileOutputStream.write(bytes);
-			fileOutputStream.close();
-			result=true;
-		return result;
+		} finally {
+			if(fileOutputStream!=null)
+				fileOutputStream.close();
+		}
+		return true;
 	}	
 	 public static byte[] getBytesFromFile(String path) throws Exception {
 		 File file = new File(path);
@@ -53,6 +60,26 @@ public class util_file {
 
 	     return bytes;
 	 }		 
+	 
+	 public static boolean copyFileUsingStream(File source, File dest, boolean append) throws IOException {
+		    InputStream is = null;
+		    OutputStream os = null;
+		    try {
+		        is = new FileInputStream(source);
+		        os = new FileOutputStream(dest,append);
+		        byte[] buffer = new byte[1024];
+		        int length;
+		        while ((length = is.read(buffer)) > 0) {
+		            os.write(buffer, 0, length);
+		        }
+		    } finally {
+		    	if(is!=null)
+		    		is.close();
+		    	if(os!=null)
+		    		os.close();
+		    }
+		    return true;
+		}
 
 	public static Properties loadExternalProperty(String property_name) throws Exception{
 			Properties property = new Properties();

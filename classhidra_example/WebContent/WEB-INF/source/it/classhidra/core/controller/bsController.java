@@ -171,20 +171,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public void init() throws ServletException, UnavailableException {
 		initialized = true;
 		loadedonstartup = true;
-		StatisticEntity stat = null;
-		try{
-			stat = new StatisticEntity(
-					"ClassHidra",
-					"",
-					"",
-					"",
-					"init",
-					null,
-					new Date(),
-					null,
-					null);
-		}catch(Exception e){
-		}
+//		StatisticEntity stat = null;
+//		try{
+//			stat = new StatisticEntity(
+//					"ClassHidra",
+//					"",
+//					"",
+//					"",
+//					"init",
+//					null,
+//					new Date(),
+//					null,
+//					null);
+//		}catch(Exception e){
+//		}
 
 
 		if(appInit==null){
@@ -220,10 +220,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 				loadOnInit();
 
 		
-		if(stat!=null){
-			stat.setFt(new Date());
-			putToStatisticProvider(stat);
-		}
+//		if(stat!=null){
+//			stat.setFt(new Date());
+//			putToStatisticProvider(stat);
+//		}
 
 	}
 
@@ -5017,6 +5017,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 	public static I_StatisticProvider checkStatisticProvider(){
 		if(!canBeProxed){
+			if(statisticProvider==null) {
+				if(appInit.get_statistic()!=null && appInit.get_statistic().equalsIgnoreCase("true")){
+					try{
+						statisticProvider = (I_StatisticProvider)Class.forName(getAppInit().get_statistic_provider()).newInstance();
+						return statisticProvider;
+					}catch(Exception e){
+						writeLog("ERROR instance Statistic Provider:"+getAppInit().get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
+					}
+				}
+			}
 			if(statisticProvider==null)
 				statisticProvider = new StatisticProvider_Simple();
 			return statisticProvider;
@@ -5100,7 +5110,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 				if(retStatisticProvider==null){
 					try{
-						retStatisticProvider = (I_StatisticProvider)Class.forName(getAppInit().get_statistic_provider()).newInstance();
+						statisticProvider = (I_StatisticProvider)Class.forName(getAppInit().get_statistic_provider()).newInstance();
+						return statisticProvider;
 					}catch(Exception e){
 						writeLog("ERROR instance Statistic Provider:"+getAppInit().get_statistic_provider()+" Will be use embeded stack.",iStub.log_ERROR);
 					}
