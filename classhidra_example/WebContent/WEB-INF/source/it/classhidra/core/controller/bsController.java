@@ -48,7 +48,11 @@ import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.tlinked.I_TLinkedProvider;
 import it.classhidra.core.tool.tlinked.TLinkedProvider_Simple;
 import it.classhidra.scheduler.scheduling.IBatchScheduling;
+import it.classhidra.serialize.JsonMapper;
+import it.classhidra.serialize.JsonReader2Map;
 import it.classhidra.serialize.JsonWriter;
+import it.classhidra.serialize.XmlMapper;
+import it.classhidra.serialize.XmlReader2Map;
 import it.classhidra.serialize.XmlWriter;
 import it.classhidra.core.tool.util.util_base64;
 import it.classhidra.core.tool.util.util_beanMessageFactory;
@@ -124,6 +128,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 	private static boolean isInitDefProfider=false;
 	private static boolean initialized = false;
 	private static boolean loadedonstartup = false;
+	
+	private static JsonMapper jsonMapper;
+	private static XmlMapper xmlMapper;
 
 
 	class LoaderConfigThreadProcess extends Thread {
@@ -5141,6 +5148,228 @@ public class bsController extends HttpServlet implements bsConstants  {
 		return retStatisticProvider;
 
 	}
+	
+	public static XmlMapper checkXmlMapper(){
+		if(!canBeProxed){
+			if(xmlMapper==null) {
+				try{
+					xmlMapper = (XmlMapper)Class.forName(getAppInit().get_xmlmapper_provider()).newInstance();
+					return xmlMapper;
+				}catch(Exception e){
+					writeLog("ERROR instance Xml Mapper Provider:"+getAppInit().get_xmlmapper_provider()+" Will be use embeded.",iStub.log_ERROR);
+				}
+			}
+			if(xmlMapper==null)
+				xmlMapper = new XmlReader2Map();
+			return xmlMapper;
+		}
+		
+		if(xmlMapper!=null)
+			return xmlMapper;
+		
+		XmlMapper retXmlMapper=null;
+		
+
+		if(getAppInit().get_xmlmapper_provider()==null || getAppInit().get_xmlmapper_provider().equals("")){
+			if(getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equals("false")){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  app_init.id_xmlmapper_provider,XmlReader2Map.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retXmlMapper==null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_xmlmapper_provider,XmlReader2Map.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retXmlMapper==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_xmlmapper_provider,XmlMapper.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(null);
+			if(retXmlMapper==null && getCdiDefaultProvider()!=null){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_xmlmapper_provider,XmlReader2Map.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retXmlMapper==null && getEjbDefaultProvider()!=null){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  app_init.id_xmlmapper_provider,XmlMapper.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+
+			if(retXmlMapper==null){
+				xmlMapper = new XmlReader2Map();
+				return xmlMapper;
+			}
+		}else{
+			if(getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equals("false")){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  app_init.id_xmlmapper_provider,getAppInit().get_xmlmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retXmlMapper==null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_xmlmapper_provider,getAppInit().get_xmlmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retXmlMapper==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_xmlmapper_provider,getAppInit().get_xmlmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(null);
+			if(retXmlMapper==null && getCdiDefaultProvider()!=null){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(), app_init.id_xmlmapper_provider,getAppInit().get_xmlmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retXmlMapper==null && getEjbDefaultProvider()!=null){
+				try{
+					retXmlMapper = (XmlMapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(), app_init.id_xmlmapper_provider,getAppInit().get_xmlmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+
+			if(retXmlMapper==null){
+				try{
+					xmlMapper = (XmlMapper)Class.forName(getAppInit().get_xmlmapper_provider()).newInstance();
+					return xmlMapper;
+				}catch(Exception e){
+					writeLog("ERROR instance Xml Mapper Provider:"+getAppInit().get_xmlmapper_provider()+" Will be use embeded .",iStub.log_ERROR);
+				}
+			}
+			if(retXmlMapper==null){
+				xmlMapper = new XmlReader2Map();
+				return xmlMapper;
+			}
+
+		}
+
+	
+		return retXmlMapper;
+
+	}		
+	
+	public static JsonMapper checkJsonMapper(){
+		if(!canBeProxed){
+			if(jsonMapper==null) {
+				try{
+					jsonMapper = (JsonMapper)Class.forName(getAppInit().get_jsonmapper_provider()).newInstance();
+					return jsonMapper;
+				}catch(Exception e){
+					writeLog("ERROR instance Json Mapper Provider:"+getAppInit().get_jsonmapper_provider()+" Will be use embeded.",iStub.log_ERROR);
+				}
+			}
+			if(jsonMapper==null)
+				jsonMapper = new JsonReader2Map();
+			return jsonMapper;
+		}
+		
+		if(jsonMapper!=null)
+			return jsonMapper;
+		
+		JsonMapper retJsonMapper=null;
+		
+
+		if(getAppInit().get_jsonmapper_provider()==null || getAppInit().get_jsonmapper_provider().equals("")){
+			if(getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equals("false")){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  app_init.id_jsonmapper_provider,JsonReader2Map.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retJsonMapper==null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_jsonmapper_provider,JsonReader2Map.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retJsonMapper==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_jsonmapper_provider,JsonMapper.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(null);
+			if(retJsonMapper==null && getCdiDefaultProvider()!=null){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_jsonmapper_provider,JsonReader2Map.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retJsonMapper==null && getEjbDefaultProvider()!=null){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  app_init.id_jsonmapper_provider,JsonMapper.class.getName(), null);
+				}catch(Exception e){
+				}
+			}
+
+			if(retJsonMapper==null){
+				jsonMapper = new JsonReader2Map();
+				return jsonMapper;
+			}
+		}else{
+			if(getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equals("false")){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  app_init.id_jsonmapper_provider,getAppInit().get_jsonmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retJsonMapper==null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_jsonmapper_provider,getAppInit().get_jsonmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retJsonMapper==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_jsonmapper_provider,getAppInit().get_jsonmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+			checkDefaultProvider(null);
+			if(retJsonMapper==null && getCdiDefaultProvider()!=null){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(), app_init.id_jsonmapper_provider,getAppInit().get_jsonmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+			if(retJsonMapper==null && getEjbDefaultProvider()!=null){
+				try{
+					retJsonMapper = (JsonMapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(), app_init.id_jsonmapper_provider,getAppInit().get_jsonmapper_provider(), null);
+				}catch(Exception e){
+				}
+			}
+
+			if(retJsonMapper==null){
+				try{
+					jsonMapper = (JsonMapper)Class.forName(getAppInit().get_jsonmapper_provider()).newInstance();
+					return jsonMapper;
+				}catch(Exception e){
+					writeLog("ERROR instance Json Mapper Provider:"+getAppInit().get_jsonmapper_provider()+" Will be use embeded .",iStub.log_ERROR);
+				}
+			}
+			if(retJsonMapper==null){
+				jsonMapper = new JsonReader2Map();
+				return jsonMapper;
+			}
+
+		}
+
+	
+		return retJsonMapper;
+
+	}	
 
 	public static void putToStatisticProvider(StatisticEntity stat){
 		final I_StatisticProvider sProvider = checkStatisticProvider();

@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
-
+import java.util.List;
 
 import it.classhidra.serialize.Serialized;
 
@@ -14,6 +14,14 @@ public class util_makeValue {
 
 
 	public static Object makeValue1(Object req, String value, String key) throws Exception{
+		if(req instanceof List) {
+			try {
+				Integer.parseInt(key); 
+				return value;
+			}catch (Exception e) {
+			}
+		}
+			
 		Object resultObject = null;
 		Field fld = null;
 		Method ret_fld = null;

@@ -31,7 +31,15 @@ public class util_json_parser {
 	private static boolean success;
 
 	public static Object decode(String json){
-		success = true;
+//		if(json==null || json.trim().length()==0)
+//			return null;
+//		success = true;
+//		int start = json.indexOf('{');
+//		if(start==-1)
+//			return null;
+//		else if(start>0)
+//			json=json.substring(start,json.length());
+//		json=json.trim();
 		return decode2(json);
 	}
 	

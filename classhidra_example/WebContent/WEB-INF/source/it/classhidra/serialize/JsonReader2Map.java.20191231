@@ -1,21 +1,15 @@
 package it.classhidra.serialize;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.serialize.JsonMapper;
+import it.classhidra.core.tool.util.util_json_parser;
 
 public class JsonReader2Map implements JsonMapper{
 	@SuppressWarnings("unchecked")
@@ -26,10 +20,7 @@ public class JsonReader2Map implements JsonMapper{
 			return table;
 		try{
 			Map<String,Object> mapped = null;
-			
-//			Object obj = util_json_parser.decode(json);
-			JsonValue value = Json.parse(json);
-			Object obj = createMap(value);
+			Object obj = util_json_parser.decode(json);
 			
 			if(obj!=null && obj instanceof Map)
 				mapped = (Map<String,Object>)obj;
@@ -101,75 +92,6 @@ public class JsonReader2Map implements JsonMapper{
 		}
 		return table;
 	}
-	
-	public static Object createMap(JsonValue jsonValue) {
-	    Map<String,Object> map = new HashMap<String, Object>();
-	    if(jsonValue.isObject()) {
-		    JsonObject jsonObj = jsonValue.asObject();
-		    
-	
-		    List<String> names = jsonObj.names();
-		    for (String name:names) {
-		    	Object value = createMap(jsonObj.get(name));
-	
-		        if (map.containsKey(name)) {
-		            Object os = map.get(name);
-		            if (os instanceof List<?>) {
-		            	@SuppressWarnings("unchecked")
-						List<Object> list = (List<Object>)os;
-		            	list.add(value);
-		            }
-		            else {
-		                List<Object> objs = new ArrayList<Object>();
-		                objs.add(os);
-		                objs.add(value);
-		                map.put(name, objs);
-		            }
-		        }
-		        else 
-	        		map.put(name, value);
-		        
-		    }
-	    }else {
-	    	if(jsonValue.isArray()) {
-	    		JsonArray array = jsonValue.asArray();
-	    		List<Object> list = new ArrayList<Object>();
-	    		for(int i=0;i<array.size();i++) {
-	    			list.add(createMap(array.get(i)));
-	    		}
-	    		return list;
-	    	}else 
-//	    		return jsonValue.toString();
-    		if(jsonValue.isString())
-	    		return jsonValue.asString();
-	    	else if(jsonValue.isBoolean())
-	    		return Boolean.valueOf(jsonValue.asBoolean());
-	    	else if(jsonValue.isNull())
-	    		return null;
-	    	else if(jsonValue.isNumber()) {
-	    		try {
-	    			int number = Integer.parseInt(jsonValue.toString());
-	    			return Integer.valueOf(number);
-	    		}catch (Exception e) {
-				}
-	    		try {
-	    			float number = Float.parseFloat(jsonValue.toString());
-	    			return Float.valueOf(number);
-	    		}catch (Exception e) {
-				}	
-	    		try {
-	    			double number = Double.parseDouble(jsonValue.toString());
-	    			return Double.valueOf(number);
-	    		}catch (Exception e) {
-				}	    		
-	    		return null;
-	    	}
-
-	    	
-	    }
-
-	    return map;
-	}		
 
 	@SuppressWarnings("unchecked")
 	private static Map<String, Object> recursive(String key, Map<String, Object> original, Map<String, Object> result, String prefix){

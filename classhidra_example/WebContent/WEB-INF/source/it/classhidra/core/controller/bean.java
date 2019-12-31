@@ -59,7 +59,7 @@ import it.classhidra.serialize.XmlMapper;
 
 
 public class bean extends elementBeanBase implements i_bean  {
-	private static final long serialVersionUID = 3917073481415967577L;
+	private static final long serialVersionUID = 1L;
 
 	protected info_bean _infobean;
 	protected info_action _infoaction;
@@ -166,11 +166,13 @@ public void init(HttpServletRequest request) throws bsControllerException{
 	}
 
 	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
-		if(initJsonPart(request)) return;
+//		if(initJsonPart(request)) return;
+		if(initJsonPart(request, bsController.checkJsonMapper())) return;
 	}
 	
 	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
-		if(initXmlPart(request)) return;
+//		if(initXmlPart(request)) return;
+		if(initXmlPart(request, bsController.checkXmlMapper())) return;
 	}	
 
 	initNormal(request);

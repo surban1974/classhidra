@@ -91,6 +91,9 @@ public class app_init implements Serializable{
 	
 	public final static String id_tag_format_user_auth		= 	"application.tag.format.user.auth";
 	
+	public final static String id_jsonmapper_provider		=	"application.jsonmapper.provider";
+	public final static String id_xmlmapper_provider		=	"application.xmlmapper.provider";
+	
 	private String _path;
 	private String _path_root;
 	private String _path_config;
@@ -147,6 +150,9 @@ public class app_init implements Serializable{
 	private String loadedFromSP="";
 	private Properties resources_path;
 	private Properties synonyms_path;
+	
+	private String _jsonmapper_provider;
+	private String _xmlmapper_provider;
 	
 	
 	
@@ -239,6 +245,8 @@ public class app_init implements Serializable{
 			_statistic_provider=(_statistic_provider==null)?System.getProperty(id_statistic_provider):_statistic_provider;
 			_statistic_stacklength=(_statistic_stacklength==null)?System.getProperty(id_statistic_stacklength):_statistic_stacklength;
 			
+			_jsonmapper_provider=(_jsonmapper_provider==null)?System.getProperty(id_jsonmapper_provider):_jsonmapper_provider;
+			_xmlmapper_provider=(_xmlmapper_provider==null)?System.getProperty(id_xmlmapper_provider):_xmlmapper_provider;
 			
 			_annotation_scanner=(_annotation_scanner==null)?System.getProperty(id_annotation_scanner):_annotation_scanner;
 			_annotation_scanner_asjar=(_annotation_scanner_asjar==null)?System.getProperty(id_annotation_scanner_asjar):_annotation_scanner_asjar;
@@ -283,6 +291,9 @@ public class app_init implements Serializable{
 	}
 	
 	public void init(Properties property) {
+		if(property!=null)
+			reInitFromProperties(property);
+/*		
 		if(_list_package_annotated==null) _list_package_annotated=new ArrayList<String>();
 		_path=(_path==null)?property.getProperty(id_path):_path;
 		_path_root=(_path_root==null)?property.getProperty(bsConstants.CONST_ID_PATHROOT):_path_root;
@@ -335,6 +346,96 @@ public class app_init implements Serializable{
 		_statistic=(_statistic==null || _statistic.equalsIgnoreCase("false"))?property.getProperty(id_statistic):_statistic;
 		_statistic_provider=(_statistic_provider==null)?property.getProperty(id_statistic_provider):_statistic_provider;
 		_statistic_stacklength=(_statistic_stacklength==null)?property.getProperty(id_statistic_stacklength):_statistic_stacklength;
+		
+		_jsonmapper_provider=(_jsonmapper_provider==null)?property.getProperty(id_jsonmapper_provider):_jsonmapper_provider;
+		_xmlmapper_provider=(_xmlmapper_provider==null)?property.getProperty(id_xmlmapper_provider):_xmlmapper_provider;
+
+		_transf_elaborationmode=(property.getProperty(id_transf_elaborationmode)!=null)?property.getProperty(id_transf_elaborationmode):_transf_elaborationmode;
+		_transf_elaborationpoint=(property.getProperty(id_transf_elaborationpoint)!=null)?property.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
+		_transf_elaborationwrapper=(property.getProperty(id_transf_elaborationwrapper)!=null)?property.getProperty(id_transf_elaborationwrapper):_transf_elaborationwrapper;
+		
+		String _package_annotated= property.getProperty(id_package_annotated);
+		if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+		_package_annotated="";
+		int ids=0;
+		try{
+			while(_package_annotated!=null){
+				_package_annotated=property.getProperty(id_package_annotated+"."+ids);
+				if(_package_annotated!=null) _list_package_annotated.add(_package_annotated);
+				ids++;
+			}
+		}catch(Exception e){				
+		}
+
+		
+		if(_enterpoint==null || _enterpoint.equals("")) _enterpoint = "*";
+		if(_load_res_mode==null) _load_res_mode="normal";
+		if(_extention_do==null) _extention_do=bsConstants.CONST_EXTENTION_DO;
+		if(_debug==null) _debug="false";
+		if(_permit_redirect_resource==null) _permit_redirect_resource="false";
+		if(_statistic==null) _statistic="false";
+		content = new HashMap<String,String>();
+		content.put(CONST_PAGESIZE, (content.get(CONST_PAGESIZE)==null)?property.getProperty(CONST_PAGESIZE):(String)content.get(CONST_PAGESIZE));
+*/	
+
+	}
+	
+	public void reInitFromProperties(Properties property) {
+		if(_list_package_annotated==null) _list_package_annotated=new ArrayList<String>();
+		_path=(property.getProperty(id_path)!=null)?property.getProperty(id_path):_path;
+		_path_root=(property.getProperty(bsConstants.CONST_ID_PATHROOT)!=null)?property.getProperty(bsConstants.CONST_ID_PATHROOT):_path_root;
+
+		_path_config=(property.getProperty(bsConstants.CONST_ID_PATHCONFIG)!=null)?property.getProperty(bsConstants.CONST_ID_PATHCONFIG):_path_config;
+		if(_path_config==null && _path!=null)
+			_path_config=(_path_config==null)?System.getProperty(_path+"."+bsConstants.CONST_ID_PATHCONFIG):_path_config;
+		if(_path_config==null)
+			_path_config=(_path_config==null)?System.getProperty(bsConstants.CONST_ID_PATHCONFIG):_path_config;
+			
+		application_path_config=(property.getProperty(bsConstants.CONST_ID_PATHCONFIG)!=null)?property.getProperty(bsConstants.CONST_ID_PATHCONFIG):application_path_config;
+		if(application_path_config==null && _path!=null)
+			application_path_config=(application_path_config==null)?System.getProperty(_path+"."+bsConstants.CONST_ID_PATHCONFIG):application_path_config;
+		if(application_path_config==null)
+			application_path_config=(application_path_config==null)?System.getProperty(bsConstants.CONST_ID_PATHCONFIG):application_path_config;
+		
+		_enterpoint=(property.getProperty(id_enterpoint)!=null)?property.getProperty(id_enterpoint):_enterpoint;
+		_load_res_mode=(property.getProperty(id_load_res_mode)!=null && !property.getProperty(id_load_res_mode).equalsIgnoreCase("normal"))?property.getProperty(id_load_res_mode):_load_res_mode;
+		_nav_excluded=(property.getProperty(id_nav_excluded)!=null)?property.getProperty(id_nav_excluded):_nav_excluded;
+		_external_loader=(property.getProperty(id_external_loader)!=null)?property.getProperty(id_external_loader):_external_loader;
+		_init_loader=(property.getProperty(id_init_loader)!=null)?property.getProperty(id_init_loader):_init_loader;
+		_context_provider=(property.getProperty(id_context_provider)!=null)?property.getProperty(id_context_provider):_context_provider;
+		_cdi_provider=(property.getProperty(id_cdi_provider)!=null)?property.getProperty(id_cdi_provider):_cdi_provider;
+		_ejb_provider=(property.getProperty(id_ejb_provider)!=null)?property.getProperty(id_ejb_provider):_ejb_provider;
+		_cdi_jndi_name=(property.getProperty(id_cdi_jndi_name)!=null)?property.getProperty(id_cdi_jndi_name):_cdi_jndi_name;
+		_ejb_jndi_name=(property.getProperty(id_ejb_jndi_name)!=null)?property.getProperty(id_ejb_jndi_name):_ejb_jndi_name;
+		_ejb_jndi_name_prefix=(property.getProperty(id_ejb_jndi_name_prefix)!=null)?property.getProperty(id_ejb_jndi_name_prefix):_ejb_jndi_name_prefix;
+		_ejb_avoid_loop_reentrant=(property.getProperty(id_ejb_avoid_loop_reentrant)!=null)?property.getProperty(id_ejb_avoid_loop_reentrant):_ejb_avoid_loop_reentrant;
+
+		_tag_component_render=(property.getProperty(id_tag_component_render)!=null)?property.getProperty(id_tag_component_render):_tag_component_render;
+		_tag_format_user_auth=(property.getProperty(id_tag_format_user_auth)!=null)?property.getProperty(id_tag_format_user_auth):_tag_format_user_auth;
+		
+		_async_provider_servlet=(property.getProperty(id_async_provider_servlet)!=null)?property.getProperty(id_async_provider_servlet):_async_provider_servlet;
+		_temporary_linked_provider=(property.getProperty(id_temporary_linked_provider)!=null)?property.getProperty(id_temporary_linked_provider):_temporary_linked_provider;
+
+		
+		
+		_pin=(property.getProperty(id_pin)!=null)?property.getProperty(id_pin):_pin;
+		_db_name=(property.getProperty(id_db_name)!=null)?property.getProperty(id_db_name):_db_name;
+		_annotation_scanner=(property.getProperty(id_annotation_scanner)!=null)?property.getProperty(id_annotation_scanner):_annotation_scanner;
+		_annotation_scanner_asjar=(property.getProperty(id_annotation_scanner_asjar)!=null)?property.getProperty(id_annotation_scanner_asjar):_annotation_scanner_asjar;
+		_vfs_plugin=(property.getProperty(id_vfs_plugin)!=null)?property.getProperty(id_vfs_plugin):_vfs_plugin;
+		_extention_do=(property.getProperty(id_extention_do)!=null)?property.getProperty(id_extention_do):bsConstants.CONST_EXTENTION_DO;
+		_actioncall_separator=(property.getProperty(id_actioncall_separator)!=null)?property.getProperty(id_actioncall_separator):_actioncall_separator;
+		_avoid_permission_chech=(property.getProperty(id_avoid_permission_chech)!=null)?property.getProperty(id_avoid_permission_chech):_avoid_permission_chech;
+
+		_debug=(property.getProperty(id_debug)!=null && property.getProperty(id_debug).equalsIgnoreCase("true"))?property.getProperty(id_debug):_debug;
+		_permit_redirect_resource=(property.getProperty(id_permit_redirect_resource)!=null && property.getProperty(id_permit_redirect_resource).equalsIgnoreCase("true"))?property.getProperty(id_permit_redirect_resource):_permit_redirect_resource;
+
+		_statistic=(property.getProperty(id_statistic)!=null && property.getProperty(id_statistic).equalsIgnoreCase("true"))?property.getProperty(id_statistic):_statistic;
+		_statistic_provider=(property.getProperty(id_statistic_provider)!=null)?property.getProperty(id_statistic_provider):_statistic_provider;
+		_statistic_stacklength=(property.getProperty(id_statistic_stacklength)!=null)?property.getProperty(id_statistic_stacklength):_statistic_stacklength;
+		
+		_jsonmapper_provider=(property.getProperty(id_jsonmapper_provider)!=null)?property.getProperty(id_jsonmapper_provider):_jsonmapper_provider;
+		_xmlmapper_provider=(property.getProperty(id_xmlmapper_provider)!=null)?property.getProperty(id_xmlmapper_provider):_xmlmapper_provider;
 
 		_transf_elaborationmode=(property.getProperty(id_transf_elaborationmode)!=null)?property.getProperty(id_transf_elaborationmode):_transf_elaborationmode;
 		_transf_elaborationpoint=(property.getProperty(id_transf_elaborationpoint)!=null)?property.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
@@ -365,6 +466,7 @@ public class app_init implements Serializable{
 	
 
 	}
+	
 	
 	public void init_resources_path() {
 		
@@ -679,5 +781,13 @@ public class app_init implements Serializable{
 
 	public String get_tag_format_user_auth() {
 		return _tag_format_user_auth;
+	}
+
+	public String get_jsonmapper_provider() {
+		return _jsonmapper_provider;
+	}
+
+	public String get_xmlmapper_provider() {
+		return _xmlmapper_provider;
 	}
 }
