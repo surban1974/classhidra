@@ -18,12 +18,15 @@ import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -1304,6 +1307,47 @@ public static Object getValueIfIsInputAnnotation(Object requested, String name, 
 				
 			}
 		}
+		return null;
+	}catch(Exception e){
+		return null;
+	}
+}
+
+public static Object getConstructedFieldValue(Object requested, String name){
+	try{
+		if(requested==null || name==null || name.equals(""))
+			return null;
+		
+		Field field = requested.getClass().getDeclaredField(name);
+		if(field!=null) {
+			boolean wasAccessible=true;
+			if(!field.isAccessible()){
+				field.setAccessible(true);
+				wasAccessible=false;
+			}
+			Object ret = field.get(requested);
+			if(ret==null) {
+				try {
+					ret = Class.forName(field.getType().getCanonicalName()).newInstance();
+				}catch (Exception e) {
+					
+					if(ret==null && field.getType().isAssignableFrom(Map.class)) ret = new HashMap<Object,Object>();
+					if(ret==null && field.getType().equals(Vector.class)) ret = new Vector<Object>();
+					if(ret==null && field.getType().isAssignableFrom(List.class)) ret = new ArrayList<Object>();					
+					if(ret==null && field.getType().isAssignableFrom(Set.class)) ret = new HashSet<Object>();
+					if(ret==null && field.getType().isAssignableFrom(Collection.class)) ret = new ArrayList<Object>();
+
+				}
+				if(ret!=null)
+					field.set(requested, ret);
+			}
+			if(!wasAccessible)	
+				field.setAccessible(false);
+			
+			return ret;
+			
+		}
+		
 		return null;
 	}catch(Exception e){
 		return null;

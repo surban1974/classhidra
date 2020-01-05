@@ -77,13 +77,16 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -2468,8 +2471,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 								}catch(Exception e) {									
 								}
 							}
-							else	
+							else
 								ret = current.newInstance();
+
 							if(ret!=null){
 								if(	ret.getClass().isPrimitive() ||
 										ret instanceof String ||
@@ -2489,9 +2493,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 									}catch(Exception ex1){
 									}
 									if(result[i]==null)
-										result[i] = util_supportbean.assignPrimitiveDefault(current);
-									
-								}								
+										result[i] = util_supportbean.assignPrimitiveDefault(current);									
+								}else {
+									if(ret==null && current.isAssignableFrom(Map.class))
+										ret = new HashMap<Object,Object>();
+									if(ret==null && current.equals(Vector.class))
+										ret = new Vector<Object>();
+									if(ret==null && current.isAssignableFrom(List.class))
+										ret = new ArrayList<Object>();					
+									if(ret==null && current.isAssignableFrom(Set.class))
+										ret = new HashSet<Object>();
+									if(ret==null && current.isAssignableFrom(Collection.class))
+										ret = new ArrayList<Object>();	
+									result[i] = ret;
+								}
 							}catch(Exception ex){
 							}
 						}

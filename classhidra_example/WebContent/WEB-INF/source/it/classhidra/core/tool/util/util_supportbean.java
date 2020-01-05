@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -250,6 +251,7 @@ public class util_supportbean  {
 						String current_field_name = st.nextToken();
 						try{
 							if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+							if(writeValue==null && current_requested instanceof Vector) writeValue = ((Vector)current_requested).get(Integer.valueOf(current_field_name).intValue());
 							if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 							if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
 
@@ -692,6 +694,7 @@ public class util_supportbean  {
 							String current_field_name = st.nextToken();
 							try{
 								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof Vector) writeValue = ((Vector)current_requested).get(Integer.valueOf(current_field_name).intValue());
 								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 								if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
 								if(writeValue==null && current_requested.getClass().isArray()){
@@ -897,6 +900,7 @@ public class util_supportbean  {
 								if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
 								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
 								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+								if(writeValue==null && current_requested instanceof Vector) writeValue = ((Vector)current_requested).get(Integer.valueOf(current_field_name).intValue());
 								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
 								if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
 								if(writeValue==null && current_requested.getClass().isArray()){
@@ -925,6 +929,10 @@ public class util_supportbean  {
 
 								if(writeValue==null)
 									writeValue = util_reflect.getValueIfIsInputAnnotation(current_requested, current_field_name, null);
+								
+								if(writeValue==null)
+									writeValue = util_reflect.getConstructedFieldValue(current_requested, current_field_name);
+								
 							}catch(Exception e){
 							}
 							current_requested = writeValue;
