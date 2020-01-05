@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sun Jan 05 21:26:06 CET 2020
+classhidra-jetty-embedded-1.5.7.jar>=
+classhidra-jetty-embedded-1.5.7.pom>=
