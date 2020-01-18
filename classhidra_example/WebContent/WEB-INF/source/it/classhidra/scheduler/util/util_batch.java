@@ -4,6 +4,7 @@ import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.common.i_4Period;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
 import it.classhidra.scheduler.scheduling.db.db_batch;
@@ -160,7 +161,14 @@ public class util_batch {
 		return calcolatePeriod(currentTime, periodTime, 0, null, CONST_APPLICANT_DEF);
 	}
 	public static String calcolatePeriod(String currentTime, String periodTime, long increased, db_batch batch, int applicant){
-
+		i_4Period iPeriod = null;
+		try {
+			iPeriod = DriverScheduling.getConfiguration().get4PeriodManager();
+		}catch (Exception e) {
+		}
+		if(iPeriod!=null)
+			return iPeriod.calcolatePeriod(currentTime, periodTime, increased, batch, applicant);
+		
 //currentTime = "2011-12-11-09-51";
 		if(periodTime.toLowerCase().indexOf(CONST_EVERY)==0){
 			long addmillis = -1;

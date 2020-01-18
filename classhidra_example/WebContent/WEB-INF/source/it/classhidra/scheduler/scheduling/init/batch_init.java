@@ -31,7 +31,9 @@ import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.util.util_blob;
 import it.classhidra.core.tool.util.util_file;
 import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.common.i_4Period;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
+import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.implementation.mysql.db_4Batch;
 
 import java.io.ByteArrayInputStream;
@@ -48,12 +50,14 @@ public class batch_init implements Serializable{
 	public static final String id_sleep=							"period.sleep";
 	public static final String id_scan= 							"period.batch.scan";
 	public static final String id_stub=								"stub.data.manager";
+	public static final String id_stub_period=						"stub.period.manager";
 
 	private String _active="false";
 	private String _sleep;
 	private String _scan;
 	private String _db_prefix="";
 	private String _stub="";
+	private String _stub_period="";
 	private String loadedFrom="";
 	private Properties properties=null;
 	
@@ -132,6 +136,7 @@ public void init() {
 			_scan = (System.getProperty(id_scan)==null)?_scan:System.getProperty(id_scan);
 			_db_prefix = (System.getProperty(id_db_prefix)==null)?_db_prefix:System.getProperty(id_db_prefix);
 			_stub = (System.getProperty(id_stub)==null)?_stub:System.getProperty(id_stub);
+			_stub_period = (System.getProperty(id_stub_period)==null)?_stub_period:System.getProperty(id_stub_period);
 			this.properties = new Properties();
 			if(_active!=null)
 				this.properties.setProperty(id_active, _active);
@@ -143,6 +148,8 @@ public void init() {
 				this.properties.setProperty(id_db_prefix, _db_prefix);
 			if(_stub!=null)
 				this.properties.setProperty(id_stub, _stub);
+			if(_stub_period!=null)
+				this.properties.setProperty(id_stub_period, _stub_period);			
 			
 			if(_sleep!=null && _scan!=null) loadedFrom="System.property";
 			
@@ -160,6 +167,7 @@ public void init(Properties ex_property) {
 	_scan = (ex_property.getProperty(id_scan)==null)?_scan:ex_property.getProperty(id_scan);
 	_db_prefix = (ex_property.getProperty(id_db_prefix)==null)?_db_prefix:ex_property.getProperty(id_db_prefix);
 	_stub = (ex_property.getProperty(id_stub)==null)?_stub:ex_property.getProperty(id_stub);
+	_stub_period = (ex_property.getProperty(id_stub_period)==null)?_stub_period:ex_property.getProperty(id_stub_period);
 
 }
 
@@ -232,6 +240,35 @@ public i_4Batch get4BatchManager(){
 	return DriverScheduling.getBatchManager();
 }
 
+public i_4Period get4PeriodManager(){
+		if(	DriverScheduling.getPeriodManager()!=null && _stub_period!=null && !_stub_period.equalsIgnoreCase(CONST_STUB_EXTERNAL))
+			return DriverScheduling.getPeriodManager();
+		else if( DriverScheduling.getPeriodManager()!=null &&
+			(_stub_period!=null && !_stub_period.equalsIgnoreCase(CONST_STUB_EMPTY) && DriverScheduling.getPeriodManager().getClass().getName().equalsIgnoreCase(_stub_period))
+		)
+			return DriverScheduling.getPeriodManager();
+		
+		i_4Period periodManager = null;
+		if(_stub_period!=null && _stub_period.equalsIgnoreCase("empty")){
+			periodManager = new i_4Period() {
+				private static final long serialVersionUID = 1L;
+				public String calcolatePeriod(String currentTime, String periodTime, long increased, db_batch batch,
+						int applicant) {
+					return currentTime;
+				}
+			};
+		}else if(_stub_period!=null && !_stub_period.equals("")){
+			try{
+				periodManager = (i_4Period)Class.forName(_stub_period).newInstance();
+			}catch(Exception e){		
+			}catch(Throwable e){		
+			}
+		}
+
+		DriverScheduling.setPeriodManager(periodManager);
+		return DriverScheduling.getPeriodManager();
+	}
+
 public boolean initDB(String path, String db_name) throws bsControllerException, Exception{
 	
 	String propData = null;
@@ -281,5 +318,9 @@ public batch_init set_stub(String _stub) {
 
 public Properties getCurrentProperties() {
 	return properties;
+}
+
+public void set_stub_period(String _stub_period) {
+	this._stub_period = _stub_period;
 }
 }

@@ -8,6 +8,7 @@ import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
 import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.scheduler.common.i_4Batch;
+import it.classhidra.scheduler.common.i_4Period;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
@@ -23,6 +24,7 @@ public class DriverScheduling implements Serializable{
 	private static IBatchFactory factory;
 	private static batch_init configuration;
 	private static i_4Batch batchManager;
+	private static i_4Period periodManager;
 	
 	
 	public static DriverScheduling init(){
@@ -96,12 +98,18 @@ public class DriverScheduling implements Serializable{
 	}	
 	
 	public static DriverScheduling init(IBatchScheduling _external, IBatchFactory _factory, batch_init _configuration, i_4Batch _batchManager){
+		return DriverScheduling.init(_external, _factory, _configuration, _batchManager, null);
+	}
+	
+	public static DriverScheduling init(IBatchScheduling _external, IBatchFactory _factory, batch_init _configuration, i_4Batch _batchManager, i_4Period _periodManager){
 		if(_configuration!=null)
 			configuration = _configuration;
 		if(_factory!=null)
 			factory = _factory;
 		if(_batchManager!=null)
 			batchManager = _batchManager;
+		if(_periodManager!=null)
+			periodManager = _periodManager;		
 		if(_external!=null){
 			try{
 				_external.stop();
@@ -222,6 +230,14 @@ public class DriverScheduling implements Serializable{
 
 	public static void setBatchManager(i_4Batch batchManager) {
 		DriverScheduling.batchManager = batchManager;
+	}
+
+	public static i_4Period getPeriodManager() {
+		return periodManager;
+	}
+
+	public static void setPeriodManager(i_4Period periodManager) {
+		DriverScheduling.periodManager = periodManager;
 	}
 
 
