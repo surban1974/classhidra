@@ -1,8 +1,8 @@
 /**
 * Name: clAjax.js
-* Version: 1.1.2
+* Version: 1.1.3
 * Creation date: (08/11/2016)
-* Last update: (24/01/2019)
+* Last update: (20/07/2020)
 * @author: Svyatoslav Urbanovych svyatoslav.urbanovych@gmail.com
 */
 (function(factory){
@@ -62,7 +62,6 @@
 		this.asScript = 			(prot)?((prot.asScript)?prot.asScript:false):false;
 		this.asCss = 				(prot)?((prot.asCss)?prot.asCss:false):false;
 		this.opened = 				(prot)?((prot.opened)?prot.opened:false):false;
-		this.outer =				(prot)?((prot.outer)?prot.outer:false):false;
 		this.compatibility =		(prot)?((prot.compatibility)?prot.compatibility:false):false;
 		this.http = 				null;
 
@@ -498,11 +497,25 @@
 								//real browsers
 								if (typeof window[instance.success] === "function")
 							    	e.onload=eval(instance.success + '()');
+								else{
+									try{
+										e.onload=eval(instance.success + '()');
+									}catch(e){
+										this.exception(e);
+									}
+								}
 							    //Internet explorer
 								    e.onreadystatechange = function() {
 								        if (this.readyState == 'complete') {
 								        	if (typeof window[instance.success] === "function")
 								        		eval(instance.success + '()');
+											else{
+												try{
+													e.onload=eval(instance.success + '()');
+												}catch(e){
+													console.log(e);
+												}
+											}
 								        }
 								    }
 							}
@@ -567,11 +580,25 @@
 								//real browsers
 								if (typeof window[instance.success] === "function")
 							    	e.onload=eval(instance.success + '()');
+								else{
+									try{
+										e.onload=eval(instance.success + '()');
+									}catch(e){
+										this.exception(e);
+									}
+								}
 							    //Internet explorer
 								    e.onreadystatechange = function() {
 								        if (this.readyState == 'complete') {
 								        	if (typeof window[instance.success] === "function")
 								        		eval(instance.success + '()');
+											else{
+												try{
+													e.onload=eval(instance.success + '()');
+												}catch(e){
+													console.log(e);
+												}											
+											}
 								        }
 								    }
 							}
@@ -735,6 +762,13 @@
 		    		}else{
 		    			if (typeof window[this.start] === "function")
 		    				eval(this.start + '(this)');
+						else{
+							try{
+								eval(this.start + '(this)');
+							}catch(e){
+								this.exception(e);
+							}											
+						}
 		    		}
 		    	}
 
@@ -796,6 +830,13 @@
 		        		}else{
 		        			if (typeof window[instance.error] === "function")
 		        				eval(instance.error + '(http_request, null, "Cannot create XMLHTTP instance")');
+							else{
+								try{
+									eval(instance.error + '(http_request, null, "Cannot create XMLHTTP instance")');
+								}catch(e){
+									this.exception(e);
+								}											
+							}
 		        		}
 		        	}else
 //		        		alert('Cannot create XMLHTTP instance');
@@ -941,7 +982,17 @@
 						            			}else{
 						            				eval(_fready + '(http_request,instance)');
 						            			}
-						            		}
+						            		}else{
+												try{
+													if(instance.compatibility){
+														eval(_fready + '(http_request,((instance.target)?instance.target.id:null))');
+													}else{
+														eval(_fready + '(http_request,instance)');
+													}
+												}catch(e){
+													this.exception(e);
+												}											
+											}
 						            	}else{
 						            		if(instance.target){
 						            			if(instance.outer)
@@ -956,13 +1007,21 @@
 						            				_fsuccess(http_request,((instance.target)?instance.target.id:null));
 						            			else
 						            				_fsuccess(http_request,instance);
-						            		}
-						            		else if (typeof window[_fsuccess] === "function"){
+						            		}else if (typeof window[_fsuccess] === "function"){
 						            			if(instance.compatibility)
 						            				eval(_fsuccess + '(http_request,((instance.target)?instance.target.id:null))');
 						            			else
 						            				eval(_fsuccess + '(http_request,instance)');
-						            		}
+						            		}else{
+												try{
+													if(instance.compatibility)
+														eval(_fsuccess + '(http_request,((instance.target)?instance.target.id:null))');
+													else
+														eval(_fsuccess + '(http_request,instance)');
+												}catch(e){
+													this.exception(e);
+												}											
+											}
 						            	}
 						    		}else{
 						            	if(_ffail){
@@ -976,7 +1035,16 @@
 						            				eval(_ffail + '(http_request,((instance.target)?instance.target.id:null))');
 						            			else
 						            				eval(_ffail + '(http_request,instance)');
-						            		}
+						            		}else{
+												try{
+													if(instance.compatibility)
+														eval(_ffail + '(http_request,((instance.target)?instance.target.id:null))');
+													else
+														eval(_ffail + '(http_request,instance)');
+												}catch(e){
+													this.exception(e);
+												}											
+											}
 						            	}
 						            }
 					    		}catch(e){
@@ -986,7 +1054,13 @@
 					            			_ferror(http_request, e, e.toString(),instance);
 					            		}else if(typeof window[_ferror] === "function"){
 					            			eval(_ferror + '(http_request, e, e.toString(), instance)');
-					            		}
+					            		}else{
+											try{
+												eval(_ferror + '(http_request, e, e.toString(), instance)');
+											}catch(e){
+												this.exception(e);
+											}											
+										}
 						    		}else
 //					            		alert('There was a generic problem with callback_function():'+e.toString());
 						    			console.log('There was a generic problem with callback_function():'+e.toString());
@@ -1004,7 +1078,16 @@
 					        				eval(_ffinish + '(http_request,((instance.target)?instance.target.id:null))');
 					        			else
 					        				eval(_ffinish + '(http_request,instance)');
-					        		}
+					        		}else{
+										try{
+											if(instance.compatibility)
+												eval(_ffinish + '(http_request,((instance.target)?instance.target.id:null))');
+											else
+												eval(_ffinish + '(http_request,instance)');
+										}catch(e){
+											this.exception(e);
+										}											
+									}
 					        	}
 
 
@@ -1025,7 +1108,13 @@
 			            			instance.error(http_request, e, e.toString() ,instance);
 			            		}else if(typeof window[instance.error] === "function"){
 			            			eval(instance.error + '(http_request, e, e.toString(), instance)');
-			            		}
+			            		}else{
+									try{
+										eval(instance.error + '(http_request, e, e.toString(), instance)');	
+									}catch(e){
+										this.exception(e);
+									}											
+								}
 			            	}else
 //			            		alert('There was a generic problem with callback_function():'+e.toString());
 			            		console.log('There was a generic problem with callback_function():'+e.toString());
@@ -1056,7 +1145,16 @@
 			        				eval(instance.timeout + '(http_request,((instance.target)?instance.target.id:null))');
 			        			else	
 			        				eval(instance.timeout + '(http_request,instance)');
-			        		}
+			        		}else{
+								try{
+									if(instance.compatibility)
+										eval(instance.timeout + '(http_request,((instance.target)?instance.target.id:null))');
+									else	
+										eval(instance.timeout + '(http_request,instance)');
+								}catch(e){
+									this.exception(e);
+								}											
+							}
 		    		}
 	        	}
 //------
