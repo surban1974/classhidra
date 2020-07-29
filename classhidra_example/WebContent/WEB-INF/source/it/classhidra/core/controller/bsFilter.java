@@ -119,8 +119,8 @@ public class bsFilter implements Filter {
 	    						((def_CharacterEncoding!=null)?";charset="+def_CharacterEncoding:"")
 	    				);
     				}else{
-	    				response.setContentType("Application/"+def_ContentType.toLowerCase());
-	    				response.setHeader("Content-Type","Application/"+def_ContentType.toLowerCase()+
+	    				response.setContentType("application/"+def_ContentType.toLowerCase());
+	    				response.setHeader("Content-Type","application/"+def_ContentType.toLowerCase()+
 	    						((def_CharacterEncoding!=null)?";charset="+def_CharacterEncoding:"")
 	    				);
     				}
@@ -359,8 +359,8 @@ public class bsFilter implements Filter {
 							    						((cTransformation.getContentTransferEncoding()!=null)?";charset="+cTransformation.getContentTransferEncoding():"")
 							    				);
 						    				}else{
-							    				response.setContentType("Application/"+cTransformation.getContentType().toLowerCase());
-							    				response.setHeader("Content-Type","Application/"+cTransformation.getContentType().toLowerCase()+
+							    				response.setContentType("application/"+cTransformation.getContentType().toLowerCase());
+							    				response.setHeader("Content-Type","application/"+cTransformation.getContentType().toLowerCase()+
 							    						((cTransformation.getContentTransferEncoding()!=null)?";charset="+cTransformation.getContentTransferEncoding():"")
 							    				);
 						    				}

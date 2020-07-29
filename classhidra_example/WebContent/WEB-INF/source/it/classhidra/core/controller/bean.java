@@ -166,12 +166,12 @@ public void init(HttpServletRequest request) throws bsControllerException{
 		return;
 	}
 
-	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
+	if(request.getContentType()!=null && (request.getContentType().toLowerCase().indexOf("application/json")>-1 || request.getContentType().toLowerCase().indexOf("text/json")>-1 || request.getContentType().toLowerCase().indexOf("+json")>-1)){
 //		if(initJsonPart(request)) return;
 		if(initJsonPart(request, bsController.checkJsonMapper())) return;
 	}
 	
-	if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
+	if(request.getContentType()!=null && (request.getContentType().toLowerCase().indexOf("application/xml")>-1 || request.getContentType().toLowerCase().indexOf("text/xml")>-1 || request.getContentType().toLowerCase().indexOf("+xml")>-1)){
 //		if(initXmlPart(request)) return;
 		if(initXmlPart(request, bsController.checkXmlMapper())) return;
 	}	

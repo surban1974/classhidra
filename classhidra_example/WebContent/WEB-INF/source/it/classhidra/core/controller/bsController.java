@@ -866,8 +866,8 @@ public class bsController extends HttpServlet implements bsConstants  {
 				    						((cTransformation.getContentTransferEncoding()!=null)?";charset="+cTransformation.getContentTransferEncoding():"")
 				    				);
 			    				}else{
-				    				response.setContentType("Application/"+cTransformation.getContentType().toLowerCase());
-				    				response.setHeader("Content-Type","Application/"+cTransformation.getContentType().toLowerCase()+
+				    				response.setContentType("application/"+cTransformation.getContentType().toLowerCase());
+				    				response.setHeader("Content-Type","application/"+cTransformation.getContentType().toLowerCase()+
 				    						((cTransformation.getContentTransferEncoding()!=null)?";charset="+cTransformation.getContentTransferEncoding():"")
 				    				);
 			    				}

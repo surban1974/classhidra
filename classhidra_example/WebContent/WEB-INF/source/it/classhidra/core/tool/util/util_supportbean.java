@@ -140,11 +140,11 @@ public class util_supportbean  {
 			return;
 		}
 	
-		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
+		if(request.getContentType()!=null && (request.getContentType().toLowerCase().indexOf("application/json")>-1 || request.getContentType().toLowerCase().indexOf("text/json")>-1 || request.getContentType().toLowerCase().indexOf("+json")>-1)){
 			if(initJsonPart(bean,request)) return;
 		}
 		
-		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
+		if(request.getContentType()!=null && (request.getContentType().toLowerCase().indexOf("application/xml")>-1 || request.getContentType().toLowerCase().indexOf("text/xml")>-1 || request.getContentType().toLowerCase().indexOf("+xml")>-1)){
 			if(initXmlPart(bean,request)) return;
 		}
 	
@@ -498,12 +498,12 @@ public class util_supportbean  {
 			return;
 		}
 	
-		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
+		if(request.getContentType()!=null && (request.getContentType().toLowerCase().indexOf("application/json")>-1 || request.getContentType().toLowerCase().indexOf("text/json")>-1 || request.getContentType().toLowerCase().indexOf("+json")>-1)){
 			if(initJsonPart(bean,prefix,request,(instance!=null)?instance.getJsonMapper():bsController.checkJsonMapper())) 
 				return;
 		}
 		
-		if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
+		if(request.getContentType()!=null && (request.getContentType().toLowerCase().indexOf("application/xml")>-1 || request.getContentType().toLowerCase().indexOf("text/xml")>-1 || request.getContentType().toLowerCase().indexOf("+xml")>-1)){
 			if(initXmlPart(bean,prefix,request,(instance!=null)?instance.getXmlMapper():bsController.checkXmlMapper()))
 				return;
 		}
@@ -1051,12 +1051,12 @@ public class util_supportbean  {
 					initMultiPart(ret_class,name,request);
 			}
 		
-			if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/json")>-1){
+			if(request.getContentType()!=null && (request.getContentType().toLowerCase().indexOf("application/json")>-1 || request.getContentType().toLowerCase().indexOf("text/json")>-1 || request.getContentType().toLowerCase().indexOf("+json")>-1)){
 				return 
 					initJsonPart(ret_class,name,request,(instance!=null)?instance.getJsonMapper():bsController.checkJsonMapper());
 			}
 			
-			if(request.getContentType()!=null && request.getContentType().toLowerCase().indexOf("application/xml")>-1){
+			if(request.getContentType()!=null && (request.getContentType().toLowerCase().indexOf("application/xml")>-1 || request.getContentType().toLowerCase().indexOf("text/xml")>-1 || request.getContentType().toLowerCase().indexOf("+xml")>-1)){
 				return 
 					initXmlPart(ret_class,name,request,(instance!=null)?instance.getXmlMapper():bsController.checkXmlMapper());
 			}
