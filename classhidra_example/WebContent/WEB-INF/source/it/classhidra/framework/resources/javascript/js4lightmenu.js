@@ -23,8 +23,8 @@ if (!IE4) {
 }
 
 function Mouse(evnt){
-  xmouse = ((NS4) || (NS6))?(evnt.screenX):event.x;
-  ymouse = ((NS4) || (NS6))?(evnt.screenY):event.y; 
+	  xmouse = ((NS4) || (NS6))?(evnt.pageX):event.x;
+	  ymouse = ((NS4) || (NS6))?(evnt.pageY):event.y; 
 }
 ((NS4) || (NS6))?window.onMouseMove=Mouse:document.onmousemove=Mouse;
 
