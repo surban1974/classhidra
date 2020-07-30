@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
 #Thu Jul 30 11:42:06 CEST 2020
+=======
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sat Jul 25 19:21:45 CEST 2020
+>>>>>>> 3f58328f4e180115deb6467553dcdb1e729eda28
 classhidra-base-example-1.5.7.pom>=
 classhidra-base-example-1.5.7.war>=
