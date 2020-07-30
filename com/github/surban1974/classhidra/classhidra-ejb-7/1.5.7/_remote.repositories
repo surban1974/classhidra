@@ -1,5 +1,5 @@
-#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Sun Jan 05 21:10:37 CET 2020
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Jul 30 16:24:53 CEST 2020
 classhidra-ejb-7-1.5.7.pom>=
 classhidra-ejb-7-1.5.7-sources.jar>=
 classhidra-ejb-7-1.5.7.jar>=
