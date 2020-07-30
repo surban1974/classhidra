@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.surban1974.classhidra</groupId>
+  <artifactId>build</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <description>Classhidra Base multi module build project</description>
+  <name>build</name>
+  <!-- BUILD PROFILES -->
+  <profiles>
+
+    <profile>
+    	<id>CLASSHIDRA-CORE</id>
+        <modules>
+		  	<module>../classhidra-origin</module>
+		  	<module>../classhidra-base</module>
+		  	<module>../classhidra-base-7</module>
+		  	<module>../classhidra-tag-components</module>
+		  	<module>../classhidra-tag-components-7</module>
+		  	<module>../classhidra-cdi</module>
+		  	<module>../classhidra-cdi-7</module>
+		  	<module>../classhidra-ejb</module>
+		  	<module>../classhidra-ejb-7</module>
+		  	<module>../classhidra-jboss7-vfs</module>
+		  	<module>../classhidra-jboss7-vfs-7</module>
+		  	<module>../classhidra-spring</module>
+		  	<module>../classhidra-spring-7</module>
+  		</modules>
+    </profile>
+ 
+  </profiles>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <build>
+	<pluginManagement>
+		<plugins>
+		<!-- Call plugin and create report with: license:aggregate-third-party-report -PALL -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.16</version>
+
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.doxia</groupId>
+						<artifactId>doxia-core</artifactId>
+						<version>1.6</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.doxia</groupId>
+						<artifactId>doxia-site-renderer</artifactId>
+						<version>1.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</pluginManagement>
+</build>
+
+</project>
