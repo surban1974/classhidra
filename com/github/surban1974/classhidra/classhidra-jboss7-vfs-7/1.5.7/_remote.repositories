@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Thu Jul 30 16:24:55 CEST 2020
-=======
-#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Sat Jul 25 19:22:07 CEST 2020
->>>>>>> 3f58328f4e180115deb6467553dcdb1e729eda28
+#Thu Jul 30 17:13:01 CEST 2020
 classhidra-jboss7-vfs-7-1.5.7.pom>=
 classhidra-jboss7-vfs-7-1.5.7-sources.jar>=
 classhidra-jboss7-vfs-7-1.5.7.jar>=
