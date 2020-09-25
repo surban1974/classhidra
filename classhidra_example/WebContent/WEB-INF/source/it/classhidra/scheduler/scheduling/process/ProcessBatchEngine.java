@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.integration.i_integration;
@@ -34,12 +36,12 @@ public class ProcessBatchEngine implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private boolean scan=false;
 	private Timestamp nextScanTime;
-	private ArrayList<schedulingThreadEvent> container_threadevents;
+	private Vector<schedulingThreadEvent> container_threadevents;
 
 
 	public 	ProcessBatchEngine(){
 		super();
-		container_threadevents=new ArrayList<schedulingThreadEvent>();
+		container_threadevents=new Vector<schedulingThreadEvent>();
 	}
 
 
@@ -253,7 +255,7 @@ public class ProcessBatchEngine implements Serializable {
 		long delta = nextScanTimeL - currentTimeL;
 
 
-		HashMap<String,db_batch> h_batchs=new HashMap<String, db_batch>();
+		Map<String,db_batch> h_batchs=new ConcurrentHashMap <String, db_batch>();
 
 		List<db_batch> elementsAll = new ArrayList<db_batch>();
 
@@ -270,7 +272,7 @@ public class ProcessBatchEngine implements Serializable {
 		}
 
 
-		List<db_batch> elements = new ArrayList<db_batch>();
+		Vector<db_batch> elements = new Vector<db_batch>();
 		for(db_batch el:elementsAll){
 			if(el.getState().shortValue()==i_batch.STATE_SCHEDULED){
 				if(DriverScheduling.getThProcess()!=null){
@@ -292,7 +294,7 @@ public class ProcessBatchEngine implements Serializable {
 		}
 
 
-		List<db_batch> batch_updated=new ArrayList<db_batch>();
+		Vector<db_batch> batch_updated=new Vector<db_batch>();
 
 		for(db_batch el:elements){
 			boolean updated=false;
@@ -362,7 +364,7 @@ public class ProcessBatchEngine implements Serializable {
 		}
 		long delta = nextScanTimeL - currentTimeL;
 
-		HashMap<String, db_batch> h_batchs=new HashMap<String, db_batch>();
+		Map<String, db_batch> h_batchs=new ConcurrentHashMap<String, db_batch>();
 		
 		i_4Batch m4b = binit.get4BatchManager();
 		HashMap<String,Object> form = new HashMap<String, Object>();
@@ -407,7 +409,7 @@ public class ProcessBatchEngine implements Serializable {
 		
 
 
-		List<db_batch> batch_updated=new ArrayList<db_batch>();
+		Vector<db_batch> batch_updated=new Vector<db_batch>();
 
 		if(el_go!=null){
 			boolean updated=false;
@@ -474,7 +476,7 @@ public class ProcessBatchEngine implements Serializable {
 		}
 		long delta = nextScanTimeL - currentTimeL;
 
-		HashMap<String,db_batch> h_batchs=new HashMap<String, db_batch>();
+		Map<String,db_batch> h_batchs=new ConcurrentHashMap<String, db_batch>();
 		
 		i_4Batch m4b = binit.get4BatchManager();
 		HashMap<String,Object> form = new HashMap<String, Object>();
@@ -519,7 +521,7 @@ public class ProcessBatchEngine implements Serializable {
 		
 
 
-		List<db_batch> batch_updated=new ArrayList<db_batch>();
+		Vector<db_batch> batch_updated=new Vector<db_batch>();
 
 		if(el_go!=null){
 			boolean updated=false;
@@ -583,14 +585,15 @@ public class ProcessBatchEngine implements Serializable {
 	}
 
 
-	public ArrayList<schedulingThreadEvent> getContainer_threadevents() {
+	public Vector<schedulingThreadEvent> getContainer_threadevents() {
 		return container_threadevents;
 	}
 	
 	private schedulingThreadEvent getFromThreadEvents(db_batch el){
 		if(el!=null && DriverScheduling.getThProcess()!=null){
 			for(schedulingThreadEvent ste:DriverScheduling.getThProcess().getPbe().getContainer_threadevents()){
-				if(ste.getBatch()!=null && ste.getBatch().getCd_btch().equals(el.getCd_btch())) return ste;
+				if(ste.getBatch()!=null && ste.getBatch().getCd_btch().equals(el.getCd_btch())) 
+					return ste;
 			}
 		}
 		return null;
