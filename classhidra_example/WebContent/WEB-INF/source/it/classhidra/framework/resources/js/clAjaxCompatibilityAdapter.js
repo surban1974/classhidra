@@ -182,7 +182,7 @@ function ajax_makeParameters(frm,url) {
 	var current = new clajax();
 	current.setCompatibility(true);
 	var url = current.getParametersAsUrl(frm,url);
-	return json;
+	return url;
  }
 
 function ajax_makeParameters64(frm,url) {
@@ -190,7 +190,7 @@ function ajax_makeParameters64(frm,url) {
 	current.setCompatibility(true);
 	current.setBase64(true);
 	var url = current.getParametersAsUrl(frm,url);
-	return json;
+	return url;
 }
 
 function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTargetJSFunction,showImgBack,responseType,requestMethod,anyServerStatus,outer) {	
