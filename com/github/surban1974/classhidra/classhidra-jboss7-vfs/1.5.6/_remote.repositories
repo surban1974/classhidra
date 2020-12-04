@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sat Oct 26 23:00:48 CEST 2019
+classhidra-jboss7-vfs-1.5.6.jar>=
+classhidra-jboss7-vfs-1.5.6.pom>=
+classhidra-jboss7-vfs-1.5.6-sources.jar>=

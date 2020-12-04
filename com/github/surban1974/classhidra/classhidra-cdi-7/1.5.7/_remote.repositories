@@ -1,5 +1,5 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Thu Jul 30 17:12:57 CEST 2020
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 04 18:39:08 CET 2020
 classhidra-cdi-7-1.5.7.pom>=
 classhidra-cdi-7-1.5.7.jar>=
 classhidra-cdi-7-1.5.7-sources.jar>=

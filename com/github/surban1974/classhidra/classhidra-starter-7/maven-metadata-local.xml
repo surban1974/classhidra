@@ -5,8 +5,12 @@
   <versioning>
     <release>1.5.7</release>
     <versions>
+      <version>1.5.4-SNAPSHOT</version>
+      <version>1.5.4</version>
+      <version>1.5.5</version>
+      <version>1.5.6</version>
       <version>1.5.7</version>
     </versions>
-    <lastUpdated>20200730151628</lastUpdated>
+    <lastUpdated>20201204174003</lastUpdated>
   </versioning>
 </metadata>

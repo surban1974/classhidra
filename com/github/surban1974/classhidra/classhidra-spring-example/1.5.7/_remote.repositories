@@ -1,4 +1,4 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Thu Jul 30 17:16:18 CEST 2020
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 04 18:42:14 CET 2020
 classhidra-spring-example-1.5.7.war>=
 classhidra-spring-example-1.5.7.pom>=

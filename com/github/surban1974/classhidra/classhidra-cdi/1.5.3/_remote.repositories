@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Thu Feb 04 17:05:50 CET 2016
+classhidra-cdi-1.5.3.jar>=
+classhidra-cdi-1.5.3.pom>=
+classhidra-cdi-1.5.3-sources.jar>=

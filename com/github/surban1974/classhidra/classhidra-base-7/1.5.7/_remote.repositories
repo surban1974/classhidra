@@ -1,8 +1,5 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Sat Oct 03 00:09:35 CEST 2020
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 04 18:38:36 CET 2020
 classhidra-base-7-1.5.7-sources.jar>=
 classhidra-base-7-1.5.7.jar>=
-classhidra-base-7-1.5.7-sources.jar>classhidra-mvn-repo=
 classhidra-base-7-1.5.7.pom>=
-classhidra-base-7-1.5.7.pom>classhidra-mvn-repo=
-classhidra-base-7-1.5.7.jar>classhidra-mvn-repo=

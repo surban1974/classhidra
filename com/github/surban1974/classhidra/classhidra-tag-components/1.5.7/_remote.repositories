@@ -1,5 +1,5 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Thu Jul 30 17:12:55 CEST 2020
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 04 18:41:08 CET 2020
 classhidra-tag-components-1.5.7.pom>=
 classhidra-tag-components-1.5.7-sources.jar>=
 classhidra-tag-components-1.5.7.jar>=

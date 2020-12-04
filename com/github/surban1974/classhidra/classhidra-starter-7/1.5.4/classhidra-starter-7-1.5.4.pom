@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.github.surban1974.classhidra</groupId>
+  <artifactId>classhidra-starter-7</artifactId>
+  <version>1.5.4</version>
+  <packaging>war</packaging>
+  <name>Classhidra Starter Java 7</name>
+  <description>Classhidra Hello World simple example application. Servlet api &gt; 3</description>
+
+
+
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+    <build>
+    <plugins>
+      	<plugin>
+	        <artifactId>maven-war-plugin</artifactId>
+	        <version>2.6</version>
+	        <configuration>
+	          	<warName>starter-j7</warName>
+	          	<warSourceDirectory>WebContent</warSourceDirectory>
+	          	<packagingExcludes>WEB-INF/lib/javax.servlet-api-3.0.1.jar, WEB-INF/lib/jsp-api-2.2.jar, WEB-INF/lib/javax.el-api-3.0.0.jar</packagingExcludes>
+	          	<failOnMissingWebXml>false</failOnMissingWebXml>
+	          	<webResources>
+					<resource>
+						<directory>src/main/webapp</directory>
+					</resource>
+	          		<resource>
+						<directory>src/main/java</directory>
+						<includes>
+								<include>**/*.*</include>
+						</includes>      
+	                    <targetPath>WEB-INF/classes</targetPath>	
+                    </resource>          	
+	          	</webResources>
+	        </configuration>
+      	</plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      
+	<plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-surefire-plugin</artifactId>
+	    <version>2.19.1</version>
+	    <configuration>
+	    	<test>test.**.*</test>
+	    	<parallel>methods</parallel>
+	        <threadCount>1</threadCount>
+	    </configuration>
+	</plugin>      
+      
+    </plugins>
+    </build>
+
+	<repositories>
+    	<repository>
+        	<id>classhidra-mvn-repo</id>
+        	<url>https://github.com/surban1974/classhidra/raw/mvn-repo/</url>
+        	<snapshots>
+            	<enabled>true</enabled>
+            	<updatePolicy>always</updatePolicy>
+        	</snapshots>
+    	</repository>
+  	</repositories>
+
+
+  <dependencies>
+  
+	<dependency>
+		<groupId>com.github.surban1974.classhidra</groupId>
+		<artifactId>classhidra-base-7</artifactId>
+		<version>1.5.4</version>
+	</dependency>
+  
+	<dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
