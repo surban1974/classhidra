@@ -288,7 +288,7 @@ public class ProcessBatchEngine implements Serializable {
 					}
 				}
 			}
-			if(el.getState().shortValue()==i_batch.STATE_NORMAL){
+			if(el.getState().shortValue()==i_batch.STATE_NORMAL || el.getState().shortValue()==i_batch.STATE_INEXEC){
 				elements.add(el);
 			}
 		}
@@ -300,19 +300,33 @@ public class ProcessBatchEngine implements Serializable {
 			boolean updated=false;
 			try{
 				Date rec = new java.util.Date();
-				long recT = rec.getTime()+60*1000;
-				if(util_batch.reCalcNextTime(el, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000, util_batch.CONST_APPLICANT_SCANNER)){
-					updated=true;
-				}
+				Timestamp lastEx = el.getTm_last();
+				if(el.getPeriod()!=null && el.getPeriod().toLowerCase().startsWith("every")) {					
+					Timestamp nextEx = el.getTm_next();
 					
-//				if(util_batch.reCalcNextTime(el,currentTime,0)){
-//					updated=true;
-//				}
+					long recT = rec.getTime()+60*1000;
+					if(util_batch.reCalcNextTime(el, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000, util_batch.CONST_APPLICANT_SCANNER)){
+						updated=true;
+					}
+					if(nextEx.getTime()>=rec.getTime() && nextEx.getTime()<=el.getTm_next().getTime()) {
+						el.setTm_next(nextEx);
+					}
+					
+				}else {					
+					long recT = rec.getTime()+60*1000;
+					if(util_batch.reCalcNextTime(el, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000, util_batch.CONST_APPLICANT_SCANNER)){
+						updated=true;
+					}
+				}
+				if(updated)
+					el.setTm_last(lastEx);	
+
 			}catch(Exception e){
 			}
 			long deltaTmp = el.getTm_next().getTime() - currentTimeL;
 			if(delta>0 && 0 <= deltaTmp && deltaTmp <= delta){
-				el.setState(new Integer(i_batch.STATE_SCHEDULED));
+				if(el.getState().shortValue()!=i_batch.STATE_INEXEC)
+					el.setState(new Integer(i_batch.STATE_SCHEDULED));
 				updated=true;
 				h_batchs.put(el.getCd_btch(), el);
 			}

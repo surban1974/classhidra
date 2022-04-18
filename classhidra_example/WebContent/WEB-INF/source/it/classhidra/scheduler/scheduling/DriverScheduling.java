@@ -10,6 +10,8 @@ import it.classhidra.core.tool.util.util_provider;
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_4Period;
 import it.classhidra.scheduler.common.i_batch;
+import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.process.ProcessBatchEngine;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadProcess;
@@ -25,6 +27,7 @@ public class DriverScheduling implements Serializable{
 	private static batch_init configuration;
 	private static i_4Batch batchManager;
 	private static i_4Period periodManager;
+	private static IBatchEventManager eventManager;
 	
 	
 	public static DriverScheduling init(){
@@ -239,6 +242,20 @@ public class DriverScheduling implements Serializable{
 	public static void setPeriodManager(i_4Period periodManager) {
 		DriverScheduling.periodManager = periodManager;
 	}
+	
+	public static void setEventManager(IBatchEventManager eventManager) {
+		DriverScheduling.eventManager = eventManager;
+	}
+	
+	public static void addToEventManager(short event, db_batch batch, i_batch_log log) {
+		if(DriverScheduling.eventManager!=null)
+			DriverScheduling.eventManager.add(event, batch, log);
+	}
+	
+	public static void addToEventManager(short event, String idBatch, i_batch_log log) { 
+		if(DriverScheduling.eventManager!=null)
+			DriverScheduling.eventManager.add(event, idBatch, log);
+	}	
 
 
 }

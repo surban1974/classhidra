@@ -35,6 +35,7 @@ public class db_batch extends elementDBBase implements i_elementDBBase, java.io.
     private Integer st_exec;
     
     private batch_init b_init;
+    private boolean inExecution=false;
 
     
     private java.sql.Timestamp tm_last;
@@ -308,6 +309,12 @@ public Integer getInitialState() {
 }
 public void setInitialState(Integer initialState) {
 	this.initialState = initialState;
+}
+public boolean isInExecution() {
+	return inExecution;
+}
+public void setInExecution(boolean inExecution) {
+	this.inExecution = inExecution;
 }
 
 

@@ -24,6 +24,7 @@ import it.classhidra.scheduler.common.generic_batch;
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
+import it.classhidra.scheduler.scheduling.IBatchEventManager;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.scheduling.init.batch_init;
@@ -151,24 +152,28 @@ public class ProcessBatchEvent implements Serializable {
 			batch = util_batch.checkBatchAndState(cd_ist, cd_btch, log);
 			if(batch==null)
 				return result_eb;
-			else
+			else if(batch.isInExecution()){
+				if(batch.getCd_p_btch()==null || batch.getCd_p_btch().equals("")){
+					
+					setDeltaPrecision(batch, parent_recalc, log);				
+					
+					reScheduleBatchInExecution(batch, recalc, log, log.getTm_start());
+					log.setSt_exec(Integer.valueOf(i_batch.STATE_KO));
+//					if(log.isWriteLog()) writeLog(log);
+				}
+				
+				return result_eb;
+			}else
 				initialBatchState = batch.getInitialState();
 			
-//			if(!recalc && batch.getTm_next()!=null){
-			if(recalc && batch.getTm_next()!=null){
-
-				Calendar nextTime = Calendar.getInstance();
-				nextTime.setTimeInMillis(batch.getTm_next().getTime());
-				nextTime.set(Calendar.SECOND,0);
-				nextTime.set(Calendar.MILLISECOND,0);
-				long deltaPrecision = nextTime.getTimeInMillis() - new Date().getTime();
-				if(deltaPrecision>0 && deltaPrecision<60*1000){
-					java.util.concurrent.TimeUnit.MILLISECONDS.sleep(deltaPrecision);
-				}
-			}
-			log.setTm_start(new Timestamp(new Date().getTime()));
 			
-			Date rec = log.getTm_start();
+			setDeltaPrecision(batch, parent_recalc, log);
+			
+			if(batch.getCd_p_btch()==null || batch.getCd_p_btch().equals(""))
+				reScheduleBatchInExecution(batch, recalc, log, log.getTm_start());
+			
+			
+//			Date rec = log.getTm_start();
 //System.out.println(rec);
 			String output = "";
 			SortedMap<String,Object> h_common_area = new TreeMap<String, Object>();
@@ -183,8 +188,6 @@ public class ProcessBatchEvent implements Serializable {
 				if(recalc || parent_recalc)
 					checkExcluded(batch);
 
-
-				
 				if(currentBatchClass!=null){
 					currentBatchClass.onBeforeReadInput(common_area);
 					currentBatchClass.readInput(common_area);
@@ -219,6 +222,7 @@ public class ProcessBatchEvent implements Serializable {
 
 					log.setTm_fin(new Timestamp(new Date().getTime()));
 					batch.setSt_exec(log.getSt_exec());
+					DriverScheduling.addToEventManager(IBatchEventManager.EVENT_OK, batch, log);
 
 				}else{
 					List<db_batch> child_batch = new ArrayList<db_batch>();
@@ -250,12 +254,14 @@ public class ProcessBatchEvent implements Serializable {
 
 					}
 					log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec()) + generic_batch.map2xml(h_common_area));	
+					DriverScheduling.addToEventManager(IBatchEventManager.EVENT_OK, batch, log);
 
 				}
 			}catch(Exception e){
 				log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+e.toString());
 				log.setSt_exec(Integer.valueOf(i_batch.STATE_KO));
 				batch.setSt_exec(log.getSt_exec());
+				DriverScheduling.addToEventManager(IBatchEventManager.EVENT_KO, batch, log);
 			}
 
 			
@@ -266,59 +272,10 @@ public class ProcessBatchEvent implements Serializable {
 				batch.setState(initialBatchState);
 			else 
 				batch.setState(Integer.valueOf(i_batch.STATE_NORMAL));
+			
 			if(batch.getCd_p_btch()==null || batch.getCd_p_btch().equals("")){
-
 				if(batch.getState().shortValue()==i_batch.STATE_NORMAL && batch.getPeriod()!=null && !batch.getPeriod().equals("")){
-					try{
-						if(recalc){
-//							Date rec = new java.util.Date();
-							long currentTimeL=rec.getTime();
-							long recT = rec.getTime()+60*1000;
-							util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000);
-						
-							if(log!=null && log.getTm_fin()!=null){
-								long delta2 = batch.getTm_next().getTime() - log.getTm_fin().getTime();
-								if(delta2>0 && delta2<60*1000){
-									rec = new java.util.Date();
-									currentTimeL=rec.getTime();
-									recT = rec.getTime()+60*1000+delta2+10;
-									util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000+delta2+10);
-								}
-							}else if(batch!=null && batch.getTm_last()!=null){
-								long delta2 = batch.getTm_next().getTime() - log.getTm_fin().getTime();
-								if(delta2>0 && delta2<60*1000){
-									rec = new java.util.Date();
-									currentTimeL=rec.getTime();
-									recT = rec.getTime()+60*1000+delta2+10;
-									util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000+delta2+10);
-								}
-							}
-							
-							long nextScanTimeL=DriverScheduling.getThProcess().getPbe().getNextScanTime().getTime();
-							long delta = nextScanTimeL - currentTimeL;
-							long deltaTmp = batch.getTm_next().getTime() - new Date().getTime();
-							if(delta>0 && 0 <= deltaTmp && deltaTmp <= delta){
-								batch.setState(Integer.valueOf(i_batch.STATE_SCHEDULED));
-	
-								try{
-									schedulingThreadEvent t_ev_old = util_batch.findFromPbe(DriverScheduling.getThProcess().getPbe(), batch.getCd_btch());
-									if(t_ev_old!=null){
-										t_ev_old.setStateThread(2);
-										t_ev_old.setThreadDone(true);
-										t_ev_old.interrupt();
-										DriverScheduling.getThProcess().getPbe().getContainer_threadevents().remove(t_ev_old);
-									}
-								}catch(Exception e){
-								}
-								schedulingThreadEvent t_ev = new schedulingThreadEvent(batch,DriverScheduling.getThProcess().getPbe());								
-								t_ev.start();
-							}else{
-								new bsException("BatchEngine:reScheduling after exec->false: batch->"+batch.getCd_btch()+": delta->"+delta+": deltaTmp->"+deltaTmp, iStub.log_WARN);
-							}
-						}
-
-					}catch (Exception e) {
-					}			
+					reScheduleBatch(batch, recalc, log, log.getTm_start());
 				}else{
 					if(batch.getState().shortValue()==i_batch.STATE_NORMAL)
 						new bsException("BatchEngine:reScheduling after exec->false: batch->"+batch.getCd_btch()+": state->"+batch.getSt_exec().shortValue()+": period->"+batch.getPeriod(), iStub.log_WARN);
@@ -345,6 +302,113 @@ public class ProcessBatchEvent implements Serializable {
 		result_eb[1]=batch.getSt_exec().toString();
 		return result_eb;
 	}
+	
+	private void setDeltaPrecision(db_batch batch, boolean recalc, i_batch_log log) throws Exception{
+		if(recalc && batch.getTm_next()!=null){
+
+			Calendar nextTime = Calendar.getInstance();
+			nextTime.setTimeInMillis(batch.getTm_next().getTime());
+			nextTime.set(Calendar.SECOND,0);
+			nextTime.set(Calendar.MILLISECOND,0);
+			long deltaPrecision = nextTime.getTimeInMillis() - new Date().getTime();
+			if(deltaPrecision>0 && deltaPrecision<60*1000){
+				java.util.concurrent.TimeUnit.MILLISECONDS.sleep(deltaPrecision);
+			}
+		}
+		log.setTm_start(new Timestamp(new Date().getTime()));		
+	}
+	
+	
+	private void reScheduleBatch(db_batch batch, boolean recalc, i_batch_log log, Date rec) {
+		if(batch==null)
+			return;
+
+		try{
+			if(recalc){
+				long currentTimeL=rec.getTime();
+				long recT = rec.getTime()+60*1000;
+				util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000);
+			
+				if(log!=null && log.getTm_fin()!=null){
+					long delta2 = batch.getTm_next().getTime() - log.getTm_fin().getTime();
+					if(delta2>0 && delta2<60*1000){
+						rec = new java.util.Date();
+						currentTimeL=rec.getTime();
+						recT = rec.getTime()+60*1000+delta2+10;
+						util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000+delta2+10);
+					}
+				}else if(batch!=null && batch.getTm_last()!=null){
+					long delta2 = batch.getTm_next().getTime() - log.getTm_fin().getTime();
+					if(delta2>0 && delta2<60*1000){
+						rec = new java.util.Date();
+						currentTimeL=rec.getTime();
+						recT = rec.getTime()+60*1000+delta2+10;
+						util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000+delta2+10);
+					}
+				}
+				
+				long nextScanTimeL=DriverScheduling.getThProcess().getPbe().getNextScanTime().getTime();
+				long delta = nextScanTimeL - currentTimeL;
+				long deltaTmp = batch.getTm_next().getTime() - new Date().getTime();
+				if(delta>0 && 0 <= deltaTmp && deltaTmp <= delta){
+					batch.setState(Integer.valueOf(i_batch.STATE_SCHEDULED));
+
+					try{
+						schedulingThreadEvent t_ev_old = util_batch.findFromPbe(DriverScheduling.getThProcess().getPbe(), batch.getCd_btch());
+						if(t_ev_old!=null){
+							t_ev_old.setStateThread(2);
+							t_ev_old.setThreadDone(true);
+							t_ev_old.interrupt();
+							DriverScheduling.getThProcess().getPbe().getContainer_threadevents().remove(t_ev_old);
+						}
+					}catch(Exception e){
+					}
+					schedulingThreadEvent t_ev = new schedulingThreadEvent(batch,DriverScheduling.getThProcess().getPbe());								
+					t_ev.start();
+				}else{
+					new bsException("BatchEngine:reScheduling after exec->false: batch->"+batch.getCd_btch()+": delta->"+delta+": deltaTmp->"+deltaTmp, iStub.log_WARN);
+				}
+			}
+
+		}catch (Exception e) {
+		}			
+
+	}
+	
+	private void reScheduleBatchInExecution(db_batch batch, boolean recalc, i_batch_log log, Date rec) {
+		if(batch==null)
+			return;
+
+		try{
+			if(recalc){
+				long recT = rec.getTime()+60*1000;
+				util_batch.reCalcNextTime(batch, util_format.dataToString(new java.util.Date(recT), "yyyy-MM-dd-HH-mm"),60*1000);
+			
+				long deltaTmp = batch.getTm_next().getTime() - new Date().getTime();
+				if(0 <= deltaTmp ){
+//					batch.setState(Integer.valueOf(i_batch.STATE_SCHEDULED));
+
+					try{
+						schedulingThreadEvent t_ev_old = util_batch.findFromPbe(DriverScheduling.getThProcess().getPbe(), batch.getCd_btch());
+						if(t_ev_old!=null){
+							t_ev_old.setStateThread(2);
+							t_ev_old.setThreadDone(true);
+							t_ev_old.interrupt();
+							DriverScheduling.getThProcess().getPbe().getContainer_threadevents().remove(t_ev_old);
+						}
+					}catch(Exception e){
+					}
+					schedulingThreadEvent t_ev = new schedulingThreadEvent(batch,DriverScheduling.getThProcess().getPbe());								
+					t_ev.start();
+				}else{
+					new bsException("BatchEngine:reScheduling after exec->false: batch->"+batch.getCd_btch()+": deltaTmp->"+deltaTmp, iStub.log_WARN);
+				}
+			}
+
+		}catch (Exception e) {
+		}			
+
+	}	
 	
 	
 	private String[] executeSingle(db_batch batch, i_batch_log log, i_batch worker, String common_area){

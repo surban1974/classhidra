@@ -7,6 +7,7 @@ import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_4Period;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
+import it.classhidra.scheduler.scheduling.IBatchEventManager;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.scheduling.init.batch_init;
@@ -64,10 +65,26 @@ public class util_batch {
 				log.setCd_ist(cd_ist);
 				log.setCd_btch(cd_btch);
 				log.setSt_exec(new Integer(i_batch.STATE_KO));
-				log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+"Batch ["+cd_btch+"] is null or in execution.");
+				if(	batch==null) {
+					log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+"Batch ["+cd_btch+"] is null.");
+					DriverScheduling.addToEventManager(IBatchEventManager.EVENT_INEXIST, cd_btch, log);
+				}else {
+					if(batch.getState().shortValue()== i_batch.STATE_INEXEC) {
+						log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+"Batch ["+cd_btch+"] still in execution.");
+						DriverScheduling.addToEventManager(IBatchEventManager.EVENT_STILL_INEXEC, batch, log);
+					}	
+					if(batch.getState().shortValue()== i_batch.STATE_SUSPEND) {
+						log.setDsc_exec(((log.getDsc_exec()==null)?"":log.getDsc_exec())+"Batch ["+cd_btch+"] is suspended.");
+						DriverScheduling.addToEventManager(IBatchEventManager.EVENT_SUSPEND, batch, log);
+					}
+				}
 				log.setTm_fin(new Timestamp(new Date().getTime()));
 			}
-			return null;
+			if(batch!=null) 
+				batch.setInExecution(true);
+			
+				
+			return batch;
 		}
 		log.setCd_ist(cd_ist);
 		log.setCd_btch(batch.getCd_btch());
