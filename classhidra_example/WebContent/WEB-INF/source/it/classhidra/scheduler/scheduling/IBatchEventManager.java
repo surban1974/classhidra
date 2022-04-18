@@ -14,4 +14,5 @@ public interface IBatchEventManager {
 	
 	void add(short event, db_batch batch, i_batch_log log);
 	void add(short event, String idBatch, i_batch_log log); 
+	void add(short event, String logMessage); 
 }

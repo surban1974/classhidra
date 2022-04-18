@@ -21,6 +21,7 @@ import it.classhidra.core.tool.util.util_format;
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.DriverScheduling;
+import it.classhidra.scheduler.scheduling.IBatchEventManager;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.scheduling.thread.schedulingThreadEvent;
@@ -76,8 +77,9 @@ public class ProcessBatchEngine implements Serializable {
 			}
 
 
-		}catch(Exception e){
+		}catch(Throwable e){
 			new bsException("Scheduler: BatchEngine:launch:error: " + e.toString(), iStub.log_ERROR);
+			DriverScheduling.addToEventManager(IBatchEventManager.ENGINE_KO, e.toString());
 		}
 		scan=false;
 	}
@@ -209,7 +211,7 @@ public class ProcessBatchEngine implements Serializable {
 
 			
 		}catch(Exception e){
-			new bsException("Scheduler: BatchEngine:remove "+((el!=null)?el.getCd_btch():"null")+":error: " + e.toString(), iStub.log_ERROR);
+			new bsException("Scheduler: BatchEngine:remove "+((el!=null)?el.getCd_btch():"null")+":error: " + e.toString(), iStub.log_ERROR);			
 			return false;
 		}
 		return true;

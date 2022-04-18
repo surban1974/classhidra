@@ -256,6 +256,11 @@ public class DriverScheduling implements Serializable{
 		if(DriverScheduling.eventManager!=null)
 			DriverScheduling.eventManager.add(event, idBatch, log);
 	}	
+	
+	public static void addToEventManager(short event, String logMessage) { 
+		if(DriverScheduling.eventManager!=null)
+			DriverScheduling.eventManager.add(event, logMessage);
+	}	
 
 
 }
