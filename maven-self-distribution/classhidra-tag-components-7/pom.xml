@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
 	<artifactId>classhidra-tag-components-7</artifactId>
-	<version>1.5.7</version>
+	<version>1.5.8</version>
 	<name>ClassHidra Tag as Components (Java 1.7 compilation, Servlet api 3.0.1) Async support</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. EJB Implementation. Java 1.7 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
@@ -57,7 +57,7 @@
 		                 		<artifactItem>
 		                   			<groupId>com.github.surban1974.classhidra</groupId>
 		                   			<artifactId>classhidra-origin</artifactId>
-		                   			<version>1.5.7</version>
+		                   			<version>1.5.8</version>
 		                   			<type>rar</type>
 		                   			<overWrite>false</overWrite>
 		                   			<outputDirectory>src/main</outputDirectory>
@@ -158,14 +158,14 @@
     	<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-origin</artifactId>
-			<version>1.5.7</version>
+			<version>1.5.8</version>
 			<type>rar</type>
 		</dependency>
 		
  		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-base-7</artifactId>
-			<version>1.5.7</version>
+			<version>1.5.8</version>
 		</dependency>
 		
 		<dependency>

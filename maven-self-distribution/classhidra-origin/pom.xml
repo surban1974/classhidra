@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
 	<artifactId>classhidra-origin</artifactId>
-	<version>1.5.7</version>
+	<version>1.5.8</version>
 	<name>ClassHidra Sources and Resources</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. Sources and Resources.</description>
 	<url>https://github.com/surban1974/classhidra</url>

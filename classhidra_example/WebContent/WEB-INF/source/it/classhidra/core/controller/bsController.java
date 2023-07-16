@@ -1809,10 +1809,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 					if(context.getRequest()!=null)
 						context.getRequest().getSession().setAttribute(bsConstants.CONST_BEAN_$ONLYASLASTINSTANCE,form);
 				}
+				if(iCall.getName()!=null && (iCall.getName().equals("jsonservice") || iCall.getName().equals("xmlservice")))
+					setCurrentForm(action_instance,context.getRequest());
 			}catch(Exception e){
 			}
 
-		}else setCurrentForm(action_instance,context.getRequest());
+		}else 
+			setCurrentForm(action_instance,context.getRequest());
 
 
 		if(beThrowed!=null)
