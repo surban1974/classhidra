@@ -631,6 +631,10 @@ public class bsFilter implements Filter {
 				}catch(Exception e){}
 
 				if(id_current!=null){	
+					
+					if(id_current.indexOf(";")>-1)
+						id_current = id_current.substring(0, id_current.indexOf(";"));
+					
 					boolean checkExt=true;
 					if(bsController.getAppInit().get_extention_do()==null || bsController.getAppInit().get_extention_do().trim().equals("")){
 						checkExt=false;						
