@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sun Jul 16 22:45:12 CEST 2023
+classhidra-spring-1.5.8.jar>=
+classhidra-spring-1.5.8.pom>=
+classhidra-spring-1.5.8-sources.jar>=

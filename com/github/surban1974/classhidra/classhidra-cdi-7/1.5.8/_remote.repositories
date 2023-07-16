@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sun Jul 16 22:45:09 CEST 2023
+classhidra-cdi-7-1.5.8.jar>=
+classhidra-cdi-7-1.5.8-sources.jar>=
+classhidra-cdi-7-1.5.8.pom>=
