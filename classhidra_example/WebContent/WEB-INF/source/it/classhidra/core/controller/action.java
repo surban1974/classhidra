@@ -28,6 +28,7 @@ package it.classhidra.core.controller;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -204,7 +205,7 @@ public class action extends bean implements i_action, Serializable{
 		return null;
 	}
 	
-	@ActionCall(name="json",navigated="false",Redirect=@Redirect(contentType="application/json"))
+	@ActionCall(name="json",navigated="false",Redirect=@Redirect(contentType="application/json", contentEncoding = "utf-8"))
 	public String modelAsJson(HttpServletRequest request, HttpServletResponse response){
 		
 		String modelName = getString("outputserializedname");
@@ -229,7 +230,8 @@ public class action extends bean implements i_action, Serializable{
 		return JsonWriter.object2json(this.get_bean().asBean(), modelName);
 	}
 	
-	@ActionCall(name="jsonservice",navigated="false",Redirect=@Redirect(contentType="application/json"))
+	@SuppressWarnings("unchecked")
+	@ActionCall(name="jsonservice",Redirect=@Redirect(contentType="application/json", contentEncoding = "utf-8"))
 	public String modelAsJsonService(HttpServletRequest request, HttpServletResponse response) throws Exception{
 
 		actionservice(request, response);
@@ -252,13 +254,19 @@ public class action extends bean implements i_action, Serializable{
 			else
 				modelName = "model";
 		}
-		return JsonWriter.object2json(this.get_bean().asBean(), modelName);			
+		
+		if(	bsController.getLocalContainer()!=null &&
+			bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS)!=null &&
+			bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS) instanceof List) 
+			return JsonWriter.object2json(this.get_bean().asBean(), modelName, (List<String>)bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS));	
+		else
+			return JsonWriter.object2json(this.get_bean().asBean(), modelName);			
 
 		
 
 	}	
 	
-	@ActionCall(name="xml",navigated="false",Redirect=@Redirect(contentType="application/xml"))
+	@ActionCall(name="xml",navigated="false",Redirect=@Redirect(contentType="application/xml", contentEncoding = "utf-8"))
 	public String modelAsXml(HttpServletRequest request, HttpServletResponse response){
 		
 		String modelName = getString("outputserializedname");
@@ -284,7 +292,8 @@ public class action extends bean implements i_action, Serializable{
 		return XmlWriter.object2xml(this.get_bean().asBean(), modelName);
 	}
 	
-	@ActionCall(name="xmlservice",navigated="false",Redirect=@Redirect(contentType="application/xml"))
+	@SuppressWarnings("unchecked")
+	@ActionCall(name="xmlservice",Redirect=@Redirect(contentType="application/xml", contentEncoding = "utf-8"))
 	public String modelAsXmlService(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		actionservice(request, response);
@@ -308,7 +317,12 @@ public class action extends bean implements i_action, Serializable{
 			else
 				modelName = "model";
 		}
-		return XmlWriter.object2xml(this.get_bean().asBean(), modelName);
+		if(	bsController.getLocalContainer()!=null &&
+			bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS)!=null &&
+			bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS) instanceof List) 
+			return XmlWriter.object2xml(this.get_bean().asBean(), modelName, (List<String>)bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS));	
+		else
+			return XmlWriter.object2xml(this.get_bean().asBean(), modelName);
 	}		
 
 	public i_bean get_bean() {

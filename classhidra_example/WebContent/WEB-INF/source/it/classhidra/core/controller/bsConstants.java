@@ -187,6 +187,8 @@ public interface bsConstants {
 	public final static String CONST_RECOVERED_REQUEST_CONTENT			=	"$recoveredRequestContent";
 	public final static String CONST_ASYNC_INFO							=	"$async_info";
 	public final static String CONST_RW_CONTENT							=	"$rw_content";
+	
+	public final static String CONST_FORM_SERIALIZE_FILTERS				=	"$form_serialize_filters";
 
 
 

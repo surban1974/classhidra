@@ -77,6 +77,7 @@
 	memoryInSession (true | false) #IMPLIED
 	memoryInServletContext (true | false) #IMPLIED
 	memoryAsLastInstance (true | false) #IMPLIED
+	memoryRemoveIfBlur (true | false) #IMPLIED
 	reloadAfterAction (true | false) #IMPLIED
 	reloadAfterNextNavigated (true | false) #IMPLIED
 	property CDATA #IMPLIED

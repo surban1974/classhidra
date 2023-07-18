@@ -773,7 +773,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			if(isDebug && id_action!=null && id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsStatistics)){
 				try{
-					String content = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+					String content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 					content+="<statistics>\n";
 					final I_StatisticProvider stack = getStatisticProvider();
 					if(stack!=null) content+=stack.getAllEntitiesAsXml();
@@ -808,11 +808,11 @@ public class bsController extends HttpServlet implements bsConstants  {
 					}
 					if(id_action.equalsIgnoreCase(CONST_DIRECTINDACTION_bsLoadFromFramework)){
 						if(loadSrc.trim().equals("") || loadSrc.lastIndexOf('/')==loadSrc.length()-1)
-							resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes());
+							resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes("utf-8"));
 						else
 							output = util_classes.getResourceAsByte("it/classhidra/framework/resources/"+loadSrc);
 						if(output==null && (resources==null || resources.size()==0))
-							resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes());
+							resources = util_classes.getResourcesAsByte("it/classhidra/framework/resources/"+loadSrc, "\n\r".getBytes("utf-8"));
 					}
 
 					if(output!=null || (resources!=null && resources.size()>0)){
@@ -2221,8 +2221,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 					
 					final boolean avoidCheckPermission = (isDebug)?true:false;
 
-
-					if(action_instance.get_bean().getXmloutput()){
+					String content_type=null;
+					if(action_instance.get_infoaction()!=null && action_instance.get_infoaction().getIRedirect()!=null && action_instance.get_infoaction().getIRedirect().getContentEncoding()!=null && !action_instance.get_infoaction().getIRedirect().getContentEncoding().isEmpty())
+						content_type = action_instance.get_infoaction().getIRedirect().getContentEncoding();
+					if(action_instance.get_bean().getXmloutput()){						
 						if(output4SOAP==null)
 							output4SOAP = util_beanMessageFactory.bean2xml(
 									(outputappliedfor==null || outputappliedfor.trim().equals(""))?action_instance.get_bean().asBean():action_instance.get_bean().asBean().get(outputappliedfor),
@@ -2250,7 +2252,13 @@ public class bsController extends HttpServlet implements bsConstants  {
 //								if(action_instance.get_bean().getXmloutput_encoding()!=null && !action_instance.get_bean().getXmloutput_encoding().equals(""))
 //									response.getOutputStream().write(output4SOAP.getBytes(action_instance.get_bean().getXmloutput_encoding()));
 //								else response.getOutputStream().write(output4SOAP.getBytes());
-							context.write(output4SOAP.getBytes());
+							if(content_type!=null) {
+								context.write(output4SOAP.getBytes(content_type));
+								if(context.getResponse()!=null)
+									context.getResponse().setHeader("Content-Transfer-Encoding",content_type);
+							}else
+								context.write(output4SOAP.getBytes());
+
 							return new Object[]{context.getResponse(), Boolean.valueOf(true)};
 						}catch(Exception e){
 							throw new bsControllerException("Controller generic redirect error. Print Bean as XML. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
@@ -2284,7 +2292,12 @@ public class bsController extends HttpServlet implements bsConstants  {
 //								if(action_instance.get_bean().getJsonoutput_encoding()!=null && !action_instance.get_bean().getJsonoutput_encoding().equals(""))
 //									response.getOutputStream().write(output4JSON.getBytes(action_instance.get_bean().getJsonoutput_encoding()));
 //								else response.getOutputStream().write(output4JSON.getBytes());
-							context.write(output4JSON.getBytes());
+							if(content_type!=null) {
+								context.write(output4JSON.getBytes(content_type));
+								if(context.getResponse()!=null)
+									context.getResponse().setHeader("Content-Transfer-Encoding",content_type);								
+							}else
+								context.write(output4JSON.getBytes());
 							return new Object[]{context.getResponse(), Boolean.valueOf(true)};
 						}catch(Exception e){
 							throw new bsControllerException("Controller generic redirect error. Print Bean as JSON. Action: ["+action_instance.get_infoaction().getPath()+"] ->" +e.toString(),context.getRequest(),iStub.log_ERROR);
@@ -2297,6 +2310,9 @@ public class bsController extends HttpServlet implements bsConstants  {
 					){
 
 						i_transformation cTransformation = null;
+						
+						if(current_redirect.get_inforedirect()!=null && current_redirect.get_inforedirect().getContentType()!=null && !current_redirect.get_inforedirect().getContentType().isEmpty())
+							content_type = current_redirect.get_inforedirect().getContentType();
 
 						if(current_redirect.get_inforedirect()!=null)
 							cTransformation = current_redirect.get_inforedirect().transformationFactory(current_redirect.get_transformationName(),context.getRequest().getSession().getServletContext());
@@ -2542,6 +2558,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static redirects prepareActionCallResponse(Object retVal, Method method, info_action iAction, info_call iCall, iContext context) throws Exception{
 		
 		redirects current_redirect = null;
+		String content_encoding = null;
 		if(method!=null){
 			if(method.getReturnType()!=null && !method.getReturnType().equals(Void.TYPE)){
 				if(redirects.class.isAssignableFrom(method.getReturnType()))
@@ -2570,6 +2587,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							if(rWrapper.getContentEncoding()!=null && !rWrapper.getContentEncoding().equals("")) {
 								fake.setContentEncoding(rWrapper.getContentEncoding());	
 								updateContentHeader|=true;
+								content_encoding = rWrapper.getContentEncoding();
 							}
 							if(updateContentHeader)
 								updateResponseContentType(fake, context.getResponse(), rWrapper.getResponseStatus());
@@ -2581,15 +2599,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 									fake.setContentType(iCall.getIRedirect().getContentType());
 								if(iCall.getIRedirect().getContentName()!=null && !iCall.getIRedirect().getContentName().equals(""))
 									fake.setContentName(iCall.getIRedirect().getContentName());		
-								if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
-									fake.setContentEncoding(iCall.getIRedirect().getContentEncoding());								
+								if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals("")) {
+									fake.setContentEncoding(iCall.getIRedirect().getContentEncoding());	
+									content_encoding = iCall.getIRedirect().getContentEncoding();
+								}
 							}
 							updateResponseContentType(fake, context.getResponse(), rWrapper.getResponseStatus());
 							if(rWrapper.getContent()!=null){
 								if(context.getResponse()!=null){
-									if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
-										context.write(((String)rWrapper.getContent()).getBytes());
-									else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
+									if(String.class.isAssignableFrom(rWrapper.getContent().getClass())) {
+										if(content_encoding!=null)
+											context.write(((String)rWrapper.getContent()).getBytes(content_encoding));
+										else
+											context.write(((String)rWrapper.getContent()).getBytes());
+									}else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
 										context.write(((byte[])rWrapper.getContent()));
 									else {
 										if(
@@ -2598,10 +2621,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 										){
 											if(context.getResponse()!=null){
 												try {
-													context.write(((String)JsonWriter.object2json(rWrapper.getContent(), "")).getBytes());
+													if(content_encoding!=null)
+														context.write(((String)JsonWriter.object2json(rWrapper.getContent(), "")).getBytes(content_encoding));
+													else
+														context.write(((String)JsonWriter.object2json(rWrapper.getContent(), "")).getBytes());
 												}catch (Exception e) {
 													new bsException(e,iStub.log_ERROR);
-													context.write((rWrapper.getContent().toString()).getBytes());
+													if(content_encoding!=null)
+														context.write((rWrapper.getContent().toString()).getBytes(content_encoding));
+													else
+														context.write((rWrapper.getContent().toString()).getBytes());
 												}
 											}
 										}else if(
@@ -2610,10 +2639,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 											){
 											if(context.getResponse()!=null){
 												try {
-													context.write(((String)XmlWriter.object2xml(rWrapper.getContent(),"response")).getBytes());
+													if(content_encoding!=null)
+														context.write(((String)XmlWriter.object2xml(rWrapper.getContent(),"response")).getBytes(content_encoding));
+													else
+														context.write(((String)XmlWriter.object2xml(rWrapper.getContent(),"response")).getBytes());
 												}catch (Exception e) {
 													new bsException(e,iStub.log_ERROR);
-													context.write((rWrapper.getContent().toString()).getBytes());
+													if(content_encoding!=null)
+														context.write((rWrapper.getContent().toString()).getBytes());
+													else
+														context.write((rWrapper.getContent().toString()).getBytes());
 												}
 											}
 										}										
@@ -2634,12 +2669,19 @@ public class bsController extends HttpServlet implements bsConstants  {
 						}
 					}
 				}else if(String.class.isAssignableFrom(method.getReturnType()) || byte[].class.isAssignableFrom(method.getReturnType())){
-					if(iCall!=null && iCall.getIRedirect()!=null)
+					if(iCall!=null && iCall.getIRedirect()!=null) {
 						updateResponseContentType(iCall.getIRedirect(), context.getResponse(), 0);
+						if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
+							content_encoding = iCall.getIRedirect().getContentEncoding();
+					}
 					if(retVal!=null){
 						if(context.getResponse()!=null){
-							if(String.class.isAssignableFrom(method.getReturnType()))
-								context.write(((String)retVal).getBytes());
+							if(String.class.isAssignableFrom(method.getReturnType())) {
+								if(content_encoding!=null)
+									context.write(((String)retVal).getBytes(content_encoding));
+								else
+									context.write(((String)retVal).getBytes());
+							}
 							if(byte[].class.isAssignableFrom(method.getReturnType()))
 								context.write(((byte[])retVal));
 							
@@ -2657,35 +2699,61 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}else {
 					if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getContentType()!=null && iCall.getIRedirect().getContentType().indexOf("/json")>-1) {
 						if(retVal!=null && context.getResponse()!=null){
-							if(iCall!=null && iCall.getIRedirect()!=null)
+							if(iCall!=null && iCall.getIRedirect()!=null) {
 								updateResponseContentType(iCall.getIRedirect(), context.getResponse(), 0);
+								if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
+									content_encoding = iCall.getIRedirect().getContentEncoding();							}
 							try {
-								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
+								if(content_encoding!=null)
+									context.write(((String)JsonWriter.object2json(retVal, "")).getBytes(content_encoding));
+								else
+									context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
 							}catch (Exception e) {
 								new bsException(e,iStub.log_ERROR);
-								context.write((retVal.toString()).getBytes());
+								if(content_encoding!=null)
+									context.write((retVal.toString()).getBytes(content_encoding));
+								else
+									context.write((retVal.toString()).getBytes());
 							}
 						}
 					}else if(iCall!=null && iCall.getIRedirect()!=null && iCall.getIRedirect().getContentType()!=null && iCall.getIRedirect().getContentType().indexOf("/xml")>-1) {
-						if(iCall!=null && iCall.getIRedirect()!=null)
+						if(iCall!=null && iCall.getIRedirect()!=null) {
 							updateResponseContentType(iCall.getIRedirect(), context.getResponse(), 0);
+							if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
+								content_encoding = iCall.getIRedirect().getContentEncoding();	
+						}
 						if(retVal!=null && context.getResponse()!=null){
 							try {
-								context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes());
+								if(content_encoding!=null)
+									context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes(content_encoding));
+								else	
+									context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes());
 							}catch (Exception e) {
 								new bsException(e,iStub.log_ERROR);
-								context.write((retVal.toString()).getBytes());
+								if(content_encoding!=null)
+									context.write((retVal.toString()).getBytes(content_encoding));
+								else
+									context.write((retVal.toString()).getBytes());
 							}
 						}
 					}else {
 						if(retVal!=null && context.getResponse()!=null){
-							if(iCall!=null && iCall.getIRedirect()!=null)
+							if(iCall!=null && iCall.getIRedirect()!=null) {
 								updateResponseContentType(iCall.getIRedirect(), context.getResponse(), 0);
+								if(iCall.getIRedirect().getContentEncoding()!=null && !iCall.getIRedirect().getContentEncoding().equals(""))
+									content_encoding = iCall.getIRedirect().getContentEncoding();								
+							}
 							try {
-								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
+								if(content_encoding!=null)
+									context.write(((String)JsonWriter.object2json(retVal, "")).getBytes(content_encoding));
+								else
+									context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
 							}catch (Exception e) {
 								new bsException(e,iStub.log_ERROR);
-								context.write((retVal.toString()).getBytes());
+								if(content_encoding!=null)
+									context.write((retVal.toString()).getBytes(content_encoding));
+								else
+									context.write((retVal.toString()).getBytes());
 							}
 						}
 						
@@ -2725,6 +2793,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	public static redirects prepareActionResponse(Object retVal, Method method, info_action iAction, iContext context) throws Exception{
 		redirects current_redirect = null;
+		String content_encoding = null;
 		if(method!=null){
 			if(method.getReturnType()!=null && !method.getReturnType().equals(Void.TYPE)){
 				if(redirects.class.isAssignableFrom(method.getReturnType()))
@@ -2753,6 +2822,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 							if(rWrapper.getContentEncoding()!=null && !rWrapper.getContentEncoding().equals("")) {
 								fake.setContentEncoding(rWrapper.getContentEncoding());	
 								updateContentHeader|=true;
+								content_encoding=rWrapper.getContentEncoding();
 							}
 							if(updateContentHeader)
 								updateResponseContentType(fake, context.getResponse(), rWrapper.getResponseStatus());
@@ -2765,14 +2835,20 @@ public class bsController extends HttpServlet implements bsConstants  {
 									fake.setContentType(iAction.getIRedirect().getContentType());
 								if(iAction.getIRedirect().getContentName()!=null && !iAction.getIRedirect().getContentName().equals(""))
 									fake.setContentName(iAction.getIRedirect().getContentName());		
-								if(iAction.getIRedirect().getContentEncoding()!=null && !iAction.getIRedirect().getContentEncoding().equals(""))
-									fake.setContentEncoding(iAction.getIRedirect().getContentEncoding());								
+								if(iAction.getIRedirect().getContentEncoding()!=null && !iAction.getIRedirect().getContentEncoding().equals("")) {
+									fake.setContentEncoding(iAction.getIRedirect().getContentEncoding());
+									content_encoding=iAction.getIRedirect().getContentEncoding();
+								}
 							}
 							updateResponseContentType(fake, context.getResponse(), rWrapper.getResponseStatus());
 							if(rWrapper.getContent()!=null){
 								if(context.getResponse()!=null){
-									if(String.class.isAssignableFrom(rWrapper.getContent().getClass()))
-										context.write(((String)rWrapper.getContent()).getBytes());
+									if(String.class.isAssignableFrom(rWrapper.getContent().getClass())) {
+										if(content_encoding!=null)
+											context.write(((String)rWrapper.getContent()).getBytes(content_encoding));
+										else
+											context.write(((String)rWrapper.getContent()).getBytes());
+									}
 									else if(byte[].class.isAssignableFrom(rWrapper.getContent().getClass()))
 										context.write(((byte[])rWrapper.getContent()));
 									else {
@@ -2782,10 +2858,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 											){
 												if(context.getResponse()!=null){
 													try {
-														context.write(((String)JsonWriter.object2json(rWrapper.getContent(), "")).getBytes());
+														if(content_encoding!=null)
+															context.write(((String)JsonWriter.object2json(rWrapper.getContent(), "")).getBytes(content_encoding));
+														else
+															context.write(((String)JsonWriter.object2json(rWrapper.getContent(), "")).getBytes());
 													}catch (Exception e) {
 														new bsException(e,iStub.log_ERROR);
-														context.write((rWrapper.getContent().toString()).getBytes());
+														if(content_encoding!=null)
+															context.write((rWrapper.getContent().toString()).getBytes(content_encoding));
+														else
+															context.write((rWrapper.getContent().toString()).getBytes());
 													}
 												}
 											}else if(
@@ -2794,10 +2876,16 @@ public class bsController extends HttpServlet implements bsConstants  {
 												){
 												if(context.getResponse()!=null){
 													try {
-														context.write(((String)XmlWriter.object2xml(rWrapper.getContent(),"response")).getBytes());
+														if(content_encoding!=null)
+															context.write(((String)XmlWriter.object2xml(rWrapper.getContent(),"response")).getBytes(content_encoding));
+														else
+															context.write(((String)XmlWriter.object2xml(rWrapper.getContent(),"response")).getBytes());
 													}catch (Exception e) {
 														new bsException(e,iStub.log_ERROR);
-														context.write((rWrapper.getContent().toString()).getBytes());
+														if(content_encoding!=null)
+															context.write((rWrapper.getContent().toString()).getBytes(content_encoding));
+														else
+															context.write((rWrapper.getContent().toString()).getBytes());
 													}
 												}
 											}
@@ -2821,11 +2909,18 @@ public class bsController extends HttpServlet implements bsConstants  {
 						if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
 							iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
 						
-						if(iRedirect!=null)
+						if(iRedirect!=null) {
 							updateResponseContentType(iRedirect, context.getResponse(), 0);
+							if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+								content_encoding=iRedirect.getContentEncoding();
+						}
 						if(context.getResponse()!=null){
-							if(String.class.isAssignableFrom(method.getReturnType()))
-								context.write(((String)retVal).getBytes());
+							if(String.class.isAssignableFrom(method.getReturnType())) {
+								if(content_encoding!=null)
+									context.write(((String)retVal).getBytes(content_encoding));
+								else
+									context.write(((String)retVal).getBytes());
+							}
 							if(byte[].class.isAssignableFrom(method.getReturnType()))
 								context.write(((byte[])retVal));
 							
@@ -2845,13 +2940,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 							info_redirect iRedirect = null;
 							if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
 								iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
-							if(iRedirect!=null)
+							if(iRedirect!=null) {
 								updateResponseContentType(iRedirect, context.getResponse(), 0);
+								if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+									content_encoding=iRedirect.getContentEncoding();
+							}
 							try {
-								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
+								if(content_encoding!=null)
+									context.write(((String)JsonWriter.object2json(retVal, "")).getBytes(content_encoding));
+								else
+									context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
 							}catch (Exception e) {
 								new bsException(e,iStub.log_ERROR);
-								context.write((retVal.toString()).getBytes());
+								if(content_encoding!=null)
+									context.write((retVal.toString()).getBytes(content_encoding));
+								else
+									context.write((retVal.toString()).getBytes());
 							}
 						}
 					}else if(iAction!=null && iAction.getIRedirect()!=null && iAction.getIRedirect().getContentType()!=null && iAction.getIRedirect().getContentType().indexOf("/xml")>-1) {
@@ -2859,13 +2963,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 							info_redirect iRedirect = null;
 							if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
 								iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
-							if(iRedirect!=null)
+							if(iRedirect!=null) {
 								updateResponseContentType(iRedirect, context.getResponse(), 0);
+								if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+									content_encoding=iRedirect.getContentEncoding();
+							}
 							try {
-								context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes());
+								if(content_encoding!=null)
+									context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes(content_encoding));
+								else
+									context.write(((String)XmlWriter.object2xml(retVal,"response")).getBytes());
 							}catch (Exception e) {
 								new bsException(e,iStub.log_ERROR);
-								context.write((retVal.toString()).getBytes());
+								if(content_encoding!=null)
+									context.write((retVal.toString()).getBytes(content_encoding));
+								else
+									context.write((retVal.toString()).getBytes());
 							}
 						}
 					}else {
@@ -2873,13 +2986,22 @@ public class bsController extends HttpServlet implements bsConstants  {
 							info_redirect iRedirect = null;
 							if(iAction!=null && iAction.getRedirect()!=null && iAction.get_redirects()!=null)
 								iRedirect = (info_redirect)iAction.get_redirects().get(iAction.getRedirect());
-							if(iRedirect!=null)
+							if(iRedirect!=null) {
 								updateResponseContentType(iRedirect, context.getResponse(), 0);
+								if(iRedirect.getContentEncoding()!=null && !iRedirect.getContentEncoding().equals(""))
+									content_encoding=iRedirect.getContentEncoding();
+							}
 							try {
-								context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
+								if(content_encoding!=null)
+									context.write(((String)JsonWriter.object2json(retVal, "")).getBytes(content_encoding));
+								else
+									context.write(((String)JsonWriter.object2json(retVal, "")).getBytes());
 							}catch (Exception e) {
 								new bsException(e,iStub.log_ERROR);
-								context.write((retVal.toString()).getBytes());
+								if(content_encoding!=null)
+									context.write((retVal.toString()).getBytes(content_encoding));
+								else
+									context.write((retVal.toString()).getBytes());
 							}
 						}
 						
@@ -3100,6 +3222,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 		boolean isRemoteEjb=false;
 		
 		info_redirect fake = null;
+		String content_encoding=null;
 
 		if(currentStreamRedirect.getWrapper()==null){
 			fake = new info_redirect().setContentType(currentStreamRedirect.getContentType()).setContentName(currentStreamRedirect.getContentName()).setContentEncoding(currentStreamRedirect.getContentEncoding());
@@ -3108,8 +3231,10 @@ public class bsController extends HttpServlet implements bsConstants  {
 					fake.setContentType(currentStreamRedirect.get_inforedirect().getContentType());
 				if(currentStreamRedirect.get_inforedirect().getContentName()!=null && !currentStreamRedirect.get_inforedirect().getContentName().equals(""))
 					fake.setContentName(currentStreamRedirect.get_inforedirect().getContentName());		
-				if(currentStreamRedirect.get_inforedirect().getContentEncoding()!=null && !currentStreamRedirect.get_inforedirect().getContentEncoding().equals(""))
-					fake.setContentEncoding(currentStreamRedirect.get_inforedirect().getContentEncoding());				
+				if(currentStreamRedirect.get_inforedirect().getContentEncoding()!=null && !currentStreamRedirect.get_inforedirect().getContentEncoding().equals("")) {
+					fake.setContentEncoding(currentStreamRedirect.get_inforedirect().getContentEncoding());		
+					content_encoding=currentStreamRedirect.get_inforedirect().getContentEncoding();
+				}
 			}
 			updateResponseContentType(fake,response,currentStreamRedirect.getResponseStatus());
 		}else{
@@ -3119,19 +3244,28 @@ public class bsController extends HttpServlet implements bsConstants  {
 					fake.setContentType(currentStreamRedirect.getWrapper().getContentType());
 				if(currentStreamRedirect.getWrapper().getContentName()!=null && !currentStreamRedirect.getWrapper().getContentName().equals(""))
 					fake.setContentName(currentStreamRedirect.getWrapper().getContentName());		
-				if(currentStreamRedirect.getWrapper().getContentEncoding()!=null && !currentStreamRedirect.getWrapper().getContentEncoding().equals(""))
-					fake.setContentEncoding(currentStreamRedirect.getWrapper().getContentEncoding());				
+				if(currentStreamRedirect.getWrapper().getContentEncoding()!=null && !currentStreamRedirect.getWrapper().getContentEncoding().equals("")) {
+					fake.setContentEncoding(currentStreamRedirect.getWrapper().getContentEncoding());		
+					content_encoding=currentStreamRedirect.getWrapper().getContentEncoding();
+				}
 			}
 			updateResponseContentType(fake,response,currentStreamRedirect.getWrapper().getResponseStatus());
 			if(currentStreamRedirect.getWrapper().getContent()!=null){
 				if(response!=null){
 					try{
-						if(String.class.isAssignableFrom(currentStreamRedirect.getWrapper().getContent().getClass()))
-							response.getOutputStream().write(((String)currentStreamRedirect.getWrapper().getContent()).getBytes());
-						else if(byte[].class.isAssignableFrom(currentStreamRedirect.getWrapper().getContent().getClass()))
+						if(String.class.isAssignableFrom(currentStreamRedirect.getWrapper().getContent().getClass())) {
+							if(content_encoding!=null)
+								response.getOutputStream().write(((String)currentStreamRedirect.getWrapper().getContent()).getBytes(content_encoding));
+							else
+								response.getOutputStream().write(((String)currentStreamRedirect.getWrapper().getContent()).getBytes());
+						}else if(byte[].class.isAssignableFrom(currentStreamRedirect.getWrapper().getContent().getClass()))
 							response.getOutputStream().write(((byte[])currentStreamRedirect.getWrapper().getContent()));
-						else 
-							response.getOutputStream().write((currentStreamRedirect.getWrapper().getContent().toString()).getBytes());
+						else { 
+							if(content_encoding!=null)
+								response.getOutputStream().write((currentStreamRedirect.getWrapper().getContent().toString()).getBytes(content_encoding));
+							else
+								response.getOutputStream().write((currentStreamRedirect.getWrapper().getContent().toString()).getBytes());
+						}
 					}catch(Exception e){
 						bsController.writeLog(e.toString(), iStub.log_ERROR);
 					}					
@@ -3625,6 +3759,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					prev_action_instance.leaveActionContext(action_instance,request2map);
 					action_instance.enterActionContext(prev_action_instance,request2map);
 				}
+				removePrevInstanceIfBlur(action_instance,prev_action_instance, context.getRequest());
 			}catch(Exception e){					
 			}
 		}
@@ -3632,6 +3767,35 @@ public class bsController extends HttpServlet implements bsConstants  {
 			
 		return payload;
 	}
+	
+	public static void removePrevInstanceIfBlur(i_action action_instance,i_action prev_action_instance, HttpServletRequest request) {
+		if( action_instance==null || action_instance.get_infoaction()==null || prev_action_instance==null ||
+			prev_action_instance.get_infoaction()==null || prev_action_instance.get_infoaction().getMemoryRemoveIfBlur()==null ||
+			!prev_action_instance.get_infoaction().getMemoryRemoveIfBlur().equalsIgnoreCase("true"))
+			return;
+		if(	(action_instance.get_infoaction().getNavigated()!=null && action_instance.get_infoaction().getNavigated().equalsIgnoreCase("true"))
+			||
+			(action_instance.get_infoaction().getMemoryInSession()!=null && action_instance.get_infoaction().getMemoryInSession().equalsIgnoreCase("true"))
+		) {
+			if(prev_action_instance.get_infoaction().getNavigated()!=null && prev_action_instance.get_infoaction().getNavigated().equalsIgnoreCase("true")) {
+				info_navigation infoNavigation = getFromInfoNavigation(prev_action_instance.get_infoaction().getPath(), request);
+				if(infoNavigation!=null) {					
+					if(infoNavigation.getParent()!=null) {
+						infoNavigation.getParent().setChild(infoNavigation.getChild());
+						if(infoNavigation.getChild()!=null)
+							infoNavigation.getChild().setParent(infoNavigation.getParent());
+						infoNavigation.set_content(null);
+						infoNavigation = null;
+					}
+					
+				}
+			}else
+				removeFromOnlySession(prev_action_instance.get_infoaction().getPath(), request);
+		}
+			
+			
+	}
+
 
 	public static boolean performStream_Enter(Vector<info_stream> _streams, String id_action,i_action action_instance, ServletContext servletContext, HttpServletRequest request, HttpServletResponse response) throws bsControllerException, Exception, Throwable{
 		if(performStream_EnterRS(_streams, id_action, action_instance, servletContext, request, response)!=null) return false;

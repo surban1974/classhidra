@@ -55,6 +55,7 @@ public class info_action extends info_entity implements i_elementBase{
 	private String memoryInServletContext;
 	private String memoryInServletContextLoadOnStartup;
 	private String memoryAsLastInstance;
+	private String memoryRemoveIfBlur;
 	private String reloadAfterAction;
 	private String reloadAfterNextNavigated;
 	private String navigated;
@@ -240,6 +241,7 @@ public class info_action extends info_entity implements i_elementBase{
 		memoryInServletContext="";
 		memoryInServletContextLoadOnStartup="-1";
 		memoryAsLastInstance="";
+		memoryRemoveIfBlur="";
 		reloadAfterAction="";
 		reloadAfterNextNavigated="";
 		navigated="";
@@ -409,6 +411,9 @@ public class info_action extends info_entity implements i_elementBase{
 				
 		if(memoryAsLastInstance!=null && !memoryAsLastInstance.trim().equals("")) result+=" memoryAsLastInstance=\""+util_format.normaliseXMLText(memoryAsLastInstance)+"\"";
 
+		if(memoryRemoveIfBlur!=null && !memoryRemoveIfBlur.trim().equals("")) result+=" memoryRemoveIfBlur=\""+util_format.normaliseXMLText(memoryRemoveIfBlur)+"\"";
+		
+		
 		if(reloadAfterAction!=null && !reloadAfterAction.trim().equals("")) result+=" reloadAfterAction=\""+util_format.normaliseXMLText(reloadAfterAction)+"\"";
 		if(reloadAfterNextNavigated!=null && !reloadAfterNextNavigated.trim().equals("")) result+=" reloadAfterNextNavigated=\""+util_format.normaliseXMLText(reloadAfterNextNavigated)+"\"";
 		if(help!=null && !help.trim().equals("")) result+=" help=\""+util_format.normaliseXMLText(help)+"\"";
@@ -782,6 +787,14 @@ public class info_action extends info_entity implements i_elementBase{
 
 	public void setLocked(String locked) {
 		this.locked = locked;
+	}
+
+	public String getMemoryRemoveIfBlur() {
+		return memoryRemoveIfBlur;
+	}
+
+	public void setMemoryRemoveIfBlur(String memoryRemoveIfBlur) {
+		this.memoryRemoveIfBlur = memoryRemoveIfBlur;
 	}
 
 

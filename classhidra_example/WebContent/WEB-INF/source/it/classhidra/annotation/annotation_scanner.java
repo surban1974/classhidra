@@ -826,6 +826,7 @@ public class annotation_scanner implements i_annotation_scanner {
     	
     	
     	iAction.setMemoryAsLastInstance(annotationAction.memoryAsLastInstance());
+    	iAction.setMemoryRemoveIfBlur(annotationAction.memoryRemoveIfBlur());
     	iAction.setReloadAfterAction(annotationAction.reloadAfterAction());
     	iAction.setReloadAfterNextNavigated(annotationAction.reloadAfterNextNavigated());
     	iAction.setNavigated(annotationAction.navigated());

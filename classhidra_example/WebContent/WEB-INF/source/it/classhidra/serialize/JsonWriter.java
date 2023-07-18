@@ -7,6 +7,7 @@ import java.lang.reflect.Modifier;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -149,22 +150,47 @@ public class JsonWriter {
 	}	
 	
 
+
+	
 	private static String generateJsonItem(Object sub_obj, String name, int level, boolean notFirst, Map<Integer,String> avoidCyclicPointers,
 			Serialized annotation, boolean serializeChildren, int serializeDepth, Map<String,?> treeFilters, WriteValidator validator,
 			Stack<Object> objList){
 		String result="";
 		boolean goAhead = true;
 		Map<String,?> subTreeFilters = null;
+		String nameTree = name;
+		String nameTree1 = null;
+		if(name!=null) {
+			if(name.equals("{}"))
+				name=null;
+			else if(name.contains("|")) {
+				String[] splitted = name.split("\\|");
+				name=splitted[0];
+				nameTree=splitted[0];
+				nameTree1=splitted[1];
+			}
+		}
 		if(treeFilters!=null){
-			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
-				goAhead=false;
-			else if(name!=null){
+			if(nameTree!=null && treeFilters.get(nameTree)==null && treeFilters.get(util_reflect.revAdaptMethodName(nameTree))==null) {
+				if(nameTree1!=null && treeFilters.get(nameTree1)==null && treeFilters.get(util_reflect.revAdaptMethodName(nameTree1))==null) 
+					goAhead=false;
+				else if(nameTree1!=null){
+					@SuppressWarnings("unchecked")
+					Map<String,?> map = (Map<String,?>)treeFilters.get(nameTree1);
+					subTreeFilters = map;
+					if(subTreeFilters==null){
+						@SuppressWarnings("unchecked")
+						Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(nameTree1));
+						subTreeFilters = map2;
+					}						
+				}
+			}else if(nameTree!=null){
 				@SuppressWarnings("unchecked")
-				Map<String,?> map = (Map<String,?>)treeFilters.get(name);
+				Map<String,?> map = (Map<String,?>)treeFilters.get(nameTree);
 				subTreeFilters = map;
 				if(subTreeFilters==null){
 					@SuppressWarnings("unchecked")
-					Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(name));
+					Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(nameTree));
 					subTreeFilters = map2;
 				}
 			}
@@ -185,19 +211,58 @@ public class JsonWriter {
 		String result="";
 		boolean goAhead = true;
 		Map<String,?> subTreeFilters = null;
+		String nameTree = name;
+		String nameTree1 = null;
+		if(name!=null) {
+			if(name.equals("{}"))
+				name=null;
+			else if(name.contains("|")) {
+				String[] splitted = name.split("\\|");
+				name=splitted[0];
+				nameTree=splitted[0];
+				nameTree1=splitted[1];
+			}
+		}
 		if(treeFilters!=null){
-			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
-				goAhead=false;
-			else if(name!=null){
+			if(nameTree!=null && treeFilters.get(nameTree)==null && treeFilters.get(util_reflect.revAdaptMethodName(nameTree))==null) {
+				if(nameTree1!=null && treeFilters.get(nameTree1)==null && treeFilters.get(util_reflect.revAdaptMethodName(nameTree1))==null) 
+					goAhead=false;
+				else if(nameTree1!=null){
+					@SuppressWarnings("unchecked")
+					Map<String,?> map = (Map<String,?>)treeFilters.get(nameTree1);
+					subTreeFilters = map;
+					if(subTreeFilters==null){
+						@SuppressWarnings("unchecked")
+						Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(nameTree1));
+						subTreeFilters = map2;
+					}						
+				}
+			}else if(nameTree!=null){
 				@SuppressWarnings("unchecked")
-				Map<String,?> map = (Map<String,?>)treeFilters.get(name);
+				Map<String,?> map = (Map<String,?>)treeFilters.get(nameTree);
 				subTreeFilters = map;
 				if(subTreeFilters==null){
 					@SuppressWarnings("unchecked")
-					Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(name));
+					Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(nameTree));
 					subTreeFilters = map2;
-				}			}
-		}
+				}
+			}
+		}		
+//		Map<String,?> subTreeFilters = null;
+//		if(treeFilters!=null){
+//			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
+//				goAhead=false;
+//			else if(name!=null){
+//				@SuppressWarnings("unchecked")
+//				Map<String,?> map = (Map<String,?>)treeFilters.get(name);
+//				subTreeFilters = map;
+//				if(subTreeFilters==null){
+//					@SuppressWarnings("unchecked")
+//					Map<String,?> map2 = (Map<String,?>)treeFilters.get(util_reflect.revAdaptMethodName(name));
+//					subTreeFilters = map2;
+//				}			}
+//		}
+		
 		if(goAhead && validator!=null)
 			goAhead = validator.isWritable(sub_obj, objList, getOutputName(name, annotation));
 		if(goAhead){
@@ -353,7 +418,10 @@ public class JsonWriter {
 					if(sub_obj2!=null){			
 						
 						Serialized sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
-						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
+						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0 
+							||
+							checkTreeFilter(treeFilters, "{}")
+						){
 
 							if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 								result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
@@ -363,7 +431,7 @@ public class JsonWriter {
 								avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 								result_tmp+=generateJsonItem(
 												sub_obj2,
-												null,
+												"{}",
 												level+1,
 												nFirst,
 												avoidCyclicPointers,
@@ -411,7 +479,10 @@ public class JsonWriter {
 					if(sub_obj2!=null){			
 						
 						Serialized sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
-						if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){							
+						if(	annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0 
+							||
+							checkTreeFilter(treeFilters, "{}")
+						){							
 						
 							if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 								result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
@@ -421,7 +492,7 @@ public class JsonWriter {
 								avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 								result_tmp+=generateJsonItem(
 												sub_obj2,
-												null,
+												"{}",
 												level+1,
 												nFirst,
 												avoidCyclicPointers,
@@ -459,7 +530,7 @@ public class JsonWriter {
 			
 		}		
 		
-		if(sub_obj instanceof List){
+		if(sub_obj instanceof Collection){
 			String result_tmp="";
 			
 			
@@ -474,7 +545,10 @@ public class JsonWriter {
 				if(sub_obj2!=null){		
 					
 					Serialized sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
-					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
+					if(	annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0 
+						||
+						checkTreeFilter(treeFilters, "{}")
+					){
 					
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 							result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
@@ -484,7 +558,7 @@ public class JsonWriter {
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result_tmp+=generateJsonItem(
 												sub_obj2,
-												null,
+												"{}",
 												level+1,
 												nFirst,
 												avoidCyclicPointers,
@@ -520,67 +594,70 @@ public class JsonWriter {
 			return result+result_tmp;
 		}
 		
-		if(sub_obj instanceof Set){
-
-			Iterator<Object> it = Arrays.asList(((Set<?>)sub_obj).toArray()).iterator(); 
-			String result_tmp="";
-
-
-		    while (it.hasNext()) {
-
-				boolean nFirst = true;
-				if(result_tmp.length()==0) nFirst=false;
-				
-				Object sub_obj2=it.next();
-				if(sub_obj2!=null){			
-					
-					Serialized sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
-					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){							
-					
-						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
-							result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
-							result_tmp+="\"WARNING\":\"cyclic pointer\"";
-							result_tmp+=generateJsonItemTag_Finish(new Object(), null,level+1, nFirst);
-						}else{
-							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
-							result_tmp+=generateJsonItem(
-												sub_obj2,
-												null,
-												level+1,
-												nFirst,
-												avoidCyclicPointers,
-												sub_annotation,
-												(sub_annotation!=null)?sub_annotation.children():false,
-												(sub_annotation!=null && sub_annotation.depth()>0)
-												?
-													sub_annotation.depth()
-												:
-													(serializeDepth-1>=0)?serializeDepth-1:0
-												,
-												treeFilters,
-												validator,
-												objList);
-							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
-						}
-					}
-				}else
-					result_tmp+=generateJsonItem(
-										sub_obj2,
-										null,
-										level+1,
-										nFirst,
-										avoidCyclicPointers,
-										annotation,
-										serializeChildren,
-										(serializeDepth-1>=0)?serializeDepth:0,
-										treeFilters,
-										validator,
-										objList);
-		        
-		    }
-		    return result+result_tmp;
-
-		}
+//		if(sub_obj instanceof Set){
+//
+//			Iterator<Object> it = Arrays.asList(((Set<?>)sub_obj).toArray()).iterator(); 
+//			String result_tmp="";
+//
+//
+//		    while (it.hasNext()) {
+//
+//				boolean nFirst = true;
+//				if(result_tmp.length()==0) nFirst=false;
+//				
+//				Object sub_obj2=it.next();
+//				if(sub_obj2!=null){			
+//					
+//					Serialized sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
+//					if(	annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0 
+//						||
+//						checkTreeFilter(treeFilters, "{}")
+//					){							
+//					
+//						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
+//							result_tmp+=generateJsonItemTag_Start(new Object(), null, level+1, sub_annotation, nFirst);
+//							result_tmp+="\"WARNING\":\"cyclic pointer\"";
+//							result_tmp+=generateJsonItemTag_Finish(new Object(), null,level+1, nFirst);
+//						}else{
+//							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
+//							result_tmp+=generateJsonItem(
+//												sub_obj2,
+//												"{}",
+//												level+1,
+//												nFirst,
+//												avoidCyclicPointers,
+//												sub_annotation,
+//												(sub_annotation!=null)?sub_annotation.children():false,
+//												(sub_annotation!=null && sub_annotation.depth()>0)
+//												?
+//													sub_annotation.depth()
+//												:
+//													(serializeDepth-1>=0)?serializeDepth-1:0
+//												,
+//												treeFilters,
+//												validator,
+//												objList);
+//							avoidCyclicPointers.remove(Integer.valueOf(System.identityHashCode(sub_obj2)));									
+//						}
+//					}
+//				}else
+//					result_tmp+=generateJsonItem(
+//										sub_obj2,
+//										null,
+//										level+1,
+//										nFirst,
+//										avoidCyclicPointers,
+//										annotation,
+//										serializeChildren,
+//										(serializeDepth-1>=0)?serializeDepth:0,
+//										treeFilters,
+//										validator,
+//										objList);
+//		        
+//		    }
+//		    return result+result_tmp;
+//
+//		}
 		
 
 		if(sub_obj instanceof Map){
@@ -597,7 +674,12 @@ public class JsonWriter {
 				if(sub_obj2!=null){		
 					
 					Serialized sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
-					if(annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0){
+					if(	annotation!=null || sub_annotation!=null || serializeChildren || serializeDepth>0
+						||
+						checkTreeFilter(treeFilters, pair.getKey().toString())
+						||
+						checkTreeFilter(treeFilters, "{}")
+					){
 					
 						if(avoidCyclicPointers.get(Integer.valueOf(System.identityHashCode(sub_obj2)))!=null){
 							result_tmp+=generateJsonItemTag_Start(new Object(), pair.getKey().toString(), level+1, sub_annotation, nFirst);
@@ -607,7 +689,7 @@ public class JsonWriter {
 							avoidCyclicPointers.put(Integer.valueOf(System.identityHashCode(sub_obj2)), sub_obj2.getClass().getName());
 							result_tmp+=generateJsonItem(
 												sub_obj2,
-												pair.getKey().toString(),
+												pair.getKey().toString()+"|{}",
 												level+1,
 												nFirst,
 												avoidCyclicPointers,
@@ -757,8 +839,10 @@ public class JsonWriter {
 									sub_annotation = sub_obj2.getClass().getAnnotation(Serialized.class);
 
 								if(	(sub_annotation==null && (serializeChildren || serializeDepth>0))
-										||
-										(sub_annotation!=null && sub_annotation.value())
+									||
+									(sub_annotation!=null && sub_annotation.value())
+									||
+									checkTreeFilter(treeFilters, methodName)
 								){								
 
 									
@@ -824,11 +908,18 @@ public class JsonWriter {
 						String fieldName = fields[j].getName();
 						Serialized sub_annotation = fields[j].getAnnotation(Serialized.class);
 						
-						if(sub_annotation!=null && sub_annotation.value()){
+						if(	(sub_annotation!=null && sub_annotation.value())
+							||
+							checkTreeFilter(treeFilters, fieldName))
+						{
+							
 							String sub_map_name2 = fields[j].getName();
-							if(sub_annotation.output()!=null && sub_annotation.output().name()!=null && !sub_annotation.output().name().equals(""))
+							if(sub_annotation!=null && sub_annotation.output()!=null && sub_annotation.output().name()!=null && !sub_annotation.output().name().equals(""))
 								sub_map_name2 = sub_annotation.output().name();
-							if(sub_map_name2!=null && name_tmp.get(sub_map_name2)==null){
+							if( (sub_map_name2!=null && name_tmp.get(sub_map_name2)==null) 
+								||
+								checkTreeFilter(treeFilters, sub_map_name2))
+							{
 								Object sub_obj2 = null;
 								if(!fields[j].isAccessible()){
 									fields[j].setAccessible(true);
@@ -1038,6 +1129,18 @@ public class JsonWriter {
 				map_name = annotation.output().name();
 		}
 		return map_name;
+	}
+	
+	private static boolean checkTreeFilter(Map<String,?> treeFilters, String name) {
+		if(treeFilters!=null) {
+			if(name!=null && treeFilters.get(name)==null && treeFilters.get(util_reflect.revAdaptMethodName(name))==null)
+				return false;
+			else if(name!=null){
+				if(treeFilters.get(name)!=null || treeFilters.get(util_reflect.revAdaptMethodName(name))!=null)
+					return true;
+			}
+		}
+		return false;		
 	}
 
 	

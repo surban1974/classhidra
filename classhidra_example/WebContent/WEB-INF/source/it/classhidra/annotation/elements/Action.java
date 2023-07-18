@@ -19,6 +19,7 @@ public @interface Action {
 	String memoryInServletContext() default "";
 	String memoryInServletContextLoadOnStartup() default "-1";
 	String memoryAsLastInstance() default "";
+	String memoryRemoveIfBlur() default "";
 	String reloadAfterAction() default "";
 	String reloadAfterNextNavigated() default "";	
 	String navigated() default "";
