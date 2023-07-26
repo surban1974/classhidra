@@ -205,6 +205,7 @@ public class action extends bean implements i_action, Serializable{
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@ActionCall(name="json",navigated="false",Redirect=@Redirect(contentType="application/json", contentEncoding = "utf-8"))
 	public String modelAsJson(HttpServletRequest request, HttpServletResponse response){
 		
@@ -227,7 +228,12 @@ public class action extends bean implements i_action, Serializable{
 			else
 				modelName = "model";
 		}
-		return JsonWriter.object2json(this.get_bean().asBean(), modelName);
+		if(	bsController.getLocalContainer()!=null &&
+				bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS)!=null &&
+				bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS) instanceof List) 
+				return JsonWriter.object2json(this.get_bean().asBean(), modelName, (List<String>)bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS));	
+		else		
+			return JsonWriter.object2json(this.get_bean().asBean(), modelName);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -266,6 +272,7 @@ public class action extends bean implements i_action, Serializable{
 
 	}	
 	
+	@SuppressWarnings("unchecked")
 	@ActionCall(name="xml",navigated="false",Redirect=@Redirect(contentType="application/xml", contentEncoding = "utf-8"))
 	public String modelAsXml(HttpServletRequest request, HttpServletResponse response){
 		
@@ -289,7 +296,12 @@ public class action extends bean implements i_action, Serializable{
 			else
 				modelName = "model";
 		}
-		return XmlWriter.object2xml(this.get_bean().asBean(), modelName);
+		if(	bsController.getLocalContainer()!=null &&
+				bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS)!=null &&
+				bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS) instanceof List) 
+				return XmlWriter.object2xml(this.get_bean().asBean(), modelName, (List<String>)bsController.getLocalContainer().get(bsConstants.CONST_FORM_SERIALIZE_FILTERS));	
+		else		
+			return XmlWriter.object2xml(this.get_bean().asBean(), modelName);
 	}
 	
 	@SuppressWarnings("unchecked")
