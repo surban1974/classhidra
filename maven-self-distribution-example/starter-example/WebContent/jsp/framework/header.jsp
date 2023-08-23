@@ -159,7 +159,7 @@ div.asbts td{
 		</td>
 		<td align="right" valign="middle" style="padding:2px; ">
 			<div class="asbts"
-			onclick="location.replace('https://sourceforge.net/projects/classhidra/files/classhidra.1/classhidra.1.5.4/')">
+			onclick="location.replace('https://sourceforge.net/projects/classhidra/files/classhidra.1/classhidra.1.5.8/')">
 			<table cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;" >
 				<tr>
 					<td align="right" valign="middle" style="padding-top: 2px"><img src="starter/images/classhidra_small.gif" border="0"/></td>

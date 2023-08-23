@@ -35,7 +35,7 @@ REM 		  429.246 org.apache.taglibs.standard.glassfish-1.2.0.v201112081803.jar
 REM 		1.748.770 org.eclipse.jdt.core-3.7.1.jar
 
 REM java -cp "classhidra-jetty-embedded-1.5.3.jar;lib/*" jetty.starter.JettyClasshidraStarter c:\ROOT
-C:\Programmi\Java\jdk1.8.0_66\bin\java -cp "classhidra-jetty-embedded-1.5.4.jar;lib/*" jetty.starter.JettyClasshidraStarter
+C:\Programmi\Java\jdk1.8.0_66\bin\java -cp "classhidra-jetty-embedded-1.5.8.jar;lib/*" jetty.starter.JettyClasshidraStarter
 REM C:\Programmi\Java\jdk1.7.0_72\bin\java -cp "clj.jar;lib/*" jetty.starter.JettyClasshidraStarter c:\svyatoslav.urbanovych\java_runtime\CLJ\root
 REM C:\Programmi\Java\jdk1.7.0_72\bin\java -cp "clj.jar;lib/*" jetty.starter.JettyClasshidraStarter
 REM pause

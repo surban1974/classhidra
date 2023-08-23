@@ -14,6 +14,7 @@ import it.classhidra.annotation.elements.TemporaryLinked;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.i_bean;
+import it.classhidra.core.controller.i_stream;
 import it.classhidra.core.controller.info_tlinked;
 import it.classhidra.core.tool.exception.bsException;
 import it.classhidra.core.tool.log.stubs.iStub;
@@ -171,6 +172,154 @@ public class TLinkedProvider_Simple implements I_TLinkedProvider {
 		}
 		return instance;
 	}
+	
+	public i_stream link(i_stream instance, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			if(instance!=null && instance.get_infostream()!=null) {
+				if(instance.get_infostream().getCheckTLinked()==-1 || instance.get_infostream().get_tlinked()==null) {
+					instance.get_infostream().setCheckTLinked(0);
+					if(instance.get_infostream().get_tlinked()==null)
+						instance.get_infostream().set_tlinked(new HashMap<String,info_tlinked>());
+					instance.get_infostream().get_tlinked().clear();
+					Map<String,Field> fields = new HashMap<String,Field>();
+					fields = getAllFields(fields, instance.getClass());
+					for(Object obj: fields.values()) {
+//					for(Field field: instance.getClass().getDeclaredFields() ) {
+						if(obj instanceof Field) {
+							Field field = (Field)obj;
+							TemporaryLinked annotation = field.getAnnotation(TemporaryLinked.class);
+							if(annotation!=null) {
+								instance.get_infostream().get_tlinked().put(field.getName(), new info_tlinked(annotation));
+								instance.get_infostream().setCheckTLinked(1);
+							}
+						}
+					}
+				}
+				if(instance.get_infostream().getCheckTLinked()==1 && instance.get_infostream().get_tlinked()!=null && instance.get_infostream().get_tlinked().size()>0) {
+					Map<String,Field> fields = new HashMap<String,Field>();
+					fields = getAllFields(fields, instance.getClass());
+					Iterator<Map.Entry<String, info_tlinked>> it = instance.get_infostream().get_tlinked().entrySet().iterator();
+				    while (it.hasNext()) {
+				        Map.Entry<String, info_tlinked> pair = it.next();
+				        try {
+//				        	Field field = instance.getClass().getDeclaredField(pair.getKey().toString());
+				        	Field field = (Field)fields.get(pair.getKey().toString());
+				        	if(field==null)
+				        		field = instance.getClass().getDeclaredField(pair.getKey().toString());
+				        	if(field!=null) {
+				        		if(checkInterfaces(i_bean.class, field.getType().getInterfaces())) {
+				        			if(pair.getValue() instanceof info_tlinked) {
+				        				info_tlinked tlinked = (info_tlinked)pair.getValue();
+				        				if(tlinked.getValue()!=null && !tlinked.getValue().equals("")) {
+				        					i_bean bean = bsController.getCurrentForm(tlinked.getValue(), request);
+				        					if(bean!=null) {
+				        						boolean isAccessible = field.isAccessible();
+							        			if(!isAccessible)
+							        				field.setAccessible(true);			        			
+							        			field.set(instance, bean.asBean());			        			
+							        			if(!isAccessible)
+							        				field.setAccessible(false);	
+				        					}
+				        				}
+				        			}	
+				        		}else if(field.getType().isAssignableFrom(Map.class)) {	
+				        			if(pair.getValue() instanceof info_tlinked) {
+				        				info_tlinked tlinked = (info_tlinked)pair.getValue();
+					        			if(tlinked.getReference()!=null && tlinked.getReference()!=void.class) {
+				        					Map<String,i_bean> references = bsController.getCurrentForm(tlinked.getReference(), request);
+				        					boolean isAccessible = field.isAccessible();
+						        			if(!isAccessible)
+						        				field.setAccessible(true);			        			
+						        			field.set(instance, references);			        			
+						        			if(!isAccessible)
+						        				field.setAccessible(false);	
+				        				}
+				        			}
+				        		}else if(field.getType().isAssignableFrom(HttpServletRequest.class)) {
+				        			boolean isAccessible = field.isAccessible();
+				        			if(!isAccessible)
+				        				field.setAccessible(true);			        			
+				        			field.set(instance, request);			        			
+				        			if(!isAccessible)
+				        				field.setAccessible(false);	
+				        		}else if(field.getType().isAssignableFrom(HttpServletResponse.class)) {
+				        			boolean isAccessible = field.isAccessible();
+				        			if(!isAccessible)
+				        				field.setAccessible(true);			        			
+				        			field.set(instance, response);			        			
+				        			if(!isAccessible)
+				        				field.setAccessible(false);	
+				        		}else if(field.getType().isAssignableFrom(HttpSession.class)) {
+				        			boolean isAccessible = field.isAccessible();
+				        			if(!isAccessible)
+				        				field.setAccessible(true);			        			
+				        			field.set(instance, request.getSession());			        			
+				        			if(!isAccessible)
+				        				field.setAccessible(false);	
+				        		}else if(field.getType().isAssignableFrom(ServletContext.class)) {
+				        			boolean isAccessible = field.isAccessible();
+				        			if(!isAccessible)
+				        				field.setAccessible(true);			        			
+				        			field.set(instance, request.getSession().getServletContext());			        			
+				        			if(!isAccessible)
+				        				field.setAccessible(false);	
+				        		}
+				        	}
+				        }catch(Exception e) {			        	
+				        }
+				    }
+				}
+			}
+		}catch(Exception e) {
+			new bsException(e,iStub.log_WARN);
+		}catch(Throwable e) {
+			new bsException(e,iStub.log_ERROR);
+		}
+		return instance;
+	}
+	
+	public i_stream unlink(i_stream instance, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			if(instance!=null && instance.get_infostream()!=null) {
+				if(instance.get_infostream().getCheckTLinked()==1 && instance.get_infostream().get_tlinked()!=null && instance.get_infostream().get_tlinked().size()>0) {
+					Iterator<Map.Entry<String, info_tlinked>> it = instance.get_infostream().get_tlinked().entrySet().iterator();
+				    while (it.hasNext()) {
+				        Map.Entry<String, info_tlinked> pair = it.next();
+				        try {
+				        	Field field = instance.getClass().getDeclaredField(pair.getKey().toString());
+				        	if(field!=null) {
+				        		if(pair.getValue() instanceof info_tlinked) {
+			        				info_tlinked tlinked = (info_tlinked)pair.getValue();
+			        				if(tlinked.isUnlinkAndSetNull()) {
+			        					boolean isAccessible = field.isAccessible();
+					        			if(!isAccessible)
+					        				field.setAccessible(true);			        			
+					        			field.set(instance, null);			        			
+					        			if(!isAccessible)
+					        				field.setAccessible(false);	
+			        				}
+				        		}else {
+		        					boolean isAccessible = field.isAccessible();
+				        			if(!isAccessible)
+				        				field.setAccessible(true);			        			
+				        			field.set(instance, null);			        			
+				        			if(!isAccessible)
+				        				field.setAccessible(false);	
+				        		}
+				        	}
+
+				        }catch(Exception e) {			        	
+				        }
+				    }
+				}
+			}
+		}catch(Exception e) {
+			new bsException(e,iStub.log_WARN);
+		}catch(Throwable e) {
+			new bsException(e,iStub.log_ERROR);
+		}
+		return instance;
+	}	
 
 	private boolean checkInterfaces(Class<?> clazz, Class<?>[] interfaces_) {
 		if(clazz==null || interfaces_.length==0) 

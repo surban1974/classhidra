@@ -46,6 +46,9 @@ public class info_stream extends info_entity implements i_elementBase{
 
 	private HashMap<String,info_apply_to_action> _apply_to_action;
 	private Vector<info_apply_to_action> v_info_apply_to_action;
+	
+	private HashMap<String,info_tlinked> _tlinked;
+	private int checkTLinked = -1; 
 
 
 
@@ -122,7 +125,9 @@ public class info_stream extends info_entity implements i_elementBase{
 		listener="";
 		_apply_to_action=new HashMap<String, info_apply_to_action>();
 		v_info_apply_to_action=new Vector<info_apply_to_action>();
-
+		
+		_tlinked=new HashMap<String, info_tlinked>();
+		checkTLinked=-1;
 
 
 	}
@@ -204,6 +209,20 @@ public class info_stream extends info_entity implements i_elementBase{
 		this.iRedirect = iRedirect;
 	}
 	
-	
+	public HashMap<String,info_tlinked> get_tlinked() {
+		return _tlinked;
+	}
+
+	public void set_tlinked(HashMap<String,info_tlinked> _tlinked) {
+		this._tlinked = _tlinked;
+	}
+
+	public int getCheckTLinked() {
+		return checkTLinked;
+	}
+
+	public void setCheckTLinked(int checkTLinked) {
+		this.checkTLinked = checkTLinked;
+	}	
 
 }

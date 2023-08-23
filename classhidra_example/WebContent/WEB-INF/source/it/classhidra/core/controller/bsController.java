@@ -3842,10 +3842,28 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 				redirects currentStreamRedirect = null;
 				try{
+					
+					try {
+						getTLinkedProvider().link(currentStream, request, response);
+					}catch(Exception ex){
+						new bsControllerException(ex, iStub.log_WARN);
+					}catch(Throwable th){
+						new bsControllerException(th, iStub.log_ERROR);
+					}					
+					
 					if(!isRemoteEjb)
 						currentStreamRedirect = currentStream.streamservice_enter(request, response);
 					else
 						currentStream.streamservice_enter(request2map);
+					
+					try {
+						getTLinkedProvider().unlink(currentStream, request, response);
+					}catch(Exception ex){
+						new bsControllerException(ex, iStub.log_WARN);
+					}catch(Throwable th){
+						new bsControllerException(th, iStub.log_ERROR);
+					}
+					
 				}catch(Exception e){
 					currentStream.streamservice_enter(null,null);
 				}
@@ -3912,10 +3930,27 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 				redirects currentStreamRedirect = null;
 				try{
+					
+					try {
+						getTLinkedProvider().link(currentStream, request, response);
+					}catch(Exception ex){
+						new bsControllerException(ex, iStub.log_WARN);
+					}catch(Throwable th){
+						new bsControllerException(th, iStub.log_ERROR);
+					}
+					
 					if(!isRemoteEjb)
 						currentStreamRedirect =currentStream.streamservice_exit(request, response);
 					else
 						currentStream.streamservice_exit(request2map);
+					
+					try {
+						getTLinkedProvider().unlink(currentStream, request, response);
+					}catch(Exception ex){
+						new bsControllerException(ex, iStub.log_WARN);
+					}catch(Throwable th){
+						new bsControllerException(th, iStub.log_ERROR);
+					}					
 				}catch(Exception e){
 					currentStream.streamservice_exit(null,null);
 				}
