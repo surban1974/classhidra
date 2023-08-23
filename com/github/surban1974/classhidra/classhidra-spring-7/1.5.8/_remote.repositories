@@ -1,5 +1,7 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Tue Jul 25 18:02:09 CEST 2023
+#Wed Aug 23 13:53:11 CEST 2023
 classhidra-spring-7-1.5.8.jar>=
 classhidra-spring-7-1.5.8.pom>=
+classhidra-spring-7-1.5.8.jar>classhidra-mvn-repo=
 classhidra-spring-7-1.5.8-sources.jar>=
+classhidra-spring-7-1.5.8.pom>classhidra-mvn-repo=
