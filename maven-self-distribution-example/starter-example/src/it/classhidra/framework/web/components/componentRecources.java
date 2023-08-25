@@ -11,7 +11,7 @@ import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.bsController;
 import it.classhidra.core.controller.i_action;
 import it.classhidra.core.controller.redirects;
-import it.classhidra.core.init.auth_init;
+import it.classhidra.core.init.jwt_init;
 import it.classhidra.core.init.project_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.jaas_authentication.load_users;
@@ -181,7 +181,7 @@ public redirects actionservice(HttpServletRequest request, HttpServletResponse r
 
 		this.put("app_init",bsController.getAppInit().getLoadedFrom());
 		this.put("project_init",new project_init(null).getLoadedFrom());
-		this.put("auth_init",new auth_init().getLoadedFrom());
+		this.put("auth_init",new jwt_init().getLoadedFrom());
 		this.put("log_init",bsController.getLogInit().getLoadedFrom());
 		this.put("db_init",bsController.getDbInit().getLoadedFrom());
 		this.put("actions_config",bsController.getAction_config().getLoadedFrom());

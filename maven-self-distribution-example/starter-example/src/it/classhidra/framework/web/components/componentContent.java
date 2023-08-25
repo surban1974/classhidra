@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import it.classhidra.annotation.elements.Action;
 import it.classhidra.annotation.elements.ActionMapping;
+import it.classhidra.annotation.elements.Entity;
 import it.classhidra.annotation.elements.Redirect;
 import it.classhidra.core.controller.action;
 import it.classhidra.core.controller.i_action;
@@ -33,7 +34,10 @@ import it.classhidra.core.tool.exception.bsControllerException;
 						name="formContent",						
 						redirect="/jsp/framework/content.jsp",
 						navigated="true",
-						reloadAfterAction="true"
+						reloadAfterAction="true",						
+						entity=@Entity(
+								property="jwt:check"
+						)
 				)
 
 

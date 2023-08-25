@@ -5,7 +5,7 @@
        password="0DPiKuNIrrVmD8IUCuw1hQxNqZc="
        matriculation="matr@admin"
        language="EN"
-       group="ADMINISTRATORS;"
+       group="ADMINISTRATORS;GUESTS;USERS;"
        target="default_target"
        wac_fascia=""
        description="Administrator"

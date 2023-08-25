@@ -31,6 +31,7 @@ import it.classhidra.core.init.auth_init;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.exception.bsControllerMessageException;
 import it.classhidra.core.tool.exception.message;
+import it.classhidra.core.tool.jaas_authentication.info_group;
 import it.classhidra.core.tool.jaas_authentication.info_target;
 import it.classhidra.core.tool.jaas_authentication.info_user;
 import it.classhidra.core.tool.jaas_authentication.load_users;
@@ -56,9 +57,9 @@ import it.classhidra.framework.web.integration.i_module_integration;
 						navigated="true",
 						memoryInSession="false",
 						reloadAfterAction="true",
-						help="/jsp/help/help_login.html",
+						help="/jsp/help/help_login.html",						
 						entity=@Entity(
-								property="always:public"
+								property="always:public;jwt:provider"
 						)
 				)
 
@@ -271,6 +272,14 @@ public class componentLogin extends action implements i_action,i_bean, Serializa
 		    	auth.set_user(_user.getName());
 		    	auth.set_userDesc(_user.getDescription());
 		    	auth.set_ruolo(_user.getGroup());
+		    	if(_user.getV_info_groups()!=null) {
+		    		String groups = "";
+		    		for(info_group ig : _user.getV_info_groups())
+		    			groups+=(((groups.isEmpty())?"":";")+ig.getName());
+		    		if(!groups.isEmpty())
+		    			groups+=";";
+		    		auth.set_ruoli(groups);	
+		    	}
 		    	auth.set_language(_user.getLanguage());
 		    	auth.set_matricola(_user.getMatriculation());
 		    	auth.set_target(_user.getTarget().replace(';','^'));
