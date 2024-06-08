@@ -189,6 +189,11 @@ public interface bsConstants {
 	public final static String CONST_RW_CONTENT							=	"$rw_content";
 	
 	public final static String CONST_FORM_SERIALIZE_FILTERS				=	"$form_serialize_filters";
+	
+	public final static String CONST_TAG_ALL_FORMATLOCATIONFROMUSERAUTH	=	"bsTag_all_formatLocationFromUserAuth";
+	public final static String CONST_TAG_ALL_FORMATLANGUAGE				=	"bsTag_all_formatLanguage";
+	public final static String CONST_TAG_ALL_FORMATCOUNTRY				=	"bsTag_all_formatCountry";
+	
 
 
 

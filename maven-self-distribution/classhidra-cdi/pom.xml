@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.surban1974.classhidra</groupId>
 	<artifactId>classhidra-cdi</artifactId>
-	<version>1.5.8</version>
+	<version>1.5.9</version>
 	<name>ClassHidra CDI Support</name>
 	<description>ClassHidra, Java open-source MVC implementation. Servlets and JSP technology. Web Application Development. CDI Implementation. Java 1.6 compilation.</description>
 	<url>https://github.com/surban1974/classhidra</url>
@@ -59,7 +59,7 @@
 		                 		<artifactItem>
 		                   			<groupId>com.github.surban1974.classhidra</groupId>
 		                   			<artifactId>classhidra-origin</artifactId>
-		                   			<version>1.5.8</version>
+		                   			<version>1.5.9</version>
 		                   			<type>rar</type>
 		                   			<overWrite>false</overWrite>
 		                   			<outputDirectory>src/main</outputDirectory>
@@ -162,14 +162,14 @@
    		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-origin</artifactId>
-			<version>1.5.8</version>
+			<version>1.5.9</version>
 			<type>rar</type>
 		</dependency>
 		
  		<dependency>
 			<groupId>com.github.surban1974.classhidra</groupId>
 			<artifactId>classhidra-base</artifactId>
-			<version>1.5.8</version>
+			<version>1.5.9</version>
 		</dependency>
 
 		<dependency>
