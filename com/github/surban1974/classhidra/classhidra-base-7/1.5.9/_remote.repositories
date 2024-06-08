@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat Jun 08 12:16:24 CEST 2024
+classhidra-base-7-1.5.9.jar>=
+classhidra-base-7-1.5.9-sources.jar>=
+classhidra-base-7-1.5.9.pom>=
