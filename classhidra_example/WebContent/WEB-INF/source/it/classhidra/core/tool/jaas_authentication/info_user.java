@@ -50,6 +50,7 @@ public class info_user extends info_entity implements i_elementBase{
 	private String matriculation;
 	private String language;
 	private String country;
+	private String timezone;
 	private String group;
 	private String target;
 	private String crypted;
@@ -107,6 +108,7 @@ public class info_user extends info_entity implements i_elementBase{
 		matriculation="";
 		language="";
 		country="";
+		timezone="";
 		group="";
 		target="";
 		crypted="";
@@ -241,6 +243,8 @@ public class info_user extends info_entity implements i_elementBase{
 			result+=System.getProperty("line.separator")+"      "+" pass_expired=\""+util_format.normaliseXMLText(getPass_expired())+"\"";
 			result+=System.getProperty("line.separator")+"      "+" matriculation=\""+util_format.normaliseXMLText(getMatriculation())+"\"";
 			result+=System.getProperty("line.separator")+"      "+" language=\""+util_format.normaliseXMLText(getLanguage())+"\"";
+			result+=System.getProperty("line.separator")+"      "+" country=\""+util_format.normaliseXMLText(getCountry())+"\"";
+			result+=System.getProperty("line.separator")+"      "+" timezone=\""+util_format.normaliseXMLText(getTimezone())+"\"";
 			if(v_info_groups==null || v_info_groups.size()==0)
 				result+=System.getProperty("line.separator")+"      "+" group=\""+util_format.normaliseXMLText(getGroup().replace('^',';'))+"\"";
 			else{
@@ -356,6 +360,14 @@ public class info_user extends info_entity implements i_elementBase{
 
 	public void setCountry(String country) {
 		this.country = country;
+	}
+
+	public String getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
 	}
 
 

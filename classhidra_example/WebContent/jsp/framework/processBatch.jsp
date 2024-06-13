@@ -54,7 +54,38 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 			<td  class="labelLeft">Batch:</td>
 		</tr>	
 	</table>
+ <!-- 
+		<bs:bean name="curr" constructor="java.lang.String">
+			<bs:parameter value="AZN"></bs:parameter>  
+		</bs:bean>
 		
+		<bs:bean name="dec" constructor="java.lang.Double">
+			<bs:parameter value="-100.12"></bs:parameter> 
+		</bs:bean>
+		
+		<bs:formelement bean="dec"  formatOutput_="0,000.00" formatLanguage="ua" formatCountry="UA" formatCurrency="{curr}" normalASCII="true"/>
+	
+	
+	
+	 										<bs:list
+											addHiddenInput="false" 
+											name="group" 
+											list="elements"
+											key_values="code"
+											propertys="cd_btch;dsc_btch;ord;period;" 
+											formatsOutput=";;0,000.00;;"
+											formatsCurrency=";;{curr};;"
+											
+											tr_styleClass="rowSignOn"	
+											td_style="font-size: 14px; height:24px"											
+
+											styleClass="divLists0"	
+											tb_width="100%"
+											width="300"
+											
+										/>
+	
+ -->		
 	<table width="100%">
 		
 		<tr>
@@ -84,9 +115,12 @@ style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow:
 	
 			
 		</tr>
+
+ 
+ 
 	
 		<bs:sequence name="elements">
-		<bs:bean name="current_batch" property="elements" index="sequence"/>
+		<bs:bean name="current_batch" property="elements" index="sequence"/> 
 		<tr >
 			<td  align="center" width="0%"></td>
 			<td  style="cursor:pointer" width="0%"><img src="images/menu/16_close.gif" 

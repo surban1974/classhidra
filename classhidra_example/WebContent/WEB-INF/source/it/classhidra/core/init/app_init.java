@@ -92,6 +92,8 @@ public class app_init implements Serializable{
 	public final static String id_tag_format_user_auth		= 	"application.tag.format.user.auth";
 	public final static String id_tag_format_language		= 	"application.tag.format.language";
 	public final static String id_tag_format_country		= 	"application.tag.format.country";
+	public final static String id_tag_format_currency		= 	"application.tag.format.currency";
+	public final static String id_tag_format_utc_shift		= 	"application.tag.format.utc.shift";
 	
 	public final static String id_jsonmapper_provider		=	"application.jsonmapper.provider";
 	public final static String id_xmlmapper_provider		=	"application.xmlmapper.provider";
@@ -115,6 +117,8 @@ public class app_init implements Serializable{
 	private String _tag_component_render;
 	private String _tag_format_user_auth;
 	private String _tag_format_country;
+	private String _tag_format_currency;
+	private String _tag_format_utc_shift;
 	private String _tag_format_language;
 	private String _pin;
 	
@@ -232,6 +236,10 @@ public class app_init implements Serializable{
 			_tag_component_render=(_tag_component_render==null)?System.getProperty(id_tag_component_render):_tag_component_render;
 			_tag_format_user_auth=(_tag_format_user_auth==null)?System.getProperty(id_tag_format_user_auth):_tag_format_user_auth;
 			_tag_format_country=(_tag_format_country==null)?System.getProperty(id_tag_format_country):_tag_format_country;
+			_tag_format_currency=(_tag_format_currency==null)?System.getProperty(id_tag_format_currency):_tag_format_currency;
+			_tag_format_utc_shift=(_tag_format_utc_shift==null)?System.getProperty(id_tag_format_utc_shift):_tag_format_utc_shift;
+			
+			
 			_tag_format_language=(_tag_format_language==null)?System.getProperty(id_tag_format_language):_tag_format_language;
 			
 			_async_provider_servlet=(_async_provider_servlet==null)?System.getProperty(id_async_provider_servlet):_async_provider_servlet;
@@ -419,7 +427,10 @@ public class app_init implements Serializable{
 		_tag_component_render=(property.getProperty(id_tag_component_render)!=null)?property.getProperty(id_tag_component_render):_tag_component_render;
 		_tag_format_user_auth=(property.getProperty(id_tag_format_user_auth)!=null)?property.getProperty(id_tag_format_user_auth):_tag_format_user_auth;
 		_tag_format_country=(property.getProperty(id_tag_format_country)!=null)?property.getProperty(id_tag_format_country):_tag_format_country;
+		_tag_format_currency=(property.getProperty(id_tag_format_currency)!=null)?property.getProperty(id_tag_format_currency):_tag_format_currency;
 		_tag_format_language=(property.getProperty(id_tag_format_language)!=null)?property.getProperty(id_tag_format_language):_tag_format_language;
+		_tag_format_utc_shift=(property.getProperty(id_tag_format_utc_shift)!=null)?property.getProperty(id_tag_format_utc_shift):_tag_format_utc_shift;
+
 		
 		_async_provider_servlet=(property.getProperty(id_async_provider_servlet)!=null)?property.getProperty(id_async_provider_servlet):_async_provider_servlet;
 		_temporary_linked_provider=(property.getProperty(id_temporary_linked_provider)!=null)?property.getProperty(id_temporary_linked_provider):_temporary_linked_provider;
@@ -805,5 +816,13 @@ public class app_init implements Serializable{
 
 	public String get_tag_format_language() {
 		return _tag_format_language;
+	}
+
+	public String get_tag_format_currency() {
+		return _tag_format_currency;
+	}
+
+	public String get_tag_format_utc_shift() {
+		return _tag_format_utc_shift;
 	}
 }

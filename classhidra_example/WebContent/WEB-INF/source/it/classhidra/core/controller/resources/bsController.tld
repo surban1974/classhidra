@@ -6,7 +6,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
 
 
-  <tlib-version>classHidra 1.5.8</tlib-version>
+  <tlib-version>classHidra 1.5.9</tlib-version>
   <jsp-version>1.3</jsp-version>
   <short-name>bs</short-name>
   <description> Tag library for classHidra   </description>
@@ -678,6 +678,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -821,6 +826,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -1211,6 +1221,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -1483,6 +1498,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -1649,6 +1669,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -1759,6 +1784,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -1838,6 +1868,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -1933,6 +1968,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2062,6 +2102,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -2123,6 +2168,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2186,6 +2236,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -2242,6 +2297,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2307,6 +2367,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2375,6 +2440,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2854,6 +2924,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+        <name>formatsCurrency</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
         <name>replaceOnBlank</name>
         <required>false</required>
@@ -3357,6 +3432,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -3513,6 +3593,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -3626,6 +3711,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
     <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -3693,6 +3783,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+    	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>

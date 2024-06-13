@@ -102,6 +102,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 
 	protected String formatInput = null;
 	protected String formatOutput = null;
+	protected String formatCurrency=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String formatLocationFromUserAuth=null;
@@ -233,6 +234,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		maxlength = null;
 		formatInput = null;
 		formatOutput = null;
+		formatCurrency=null;
 		formatLanguage=null;
 		formatCountry=null;
 		formatLocationFromUserAuth=null;
@@ -405,6 +407,21 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 				formatCountry=bsController.getAppInit().get_tag_format_country();			
 			if(formatCountry==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY)!=null)
 				formatCountry=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY).toString();
+			if(formatCurrency==null && bsController.getAppInit().get_tag_format_currency()!=null && !bsController.getAppInit().get_tag_format_currency().equals(""))
+				formatCurrency=bsController.getAppInit().get_tag_format_currency();			
+			if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
+				formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+			
+			if(formatLocationFromUserAuth!=null)
+				formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
+			if(formatLanguage!=null)
+				formatLanguage=checkParametersIfDynamic(formatLanguage, null);
+			if(formatCountry!=null)
+				formatCountry=checkParametersIfDynamic(formatCountry, null);
+			if(formatCurrency!=null)
+				formatCurrency=checkParametersIfDynamic(formatCurrency, null);
+			if(formatOutput!=null)
+				formatOutput=checkParametersIfDynamic(formatOutput, null);
 			
 			
 			if(anotherBean!=null){
@@ -415,9 +432,9 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 					name=bean;
 					try{
 						if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-							value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+							value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
 						else
-							value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, writeValue);
+							value = util_format.makeFormatedString(formatOutput,formatLanguage, formatCountry, formatCurrency, writeValue);
 						
 					}catch(Exception e){
 					}
@@ -426,9 +443,9 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,arg);
 						if(writeValue!=null) {
 							if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-								value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+								value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
 							else
-								value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, writeValue);
+								value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, formatCurrency, writeValue);
 						}
 					}catch(Exception e){}
 				}
@@ -1681,6 +1698,22 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 
 	public void setRendering(String rendering) {
 		this.rendering = rendering;
+	}
+
+	public String getFormatCurrency() {
+		return formatCurrency;
+	}
+
+	public void setFormatCurrency(String formatCurrency) {
+		this.formatCurrency = formatCurrency;
+	}
+
+	public String getFormatLocationFromUserAuth() {
+		return formatLocationFromUserAuth;
+	}
+
+	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
+		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
 	}	
 
 }

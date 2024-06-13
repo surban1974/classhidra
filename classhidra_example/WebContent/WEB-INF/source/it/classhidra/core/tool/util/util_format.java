@@ -1,8 +1,15 @@
 package it.classhidra.core.tool.util;
 
+import it.classhidra.core.controller.bsConstants;
+import it.classhidra.core.controller.bsController;
 import it.classhidra.core.init.log_init;
+import it.classhidra.serialize.JsonReader2Map;
 
 import java.util.*;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonValue;
+
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.text.*;
@@ -14,6 +21,23 @@ public class util_format {
 	final static public int ANGLOAMERICAN = 1;
 	final static String[] Cifra = {"","","uno","due","tre","quattro","cinque","sei","sette","otto","nove","dieci","undici","dodici","tredici","quattordici","quindici","sedici","diciassette","diciotto","diciannove","venti","trenta","quaranta","cinquanta","sessanta","settanta","ottanta","novanta"};
 
+	final static public Map<String, String> currency_symbols_locale = new HashMap<String, String>() {
+		private static final long serialVersionUID = 1L;
+	{
+        Locale[] locs = Locale.getAvailableLocales();
+
+        for(Locale loc : locs) {
+            try {
+                Currency currency = Currency.getInstance( loc );
+                if ( currency != null ) {
+                    put(currency.getCurrencyCode(),currency.getSymbol(loc));
+                }
+            } catch(Exception exc){
+
+            }
+        }
+	}};
+	
 	private static int anno;
 	private static int mese;
 	private static int giorno;
@@ -44,9 +68,33 @@ public util_format(java.sql.Date data) {
 	giorno = c.get(Calendar.DAY_OF_MONTH);
 }
 
+public static Long addHoursToDate(Object date, int hours) {
+	
+    if(!
+    		(date instanceof java.util.Date) || (date instanceof java.sql.Date) || (date instanceof Timestamp)
+    )
+    	return null;
+
+	
+    Calendar calendar = Calendar.getInstance();
+    if(date instanceof java.util.Date)
+    	calendar.setTime((java.util.Date)date);
+    if(date instanceof java.sql.Date)
+    	calendar.setTime((java.sql.Date)date);  
+    if(date instanceof Timestamp)
+    	calendar.setTime((Timestamp)date);    
+    calendar.add(Calendar.HOUR_OF_DAY, hours);
+    return calendar.getTimeInMillis();
+}
 
 public  static  String timestampToString( Timestamp timestamp, String formato) {
 	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,ITALIAN);
+	String result=null;
+	result = sdf.format(timestamp);
+	return  result;
+}
+public  static  String timestampToString( Timestamp timestamp, String formato, Locale loc) {
+	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
 	String result=null;
 	result = sdf.format(timestamp);
 	return  result;
@@ -58,12 +106,17 @@ public  static  String dataToString( Object data, String formato) {
 	if(data instanceof java.sql.Date) return dataToString( (java.sql.Date)data, formato);
 	return "";
 }
+public  static  String dataToString( Object data, String formato, Locale loc) {
+	if(data==null || formato==null) return "";
+	if(data instanceof java.util.Date) return dataToString( (java.util.Date)data, formato, loc);
+	if(data instanceof java.sql.Date) return dataToString( (java.sql.Date)data, formato, loc);
+	return "";
+}
 
 public  static  String dataToString( java.util.Date data, String formato) {
 	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,ITALIAN);
 	String result=null;
 	result = sdf.format(data);
-//	if(result.equals("0001-01-01")) result="1-01-01";
 	return  result;
 }
 public  static  String dataToString( java.util.Date data, String formato, Locale loc) {
@@ -72,14 +125,10 @@ public  static  String dataToString( java.util.Date data, String formato, Locale
 	result = sdf.format(data);
 	return  result;
 }
-
-
-
 public  static  String dataToString( java.sql.Date data, String formato) {
 	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,ITALIAN);
 	String result=null;
 	result = sdf.format(data);
-//	if(result.equals("0001-01-01")) result="1-01-01";
 	return  result;
 }
 public  static  String dataToString( java.sql.Date data, String formato, Locale loc) {
@@ -286,7 +335,7 @@ public static java.util.Date stringToData(String data, int style) throws Excepti
 
 }
 
-public static java.util.Date stringToData ( String data, String formato) throws Exception {
+public static java.util.Date stringToData (String data, String formato) throws Exception {
 	SimpleDateFormat sdf = new SimpleDateFormat(formato,ITALIAN);
 	ParsePosition pos = new ParsePosition(0);
 	Date dataResult = null;
@@ -387,8 +436,23 @@ public static String convertAp(String value){
 	}
 	return result;
 }
+
+
+
 public static java.sql.Timestamp stringToTimestamp ( String data, String formato) throws Exception {
 	SimpleDateFormat sdf = new SimpleDateFormat(formato,ITALIAN);
+	ParsePosition pos = new ParsePosition(0);
+	Date dataResult = null;
+	try {
+		dataResult = sdf.parse(data,pos);
+	} catch(Exception e) {
+		throw new Exception();
+	}
+	if ( pos.getIndex()==0 || dataResult==null ) throw new Exception();
+	return new java.sql.Timestamp(dataResult.getTime());
+}
+public static java.sql.Timestamp stringToTimestamp ( String data, String formato, Locale loc) throws Exception {
+	SimpleDateFormat sdf = new SimpleDateFormat(formato,loc);
 	ParsePosition pos = new ParsePosition(0);
 	Date dataResult = null;
 	try {
@@ -570,7 +634,7 @@ public static String makeFormatedStringWithMethod(String format, Object ref) thr
 	return result;
 }
 
-public static String makeFormatedString(String format, Object ref) throws Exception{
+public static String makeFormatedString(String format, String currency, Object ref) throws Exception{
 	if(format==null || format.equals("")) 
 		return ref.toString();	
 	if(ref.getClass().isPrimitive()) return ref.toString();
@@ -581,8 +645,11 @@ public static String makeFormatedString(String format, Object ref) throws Except
 	){
 		try{
 			try{
-//				return new DecimalFormat(format).parse(ref.toString().trim()).toString();
-				return new DecimalFormat(format).format(new java.math.BigDecimal(ref.toString()).doubleValue());
+				DecimalFormat decimalFormat = new DecimalFormat(format); 
+				if(currency!=null && !currency.isEmpty()) 
+					return formatDecimalWithCurrency(decimalFormat, null, format, currency, ref);
+				else
+					return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
 			}catch(Exception e){}	
 		}catch(Exception e){
 			try{
@@ -594,11 +661,20 @@ public static String makeFormatedString(String format, Object ref) throws Except
 		}	
 	}	
 	if(ref instanceof java.sql.Date){
+		java.sql.Date utc = (java.sql.Date)ref;
+		int utc_shift = 0;
+		try {
+			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
+		}catch (Exception e) {
+		}
+		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
+			utc=new java.sql.Date(addHoursToDate(utc, utc_shift));
+		}
 		try{
-			return dataToString((java.sql.Date)ref, format);
+			return dataToString(utc, format);
 		}catch(Exception e){
 			try{
-				String res = makeFormatedStringWithMethod(format, ref);
+				String res = makeFormatedStringWithMethod(format, utc);
 				if(res!=null) return res;
 			}catch (Exception ex) {
 			}
@@ -606,22 +682,40 @@ public static String makeFormatedString(String format, Object ref) throws Except
 		}
 	}	
 	if(ref instanceof Timestamp){
+		Timestamp utc = (Timestamp)ref;
+		int utc_shift = 0;
+		try {
+			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
+		}catch (Exception e) {
+		}
+		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
+			utc=new Timestamp(addHoursToDate(utc, utc_shift));
+		}		
 		try{
-			return dataToString(new java.sql.Date(((Timestamp)ref).getTime()), format);
+			return dataToString(new java.sql.Date(((Timestamp)utc).getTime()), format);
 		}catch(Exception e){
 			try{
-				String res = makeFormatedStringWithMethod(format, ref);
+				String res = makeFormatedStringWithMethod(format, utc);
 				if(res!=null) return res;
 			}catch (Exception ex) {
 			}
 		}
 	}
 	if(ref instanceof java.util.Date){
+		java.util.Date utc = (java.util.Date)ref;
+		int utc_shift = 0;
+		try {
+			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
+		}catch (Exception e) {
+		}
+		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
+			utc=new java.util.Date(addHoursToDate(utc, utc_shift));
+		}		
 		try{
-			return util_format.dataToString((java.util.Date)ref, format);
+			return util_format.dataToString(utc, format);
 		}catch(Exception e){
 			try{
-				String res = makeFormatedStringWithMethod(format, ref);
+				String res = makeFormatedStringWithMethod(format, utc);
 				if(res!=null) return res;
 			}catch (Exception ex) {
 			}
@@ -629,9 +723,11 @@ public static String makeFormatedString(String format, Object ref) throws Except
 	}
 	if(ref instanceof String){
 		try{
-
-				return new DecimalFormat(format).format(new java.math.BigDecimal(ref.toString()).doubleValue());
-	
+			DecimalFormat decimalFormat = new DecimalFormat(format); 
+			if(currency!=null && !currency.isEmpty()) 
+				return formatDecimalWithCurrency(decimalFormat, null, format, currency, ref);
+			else
+				return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());	
 		}catch(Exception e){
 			try{
 				String res = makeFormatedStringWithMethod(format, ref);
@@ -644,11 +740,170 @@ public static String makeFormatedString(String format, Object ref) throws Except
 	return ref.toString();		
 }
 
+@SuppressWarnings("unchecked")
+public static String getCurrensySymbolByCode(String code) {
+	if(bsController.getFromLocalContainer(bsConstants.CONST_MAP_CURRENCY_CODE_SYMBOL)==null) {
+		Map<String, String> code_symbol = new HashMap<String, String>();
+		
+		try {
+			byte[] currencies_json = util_classes.getResourceAsByte("it/classhidra/core/controller/resources/currencies.json");
+			JsonValue value = Json.parse(new String(currencies_json));
+			Object obj = JsonReader2Map.createMap(value);
+			if(obj!=null && obj instanceof List) {
+				List<Object> mapped = (List<Object>)obj;
+				if(mapped.size()>0) {
+					for(Object chunk : mapped) {
+						if(chunk instanceof Map) {
+							Map<String, Object> m_chunk = (Map<String, Object>)chunk;
+							try {
+								code_symbol.put(m_chunk.get("alpha").toString(),m_chunk.get("symbol").toString());
+							}catch (Exception e) {
+								e.toString();
+							}
+						}
+					}
+				}
+			}
+		}catch (Exception e) {
+			e.toString();
+		}
+
+		if(currency_symbols_locale!=null) {
+			for(Map.Entry<String, String> entry : currency_symbols_locale.entrySet()) {
+				if(code_symbol.get(entry.getKey())==null)
+					code_symbol.put(entry.getKey(), entry.getValue());
+			}
+		}
+		bsController.setToLocalContainer(bsConstants.CONST_MAP_CURRENCY_CODE_SYMBOL, code_symbol);
+	}
+
+	Map<String, String> code_symbol = (Map<String, String>)bsController.getFromLocalContainer(bsConstants.CONST_MAP_CURRENCY_CODE_SYMBOL);
+	return code_symbol.get(code);
+}
+
+public static int countChar(String test, char check) {
+	if(test==null || test.length()==0)
+		return 0;
+	int count = 0;
+	 
+	for (int i = 0; i < test.length(); i++) {
+	    if (test.charAt(i) == check) {
+	        count++;
+	    }
+	}
+	return count;
+}
+
+public static String formatDecimalWithCurrency(NumberFormat decimalFormat, Locale locale, String format, String currency, Object ref) {
+	try {
+		if(currency!=null)
+			currency=currency.toUpperCase();
+		double val = new java.math.BigDecimal(ref.toString()).doubleValue();
+		NumberFormat testFormatter = null;
+		Currency testCur = null;
+		String symbToReplace = null;
+		if(locale!=null) {
+			testFormatter = NumberFormat.getCurrencyInstance(locale); 
+			testCur = Currency.getInstance(locale); 
+			symbToReplace = testCur.getSymbol(locale);
+		}else {
+			testFormatter = NumberFormat.getCurrencyInstance();
+			testCur = Currency.getInstance(currency);
+			symbToReplace = testCur.getSymbol();
+		}
+		testFormatter.setCurrency(testCur);
+
+		String test = testFormatter.format(val); 
+		test = test.replace(symbToReplace, "___");
+		if(format!=null && !format.isEmpty()) {
+			test = test.replaceAll("[Z0-9.,]", "X");
+			while(countChar(test,'X')>1)
+				test=test.replaceFirst("X", "");
+			if(val<0)
+				val=val*-1;
+			test=test.replace("X",decimalFormat.format(val));
+		}
+		if(symbToReplace!=null && getCurrensySymbolByCode(currency)!=null)
+			test = test.replace("___", getCurrensySymbolByCode(currency));
+	
+		return test;
+		
+//		test = test.replace(",", "").replace(".", "").replace(" ", "9");
+//		boolean firstMinus=false;
+//		boolean symbolBefore=false;
+//		if(test.length()>0 && test.indexOf(0)=='-') {
+//			firstMinus=true;
+//			test=test.substring(1);
+//		}
+//		if(test.length()>0 && test.indexOf(0)!='1') {
+//			symbolBefore=false;
+//		}
+//		if(test.length()>0) {
+//			test = test.replaceAll("[^Z0-9]", "").replaceAll("0", "").replaceAll("1", "").replace("9", " ");
+//			
+//			
+//			
+//			
+//			if(test.indexOf(0)=='1') {
+//				test = test.replaceAll(
+//				          "[^Z0-9]", "");
+//				test = test.replaceAll("0", "").replaceAll("1", "").replace("9", " ");
+//				if(currency!=null && currency_symbols.get(currency)!=null)
+//					return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue())+test+currency_symbols.get(currency);
+//				else 
+//					return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
+//			}else {
+//				test = test.replaceAll(
+//				          "[^Z0-9]", "");
+//				test = test.replaceAll("0", "").replace("9", " ");
+//				if(currency!=null && currency_symbols.get(currency)!=null)
+//					return currency_symbols.get(currency)+test+decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
+//				else 
+//					return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
+//			}
+//		}else {
+//			if(currency!=null && currency_symbols.get(currency)!=null)
+//				return currency_symbols.get(currency) + " "+decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
+//			else 
+//				return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());			
+//		}
+			
+	}catch (Exception e) {
+		if(currency!=null && getCurrensySymbolByCode(currency)!=null)
+			return getCurrensySymbolByCode(currency) + " "+decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
+		else 
+			return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
+	}
+}
 
 public static String makeFormatedString(String format, String language, String country, Object ref) throws Exception{
+	return makeFormatedString(format, language, country, null, ref);
+}
+
+public static String makeFormatedString(String format, String language, String country, String currency, Object ref) throws Exception{
 	if(ref==null) return null;	
+	if((format==null || format.equals("")) && currency!=null && !currency.isEmpty()) {
+		Locale locale = null;
+		try{
+			if(language!=null && !language.equals("")){
+				if(country!=null && !country.equals(""))
+					locale = new Locale(language,country);
+				else
+					locale = new Locale(language);
+			}
+		}catch(Exception e){		
+		}
+		NumberFormat numberFormat = null;
+		if(locale!=null)
+			numberFormat = DecimalFormat.getCurrencyInstance(locale);
+		else
+			numberFormat = DecimalFormat.getCurrencyInstance();
+		return formatDecimalWithCurrency(numberFormat, locale, format, currency, ref);
+	}
+		
+		
 	if(format==null || format.equals(""))
-		return ref.toString();	
+		return ref.toString();
 	Locale locale = null;
 	try{
 		if(language!=null && !language.equals("")){
@@ -659,11 +914,13 @@ public static String makeFormatedString(String format, String language, String c
 		}
 	}catch(Exception e){		
 	}
-	if(locale==null) return makeFormatedString(format, ref);
+	if(locale==null) 
+		return makeFormatedString(format, currency, ref);
 	
 	
 	
-	if(ref.getClass().isPrimitive()) return ref.toString();
+	if(ref.getClass().isPrimitive()) 
+		return ref.toString();
 	if(	!(ref instanceof java.sql.Date) &&
 		!(ref instanceof java.util.Date) &&
 		!(ref instanceof java.sql.Timestamp) &&
@@ -671,8 +928,11 @@ public static String makeFormatedString(String format, String language, String c
 	){
 		try{
 			try{
-//				return new DecimalFormat(format).parse(ref.toString().trim()).toString();
-				return new DecimalFormat(format, new DecimalFormatSymbols(locale)).format(new java.math.BigDecimal(ref.toString()).doubleValue());
+				DecimalFormat decimalFormat = new DecimalFormat(format, new DecimalFormatSymbols(locale));
+				if(currency!=null && !currency.isEmpty()) 
+					return formatDecimalWithCurrency(decimalFormat, locale, format, currency, ref);
+				else
+					return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
 			}catch(Exception e){}	
 		}catch(Exception e){
 			try{
@@ -684,11 +944,20 @@ public static String makeFormatedString(String format, String language, String c
 		}	
 	}	
 	if(ref instanceof java.sql.Date){
+		java.sql.Date utc = (java.sql.Date)ref;
+		int utc_shift = 0;
+		try {
+			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
+		}catch (Exception e) {
+		}
+		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
+			utc=new java.sql.Date(addHoursToDate(utc, utc_shift));
+		}
 		try{
-			return dataToString((java.sql.Date)ref, format);
+			return dataToString(utc, format, locale);
 		}catch(Exception e){
 			try{
-				String res = makeFormatedStringWithMethod(format, ref);
+				String res = makeFormatedStringWithMethod(format, utc);
 				if(res!=null) return res;
 			}catch (Exception ex) {
 			}
@@ -696,22 +965,40 @@ public static String makeFormatedString(String format, String language, String c
 		}
 	}	
 	if(ref instanceof Timestamp){
+		Timestamp utc = (Timestamp)ref;
+		int utc_shift = 0;
+		try {
+			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
+		}catch (Exception e) {
+		}
+		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
+			utc=new Timestamp(addHoursToDate(utc, utc_shift));
+		}		
 		try{
-			return dataToString(new java.sql.Date(((Timestamp)ref).getTime()), format);
+			return dataToString(new java.sql.Date(((Timestamp)utc).getTime()), format, locale);
 		}catch(Exception e){
 			try{
-				String res = makeFormatedStringWithMethod(format, ref);
+				String res = makeFormatedStringWithMethod(format, utc);
 				if(res!=null) return res;
 			}catch (Exception ex) {
 			}
 		}
 	}
 	if(ref instanceof java.util.Date){
+		java.util.Date utc = (java.util.Date)ref;
+		int utc_shift = 0;
+		try {
+			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
+		}catch (Exception e) {
+		}
+		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
+			utc=new java.util.Date(addHoursToDate(utc, utc_shift));
+		}
 		try{
-			return util_format.dataToString((java.util.Date)ref, format);
+			return util_format.dataToString(utc, format, locale);
 		}catch(Exception e){
 			try{
-				String res = makeFormatedStringWithMethod(format, ref);
+				String res = makeFormatedStringWithMethod(format, utc);
 				if(res!=null) return res;
 			}catch (Exception ex) {
 			}
@@ -719,9 +1006,11 @@ public static String makeFormatedString(String format, String language, String c
 	}
 	if(ref instanceof String){
 		try{
-
-				return new DecimalFormat(format, new DecimalFormatSymbols(locale)).format(new java.math.BigDecimal(ref.toString()).doubleValue());
-	
+			DecimalFormat decimalFormat = new DecimalFormat(format, new DecimalFormatSymbols(locale));
+			if(currency!=null && !currency.isEmpty()) 
+				return formatDecimalWithCurrency(decimalFormat, locale, format, currency, ref);
+			else
+				return decimalFormat.format(new java.math.BigDecimal(ref.toString()).doubleValue());
 		}catch(Exception e){
 			try{
 				String res = makeFormatedStringWithMethod(format, ref);
@@ -883,15 +1172,15 @@ public static String formatForJS(String target){
 		newTarget=replace(newTarget,"`","&#96;");
 		newTarget=replace(newTarget,"~","&#126;");
 /*
-        newTarget=replace(newTarget,"�","&agrave;");
-        newTarget=replace(newTarget,"�","&egrave;");
-		newTarget=replace(newTarget,"�","&eacute;");
-		newTarget=replace(newTarget,"�","&iacute;");
-		newTarget=replace(newTarget,"�","&igrave;");
-		newTarget=replace(newTarget,"�","&ograve;");			 
-		newTarget=replace(newTarget,"�","&oacute;");
-		newTarget=replace(newTarget,"�","&ugrave;");
-		newTarget=replace(newTarget,"�","&uacute;");
+        newTarget=replace(newTarget,"ï¿½","&agrave;");
+        newTarget=replace(newTarget,"ï¿½","&egrave;");
+		newTarget=replace(newTarget,"ï¿½","&eacute;");
+		newTarget=replace(newTarget,"ï¿½","&iacute;");
+		newTarget=replace(newTarget,"ï¿½","&igrave;");
+		newTarget=replace(newTarget,"ï¿½","&ograve;");			 
+		newTarget=replace(newTarget,"ï¿½","&oacute;");
+		newTarget=replace(newTarget,"ï¿½","&ugrave;");
+		newTarget=replace(newTarget,"ï¿½","&uacute;");
 */
     }
 	return newTarget;	

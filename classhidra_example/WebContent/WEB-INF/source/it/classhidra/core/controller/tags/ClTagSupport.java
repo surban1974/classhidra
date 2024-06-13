@@ -28,7 +28,7 @@ public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttr
 	protected auth_init auth=null;
 
 
-	protected String checkParametersIfDynamic(String input, i_bean formBean){
+	protected String checkParametersIfDynamic(String input, Object formBean){
 		if(input==null || input.equals("") || input.indexOf('{')<0)
 			return input;
 
@@ -49,8 +49,11 @@ public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttr
 			i_action formAction=(i_action)request.getAttribute(bsController.CONST_BEAN_$INSTANCEACTION);		
 			if(formAction==null) formAction = new action(); 
 			formBean = formAction.get_bean();
-			if(formBean!=null)
-				formBean=formBean.asBean();
+			if(formBean!=null) {
+				if(formBean instanceof i_bean)
+					formBean=((i_bean)formBean).asBean();
+			}
+				
 		}
 		
 		Iterator<String> it = tokens.keySet().iterator();
@@ -64,7 +67,7 @@ public abstract class ClTagSupport extends BodyTagSupport implements DynamicAttr
 		return input;
 	}
 	
-	protected String checkParameterIfDynamic(String parameter, i_bean formBean){
+	protected String checkParameterIfDynamic(String parameter, Object formBean){
 		if(parameter==null || parameter.equals(""))
 			return parameter;		
 		String result = parameter;

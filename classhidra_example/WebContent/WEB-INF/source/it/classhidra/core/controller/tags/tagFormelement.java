@@ -57,6 +57,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	protected String name = null;
 	protected String styleClass=null;
 	protected String formatOutput=null;
+	protected String formatCurrency=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String formatLocationFromUserAuth=null;
@@ -138,6 +139,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 		name=null;
 		styleClass=null;
 		formatOutput=null;
+		formatCurrency=null;
 		formatLocationFromUserAuth=null;
 		method_prefix=null;
 		replaceOnBlank=null;
@@ -273,6 +275,22 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 				formatCountry=bsController.getAppInit().get_tag_format_country();			
 			if(formatCountry==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY)!=null)
 				formatCountry=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY).toString();
+
+			if(formatCurrency==null && bsController.getAppInit().get_tag_format_currency()!=null && !bsController.getAppInit().get_tag_format_currency().equals(""))
+				formatCurrency=bsController.getAppInit().get_tag_format_currency();			
+			if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
+				formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+			
+			if(formatLocationFromUserAuth!=null)
+				formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
+			if(formatLanguage!=null)
+				formatLanguage=checkParametersIfDynamic(formatLanguage, null);
+			if(formatCountry!=null)
+				formatCountry=checkParametersIfDynamic(formatCountry, null);
+			if(formatCurrency!=null)
+				formatCurrency=checkParametersIfDynamic(formatCurrency, null);
+			if(formatOutput!=null)
+				formatOutput=checkParametersIfDynamic(formatOutput, null);
 			
 			if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
 				auth=bsController.checkAuth_init(request);
@@ -323,9 +341,9 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 			}
 			try{
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
 				else
-					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage, formatCountry, writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage, formatCountry, formatCurrency, writeValue);
 					
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
@@ -515,6 +533,14 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 
 	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
 		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
+	}
+
+	public String getFormatCurrency() {
+		return formatCurrency;
+	}
+
+	public void setFormatCurrency(String formatCurrency) {
+		this.formatCurrency = formatCurrency;
 	}
 
 

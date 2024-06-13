@@ -357,14 +357,14 @@ public class parameter extends elementBase{
 				if(value_type.equals(VALUE_NUMBER)){
 					try{
 						Long ref = new Long(new DecimalFormat(format_output).parse(value.trim()).longValue());
-						value = util_format.makeFormatedString(format_input, ref);
+						value = util_format.makeFormatedString(format_input, null, ref);
 					}catch(Exception e){
 						e.toString();
 					}	
 				}
 			}else{
 				try{
-					value = util_format.makeFormatedString(format_input,value);
+					value = util_format.makeFormatedString(format_input, null, value);
 				}catch(Exception e){
 				}
 			}

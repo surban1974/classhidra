@@ -63,6 +63,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 	protected String dir=null;//"ltr"
 
 	protected String formatOutput=null;
+	protected String formatCurrency=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String formatLocationFromUserAuth=null;
@@ -230,6 +231,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		styleClass=null;
 		dir=null;//"ltr"
 		formatOutput=null;
+		formatCurrency=null;
 		formatLocationFromUserAuth=null;
 		formatLanguage=null;
 		formatCountry=null;
@@ -553,11 +555,26 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 					formatCountry=bsController.getAppInit().get_tag_format_country();			
 				if(formatCountry==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY)!=null)
 					formatCountry=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY).toString();
+				if(formatCurrency==null && bsController.getAppInit().get_tag_format_currency()!=null && !bsController.getAppInit().get_tag_format_currency().equals(""))
+					formatCurrency=bsController.getAppInit().get_tag_format_currency();			
+				if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
+					formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+				
+				if(formatLocationFromUserAuth!=null)
+					formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
+				if(formatLanguage!=null)
+					formatLanguage=checkParametersIfDynamic(formatLanguage, null);
+				if(formatCountry!=null)
+					formatCountry=checkParametersIfDynamic(formatCountry, null);
+				if(formatCurrency!=null)
+					formatCurrency=checkParametersIfDynamic(formatCurrency, null);
+				if(formatOutput!=null)
+					formatOutput=checkParametersIfDynamic(formatOutput, null);
 				
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-					currentLabel=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), currentLabel);
+					currentLabel=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, currentLabel);
 				else
-					currentLabel=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, currentLabel);
+					currentLabel=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, formatCurrency, currentLabel);
 //				currentLabel=util_format.makeFormatedString(formatOutput,currentLabel);
 			}catch(Exception e){}
 			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
@@ -978,6 +995,14 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
 		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
+	}
+
+	public String getFormatCurrency() {
+		return formatCurrency;
+	}
+
+	public void setFormatCurrency(String formatCurrency) {
+		this.formatCurrency = formatCurrency;
 	}
 
 }

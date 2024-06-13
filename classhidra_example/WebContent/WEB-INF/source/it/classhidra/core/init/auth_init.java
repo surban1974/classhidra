@@ -78,6 +78,7 @@ public class auth_init implements Serializable{
 	private String _ruoli;
 	private String _language;
 	private String _country;
+	private String _timezone;
 	private String _matricola;
 	private String _mail;
 	private String _target;
@@ -86,6 +87,7 @@ public class auth_init implements Serializable{
 
 
 	private String _ticker;
+	private String _sessionId;
 
 
 	private String _wac_fascia;
@@ -254,12 +256,14 @@ public class auth_init implements Serializable{
 		_ruoli = another.get_ruoli();
 		_language = another.get_language();
 		_country = another.get_country();
+		_timezone = another.get_timezone();
 		_matricola = another.get_matricola();
 		_mail = another.get_mail();
 		_target = another.get_target();
 		_user_ip = another.get_user_ip();
 		
-		_ticker = another.get_ticker();
+		_ticker = another.get_ticker();		
+		_sessionId = another.get_sessionId();
 
 		_wac_fascia = another.get_wac_fascia();
 		_risoluzione = another.get_risoluzione();
@@ -295,9 +299,11 @@ public class auth_init implements Serializable{
 		_mail="";
 		_language="EN";
 		_country="";
+		_timezone="";
 		_target="";
 		_user_ip="";
 		_ticker="";
+		_sessionId="";
 		_risoluzione="";
 
 
@@ -580,6 +586,22 @@ public class auth_init implements Serializable{
 
 	public void set_country(String _country) {
 		this._country = _country;
+	}
+
+	public String get_timezone() {
+		return _timezone;
+	}
+
+	public void set_timezone(String _timezone) {
+		this._timezone = _timezone;
+	}
+
+	public String get_sessionId() {
+		return _sessionId;
+	}
+
+	public void set_sessionId(String _sessionId) {
+		this._sessionId = _sessionId;
 	}
 
 }

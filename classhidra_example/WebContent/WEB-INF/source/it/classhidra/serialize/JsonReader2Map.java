@@ -15,7 +15,6 @@ import com.eclipsesource.json.JsonValue;
 import it.classhidra.core.controller.i_bean;
 import it.classhidra.core.tool.exception.bsControllerException;
 import it.classhidra.core.tool.log.stubs.iStub;
-import it.classhidra.serialize.JsonMapper;
 
 public class JsonReader2Map implements JsonMapper{
 	@SuppressWarnings("unchecked")

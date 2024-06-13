@@ -65,6 +65,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 	protected String propertys = null;
 	protected String key_values = null;
 	protected String formatsOutput=null;
+	protected String formatsCurrency=null;
 	protected String replaceOnBlank=null;
 	protected String value = null;
 	protected String multiple = null;
@@ -128,6 +129,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
+	
 	protected String component=null;
 	protected String rendering = null;
 	protected String formatLocationFromUserAuth=null;
@@ -257,6 +259,14 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 			formatCountry=bsController.getAppInit().get_tag_format_country();			
 		if(formatCountry==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY)!=null)
 			formatCountry=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY).toString();
+
+		if(formatLocationFromUserAuth!=null)
+			formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
+		if(formatLanguage!=null)
+			formatLanguage=checkParametersIfDynamic(formatLanguage, null);
+		if(formatCountry!=null)
+			formatCountry=checkParametersIfDynamic(formatCountry, null);
+		
 		
 		if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
 			auth=bsController.checkAuth_init(request);
@@ -266,6 +276,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		Vector<String> v_propertys = new Vector<String>();
 		Vector<String> v_values = new Vector<String>();
 		Vector<String> v_formatsOutput = new Vector<String>();
+		Vector<String> v_formatsCurrency = new Vector<String>();
 		Vector<String> v_replaceOnBlank = new Vector<String>();
 		Vector<String> v_td_width = new Vector<String>();
 		Vector<String> v_td_styleClassOutput = new Vector<String>();
@@ -334,6 +345,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 						count_propertys++;
 					}
 				}
+
 				if(formatsOutput!=null){
 					StringTokenizer st = new StringTokenizer(formatsOutput,";");
 					while(st.hasMoreTokens()) v_formatsOutput.add(st.nextToken().trim());
@@ -341,7 +353,17 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 					for(int i=0;i<count_propertys-len;i++) v_formatsOutput.add(null);
 				}else{
 					for(int i=0;i<count_propertys;i++) v_formatsOutput.add(null);
+				}	
+				
+				if(formatsCurrency!=null){
+					StringTokenizer st = new StringTokenizer(formatsCurrency,";");
+					while(st.hasMoreTokens()) v_formatsCurrency.add(st.nextToken().trim());
+					int len = v_formatsCurrency.size();
+					for(int i=0;i<count_propertys-len;i++) v_formatsCurrency.add(null);
+				}else{
+					for(int i=0;i<count_propertys;i++) v_formatsCurrency.add(null);
 				}
+				
 				if(replaceOnBlank!=null){
 					StringTokenizer st = new StringTokenizer(replaceOnBlank,";");
 					while(st.hasMoreTokens()) v_replaceOnBlank.add(st.nextToken().trim());
@@ -389,7 +411,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 			if(body_as_first_row==null || body_as_first_row.toUpperCase().equals("FALSE")){
 				results.append(createDIV_TagBodyTable(v_td_width));
 			}
-			results.append(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput,v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
+			results.append(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
 
 			writer.print(results);
 		} catch (IOException e) {
@@ -409,7 +431,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 						if(body_as_first_row==null || body_as_first_row.toUpperCase().equals("FALSE")){
 							pageContext.getOut().write(createDIV_TagBodyTable(v_td_width));
 						}
-						pageContext.getOut().write(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput,v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
+						pageContext.getOut().write(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
 
 
 						if(objId!=null)
@@ -451,6 +473,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		propertys = null;
 		key_values = null;
 		formatsOutput=null;
+		formatsCurrency=null;
 		replaceOnBlank=null;
 		value = null;
 
@@ -699,7 +722,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 		return results.toString();
 	}
 
-	protected String createDIV_TagBodyFinish(List<?> iterator, Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput, 
+	protected String createDIV_TagBodyFinish(List<?> iterator, Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput,  Vector<String> v_formatsCurrency,
 			Vector<String> v_replaceOnBlank, Vector<String> v_td_width, Vector<String> v_td_styleClassOutput, Vector<String> v_key_values) {
 		final StringBuffer results = new StringBuffer("");
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
@@ -711,7 +734,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 				String stylePariDispari="";
 				if(i%2!=0) stylePariDispari="Disp";
 				results.append(
-					createTR_TagBody(i,iterator.get(i),v_propertys, v_values, v_formatsOutput,v_replaceOnBlank,v_td_width,v_td_styleClassOutput,v_key_values,stylePariDispari)
+					createTR_TagBody(i,iterator.get(i),v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_replaceOnBlank,v_td_width,v_td_styleClassOutput,v_key_values,stylePariDispari)
 				);
 			}
 		}
@@ -767,7 +790,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 		return results.toString();
 	}
 
-	protected String createTR_TagBody(int current_position, Object current,Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput,
+	protected String createTR_TagBody(int current_position, Object current,Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput, Vector<String> v_formatsCurrency,
 			Vector<String> v_replaceOnBlank, Vector<String> v_td_width,Vector<String> v_td_styleClassOutput, Vector<String> v_key_values, String stylePariDispari) {
 		final StringBuffer results = new StringBuffer("");
 		Object writeObject = null;
@@ -917,7 +940,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 		if(v_propertys!=null){
 			for(int i=0;i<v_propertys.size();i++){
-				results.append(createTD_TagBody(current,v_propertys.get(i), v_formatsOutput.get(i),v_replaceOnBlank.get(i), v_td_width.get(i),v_td_styleClassOutput.get(i)));
+				results.append(createTD_TagBody(current,v_propertys.get(i), v_formatsOutput.get(i), v_formatsCurrency.get(i), v_replaceOnBlank.get(i), v_td_width.get(i),v_td_styleClassOutput.get(i)));
 			}
 		}
 
@@ -926,7 +949,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 	}
 
 
-	protected String createTD_TagBody(Object current, Object v_propertys_current, Object v_formatsOutput_current, Object v_replaceOnBlank_current, Object v_td_width_current, Object v_td_styleClassOutput_current) {
+	protected String createTD_TagBody(Object current, Object v_propertys_current, Object v_formatsOutput_current, Object v_formatsCurrency_current, Object v_replaceOnBlank_current, Object v_td_width_current, Object v_td_styleClassOutput_current) {
 
 		final StringBuffer results = new StringBuffer("<td ");
 		if(v_td_width_current!=null){
@@ -1019,24 +1042,49 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 				}catch(Exception e){}
 			}
 		}
+		boolean justNormalizedASCII = false;
 		try{
 			
+			String format = null;
+			if(v_formatsOutput_current!=null && !v_formatsOutput_current.toString().isEmpty()) {
+				format = checkParametersIfDynamic(v_formatsOutput_current.toString(),current);
+				format = checkParametersIfDynamic(format,null);
+			}			
+			
+			String currency = null;
+			if(v_formatsCurrency_current!=null && !v_formatsCurrency_current.toString().isEmpty()) {
+				currency = checkParametersIfDynamic(v_formatsCurrency_current.toString(),current);
+				currency = checkParametersIfDynamic(currency,null);
+			}
 			if(!v_formatsOutput_current.toString().equals("")) {
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-					writeValue=util_format.makeFormatedString(v_formatsOutput_current.toString(), auth.get_language(), auth.get_country(), writeValue);
+					writeValue=util_format.makeFormatedString(format, auth.get_language(), auth.get_country(), currency, writeValue);
 				else
-					writeValue=util_format.makeFormatedString(v_formatsOutput_current.toString(),formatLanguage,formatCountry,writeValue);
+					writeValue=util_format.makeFormatedString(format, formatLanguage, formatCountry, currency, writeValue);
+				
+				if(v_formatsCurrency_current!=null && !v_formatsCurrency_current.toString().isEmpty()) {
+					writeValue = util_xml.normalASCII(writeValue.toString());
+					justNormalizedASCII = true;
+				}
 			}
 			if(!v_replaceOnBlank_current.toString().equals("") && v_replaceOnBlank_current.toString().equals(writeValue.toString()))
 				writeValue=util_format.replace(writeValue.toString(),v_replaceOnBlank_current.toString(),"");
+			
+			
+				
+				
 
 		}catch(Exception e){}
 		if(marked){
 			if(mark_styleClass!=null) results.append("span class=\""+mark_styleClass+"\">");
 			else results.append("<font color=\"red\">");
 		}
-		if(writeValue!=null)
-			results.append(util_xml.normalHTML(writeValue.toString(),null));
+		if(writeValue!=null) {
+			if(justNormalizedASCII)
+				results.append(writeValue.toString());
+			else
+				results.append(util_xml.normalHTML(writeValue.toString(),null));
+		}
  
 		if(marked){
 			if(mark_styleClass!=null) results.append("</span>");
@@ -1608,6 +1656,20 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
 		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
+	}
+
+
+	public String getFormatsCurrency() {
+		return formatsCurrency;
+	}
+
+
+	public void setFormatsCurrency(String string) {
+		if(string==null || string.length()==0) formatsCurrency = string;
+//		while(string.indexOf(";;")>-1) string = string.replace(";;","; ;");
+		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
+		if(string.indexOf(";")==0) string = " "+ string;
+		formatsCurrency=string;
 	}
 }
 
