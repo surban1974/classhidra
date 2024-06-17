@@ -681,6 +681,16 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>formatTimeZone</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
@@ -830,6 +840,16 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>formatTimeZone</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
@@ -1224,6 +1244,16 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+        <name>formatTimeZone</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
@@ -1501,7 +1531,12 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -1672,6 +1707,11 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
@@ -1789,6 +1829,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
     <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>	
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -1870,6 +1915,11 @@
 	</attribute>
     <attribute>
     	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
@@ -1970,6 +2020,11 @@
 	</attribute>
     <attribute>
     	<name>formatCurrency</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
@@ -2105,6 +2160,11 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
     <attribute>
     	<name>formatLocationFromUserAuth</name>
@@ -2172,7 +2232,12 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2239,7 +2304,12 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2302,6 +2372,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2372,6 +2447,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2444,7 +2524,12 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -2929,6 +3014,11 @@
         <required>false</required>
     	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+    <attribute>
+        <name>formatsTimeZoneShift</name>
+        <required>false</required>
+    	<rtexprvalue>true</rtexprvalue>
+	</attribute>		
     <attribute>
         <name>replaceOnBlank</name>
         <required>false</required>
@@ -3437,6 +3527,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
     <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -3596,7 +3691,12 @@
     	<name>formatCurrency</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
-	</attribute>	
+	</attribute>
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
@@ -3716,6 +3816,11 @@
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
     <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
+    <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
@@ -3788,6 +3893,11 @@
     	<required>false</required>
    	 	<rtexprvalue>true</rtexprvalue>
 	</attribute>	
+    <attribute>
+    	<name>formatTimeZoneShift</name>
+    	<required>false</required>
+   	 	<rtexprvalue>true</rtexprvalue>
+	</attribute>
     <attribute>
     	<name>formatLocationFromUserAuth</name>
     	<required>false</required>

@@ -66,6 +66,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 	protected String key_values = null;
 	protected String formatsOutput=null;
 	protected String formatsCurrency=null;
+	protected String formatsTimeZoneShift=null;
 	protected String replaceOnBlank=null;
 	protected String value = null;
 	protected String multiple = null;
@@ -265,8 +266,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		if(formatLanguage!=null)
 			formatLanguage=checkParametersIfDynamic(formatLanguage, null);
 		if(formatCountry!=null)
-			formatCountry=checkParametersIfDynamic(formatCountry, null);
-		
+			formatCountry=checkParametersIfDynamic(formatCountry, null);		
 		
 		if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
 			auth=bsController.checkAuth_init(request);
@@ -277,6 +277,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		Vector<String> v_values = new Vector<String>();
 		Vector<String> v_formatsOutput = new Vector<String>();
 		Vector<String> v_formatsCurrency = new Vector<String>();
+		Vector<String> v_formatsTimeZoneShift = new Vector<String>();
 		Vector<String> v_replaceOnBlank = new Vector<String>();
 		Vector<String> v_td_width = new Vector<String>();
 		Vector<String> v_td_styleClassOutput = new Vector<String>();
@@ -364,6 +365,16 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 					for(int i=0;i<count_propertys;i++) v_formatsCurrency.add(null);
 				}
 				
+				if(formatsTimeZoneShift!=null){
+					StringTokenizer st = new StringTokenizer(formatsTimeZoneShift,";");
+					while(st.hasMoreTokens()) v_formatsTimeZoneShift.add(st.nextToken().trim());
+					int len = v_formatsTimeZoneShift.size();
+					for(int i=0;i<count_propertys-len;i++) v_formatsTimeZoneShift.add(null);
+				}else{
+					for(int i=0;i<count_propertys;i++) v_formatsTimeZoneShift.add(null);
+				}
+
+				
 				if(replaceOnBlank!=null){
 					StringTokenizer st = new StringTokenizer(replaceOnBlank,";");
 					while(st.hasMoreTokens()) v_replaceOnBlank.add(st.nextToken().trim());
@@ -411,7 +422,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 			if(body_as_first_row==null || body_as_first_row.toUpperCase().equals("FALSE")){
 				results.append(createDIV_TagBodyTable(v_td_width));
 			}
-			results.append(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
+			results.append(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_formatsTimeZoneShift, v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
 
 			writer.print(results);
 		} catch (IOException e) {
@@ -431,7 +442,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 						if(body_as_first_row==null || body_as_first_row.toUpperCase().equals("FALSE")){
 							pageContext.getOut().write(createDIV_TagBodyTable(v_td_width));
 						}
-						pageContext.getOut().write(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
+						pageContext.getOut().write(createDIV_TagBodyFinish(iterator, v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_formatsTimeZoneShift, v_replaceOnBlank, v_td_width, v_td_styleClassOutput,v_key_values));
 
 
 						if(objId!=null)
@@ -474,6 +485,7 @@ public class tagList extends ClTagSupport implements DynamicAttributes {
 		key_values = null;
 		formatsOutput=null;
 		formatsCurrency=null;
+		formatsTimeZoneShift=null;
 		replaceOnBlank=null;
 		value = null;
 
@@ -722,7 +734,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 		return results.toString();
 	}
 
-	protected String createDIV_TagBodyFinish(List<?> iterator, Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput,  Vector<String> v_formatsCurrency,
+	protected String createDIV_TagBodyFinish(List<?> iterator, Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput,  Vector<String> v_formatsCurrency, Vector<String> v_formatsTimeZoneShift,
 			Vector<String> v_replaceOnBlank, Vector<String> v_td_width, Vector<String> v_td_styleClassOutput, Vector<String> v_key_values) {
 		final StringBuffer results = new StringBuffer("");
 		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
@@ -734,7 +746,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 				String stylePariDispari="";
 				if(i%2!=0) stylePariDispari="Disp";
 				results.append(
-					createTR_TagBody(i,iterator.get(i),v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_replaceOnBlank,v_td_width,v_td_styleClassOutput,v_key_values,stylePariDispari)
+					createTR_TagBody(i,iterator.get(i),v_propertys, v_values, v_formatsOutput, v_formatsCurrency, v_formatsTimeZoneShift, v_replaceOnBlank,v_td_width,v_td_styleClassOutput,v_key_values,stylePariDispari)
 				);
 			}
 		}
@@ -790,7 +802,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 		return results.toString();
 	}
 
-	protected String createTR_TagBody(int current_position, Object current,Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput, Vector<String> v_formatsCurrency,
+	protected String createTR_TagBody(int current_position, Object current,Vector<String> v_propertys, Vector<String> v_values, Vector<String> v_formatsOutput, Vector<String> v_formatsCurrency, Vector<String> v_formatsTimeZoneShift,
 			Vector<String> v_replaceOnBlank, Vector<String> v_td_width,Vector<String> v_td_styleClassOutput, Vector<String> v_key_values, String stylePariDispari) {
 		final StringBuffer results = new StringBuffer("");
 		Object writeObject = null;
@@ -825,23 +837,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 		}
 
-/*
-		if(key_values==null) writeObject = current.toString();
-		else{
-			try{
-				writeObject = util_reflect.prepareWriteValueForTag(current,method_prefix,key_values,null);
-				if(writeObject==null) writeObject = util_reflect.getValue(current,key_values,null);
-				if(writeObject.toString().equals(v_values.get(v_values.size()-1))) sel_position = current_position;
-				int k=0;
-				while(k<v_values.size() && !selectedValue){
-					if(	writeObject.toString().equals(v_values.get(k))) selectedValue=true;
-					else k++;
-				}
 
-			}catch(Exception e){
-			}
-		}
-*/
 		results.append("<tr ");
 		if(objId!=null){
 			results.append(" id=\"tr_");
@@ -940,7 +936,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 		if(v_propertys!=null){
 			for(int i=0;i<v_propertys.size();i++){
-				results.append(createTD_TagBody(current,v_propertys.get(i), v_formatsOutput.get(i), v_formatsCurrency.get(i), v_replaceOnBlank.get(i), v_td_width.get(i),v_td_styleClassOutput.get(i)));
+				results.append(createTD_TagBody(current,v_propertys.get(i), v_formatsOutput.get(i), v_formatsCurrency.get(i), v_formatsTimeZoneShift.get(i), v_replaceOnBlank.get(i), v_td_width.get(i),v_td_styleClassOutput.get(i)));
 			}
 		}
 
@@ -949,7 +945,7 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 	}
 
 
-	protected String createTD_TagBody(Object current, Object v_propertys_current, Object v_formatsOutput_current, Object v_formatsCurrency_current, Object v_replaceOnBlank_current, Object v_td_width_current, Object v_td_styleClassOutput_current) {
+	protected String createTD_TagBody(Object current, Object v_propertys_current, Object v_formatsOutput_current, Object v_formatsCurrency_current, Object v_formatsTimeZoneShift_current, Object v_replaceOnBlank_current, Object v_td_width_current, Object v_td_styleClassOutput_current) {
 
 		final StringBuffer results = new StringBuffer("<td ");
 		if(v_td_width_current!=null){
@@ -1056,19 +1052,37 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 				currency = checkParametersIfDynamic(v_formatsCurrency_current.toString(),current);
 				currency = checkParametersIfDynamic(currency,null);
 			}
+			String timeZoneToShift = null;
+			if(v_formatsTimeZoneShift_current!=null && !v_formatsTimeZoneShift_current.toString().isEmpty()) {
+				timeZoneToShift = checkParametersIfDynamic(v_formatsTimeZoneShift_current.toString(),current);
+				timeZoneToShift = checkParametersIfDynamic(timeZoneToShift,null);
+			}
+			String replaceOnBlank = null;
+			if(v_replaceOnBlank_current!=null && !v_replaceOnBlank_current.toString().isEmpty()) {
+				replaceOnBlank = checkParametersIfDynamic(v_replaceOnBlank_current.toString(),current);
+				replaceOnBlank = checkParametersIfDynamic(replaceOnBlank,null);
+			}			
+			
+			
 			if(!v_formatsOutput_current.toString().equals("")) {
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth==null)
+					auth=bsController.checkAuth_init((HttpServletRequest) this.pageContext.getRequest());
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-					writeValue=util_format.makeFormatedString(format, auth.get_language(), auth.get_country(), currency, writeValue);
+					writeValue=util_format.makeFormatedString(format, 
+						(formatLanguage==null)?auth.get_language_profile():formatLanguage,
+						(formatCountry==null)?auth.get_country():formatCountry,
+						(timeZoneToShift==null)?auth.get_timezone():timeZoneToShift,
+								currency, writeValue);
 				else
-					writeValue=util_format.makeFormatedString(format, formatLanguage, formatCountry, currency, writeValue);
+					writeValue=util_format.makeFormatedString(format, formatLanguage, formatCountry, timeZoneToShift, currency, writeValue);
 				
 				if(v_formatsCurrency_current!=null && !v_formatsCurrency_current.toString().isEmpty()) {
 					writeValue = util_xml.normalASCII(writeValue.toString());
 					justNormalizedASCII = true;
 				}
 			}
-			if(!v_replaceOnBlank_current.toString().equals("") && v_replaceOnBlank_current.toString().equals(writeValue.toString()))
-				writeValue=util_format.replace(writeValue.toString(),v_replaceOnBlank_current.toString(),"");
+			if(replaceOnBlank!=null && !replaceOnBlank.toString().equals("") && replaceOnBlank.toString().equals(writeValue.toString()))
+				writeValue=util_format.replace(writeValue.toString(),replaceOnBlank.toString(),"");
 			
 			
 				
@@ -1666,10 +1680,23 @@ results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-
 
 	public void setFormatsCurrency(String string) {
 		if(string==null || string.length()==0) formatsCurrency = string;
-//		while(string.indexOf(";;")>-1) string = string.replace(";;","; ;");
 		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
 		if(string.indexOf(";")==0) string = " "+ string;
 		formatsCurrency=string;
+	}
+
+
+	public String getFormatsTimeZoneShift() {
+		return formatsTimeZoneShift;
+	}
+
+
+	public void setFormatsTimeZoneShift(String string) {
+		if(string==null || string.length()==0) formatsTimeZoneShift = string;
+		while(string.indexOf(";;")>-1) string = util_format.replace(string,";;","; ;");
+		if(string.indexOf(";")==0) string = " "+ string;
+		formatsTimeZoneShift=string;
+		
 	}
 }
 

@@ -742,7 +742,7 @@ public class JsonWriter {
 				check=true;
 				if(annotation!=null && annotation.output()!=null){
 					try{					
-						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
+						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(),annotation.output().timeZoneShift(), sub_obj);
 						result+="\""+normalJSON(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null))+"\"";
 					}catch(Exception e){	
 						result+="\""+normalJSON(value,null)+"\"";
@@ -768,7 +768,7 @@ public class JsonWriter {
 						!annotation.output().format().equals("")
 						){
 					try{					
-						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
+						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(),annotation.output().timeZoneShift(), sub_obj);
 						result+="\""+normalJSON(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null))+"\"";
 					}catch(Exception e){	
 						result+=normalJSON(value,null);
@@ -782,7 +782,7 @@ public class JsonWriter {
 				check=true;
 				if(annotation!=null && annotation.output()!=null){
 					try{					
-						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
+						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(),annotation.output().timeZoneShift(), sub_obj);
 						result+="\""+normalJSON(value,((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null))+"\"";
 					}catch(Exception e){	
 						result+="\""+normalJSON(value,null)+"\"";

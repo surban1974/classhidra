@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import it.classhidra.core.tool.elements.elementBase;
 import it.classhidra.core.tool.exception.bsException;
@@ -40,6 +41,18 @@ public class parameter extends elementBase{
 	
 	@Serialized(false)
 	private String format_input;
+	
+	@Serialized(false)
+	private String format_language;
+
+	@Serialized(false)
+	private String format_country;
+
+	@Serialized(false)
+	private String format_currency;
+	
+	@Serialized(false)
+	private String format_timezone_shift;	
 	
 	@Serialized(false)
 	private String format_output;
@@ -344,12 +357,23 @@ public class parameter extends elementBase{
 	
 	private String getFormat(String value){
 		if(!format_input.equals("")){
+			Locale locale = null;
+			try{
+				if(format_language!=null && !format_language.equals("")){
+					if(format_country!=null && !format_country.equals(""))
+						locale = new Locale(format_language,format_country);
+					else
+						locale = new Locale(format_language);
+				}
+			}catch(Exception e){		
+			}
+			
 			if(!format_output.equals("")){
 				if(value_type.equals(VALUE_DATE)){
 					try{
-						Date resultObject = util_format.stringToData(value, format_output);
+						Date resultObject = util_format.stringToData(value, format_output, locale);
 						if(resultObject!=null){
-							value = util_format.dataToString(resultObject, format_input);
+							value = util_format.dataToString(resultObject, format_input, locale);
 						}
 					}catch(Exception e){
 					}
@@ -357,14 +381,16 @@ public class parameter extends elementBase{
 				if(value_type.equals(VALUE_NUMBER)){
 					try{
 						Long ref = new Long(new DecimalFormat(format_output).parse(value.trim()).longValue());
-						value = util_format.makeFormatedString(format_input, null, ref);
+//						value = util_format.makeFormatedString(format_input, null, ref);
+						value = util_format.makeFormatedString(format_input, format_language, format_country, format_timezone_shift, format_currency, ref);						
 					}catch(Exception e){
 						e.toString();
 					}	
 				}
 			}else{
 				try{
-					value = util_format.makeFormatedString(format_input, null, value);
+//					value = util_format.makeFormatedString(format_input, null, value);
+					value = util_format.makeFormatedString(format_input, format_language, format_country, format_timezone_shift, format_currency, value);
 				}catch(Exception e){
 				}
 			}
@@ -408,6 +434,38 @@ public class parameter extends elementBase{
 
 	public String getInitial_default_value() {
 		return initial_default_value;
+	}
+
+	public String getFormat_language() {
+		return format_language;
+	}
+
+	public void setFormat_language(String format_language) {
+		this.format_language = format_language;
+	}
+
+	public String getFormat_country() {
+		return format_country;
+	}
+
+	public void setFormat_country(String format_country) {
+		this.format_country = format_country;
+	}
+
+	public String getFormat_currency() {
+		return format_currency;
+	}
+
+	public void setFormat_currency(String format_currency) {
+		this.format_currency = format_currency;
+	}
+
+	public String getFormat_timezone_shift() {
+		return format_timezone_shift;
+	}
+
+	public void setFormat_timezone_shift(String format_timezone_shift) {
+		this.format_timezone_shift = format_timezone_shift;
 	}
 
 }

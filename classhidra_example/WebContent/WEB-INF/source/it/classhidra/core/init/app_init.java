@@ -92,11 +92,14 @@ public class app_init implements Serializable{
 	public final static String id_tag_format_user_auth		= 	"application.tag.format.user.auth";
 	public final static String id_tag_format_language		= 	"application.tag.format.language";
 	public final static String id_tag_format_country		= 	"application.tag.format.country";
-	public final static String id_tag_format_currency		= 	"application.tag.format.currency";
-	public final static String id_tag_format_utc_shift		= 	"application.tag.format.utc.shift";
+	public final static String id_tag_format_currency		= 	"application.tag.format.currency";	
+	public final static String id_tag_format_timezone_shift	= 	"application.tag.format.timezone.shift";
 	
 	public final static String id_jsonmapper_provider		=	"application.jsonmapper.provider";
 	public final static String id_xmlmapper_provider		=	"application.xmlmapper.provider";
+	public final static String id_timezonemapper_provider	=	"application.timezonemapper.provider";
+	public final static String id_timezone_db				= 	"application.timezone.db";
+	public final static String id_timezone_vm				= 	"application.timezone.vm";
 	
 	private String _path;
 	private String _path_root;
@@ -118,7 +121,9 @@ public class app_init implements Serializable{
 	private String _tag_format_user_auth;
 	private String _tag_format_country;
 	private String _tag_format_currency;
-	private String _tag_format_utc_shift;
+	private String _timezone_db;
+	private String _timezone_vm;
+	private String _tag_format_timezone_shift;
 	private String _tag_format_language;
 	private String _pin;
 	
@@ -161,6 +166,7 @@ public class app_init implements Serializable{
 	
 	private String _jsonmapper_provider;
 	private String _xmlmapper_provider;
+	private String _timezonemapper_provider;
 	
 	
 	
@@ -237,7 +243,10 @@ public class app_init implements Serializable{
 			_tag_format_user_auth=(_tag_format_user_auth==null)?System.getProperty(id_tag_format_user_auth):_tag_format_user_auth;
 			_tag_format_country=(_tag_format_country==null)?System.getProperty(id_tag_format_country):_tag_format_country;
 			_tag_format_currency=(_tag_format_currency==null)?System.getProperty(id_tag_format_currency):_tag_format_currency;
-			_tag_format_utc_shift=(_tag_format_utc_shift==null)?System.getProperty(id_tag_format_utc_shift):_tag_format_utc_shift;
+			_timezone_db=(_timezone_db==null)?System.getProperty(id_timezone_db):_timezone_db;
+			_timezone_vm=(_timezone_vm==null)?System.getProperty(id_timezone_vm):_timezone_vm;
+			_tag_format_timezone_shift=(_tag_format_timezone_shift==null)?System.getProperty(id_tag_format_timezone_shift):_tag_format_timezone_shift;
+			
 			
 			
 			_tag_format_language=(_tag_format_language==null)?System.getProperty(id_tag_format_language):_tag_format_language;
@@ -261,6 +270,8 @@ public class app_init implements Serializable{
 			
 			_jsonmapper_provider=(_jsonmapper_provider==null)?System.getProperty(id_jsonmapper_provider):_jsonmapper_provider;
 			_xmlmapper_provider=(_xmlmapper_provider==null)?System.getProperty(id_xmlmapper_provider):_xmlmapper_provider;
+			_timezonemapper_provider=(_timezonemapper_provider==null)?System.getProperty(id_timezonemapper_provider):_timezonemapper_provider;
+			
 			
 			_annotation_scanner=(_annotation_scanner==null)?System.getProperty(id_annotation_scanner):_annotation_scanner;
 			_annotation_scanner_asjar=(_annotation_scanner_asjar==null)?System.getProperty(id_annotation_scanner_asjar):_annotation_scanner_asjar;
@@ -429,8 +440,9 @@ public class app_init implements Serializable{
 		_tag_format_country=(property.getProperty(id_tag_format_country)!=null)?property.getProperty(id_tag_format_country):_tag_format_country;
 		_tag_format_currency=(property.getProperty(id_tag_format_currency)!=null)?property.getProperty(id_tag_format_currency):_tag_format_currency;
 		_tag_format_language=(property.getProperty(id_tag_format_language)!=null)?property.getProperty(id_tag_format_language):_tag_format_language;
-		_tag_format_utc_shift=(property.getProperty(id_tag_format_utc_shift)!=null)?property.getProperty(id_tag_format_utc_shift):_tag_format_utc_shift;
-
+		_timezone_db=(property.getProperty(id_timezone_db)!=null)?property.getProperty(id_timezone_db):_timezone_db;
+		_timezone_vm=(property.getProperty(id_timezone_vm)!=null)?property.getProperty(id_timezone_vm):_timezone_vm;
+		_tag_format_timezone_shift=(property.getProperty(id_tag_format_timezone_shift)!=null)?property.getProperty(id_tag_format_timezone_shift):_tag_format_timezone_shift;
 		
 		_async_provider_servlet=(property.getProperty(id_async_provider_servlet)!=null)?property.getProperty(id_async_provider_servlet):_async_provider_servlet;
 		_temporary_linked_provider=(property.getProperty(id_temporary_linked_provider)!=null)?property.getProperty(id_temporary_linked_provider):_temporary_linked_provider;
@@ -455,6 +467,7 @@ public class app_init implements Serializable{
 		
 		_jsonmapper_provider=(property.getProperty(id_jsonmapper_provider)!=null)?property.getProperty(id_jsonmapper_provider):_jsonmapper_provider;
 		_xmlmapper_provider=(property.getProperty(id_xmlmapper_provider)!=null)?property.getProperty(id_xmlmapper_provider):_xmlmapper_provider;
+		_timezonemapper_provider=(property.getProperty(id_timezonemapper_provider)!=null)?property.getProperty(id_timezonemapper_provider):_timezonemapper_provider;
 
 		_transf_elaborationmode=(property.getProperty(id_transf_elaborationmode)!=null)?property.getProperty(id_transf_elaborationmode):_transf_elaborationmode;
 		_transf_elaborationpoint=(property.getProperty(id_transf_elaborationpoint)!=null)?property.getProperty(id_transf_elaborationpoint):_transf_elaborationpoint;
@@ -822,7 +835,19 @@ public class app_init implements Serializable{
 		return _tag_format_currency;
 	}
 
-	public String get_tag_format_utc_shift() {
-		return _tag_format_utc_shift;
+	public String get_tag_format_timezone_shift() {
+		return _tag_format_timezone_shift;
+	}
+
+	public String get_timezone_db() {
+		return _timezone_db;
+	}
+
+	public String get_timezone_vm() {
+		return _timezone_vm;
+	}
+
+	public String get_timezonemapper_provider() {
+		return _timezonemapper_provider;
 	}
 }

@@ -50,6 +50,7 @@ public class tagOperand extends ClTagSupport implements IExpressionArgument{
 	protected String formatCurrency=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
+	protected String formatTimeZoneShift=null;
 	protected String formatLocationFromUserAuth=null;
 	protected String method_prefix=null;
 	protected String replaceOnBlank=null;
@@ -92,6 +93,7 @@ public class tagOperand extends ClTagSupport implements IExpressionArgument{
 		name=null;
 		formatOutput=null;
 		formatCurrency=null;
+		formatTimeZoneShift=null;
 		formatLocationFromUserAuth=null;
 		method_prefix=null;
 		replaceOnBlank=null;
@@ -205,6 +207,10 @@ public class tagOperand extends ClTagSupport implements IExpressionArgument{
 					formatCurrency=bsController.getAppInit().get_tag_format_currency();			
 				if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
 					formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+				if(formatTimeZoneShift==null && bsController.getAppInit().get_tag_format_timezone_shift()!=null && !bsController.getAppInit().get_tag_format_timezone_shift().equals(""))
+					formatTimeZoneShift=bsController.getAppInit().get_tag_format_currency();			
+				if(formatTimeZoneShift==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT)!=null)
+					formatTimeZoneShift=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT).toString();
 				
 				if(formatLocationFromUserAuth!=null)
 					formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
@@ -216,12 +222,21 @@ public class tagOperand extends ClTagSupport implements IExpressionArgument{
 					formatCurrency=checkParametersIfDynamic(formatCurrency, null);
 				if(formatOutput!=null)
 					formatOutput=checkParametersIfDynamic(formatOutput, null);
+				if(formatTimeZoneShift!=null)
+					formatTimeZoneShift=checkParametersIfDynamic(formatTimeZoneShift, null);
+				if(replaceOnBlank!=null)
+					replaceOnBlank=checkParametersIfDynamic(replaceOnBlank, null);
 				
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true")) {
 					auth=bsController.checkAuth_init(request);
-					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(),formatCurrency, writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, 
+							(formatLanguage==null)?auth.get_language_profile():formatLanguage,
+							(formatCountry==null)?auth.get_country():formatCountry,
+							(formatTimeZoneShift==null)?auth.get_timezone():formatTimeZoneShift,
+							formatCurrency, writeValue);
 				}else
-					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, formatCurrency, writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, formatTimeZoneShift, formatCurrency, writeValue);
+				
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
 				if(normalXML!=null && normalXML.toLowerCase().equals("true"))
@@ -241,12 +256,9 @@ public class tagOperand extends ClTagSupport implements IExpressionArgument{
 				
 				
 			}catch(Exception e){}	
-//			results.append(writeValue);			
+			
 		}
-//		if(normalXML!=null && normalXML.toLowerCase().equals("true"))
-//			return util_xml.normalXML(results.toString(),null);
-//		else 
-			return results.toString();
+		return results.toString();
 	}		
 	
 
@@ -381,6 +393,14 @@ public class tagOperand extends ClTagSupport implements IExpressionArgument{
 
 	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
 		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
+	}
+
+	public String getFormatTimeZoneShift() {
+		return formatTimeZoneShift;
+	}
+
+	public void setFormatTimeZoneShift(String formatTimeZoneShift) {
+		this.formatTimeZoneShift = formatTimeZoneShift;
 	}
 
 

@@ -536,7 +536,7 @@ public class XmlWriter {
 				if(annotation!=null && annotation.output()!=null){
 					try{					
 						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),
-								annotation.output().country(), sub_obj);
+								annotation.output().country(),annotation.output().timeZoneShift(), sub_obj);
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
@@ -588,7 +588,7 @@ public class XmlWriter {
 				check=true;
 				if(annotation!=null && annotation.output()!=null){
 					try{					
-						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
+						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(),annotation.output().timeZoneShift(), sub_obj);
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)
@@ -615,7 +615,7 @@ public class XmlWriter {
 				check=true;
 				if(annotation!=null && annotation.output()!=null){
 					try{					
-						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(), sub_obj);
+						value=util_format.makeFormatedString(annotation.output().format(), annotation.output().language(),annotation.output().country(),annotation.output().timeZoneShift(), sub_obj);
 						if(annotation.output().xml_cdata() && value!=null) {
 							String charset = ((annotation.output().characterset().equals(""))?((annotation.output().ascii())?"ascii":null):null);
 							if(charset==null)

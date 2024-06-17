@@ -182,13 +182,14 @@ public class action extends bean implements i_action, Serializable{
 		String formatOutput=request.getParameter("$formatOutput_"+target);
 		String formatLanguage=request.getParameter("$formatLanguage_"+target);
 		String formatCountry=request.getParameter("$formatCountry_"+target);
+		String formatTimeZoneShift = request.getParameter("$formatTimeZoneShift_"+target);
 		String replaceOnBlank=request.getParameter("$replaceOnBlank_"+target);
 		String replaceOnErrorFormat=request.getParameter("$replaceOnErrorFormat_"+target);
 
 		Object writeValue = get_bean().get(target);
 		String value = null;
 		try{
-			value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,writeValue);
+			value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,formatTimeZoneShift,writeValue);
 			if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
 		}catch(Exception e){
 			if(replaceOnErrorFormat != null)

@@ -26,7 +26,9 @@ package it.classhidra.core.controller.tags;
 
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,8 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 	protected String formatCurrency=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
+	protected String formatTimeZoneShift=null;
+	protected String formatTimeZone=null;
 	protected String formatLocationFromUserAuth=null;
 	protected String toUpperCase = null;
 	protected String toTrim = null;
@@ -133,6 +137,17 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 		this.release();
 		return super.doEndTag();
 	}
+	
+	protected String updateFormatTimezone() {
+		if(formatTimeZoneShift==null || formatTimeZoneShift.isEmpty() || formatTimeZone==null || formatTimeZone.isEmpty())
+			return formatTimeZoneShift;
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat(formatTimeZone);
+			return sdf.format(new Date());
+		}catch (Exception e) {
+		}
+		return formatTimeZoneShift;
+	}
 
 	public void release() {
 		super.release();
@@ -148,6 +163,8 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 		formatCurrency=null;
 		formatLanguage=null;
 		formatCountry=null;
+		formatTimeZoneShift=null;
+		formatTimeZone=null;
 		formatLocationFromUserAuth=null;
 		placeholder = null;
 		placeholder_messagecode = null;
@@ -278,6 +295,10 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 				formatCurrency=bsController.getAppInit().get_tag_format_currency();			
 			if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
 				formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+			if(formatTimeZoneShift==null && bsController.getAppInit().get_tag_format_timezone_shift()!=null && !bsController.getAppInit().get_tag_format_timezone_shift().equals(""))
+				formatTimeZoneShift=bsController.getAppInit().get_tag_format_currency();			
+			if(formatTimeZoneShift==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT)!=null)
+				formatTimeZoneShift=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT).toString();
 			
 			if(formatLocationFromUserAuth!=null)
 				formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
@@ -289,18 +310,38 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 				formatCurrency=checkParametersIfDynamic(formatCurrency, null);
 			if(formatOutput!=null)
 				formatOutput=checkParametersIfDynamic(formatOutput, null);
+			if(formatInput!=null)
+				formatInput=checkParametersIfDynamic(formatInput, null);
+			if(formatTimeZoneShift!=null)
+				formatTimeZoneShift=checkParametersIfDynamic(formatTimeZoneShift, null);
+			if(replaceOnBlank!=null)
+				replaceOnBlank=checkParametersIfDynamic(replaceOnBlank, null);
+			if(replaceOnErrorFormat!=null)
+				replaceOnErrorFormat=checkParametersIfDynamic(replaceOnErrorFormat, null);
+			if(placeholder!=null)
+				placeholder=checkParametersIfDynamic(placeholder, null);
 			
 			if(anotherBean!=null){
-				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth==null)
 					auth=bsController.checkAuth_init(request);
 				if(name==null){
 					writeValue = anotherBean;
 					name=bean;
 					try{
-						if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-							value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
-						else
-							value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, formatCurrency, writeValue);
+						if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null) {
+							value=util_format.makeFormatedString(formatOutput, 
+									(formatLanguage==null)?auth.get_language_profile():formatLanguage,
+									(formatCountry==null)?auth.get_country():formatCountry,
+									(formatTimeZoneShift==null)?auth.get_timezone():formatTimeZoneShift,
+									null, writeValue);
+							if(formatLanguage==null)
+								formatLanguage = auth.get_language_profile();
+							if(formatCountry==null)
+								formatCountry = auth.get_country();
+							if(formatTimeZoneShift==null)
+								formatTimeZoneShift = auth.get_timezone();
+						}else
+							value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, formatTimeZoneShift, null, writeValue);
 						
 					}catch(Exception e){
 					}
@@ -308,10 +349,20 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 					try{
 						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,arg);
 						if(writeValue!=null) {
-							if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-								value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
-							else
-								value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, formatCurrency, writeValue);
+							if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null) {
+								value=util_format.makeFormatedString(formatOutput, 
+										(formatLanguage==null)?auth.get_language_profile():formatLanguage,
+										(formatCountry==null)?auth.get_country():formatCountry,
+										(formatTimeZoneShift==null)?auth.get_timezone():formatTimeZoneShift,
+										null, writeValue);
+								if(formatLanguage==null)
+									formatLanguage = auth.get_language_profile();
+								if(formatCountry==null)
+									formatCountry = auth.get_country();
+								if(formatTimeZoneShift==null)
+									formatTimeZoneShift = auth.get_timezone();								
+							}else
+								value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,formatTimeZoneShift, null, writeValue);
 						}
 					}catch(Exception e){}
 				}
@@ -357,6 +408,11 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 							asyncUpdateUrl+="$formatCountry_"+prefixName+"="+util_format.normaliseURLParameter(formatCountry)+"&";
 						else asyncUpdateUrl+="$formatCountry_"+name+"="+util_format.normaliseURLParameter(formatCountry)+"&";
 					}	
+					if(formatTimeZoneShift!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatTimeZoneShift_"+prefixName+"="+util_format.normaliseURLParameter(formatTimeZoneShift)+"&";
+						else asyncUpdateUrl+="$formatTimeZoneShift_"+name+"="+util_format.normaliseURLParameter(formatTimeZoneShift)+"&";
+					}					
 					if(formatLocationFromUserAuth!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
 							asyncUpdateUrl+="$formatLocationFromUserAuth_"+prefixName+"="+util_format.normaliseURLParameter(formatLocationFromUserAuth)+"&";
@@ -377,7 +433,36 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 			}
 		}
 
-		final StringBuffer results = new StringBuffer("<textarea ");
+		final StringBuffer results = new StringBuffer("");
+		String inputId=null;
+		if(objId!=null){
+			inputId=objId;
+		}else{
+			if(name!=null){				
+				if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+					inputId=prefixName;
+				else inputId=name;
+			}
+		}
+		
+		if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append("<section class=\"");
+			if(formatCurrency!=null) {
+				results.append(" textareaFormatCurrencySectionStyles");
+			}
+			if(formatTimeZoneShift!=null && formatTimeZone!=null) {
+				results.append(" textareaFormatTimeZoneShiftSectionStyles");
+			}
+			results.append("\" >");
+			if(formatCurrency!=null) {
+				results.append("<label for=\""+inputId+"\" class=\"textareaFormatCurrencyLabelStyles\">"+util_format.getCurrensySymbolByCode(formatCurrency)+"</label>");			
+			}
+			if(formatTimeZoneShift!=null && formatTimeZone!=null) {
+				results.append("<label for=\""+inputId+"\" class=\"textareaFormatTimeZoneShiftLabelStyles\">"+updateFormatTimezone()+"</label>");			
+			}			
+		}		
+
+		results.append("<textarea ");
 		if(name!=null){
 			results.append(" name=\"");
 			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
@@ -415,7 +500,21 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 
 		if (styleClass != null) {
 			results.append(" class=\"");
-			results.append(styleClass);
+			if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+				results.append(styleClass);
+				if(formatCurrency!=null)
+					results.append(" inputFormatCurrencyStyles");
+				if(formatTimeZoneShift!=null && formatTimeZone!=null)
+					results.append(" inputFormatTimeZoneShiftStyles");
+			}else
+				results.append(styleClass);
+			results.append('"');
+		}else if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append(" class=\"");
+			if(formatCurrency!=null)
+				results.append(" inputFormatCurrencyStyles");
+			if(formatTimeZoneShift!=null && formatTimeZone!=null)
+				results.append(" inputFormatTimeZoneShiftStyles");	
 			results.append('"');
 		}
 		
@@ -488,6 +587,9 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 		}catch(Exception e){}
 		
 		results.append("</textarea>");
+		if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append("</section>");
+		}		
 
 		if(name!=null && formatInput!=null){
 			results.append("<input name=\"");
@@ -498,6 +600,51 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 			results.append(formatInput);
 			results.append("\">");
 		}
+		if(name!=null && formatOutput!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatOutput_"+prefixName);
+			else results.append("$formatOutput_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatOutput);
+			results.append("\">");
+		}
+		if(name!=null && formatLanguage!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatLanguage_"+prefixName);
+			else results.append("$formatLanguage_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatLanguage);
+			results.append("\">");
+		}
+		if(name!=null && formatCountry!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatCountry_"+prefixName);
+			else results.append("$formatCountry_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatCountry);
+			results.append("\">");
+		}
+		if(name!=null && formatTimeZoneShift!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatTimeZoneShift_"+prefixName);
+			else results.append("$formatTimeZoneShift_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatTimeZoneShift);
+			results.append("\">");
+		}
+		if(name!=null && formatLocationFromUserAuth!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatLocationFromUserAuth_"+prefixName);
+			else results.append("$formatLocationFromUserAuth_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatLocationFromUserAuth);
+			results.append("\">");
+		}			
 		if(name!=null && replaceOnBlank!=null){
 			results.append("<input name=\"");
 			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
@@ -746,6 +893,22 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 
 	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
 		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
+	}
+
+	public String getFormatTimeZoneShift() {
+		return formatTimeZoneShift;
+	}
+
+	public void setFormatTimeZoneShift(String formatTimeZoneShift) {
+		this.formatTimeZoneShift = formatTimeZoneShift;
+	}
+
+	public String getFormatTimeZone() {
+		return formatTimeZone;
+	}
+
+	public void setFormatTimeZone(String formatTimeZone) {
+		this.formatTimeZone = formatTimeZone;
 	}	
 
 }

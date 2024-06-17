@@ -243,197 +243,78 @@ public void init(HttpServletRequest request) throws bsControllerException{
 			if(parameters.get(key) instanceof String ){
 
 				
-				String value = (String)parameters.get(key);
-				String format = (String)parameters.get("$format_"+key);
-				String replaceOnBlank = (String)parameters.get("$replaceOnBlank_"+key);
-				String replaceOnErrorFormat = (String)parameters.get("$replaceOnErrorFormat_"+key);
+				
+				if(
+						!(
+							key.startsWith("$format_") ||
+							key.startsWith("$formatOutput_") ||
+							key.startsWith("$formatLanguage_") ||
+							key.startsWith("$formatCountry_") ||
+							key.startsWith("$replaceOnBlank_") ||
+							key.startsWith("$replaceOnErrorFormat_") ||
+							key.startsWith("$formatTimeZoneShift_")
+						)
+					) {
+					
+					String value = (String)parameters.get(key);
+					String format = (String)parameters.get("$format_"+key);
+					String formatLanguage = (String)parameters.get("$formatLanguage_"+key);
+					String formatCountry = (String)parameters.get("$formatCountry_"+key);
+					String formatTimeZoneShift = (String)parameters.get("$formatTimeZoneShift_"+key);
+					String replaceOnBlank = (String)parameters.get("$replaceOnBlank_"+key);
+					String replaceOnErrorFormat = (String)parameters.get("$replaceOnErrorFormat_"+key);
+					
 
-				if(inputBase64){
-					String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
-
-					try{
-						if(value!=null) value=new String(util_base64.decode(value),charset);
-					}catch(Exception e){}
-					try{
-						if(format!=null) format=new String(util_base64.decode(format),charset);
-					}catch(Exception e){}
-					try{
-						if(replaceOnBlank!=null) replaceOnBlank=new String(util_base64.decode(replaceOnBlank),charset);
-					}catch(Exception e){}
-					try{
-						if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(util_base64.decode(replaceOnErrorFormat),charset);
-					}catch(Exception e){
-					}
-				}
-
-
-				if(key.indexOf(".")==-1){
-					try{
-						Object makedValue=null;
-						if(format!=null){
-							if(delegated!=null){
-								makedValue=util_makeValue.makeFormatedValue1(delegated,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-								if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-							}else{
-								makedValue=util_makeValue.makeFormatedValue1(this,format,value,key,replaceOnBlank,replaceOnErrorFormat);
-							}
-						}else{
-							Object current_requested = null;
-							if(delegated!=null){
-								current_requested=delegated;
-							}else{
-								current_requested=this;
-							}
-							Serialized serialized_annotation = null;
-							Object checkForDes = parameters.get(JsonMapper.CONST_ID_CHECKFORDESERIALIZE);								
-							if(checkForDes!=null && checkForDes.toString().equalsIgnoreCase("true")){
-								Method ret_method = util_reflect.getSetMethod(current_requested, key);
-								if(ret_method!=null)
-									serialized_annotation =ret_method.getAnnotation(Serialized.class);
-								if(serialized_annotation==null){
-									Field ret_field = util_reflect.getField(current_requested, key);
-									if(ret_field!=null)
-										serialized_annotation =ret_field.getAnnotation(Serialized.class);
-								}
-							}
-							if(	serialized_annotation!=null &&
-								serialized_annotation.input()!=null &&
-								serialized_annotation.input().format()!=null &&
-								!serialized_annotation.input().format().equals(""))
-								setCampoValuePoint(
-										current_requested,
-										key,
-										util_makeValue.makeFormatedValue1(
-													current_requested,
-													serialized_annotation.input().format(),
-													value,
-													key,
-													serialized_annotation.input().replaceOnBlank(),
-													serialized_annotation.input().replaceOnErrorFormat()
-													
-										),
-										false
-								);
-							else{	
-								if(delegated!=null){
-									makedValue=util_makeValue.makeValue1(delegated,value,key);
-									if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
-								}else{
-									makedValue=util_makeValue.makeValue1(this,value,key);
-								}
-								if(!setCampoValueWithPoint(key,makedValue))
-									throw new Exception();
-							}
-							
+					if(inputBase64){
+						String charset = (parameters.get("$REQUEST_CHARSET")==null || parameters.get("$REQUEST_CHARSET").toString().equals(""))?"UTF-8":parameters.get("$REQUEST_CHARSET").toString();
+	
+						try{
+							if(value!=null) value=new String(util_base64.decode(value),charset);
+						}catch(Exception e){}
+						try{
+							if(format!=null) format=new String(util_base64.decode(format),charset);
+						}catch(Exception e){}
+						try{
+							if(formatLanguage!=null) formatLanguage=new String(util_base64.decode(formatLanguage),charset);
+						}catch(Exception e){}
+						try{
+							if(formatCountry!=null) formatCountry=new String(util_base64.decode(formatCountry),charset);
+						}catch(Exception e){}					
+						try{
+							if(replaceOnBlank!=null) replaceOnBlank=new String(util_base64.decode(replaceOnBlank),charset);
+						}catch(Exception e){}
+						try{
+							if(replaceOnErrorFormat!=null) replaceOnErrorFormat=new String(util_base64.decode(replaceOnErrorFormat),charset);
+						}catch(Exception e){
 						}
-
-						
-						
-
-					}catch(Exception e){
+					}
+	
+	
+					if(key.indexOf(".")==-1){
 						try{
 							Object makedValue=null;
-
 							if(format!=null){
 								if(delegated!=null){
-									makedValue=util_makeValue.makeFormatedValue(delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
-									if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+									makedValue=util_makeValue.makeFormatedValue1(delegated,format,formatLanguage,formatCountry,formatTimeZoneShift,value,key,replaceOnBlank,replaceOnErrorFormat);
+									if(makedValue==null) makedValue=util_makeValue.makeFormatedValue1(this,format,formatLanguage,formatCountry,formatTimeZoneShift,value,key,replaceOnBlank,replaceOnErrorFormat);
 								}else{
-									makedValue=util_makeValue.makeFormatedValue(this,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+									makedValue=util_makeValue.makeFormatedValue1(this,format,formatLanguage,formatCountry,formatTimeZoneShift,value,key,replaceOnBlank,replaceOnErrorFormat);
 								}
-							}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
-
-							if(!setCampoValueWithPoint(key,makedValue))
-								throw new Exception();
-						}catch(Exception ex){
-							getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"]."+((add2fly)?" Will e added into FLY.":""));
-							if(add2fly){
-								if(parametersFly==null) 
-									parametersFly = new HashMap<String, Object>();
-								if(key!=null && key.length()>0 && key.indexOf(0)!='$') 
-									parametersFly.put(key, value);
-							}
-						}
-					}
-
-				}else{
-					Object writeValue=null;
-					Object current_requested = (delegated==null)?this:delegated;
-
-					String last_field_name = null;
-					StringTokenizer st = new StringTokenizer(key,".");
-					while(st.hasMoreTokens()){
-						if(st.countTokens()>1){
-							String current_field_name = st.nextToken();
-							try{
-								writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
-								if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
-								if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
-								if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
-								if(writeValue==null && current_requested instanceof Vector) writeValue = ((Vector)current_requested).get(Integer.valueOf(current_field_name).intValue());
-								if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
-								if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
-								if(writeValue==null && current_requested.getClass().isArray()){
-									Class<?> componentType = current_requested.getClass().getComponentType();
-									if(!componentType.isPrimitive())
-										writeValue = ((Object[])current_requested)[Integer.valueOf(current_field_name).intValue()];
-									else{
-										if (boolean.class.isAssignableFrom(componentType))
-											writeValue = ((boolean[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
-										else if (byte.class.isAssignableFrom(componentType))
-											writeValue = ((byte[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
-										else if (char.class.isAssignableFrom(componentType))
-											writeValue = ((char[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
-										else if (double.class.isAssignableFrom(componentType))
-											writeValue = ((double[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
-										else if (float.class.isAssignableFrom(componentType))
-											writeValue = ((float[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
-										else if (int.class.isAssignableFrom(componentType))
-											writeValue = ((int[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
-										else if (long.class.isAssignableFrom(componentType))
-											writeValue = ((long[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
-										else if (short.class.isAssignableFrom(componentType))
-											writeValue = ((short[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
-									}
+							}else{
+								Object current_requested = null;
+								if(delegated!=null){
+									current_requested=delegated;
+								}else{
+									current_requested=this;
 								}
-
-								if(writeValue==null)
-									writeValue = util_reflect.getValueIfIsInputAnnotation(current_requested, current_field_name, null);
-								
-							}catch(Exception e){
-							}
-							current_requested = writeValue;
-						}else{
-							last_field_name = st.nextToken();
-						}
-						writeValue = null;
-					}
-
-					if(current_requested!=null){
-						try{
-							if(format!=null)
-								setCampoValuePoint(
-										current_requested,
-										last_field_name,
-										util_makeValue.makeFormatedValue1(
-													current_requested,
-													format,
-													value,
-													last_field_name,
-													replaceOnBlank,
-													replaceOnErrorFormat
-										),
-										false
-								);
-							else{
 								Serialized serialized_annotation = null;
 								Object checkForDes = parameters.get(JsonMapper.CONST_ID_CHECKFORDESERIALIZE);								
 								if(checkForDes!=null && checkForDes.toString().equalsIgnoreCase("true")){
-									Method ret_method = util_reflect.getSetMethod(current_requested, last_field_name);
+									Method ret_method = util_reflect.getSetMethod(current_requested, key);
 									if(ret_method!=null)
 										serialized_annotation =ret_method.getAnnotation(Serialized.class);
 									if(serialized_annotation==null){
-										Field ret_field = util_reflect.getField(current_requested, last_field_name);
+										Field ret_field = util_reflect.getField(current_requested, key);
 										if(ret_field!=null)
 											serialized_annotation =ret_field.getAnnotation(Serialized.class);
 									}
@@ -444,41 +325,190 @@ public void init(HttpServletRequest request) throws bsControllerException{
 									!serialized_annotation.input().format().equals(""))
 									setCampoValuePoint(
 											current_requested,
-											last_field_name,
+											key,
 											util_makeValue.makeFormatedValue1(
 														current_requested,
 														serialized_annotation.input().format(),
+														serialized_annotation.input().language(),
+														serialized_annotation.input().country(),
+														serialized_annotation.input().timeZoneShift(),
 														value,
-														last_field_name,
+														key,
 														serialized_annotation.input().replaceOnBlank(),
 														serialized_annotation.input().replaceOnErrorFormat()
 														
 											),
 											false
 									);
-								else	
+								else{	
+									if(delegated!=null){
+										makedValue=util_makeValue.makeValue1(delegated,value,key);
+										if(makedValue==null) makedValue=util_makeValue.makeValue1(this,value,key);
+									}else{
+										makedValue=util_makeValue.makeValue1(this,value,key);
+									}
+									if(!setCampoValueWithPoint(key,makedValue))
+										throw new Exception();
+								}
+								
+							}
+	
+							
+							
+	
+						}catch(Exception e){
+							try{
+								Object makedValue=null;
+	
+								if(format!=null){
+									if(delegated!=null){
+										makedValue=util_makeValue.makeFormatedValue(delegated,format,formatLanguage,formatCountry,formatTimeZoneShift,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+										if(makedValue==null) makedValue=util_makeValue.makeFormatedValue(this,format,formatLanguage,formatCountry,formatTimeZoneShift,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+									}else{
+										makedValue=util_makeValue.makeFormatedValue(this,format,formatLanguage,formatCountry,formatTimeZoneShift,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat);
+									}
+								}else makedValue=util_makeValue.makeValue(value,getCampoValue(key));
+	
+								if(!setCampoValueWithPoint(key,makedValue))
+									throw new Exception();
+							}catch(Exception ex){
+								getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"]."+((add2fly)?" Will e added into FLY.":""));
+								if(add2fly){
+									if(parametersFly==null) 
+										parametersFly = new HashMap<String, Object>();
+									if(key!=null && key.length()>0 && key.indexOf(0)!='$') 
+										parametersFly.put(key, value);
+								}
+							}
+						}
+	
+					}else{
+						Object writeValue=null;
+						Object current_requested = (delegated==null)?this:delegated;
+	
+						String last_field_name = null;
+						StringTokenizer st = new StringTokenizer(key,".");
+						while(st.hasMoreTokens()){
+							if(st.countTokens()>1){
+								String current_field_name = st.nextToken();
+								try{
+									writeValue = util_reflect.getValue(current_requested,"get"+util_reflect.adaptMethodName(current_field_name),null);
+									if(writeValue==null) writeValue = util_reflect.getValue(current_requested,current_field_name,null);
+									if(writeValue==null && current_requested instanceof i_bean) writeValue = ((i_bean)current_requested).get(current_field_name);
+									if(writeValue==null && current_requested instanceof Map) writeValue = ((Map)current_requested).get(current_field_name);
+									if(writeValue==null && current_requested instanceof Vector) writeValue = ((Vector)current_requested).get(Integer.valueOf(current_field_name).intValue());
+									if(writeValue==null && current_requested instanceof List) writeValue = ((List)current_requested).get(Integer.valueOf(current_field_name).intValue());
+									if(writeValue==null && current_requested instanceof Set) writeValue = Arrays.asList(((Set)current_requested)).toArray()[Integer.valueOf(current_field_name).intValue()];
+									if(writeValue==null && current_requested.getClass().isArray()){
+										Class<?> componentType = current_requested.getClass().getComponentType();
+										if(!componentType.isPrimitive())
+											writeValue = ((Object[])current_requested)[Integer.valueOf(current_field_name).intValue()];
+										else{
+											if (boolean.class.isAssignableFrom(componentType))
+												writeValue = ((boolean[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+											else if (byte.class.isAssignableFrom(componentType))
+												writeValue = ((byte[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+											else if (char.class.isAssignableFrom(componentType))
+												writeValue = ((char[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+											else if (double.class.isAssignableFrom(componentType))
+												writeValue = ((double[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+											else if (float.class.isAssignableFrom(componentType))
+												writeValue = ((float[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+											else if (int.class.isAssignableFrom(componentType))
+												writeValue = ((int[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+											else if (long.class.isAssignableFrom(componentType))
+												writeValue = ((long[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+											else if (short.class.isAssignableFrom(componentType))
+												writeValue = ((short[])current_requested)[Integer.valueOf(current_field_name).intValue()]; 
+										}
+									}
+	
+									if(writeValue==null)
+										writeValue = util_reflect.getValueIfIsInputAnnotation(current_requested, current_field_name, null);
+									
+								}catch(Exception e){
+								}
+								current_requested = writeValue;
+							}else{
+								last_field_name = st.nextToken();
+							}
+							writeValue = null;
+						}
+	
+						if(current_requested!=null){
+							try{
+								if(format!=null)
 									setCampoValuePoint(
 											current_requested,
 											last_field_name,
-											util_makeValue.makeValue1(current_requested,value,last_field_name),
+											util_makeValue.makeFormatedValue1(
+														current_requested,
+														format,
+														formatLanguage,formatCountry,formatTimeZoneShift,
+														value,
+														last_field_name,
+														replaceOnBlank,
+														replaceOnErrorFormat
+											),
 											false
+									);
+								else{
+									Serialized serialized_annotation = null;
+									Object checkForDes = parameters.get(JsonMapper.CONST_ID_CHECKFORDESERIALIZE);								
+									if(checkForDes!=null && checkForDes.toString().equalsIgnoreCase("true")){
+										Method ret_method = util_reflect.getSetMethod(current_requested, last_field_name);
+										if(ret_method!=null)
+											serialized_annotation =ret_method.getAnnotation(Serialized.class);
+										if(serialized_annotation==null){
+											Field ret_field = util_reflect.getField(current_requested, last_field_name);
+											if(ret_field!=null)
+												serialized_annotation =ret_field.getAnnotation(Serialized.class);
+										}
+									}
+									if(	serialized_annotation!=null &&
+										serialized_annotation.input()!=null &&
+										serialized_annotation.input().format()!=null &&
+										!serialized_annotation.input().format().equals(""))
+										setCampoValuePoint(
+												current_requested,
+												last_field_name,
+												util_makeValue.makeFormatedValue1(
+															current_requested,
+															serialized_annotation.input().format(),
+															serialized_annotation.input().language(),
+															serialized_annotation.input().country(),
+															serialized_annotation.input().timeZoneShift(),
+															value,
+															last_field_name,
+															serialized_annotation.input().replaceOnBlank(),
+															serialized_annotation.input().replaceOnErrorFormat()
+															
+												),
+												false
 										);
-								
+									else	
+										setCampoValuePoint(
+												current_requested,
+												last_field_name,
+												util_makeValue.makeValue1(current_requested,value,last_field_name),
+												false
+											);
+									
+								}
+							}catch(Exception e){
+								try{
+									if(format!=null)
+										setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,formatLanguage,formatCountry,formatTimeZoneShift,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat),false);
+									else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)),false);
+								}catch(Exception ex){
+									getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"].");
+								}
 							}
-						}catch(Exception e){
-							try{
-								if(format!=null)
-									setCampoValuePoint(current_requested,key,util_makeValue.makeFormatedValue((delegated==null)?this:delegated,format,value,getCampoValue(key),replaceOnBlank,replaceOnErrorFormat),false);
-								else setCampoValuePoint(current_requested,key,util_makeValue.makeValue(value,getCampoValue(key)),false);
-							}catch(Exception ex){
-								getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"].");
-							}
-						}
-					}else
-						getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"].");
-
-
-
+						}else
+							getInitErrors().put(key,"Init Map: ["+key+"] not found in the bean ["+this.getClass().getName()+"].");
+	
+	
+					}
 				}
 			}
 		}

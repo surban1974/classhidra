@@ -64,6 +64,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	protected String formatOutput=null;
 	protected String formatCurrency=null;
+	protected String formatTimeZoneShift=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String formatLocationFromUserAuth=null;
@@ -235,6 +236,7 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 		formatLocationFromUserAuth=null;
 		formatLanguage=null;
 		formatCountry=null;
+		formatTimeZoneShift=null;
 		
 		formatInput=null;
 
@@ -559,6 +561,10 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 					formatCurrency=bsController.getAppInit().get_tag_format_currency();			
 				if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
 					formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+				if(formatTimeZoneShift==null && bsController.getAppInit().get_tag_format_timezone_shift()!=null && !bsController.getAppInit().get_tag_format_timezone_shift().equals(""))
+					formatTimeZoneShift=bsController.getAppInit().get_tag_format_currency();			
+				if(formatTimeZoneShift==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT)!=null)
+					formatTimeZoneShift=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT).toString();
 				
 				if(formatLocationFromUserAuth!=null)
 					formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
@@ -570,13 +576,25 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 					formatCurrency=checkParametersIfDynamic(formatCurrency, null);
 				if(formatOutput!=null)
 					formatOutput=checkParametersIfDynamic(formatOutput, null);
+				if(formatInput!=null)
+					formatInput=checkParametersIfDynamic(formatInput, null);
+				if(formatTimeZoneShift!=null)
+					formatTimeZoneShift=checkParametersIfDynamic(formatTimeZoneShift, null);
+
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth==null)
+					auth=bsController.checkAuth_init((HttpServletRequest) this.pageContext.getRequest());
 				
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-					currentLabel=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, currentLabel);
+					currentLabel=util_format.makeFormatedString(formatOutput, 
+							(formatLanguage==null)?auth.get_language_profile():formatLanguage,
+							(formatCountry==null)?auth.get_country():formatCountry,
+							(formatTimeZoneShift==null)?auth.get_timezone():formatTimeZoneShift,
+							formatCurrency, currentLabel);
 				else
-					currentLabel=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, formatCurrency, currentLabel);
-//				currentLabel=util_format.makeFormatedString(formatOutput,currentLabel);
+					currentLabel=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, formatTimeZoneShift, formatCurrency, currentLabel);
+
 			}catch(Exception e){}
+			
 			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
 				results.append(util_xml.normalXML((currentLabel==null)?"":currentLabel.toString(),charset));	
 			else if(normalXML10!=null && normalXML10.toLowerCase().equals("true"))
@@ -1003,6 +1021,14 @@ public class tagOptions extends ClTagSupport implements DynamicAttributes {
 
 	public void setFormatCurrency(String formatCurrency) {
 		this.formatCurrency = formatCurrency;
+	}
+
+	public String getFormatTimeZoneShift() {
+		return formatTimeZoneShift;
+	}
+
+	public void setFormatTimeZoneShift(String formatTimeZoneShift) {
+		this.formatTimeZoneShift = formatTimeZoneShift;
 	}
 
 }

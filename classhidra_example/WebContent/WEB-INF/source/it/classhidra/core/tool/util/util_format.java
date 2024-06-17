@@ -68,24 +68,7 @@ public util_format(java.sql.Date data) {
 	giorno = c.get(Calendar.DAY_OF_MONTH);
 }
 
-public static Long addHoursToDate(Object date, int hours) {
-	
-    if(!
-    		(date instanceof java.util.Date) || (date instanceof java.sql.Date) || (date instanceof Timestamp)
-    )
-    	return null;
 
-	
-    Calendar calendar = Calendar.getInstance();
-    if(date instanceof java.util.Date)
-    	calendar.setTime((java.util.Date)date);
-    if(date instanceof java.sql.Date)
-    	calendar.setTime((java.sql.Date)date);  
-    if(date instanceof Timestamp)
-    	calendar.setTime((Timestamp)date);    
-    calendar.add(Calendar.HOUR_OF_DAY, hours);
-    return calendar.getTimeInMillis();
-}
 
 public  static  String timestampToString( Timestamp timestamp, String formato) {
 	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,ITALIAN);
@@ -100,6 +83,15 @@ public  static  String timestampToString( Timestamp timestamp, String formato, L
 	return  result;
 }
 
+public  static  String timestampToString( Timestamp timestamp, String formato, Locale loc, String timeZoneToShift) {
+	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	util_timezone.updateTimeZone(sdf, timestamp, timeZoneToShift);
+	String result=null;
+	result = sdf.format(timestamp);
+	return  result;
+}
+
+
 public  static  String dataToString( Object data, String formato) {
 	if(data==null || formato==null) return "";
 	if(data instanceof java.util.Date) return dataToString( (java.util.Date)data, formato);
@@ -112,9 +104,23 @@ public  static  String dataToString( Object data, String formato, Locale loc) {
 	if(data instanceof java.sql.Date) return dataToString( (java.sql.Date)data, formato, loc);
 	return "";
 }
+public  static  String dataToString( Object data, String formato, Locale loc, String timeZoneToShift) {
+	if(data==null || formato==null) return "";
+	if(data instanceof java.util.Date) return dataToString( (java.util.Date)data, formato, loc, timeZoneToShift);
+	if(data instanceof java.sql.Date) return dataToString( (java.sql.Date)data, formato, loc, timeZoneToShift);
+	return "";
+}
+
 
 public  static  String dataToString( java.util.Date data, String formato) {
 	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,ITALIAN);
+	String result=null;
+	result = sdf.format(data);
+	return  result;
+}
+public  static  String dataToString( java.util.Date data, String formato, String timeZoneToShift) {
+	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,ITALIAN);
+	util_timezone.updateTimeZone(sdf, data, timeZoneToShift);
 	String result=null;
 	result = sdf.format(data);
 	return  result;
@@ -125,8 +131,23 @@ public  static  String dataToString( java.util.Date data, String formato, Locale
 	result = sdf.format(data);
 	return  result;
 }
+public  static  String dataToString( java.util.Date data, String formato, Locale loc, String timeZoneToShift) {
+	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	util_timezone.updateTimeZone(sdf, data, timeZoneToShift);
+	String result=null;
+	result = sdf.format(data);
+	return  result;
+}
+
 public  static  String dataToString( java.sql.Date data, String formato) {
 	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,ITALIAN);
+	String result=null;
+	result = sdf.format(data);
+	return  result;
+}
+public  static  String dataToString( java.sql.Date data, String formato, String timeZoneToShift) {
+	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,ITALIAN);
+	util_timezone.updateTimeZone(sdf, data, timeZoneToShift);	
 	String result=null;
 	result = sdf.format(data);
 	return  result;
@@ -137,6 +158,14 @@ public  static  String dataToString( java.sql.Date data, String formato, Locale 
 	result = sdf.format(data);
 	return  result;
 }
+public  static  String dataToString( java.sql.Date data, String formato, Locale loc, String timeZoneToShift) {
+	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	util_timezone.updateTimeZone(sdf, data, timeZoneToShift);
+	String result=null;
+	result = sdf.format(data);
+	return  result;
+}
+
 public  static  java.sql.Date dataUtilToSql( Object data) {
 	if(data instanceof java.util.Date){
 		return new java.sql.Date(((java.util.Date) data).getTime());
@@ -348,6 +377,8 @@ public static java.util.Date stringToData (String data, String formato) throws E
 	return dataResult;
 }
 public static java.util.Date stringToData ( String data, String formato, Locale loc) throws Exception {
+	if(loc==null)
+		loc = ITALIAN;
 	SimpleDateFormat sdf = new SimpleDateFormat(formato,loc);
 	ParsePosition pos = new ParsePosition(0);
 	Date dataResult = null;
@@ -360,6 +391,8 @@ public static java.util.Date stringToData ( String data, String formato, Locale 
 	return dataResult;
 }
 public static java.sql.Date stringToSqlData ( String data, String formato, Locale loc) throws ParseException {
+	if(loc==null)
+		loc = ITALIAN;
 	SimpleDateFormat sdf = new SimpleDateFormat(formato,loc);
 	ParsePosition pos = new ParsePosition(0);
 	Date dataResult = null;
@@ -634,7 +667,11 @@ public static String makeFormatedStringWithMethod(String format, Object ref) thr
 	return result;
 }
 
-public static String makeFormatedString(String format, String currency, Object ref) throws Exception{
+public static String makeFormatedStringTimeZone(String format, String currency, Object ref) throws Exception{
+	return makeFormatedString( format,  currency, null,  ref);
+}
+
+public static String makeFormatedStringTimeZone(String format, String currency, String timeZoneToShift, Object ref) throws Exception{
 	if(format==null || format.equals("")) 
 		return ref.toString();	
 	if(ref.getClass().isPrimitive()) return ref.toString();
@@ -662,16 +699,9 @@ public static String makeFormatedString(String format, String currency, Object r
 	}	
 	if(ref instanceof java.sql.Date){
 		java.sql.Date utc = (java.sql.Date)ref;
-		int utc_shift = 0;
-		try {
-			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
-		}catch (Exception e) {
-		}
-		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
-			utc=new java.sql.Date(addHoursToDate(utc, utc_shift));
-		}
+		utc = (java.sql.Date)util_timezone.updateTimezoneServerShift(utc, format);
 		try{
-			return dataToString(utc, format);
+			return dataToString(utc, format, timeZoneToShift);
 		}catch(Exception e){
 			try{
 				String res = makeFormatedStringWithMethod(format, utc);
@@ -683,16 +713,9 @@ public static String makeFormatedString(String format, String currency, Object r
 	}	
 	if(ref instanceof Timestamp){
 		Timestamp utc = (Timestamp)ref;
-		int utc_shift = 0;
-		try {
-			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
-		}catch (Exception e) {
-		}
-		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
-			utc=new Timestamp(addHoursToDate(utc, utc_shift));
-		}		
+		utc = (Timestamp)util_timezone.updateTimezoneServerShift(utc, format);
 		try{
-			return dataToString(new java.sql.Date(((Timestamp)utc).getTime()), format);
+			return dataToString(new java.sql.Date(((Timestamp)utc).getTime()), format, timeZoneToShift);
 		}catch(Exception e){
 			try{
 				String res = makeFormatedStringWithMethod(format, utc);
@@ -703,16 +726,9 @@ public static String makeFormatedString(String format, String currency, Object r
 	}
 	if(ref instanceof java.util.Date){
 		java.util.Date utc = (java.util.Date)ref;
-		int utc_shift = 0;
-		try {
-			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
-		}catch (Exception e) {
-		}
-		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
-			utc=new java.util.Date(addHoursToDate(utc, utc_shift));
-		}		
+		utc = (java.util.Date)util_timezone.updateTimezoneServerShift(utc, format);
 		try{
-			return util_format.dataToString(utc, format);
+			return util_format.dataToString(utc, format, timeZoneToShift);
 		}catch(Exception e){
 			try{
 				String res = makeFormatedStringWithMethod(format, utc);
@@ -876,11 +892,21 @@ public static String formatDecimalWithCurrency(NumberFormat decimalFormat, Local
 	}
 }
 
-public static String makeFormatedString(String format, String language, String country, Object ref) throws Exception{
-	return makeFormatedString(format, language, country, null, ref);
+public static String makeFormatedString(String format, String language, Object ref) throws Exception{
+	return makeFormatedString(format, language, null, null, null, ref);
 }
 
-public static String makeFormatedString(String format, String language, String country, String currency, Object ref) throws Exception{
+
+public static String makeFormatedString(String format, String language, String country, Object ref) throws Exception{
+	return makeFormatedString(format, language, country, null, null, ref);
+}
+
+
+public static String makeFormatedString(String format, String language, String country, String timeZoneShift, Object ref) throws Exception{
+	return makeFormatedString(format, language, country, timeZoneShift, null, ref);
+}
+
+public static String makeFormatedString(String format, String language, String country, String timeZoneShift, String currency, Object ref) throws Exception{
 	if(ref==null) return null;	
 	if((format==null || format.equals("")) && currency!=null && !currency.isEmpty()) {
 		Locale locale = null;
@@ -915,7 +941,7 @@ public static String makeFormatedString(String format, String language, String c
 	}catch(Exception e){		
 	}
 	if(locale==null) 
-		return makeFormatedString(format, currency, ref);
+		return makeFormatedStringTimeZone(format, currency, timeZoneShift, ref);
 	
 	
 	
@@ -945,16 +971,12 @@ public static String makeFormatedString(String format, String language, String c
 	}	
 	if(ref instanceof java.sql.Date){
 		java.sql.Date utc = (java.sql.Date)ref;
-		int utc_shift = 0;
-		try {
-			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
-		}catch (Exception e) {
-		}
-		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
-			utc=new java.sql.Date(addHoursToDate(utc, utc_shift));
-		}
+		utc = (java.sql.Date)util_timezone.updateTimezoneServerShift(utc, format);
 		try{
-			return dataToString(utc, format, locale);
+			if(timeZoneShift!=null)
+				return dataToString(utc, format, locale, timeZoneShift);
+			else
+				return dataToString(utc, format, locale);
 		}catch(Exception e){
 			try{
 				String res = makeFormatedStringWithMethod(format, utc);
@@ -966,16 +988,12 @@ public static String makeFormatedString(String format, String language, String c
 	}	
 	if(ref instanceof Timestamp){
 		Timestamp utc = (Timestamp)ref;
-		int utc_shift = 0;
-		try {
-			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
-		}catch (Exception e) {
-		}
-		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
-			utc=new Timestamp(addHoursToDate(utc, utc_shift));
-		}		
+		utc = (Timestamp)util_timezone.updateTimezoneServerShift(utc, format);
 		try{
-			return dataToString(new java.sql.Date(((Timestamp)utc).getTime()), format, locale);
+			if(timeZoneShift!=null)
+				return dataToString(new java.sql.Date(((Timestamp)utc).getTime()), format, locale, timeZoneShift);
+			else
+				return dataToString(new java.sql.Date(((Timestamp)utc).getTime()), format, locale);
 		}catch(Exception e){
 			try{
 				String res = makeFormatedStringWithMethod(format, utc);
@@ -986,16 +1004,12 @@ public static String makeFormatedString(String format, String language, String c
 	}
 	if(ref instanceof java.util.Date){
 		java.util.Date utc = (java.util.Date)ref;
-		int utc_shift = 0;
-		try {
-			utc_shift = Integer.valueOf(bsController.getAppInit().get_tag_format_utc_shift()).intValue();			
-		}catch (Exception e) {
-		}
-		if((format.contains("z") || format.contains("Z") || format.contains("X")) && utc_shift!=0) {
-			utc=new java.util.Date(addHoursToDate(utc, utc_shift));
-		}
+		utc = (java.util.Date)util_timezone.updateTimezoneServerShift(utc, format);
 		try{
-			return util_format.dataToString(utc, format, locale);
+			if(timeZoneShift!=null)
+				return dataToString(utc, format, locale, timeZoneShift);
+			else
+				return dataToString(utc, format, locale);
 		}catch(Exception e){
 			try{
 				String res = makeFormatedStringWithMethod(format, utc);

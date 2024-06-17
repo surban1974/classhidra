@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import it.classhidra.serialize.Serialized;
 
@@ -187,6 +189,7 @@ public class util_makeValue {
 				formatesD[5]="dd/MM/yyyy";
 				formatesD[6]="dd-MM-yyyy";
 				formatesD[7]="dd.MM.yyyy";
+				
 			if(ret_class.getName().equals("java.sql.Date")){
 				try {
 					resultObject = util_format.stringToSqlData(value, "EEE MMM dd HH:mm:ss z yyyy", util_format.ENGLISH);
@@ -287,6 +290,10 @@ public class util_makeValue {
 	}
 
 	public static Object makeFormatedValue1(Object req, String format, String value, String key, String replaceOnBlank, String replaceOnErrorFormat) throws Exception{
+		return makeFormatedValue1( req,  format,  null,  null, null,  value,  key,  replaceOnBlank,  replaceOnErrorFormat);
+	}
+	
+	public static Object makeFormatedValue1(Object req, String format, String language, String country, String timeZoneShift, String value, String key, String replaceOnBlank, String replaceOnErrorFormat) throws Exception{
 		Object resultObject = null;
 		Field fld = null;
 		Method ret_fld = null;
@@ -365,13 +372,27 @@ public class util_makeValue {
 		
 		if(ret_class==null) return null;
 		
+		Locale locale = null;
+		try{
+			if(language!=null && !language.equals("")){
+				if(country!=null && !country.equals(""))
+					locale = new Locale(language,country);
+				else
+					locale = new Locale(language);
+			}
+		}catch(Exception e){		
+		}
 
 		if(ret_class.isPrimitive()){
 			try{
 				if(format!=null && !format.equals("")){
 					try{
+					
 						if((value==null || value.equals("")) && replaceOnBlank!=null && replaceOnBlank!=null && !replaceOnBlank.equals("")) value=replaceOnBlank;
-						value = new DecimalFormat(format).parse(value.trim()).toString();
+						if(locale!=null)
+							value = new DecimalFormat(format,new DecimalFormatSymbols(locale)).parse(value.trim()).toString();
+						else	
+							value = new DecimalFormat(format).parse(value.trim()).toString();
 					}catch(Exception e){
 					}
 				}
@@ -423,7 +444,7 @@ public class util_makeValue {
 					return resultObject;
 				}
 				if(replaceOnErrorFormat!=null){
-					resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null);
+					resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null, country, language, timeZoneShift);
 					return resultObject;
 				}
 			}
@@ -437,20 +458,21 @@ public class util_makeValue {
 				try{
 					try{
 						if((value==null || value.equals("")) && replaceOnBlank!=null && !replaceOnBlank.equals("")) value=replaceOnBlank;
-//						value = new DecimalFormat(format).format(new java.math.BigDecimal(value.trim()).doubleValue());
-						value = new DecimalFormat(format).parse(value.trim()).toString();
+						if(locale!=null)
+							value = new DecimalFormat(format,new DecimalFormatSymbols(locale)).parse(value.trim()).toString();
+						else	
+							value = new DecimalFormat(format).parse(value.trim()).toString();
 					}catch(Exception e){}
 
 					Object[] prs = new Object[1];
 					Class<?>[] cls = new Class[1];
 					cls[0]=value.getClass();
 					prs[0]=value;
-//					Class cl = resultObject.getClass();
 					resultObject = ret_class.getConstructor(cls).newInstance(prs);
 					return resultObject;
 				}catch(Exception e){
 					if(replaceOnErrorFormat!=null){
-						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null);
+						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null, country, language, timeZoneShift);
 						return resultObject;
 					}
 				}
@@ -459,10 +481,12 @@ public class util_makeValue {
 				try{
 					if((value==null || value.equals("")) && replaceOnBlank!=null && !replaceOnBlank.equals("")) value=replaceOnBlank;
 					resultObject = util_format.stringToData(value, format);
-					if(resultObject!=null) return new java.sql.Date(((java.util.Date)resultObject).getTime());
+					long minusInMillis = util_timezone.calcTimezoneDistance(resultObject,timeZoneShift);
+					if(resultObject!=null) 
+						return new java.sql.Date(((java.util.Date)resultObject).getTime()+minusInMillis);
 				}catch(Exception e){
 					if(replaceOnErrorFormat!=null){
-						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null);
+						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null, country, language, timeZoneShift);
 						return resultObject;
 					}
 				}
@@ -471,10 +495,14 @@ public class util_makeValue {
 				try{
 					if((value==null || value.equals("")) && replaceOnBlank!=null && !replaceOnBlank.equals("")) value=replaceOnBlank;
 					resultObject = util_format.stringToData(value, format);
-					if(resultObject!=null) return new Timestamp(((java.util.Date)resultObject).getTime());
+					
+					long minusInMillis = util_timezone.calcTimezoneDistance(resultObject,timeZoneShift);
+					if(resultObject!=null) 
+						return new Timestamp(((java.util.Date)resultObject).getTime()+minusInMillis);
+					
 				}catch(Exception e){
 					if(replaceOnErrorFormat!=null){
-						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null);
+						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null, country, language, timeZoneShift);
 						return resultObject;
 					}
 				}
@@ -483,15 +511,17 @@ public class util_makeValue {
 				try{
 					if((value==null || value.equals("")) && replaceOnBlank!=null && !replaceOnBlank.equals("")) value=replaceOnBlank;
 					resultObject = util_format.stringToData(value, format);
-					if(resultObject!=null) return resultObject;
+					
+					long minusInMillis = util_timezone.calcTimezoneDistance(resultObject,timeZoneShift);
+					if(resultObject!=null) 
+						return new Timestamp(((java.util.Date)resultObject).getTime()+minusInMillis);
+
 				}catch(Exception e){
 					if(value!=null && value.equals("")){
-//						resultObject = get(key);
-//						if(resultObject==null) 	resultObject = new java.util.Date();
 						return resultObject;
 					}
 					if(replaceOnErrorFormat!=null){
-						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null);
+						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null, country, language, timeZoneShift);
 						return resultObject;
 					}
 				}
@@ -499,11 +529,14 @@ public class util_makeValue {
 			if(ret_class.getName().equals("java.lang.String")){
 				try{
 					if((value==null || value.equals("")) && replaceOnBlank!=null && !replaceOnBlank.equals("")) value=replaceOnBlank;
-					resultObject = new DecimalFormat(format).parse(value.trim()).toString();
+					if(locale!=null)
+						resultObject = new DecimalFormat(format, new DecimalFormatSymbols(locale)).parse(value.trim()).toString();
+					else	
+						resultObject = new DecimalFormat(format).parse(value.trim()).toString();
 					if(resultObject!=null) return resultObject;
 				}catch(Exception e){
 					if(replaceOnErrorFormat!=null){
-						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null);
+						resultObject=makeFormatedValue1(req, format, replaceOnErrorFormat, key, replaceOnBlank, null, country, language, timeZoneShift);
 						return resultObject;
 					}
 					resultObject = value;
@@ -516,13 +549,31 @@ public class util_makeValue {
 	
 	
 	public static Object makeFormatedValue1(Class<?> ret_class, String value, String format) throws Exception{
+		return makeFormatedValue1(ret_class,  value,  format,  null,  null,  null);
+	}
+	
+	public static Object makeFormatedValue1(Class<?> ret_class, String value, String format, String language, String country, String timeZoneShift) throws Exception{
 		Object resultObject = null;
+		
+		Locale locale = null;
+		try{
+			if(language!=null && !language.equals("")){
+				if(country!=null && !country.equals(""))
+					locale = new Locale(language,country);
+				else
+					locale = new Locale(language);
+			}
+		}catch(Exception e){		
+		}
 
 		if(ret_class.isPrimitive()){
 			try{
 				if(format!=null && !format.equals("")){
 					try{
-						value = new DecimalFormat(format).parse(value.trim()).toString();
+						if(locale!=null)
+							value = new DecimalFormat(format, new DecimalFormatSymbols(locale)).parse(value.trim()).toString();
+						else	
+							value = new DecimalFormat(format).parse(value.trim()).toString();
 					}catch(Exception e){
 					}
 				}
@@ -582,7 +633,11 @@ public class util_makeValue {
 			){
 				try{
 					try{
-						value = new DecimalFormat(format).parse(value.trim()).toString();
+						if(locale!=null)
+							value = new DecimalFormat(format, new DecimalFormatSymbols(locale)).parse(value.trim()).toString();
+						else	
+							value = new DecimalFormat(format).parse(value.trim()).toString();
+
 					}catch(Exception e){}
 
 					Object[] prs = new Object[1];
@@ -602,7 +657,10 @@ public class util_makeValue {
 				else{
 					try{
 						resultObject = util_format.stringToData(value, format);
-						if(resultObject!=null) return new java.sql.Date(((java.util.Date)resultObject).getTime());
+						
+						long minusInMillis = util_timezone.calcTimezoneDistance(resultObject,timeZoneShift);
+						if(resultObject!=null)
+							return new java.sql.Date(((java.util.Date)resultObject).getTime()+minusInMillis);
 					}catch(Exception e){
 	
 					}
@@ -614,7 +672,11 @@ public class util_makeValue {
 				else{
 					try{
 						resultObject = util_format.stringToData(value, format);
-						if(resultObject!=null) return new Timestamp(((java.util.Date)resultObject).getTime());
+						
+						long minusInMillis = util_timezone.calcTimezoneDistance(resultObject,timeZoneShift);
+						if(resultObject!=null) 
+							return new Timestamp(((java.util.Date)resultObject).getTime()+minusInMillis);
+
 					}catch(Exception e){
 	
 					}
@@ -626,7 +688,11 @@ public class util_makeValue {
 				else{
 					try{
 						resultObject = util_format.stringToData(value, format);
-						if(resultObject!=null) return resultObject;
+						
+						long minusInMillis = util_timezone.calcTimezoneDistance(resultObject,timeZoneShift); 
+						if(resultObject!=null) 
+							return new Timestamp(((java.util.Date)resultObject).getTime()+minusInMillis);
+
 					}catch(Exception e){
 						if(value!=null && value.equals("")){
 	//						resultObject = get(key);
@@ -642,7 +708,10 @@ public class util_makeValue {
 					resultObject = "";
 				else{
 					try{
-						resultObject = new DecimalFormat(format).parse(value.trim()).toString();
+						if(locale!=null)
+							resultObject = new DecimalFormat(format, new DecimalFormatSymbols(locale)).parse(value.trim()).toString();
+						else	
+							resultObject = new DecimalFormat(format).parse(value.trim()).toString();
 						if(resultObject!=null) return resultObject;
 					}catch(Exception e){
 						resultObject = value;
@@ -654,10 +723,23 @@ public class util_makeValue {
 
 	}	
 
-
 	public static Object makeFormatedValue(Object req, String format, String value, Object ref, String replaceOnBlank, String replaceOnErrorFormat) throws Exception{
+		return makeFormatedValue( req,  format,  null,  null,  null,  value,  ref,  replaceOnBlank,  replaceOnErrorFormat);
+	}
+
+	public static Object makeFormatedValue(Object req, String format, String language, String country, String timeZoneShift, String value, Object ref, String replaceOnBlank, String replaceOnErrorFormat) throws Exception{
 		Object resultObject=null;
 		if(ref.getClass().isPrimitive()) return resultObject;
+		Locale locale = null;
+		try{
+			if(language!=null && !language.equals("")){
+				if(country!=null && !country.equals(""))
+					locale = new Locale(language,country);
+				else
+					locale = new Locale(language);
+			}
+		}catch(Exception e){		
+		}
 		if(	!(ref instanceof java.sql.Date) &&
 			!(ref instanceof java.util.Date) &&
 			!(ref instanceof Timestamp) &&
@@ -666,7 +748,10 @@ public class util_makeValue {
 			try{
 				try{
 					if((value==null || value.equals("")) && replaceOnBlank!=null && !replaceOnBlank.equals("")) value=replaceOnBlank;
-					value = new DecimalFormat(format).format(new java.math.BigDecimal(value.trim()).doubleValue());
+					if(locale!=null)
+						resultObject = new DecimalFormat(format, new DecimalFormatSymbols(locale)).format(new java.math.BigDecimal(value.trim()).doubleValue());
+					else	
+						resultObject = new DecimalFormat(format).format(new java.math.BigDecimal(value.trim()).doubleValue());
 				}catch(Exception e){}
 
 				Object[] prs = new Object[1];
@@ -678,7 +763,7 @@ public class util_makeValue {
 				return resultObject;
 			}catch(Exception e){
 				if(replaceOnErrorFormat!=null){
-					resultObject=makeFormatedValue(req, format, replaceOnErrorFormat, ref, replaceOnBlank, null);
+					resultObject=makeFormatedValue(req, format, language, country, timeZoneShift, replaceOnErrorFormat, ref, replaceOnBlank, null);
 					return resultObject;
 				}
 			}
@@ -690,7 +775,7 @@ public class util_makeValue {
 				if(resultObject!=null) return new java.sql.Date(((java.util.Date)resultObject).getTime());
 			}catch(Exception e){
 				if(replaceOnErrorFormat!=null){
-					resultObject=makeFormatedValue(req, format, replaceOnErrorFormat, ref, replaceOnBlank, null);
+					resultObject=makeFormatedValue(req, format, language, country, timeZoneShift, replaceOnErrorFormat, ref, replaceOnBlank, null);
 					return resultObject;
 				}
 			}
@@ -702,7 +787,7 @@ public class util_makeValue {
 				if(resultObject!=null) return new Timestamp(((java.util.Date)resultObject).getTime());
 			}catch(Exception e){
 				if(replaceOnErrorFormat!=null){
-					resultObject=makeFormatedValue(req, format, replaceOnErrorFormat, ref, replaceOnBlank, null);
+					resultObject=makeFormatedValue(req, format, language, country, timeZoneShift, replaceOnErrorFormat, ref, replaceOnBlank, null);
 					return resultObject;
 				}
 			}
@@ -714,7 +799,7 @@ public class util_makeValue {
 				if(resultObject!=null) return resultObject;
 			}catch(Exception e){
 				if(replaceOnErrorFormat!=null){
-					resultObject=makeFormatedValue(req, format, replaceOnErrorFormat, ref, replaceOnBlank, null);
+					resultObject=makeFormatedValue(req, format, language, country, timeZoneShift, replaceOnErrorFormat, ref, replaceOnBlank, null);
 					return resultObject;
 				}
 			}

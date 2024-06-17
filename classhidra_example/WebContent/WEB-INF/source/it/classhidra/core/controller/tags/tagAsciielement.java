@@ -25,6 +25,7 @@
 package it.classhidra.core.controller.tags;
 
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import it.classhidra.core.controller.bsConstants;
@@ -85,6 +86,10 @@ public class tagAsciielement extends tagFormelement implements DynamicAttributes
 				formatCurrency=bsController.getAppInit().get_tag_format_currency();			
 			if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
 				formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+			if(formatTimeZoneShift==null && bsController.getAppInit().get_tag_format_timezone_shift()!=null && !bsController.getAppInit().get_tag_format_timezone_shift().equals(""))
+				formatTimeZoneShift=bsController.getAppInit().get_tag_format_currency();			
+			if(formatTimeZoneShift==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT)!=null)
+				formatTimeZoneShift=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT).toString();
 			
 			if(formatLocationFromUserAuth!=null)
 				formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
@@ -96,12 +101,19 @@ public class tagAsciielement extends tagFormelement implements DynamicAttributes
 				formatCurrency=checkParametersIfDynamic(formatCurrency, null);
 			if(formatOutput!=null)
 				formatOutput=checkParametersIfDynamic(formatOutput, null);
+			if(formatTimeZoneShift!=null)
+				formatTimeZoneShift=checkParametersIfDynamic(formatTimeZoneShift, null);
+			if(replaceOnBlank!=null)
+				replaceOnBlank=checkParametersIfDynamic(replaceOnBlank, null);
+			
+			if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth==null)
+				auth=bsController.checkAuth_init((HttpServletRequest) this.pageContext.getRequest());
 			
 			try{
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language_profile(), auth.get_country(), formatTimeZoneShift, formatCurrency, writeValue);
 				else
-					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, formatCurrency, writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage, formatCountry, formatTimeZoneShift, formatCurrency, writeValue);
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
 			}catch(Exception e){}	

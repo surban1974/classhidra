@@ -45,6 +45,8 @@ import it.classhidra.core.tool.log.statistic.I_StatisticProvider;
 import it.classhidra.core.tool.log.statistic.StatisticEntity;
 import it.classhidra.core.tool.log.statistic.StatisticProvider_Simple;
 import it.classhidra.core.tool.log.stubs.iStub;
+import it.classhidra.core.tool.timezone.I_TimeZoneMapper;
+import it.classhidra.core.tool.timezone.TimeZoneMapper_Simple;
 import it.classhidra.core.tool.tlinked.I_TLinkedProvider;
 import it.classhidra.core.tool.tlinked.TLinkedProvider_Simple;
 import it.classhidra.scheduler.scheduling.IBatchScheduling;
@@ -134,6 +136,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 	
 	private static JsonMapper jsonMapper;
 	private static XmlMapper xmlMapper;
+	private static I_TimeZoneMapper timezoneMapper;
 
 
 	class LoaderConfigThreadProcess extends Thread {
@@ -2471,7 +2474,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					if(ret!=null && (ret.getClass().isAssignableFrom(current) || current.isAssignableFrom(ret.getClass())))
 						result[i] = ret;
 					else if(ret!=null){
-						result[i] = util_makeValue.makeFormatedValue1(current,ret.toString(),null);
+						result[i] = util_makeValue.makeFormatedValue1(current,ret.toString(),null,null,null,null);
 					}else if(context.getRequest().getParameter(annotationParameter.name())!=null){
 						ret = context.getRequest().getParameter(annotationParameter.name());
 						if(ret!=null && ret instanceof String && inputBase64){
@@ -2479,7 +2482,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 								ret=new String(util_base64.decode((String)ret),charset);
 							}catch(Exception e){}
 						}
-						result[i] = util_makeValue.makeFormatedValue1(current,(ret!=null)?ret.toString():"",null);
+						result[i] = util_makeValue.makeFormatedValue1(current,(ret!=null)?ret.toString():"",null,null,null,null);
 					}else if(ret==null){
 						try{
 							if(current.isAssignableFrom(Boolean.class))
@@ -2542,7 +2545,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 					else if(current.isAssignableFrom(bsContext.class))
 						result[i] = context;
 					else if(current.isPrimitive())
-						result[i] = util_makeValue.makeFormatedValue1(current,"",null);
+						result[i] = util_makeValue.makeFormatedValue1(current,"",null,null,null,null);
 				}catch(Exception e){
 					
 				}
@@ -5346,16 +5349,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 				}
 
 			}
-/*			
-			if(statisticProvider==null){
-				try{
-					statisticProvider = (I_StatisticProvider)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(), StatisticProvider_Simple.class.getName(),StatisticProvider_Simple.class.getName(), null);
-				}catch(Exception e){
-				}
-				if(statisticProvider==null)
-					statisticProvider = new StatisticProvider_Simple();
-			}
-*/			
+			
 		}
 		if(retStatisticProvider==null){
 			statisticProvider = new StatisticProvider_Simple();
@@ -5695,12 +5689,7 @@ public class bsController extends HttpServlet implements bsConstants  {
 
 			
 		}
-/*			
-		if(retTLinkedProvider==null){
-			tLinkedProvider = new TLinkedProvider_Simple();
-			return tLinkedProvider;
-		}
-*/		
+	
 		return retTLinkedProvider;
 
 	}
@@ -5708,6 +5697,124 @@ public class bsController extends HttpServlet implements bsConstants  {
 	public static I_TLinkedProvider getTLinkedProvider(){
 		return checkTLinkedProvider();
 	}
+	
+	public static I_TimeZoneMapper checkTimeZoneMapper(){
+		if(!canBeProxed){
+			if(timezoneMapper==null) {
+				if(appInit.get_timezonemapper_provider()!=null){
+					try{
+						timezoneMapper = (I_TimeZoneMapper)Class.forName(getAppInit().get_timezonemapper_provider()).newInstance();
+						return timezoneMapper;
+					}catch(Exception e){
+						writeLog("ERROR instance TimeZone Mapper:"+getAppInit().get_timezonemapper_provider()+" Will be use embeded stack.",iStub.log_ERROR);
+					}
+				}
+			}
+			if(timezoneMapper==null)
+				timezoneMapper = new TimeZoneMapper_Simple();
+			return timezoneMapper;
+		}
+		
+		if(timezoneMapper!=null)
+			return timezoneMapper;
+		
+		I_TimeZoneMapper retTimezoneMapper=null;
+		
+
+			if(getAppInit().get_timezonemapper_provider()==null || getAppInit().get_timezonemapper_provider().equals("")){
+				if(getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equals("false")){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  app_init.id_statistic_provider,TimeZoneMapper_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTimezoneMapper==null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_statistic_provider,TimeZoneMapper_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTimezoneMapper==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_statistic_provider,I_TimeZoneMapper.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				checkDefaultProvider(null);
+				if(retTimezoneMapper==null && getCdiDefaultProvider()!=null){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(),  app_init.id_statistic_provider,TimeZoneMapper_Simple.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTimezoneMapper==null && getEjbDefaultProvider()!=null){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(),  app_init.id_statistic_provider,I_TimeZoneMapper.class.getName(), null);
+					}catch(Exception e){
+					}
+				}
+
+				if(retTimezoneMapper==null){
+					timezoneMapper = new TimeZoneMapper_Simple();
+					return timezoneMapper;
+				}
+			}else{
+				if(getAppInit().get_context_provider()!=null && !getAppInit().get_context_provider().equals("") && !getAppInit().get_context_provider().equals("false")){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_context_provider(),  app_init.id_statistic_provider,getAppInit().get_timezonemapper_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTimezoneMapper==null && getAppInit().get_cdi_provider()!=null && !getAppInit().get_cdi_provider().equals("") && !getAppInit().get_cdi_provider().equals("false")){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_cdi_provider(),  app_init.id_statistic_provider,getAppInit().get_timezonemapper_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTimezoneMapper==null && getAppInit().get_ejb_provider()!=null && !getAppInit().get_ejb_provider().equals("") && !getAppInit().get_ejb_provider().equals("false")){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getAppInit().get_ejb_provider(),  app_init.id_statistic_provider,getAppInit().get_timezonemapper_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				checkDefaultProvider(null);
+				if(retTimezoneMapper==null && getCdiDefaultProvider()!=null){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getCdiDefaultProvider(), app_init.id_statistic_provider,getAppInit().get_timezonemapper_provider(), null);
+					}catch(Exception e){
+					}
+				}
+				if(retTimezoneMapper==null && getEjbDefaultProvider()!=null){
+					try{
+						retTimezoneMapper = (I_TimeZoneMapper)util_provider.getBeanFromObjectFactory(getEjbDefaultProvider(), app_init.id_statistic_provider,getAppInit().get_timezonemapper_provider(), null);
+					}catch(Exception e){
+					}
+				}
+
+				if(retTimezoneMapper==null){
+					try{
+						timezoneMapper = (I_TimeZoneMapper)Class.forName(getAppInit().get_timezonemapper_provider()).newInstance();
+						return timezoneMapper;
+					}catch(Exception e){
+						writeLog("ERROR instance TimeZone Mapper:"+getAppInit().get_timezonemapper_provider()+" Will be use embeded stack.",iStub.log_ERROR);
+					}
+				}
+				if(retTimezoneMapper==null){
+					timezoneMapper = new TimeZoneMapper_Simple();
+					return timezoneMapper;
+				}
+
+			}
+
+		
+		return retTimezoneMapper;
+
+	}
+	
+	public static I_TimeZoneMapper getTimeZoneMapper(){
+		return checkTimeZoneMapper();
+	}
+	
 
 	private static void environmentState(HttpServletRequest request, String id_action){
 		if(System.getProperty("application.environment.debug")!=null && System.getProperty("application.environment.debug").equalsIgnoreCase("true")){

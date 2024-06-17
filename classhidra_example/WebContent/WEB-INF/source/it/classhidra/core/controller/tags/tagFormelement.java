@@ -58,9 +58,10 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 	protected String styleClass=null;
 	protected String formatOutput=null;
 	protected String formatCurrency=null;
+	protected String formatTimeZoneShift=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
-	protected String formatLocationFromUserAuth=null;
+	protected String formatLocationFromUserAuth=null; 
 	protected String method_prefix=null;
 	protected String replaceOnBlank=null;
 	protected String normalXML=null;
@@ -140,6 +141,7 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 		styleClass=null;
 		formatOutput=null;
 		formatCurrency=null;
+		formatTimeZoneShift=null;
 		formatLocationFromUserAuth=null;
 		method_prefix=null;
 		replaceOnBlank=null;
@@ -280,6 +282,14 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 				formatCurrency=bsController.getAppInit().get_tag_format_currency();			
 			if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
 				formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+
+			if(formatTimeZoneShift==null && bsController.getAppInit().get_tag_format_timezone_shift()!=null && !bsController.getAppInit().get_tag_format_timezone_shift().equals(""))
+				formatTimeZoneShift=bsController.getAppInit().get_tag_format_currency();			
+			if(formatTimeZoneShift==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT)!=null)
+				formatTimeZoneShift=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT).toString();
+			
+			if(replaceOnBlank!=null)
+				replaceOnBlank=checkParametersIfDynamic(replaceOnBlank, null);
 			
 			if(formatLocationFromUserAuth!=null)
 				formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
@@ -289,6 +299,9 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 				formatCountry=checkParametersIfDynamic(formatCountry, null);
 			if(formatCurrency!=null)
 				formatCurrency=checkParametersIfDynamic(formatCurrency, null);
+			if(formatTimeZoneShift!=null)
+				formatTimeZoneShift=checkParametersIfDynamic(formatTimeZoneShift, null);
+			
 			if(formatOutput!=null)
 				formatOutput=checkParametersIfDynamic(formatOutput, null);
 			
@@ -339,11 +352,14 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 				
 				results.append(">");
 			}
+			if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth==null)
+				auth=bsController.checkAuth_init((HttpServletRequest) this.pageContext.getRequest());
+			
 			try{
 				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language_profile(), auth.get_country(), formatTimeZoneShift, formatCurrency, writeValue);
 				else
-					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage, formatCountry, formatCurrency, writeValue);
+					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage, formatCountry, formatTimeZoneShift, formatCurrency, writeValue);
 					
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
@@ -541,6 +557,14 @@ public class tagFormelement extends ClTagSupport implements DynamicAttributes {
 
 	public void setFormatCurrency(String formatCurrency) {
 		this.formatCurrency = formatCurrency;
+	}
+
+	public String getFormatTimeZoneShift() {
+		return formatTimeZoneShift;
+	}
+
+	public void setFormatTimeZoneShift(String formatTimeZoneShift) {
+		this.formatTimeZoneShift = formatTimeZoneShift;
 	}
 
 

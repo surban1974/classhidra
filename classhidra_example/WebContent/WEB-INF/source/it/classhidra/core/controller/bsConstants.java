@@ -194,6 +194,7 @@ public interface bsConstants {
 	public final static String CONST_TAG_ALL_FORMATLANGUAGE				=	"bsTag_all_formatLanguage";
 	public final static String CONST_TAG_ALL_FORMATCOUNTRY				=	"bsTag_all_formatCountry";
 	public final static String CONST_TAG_ALL_FORMATCURRENCY				=	"bsTag_all_formatCurrency";
+	public final static String CONST_TAG_ALL_FORMATTIMEZONESHIFT		=	"bsTag_all_formatTimeZoneShift";
 	public final static String CONST_MAP_CURRENCY_CODE_SYMBOL			=	"$map_currency_code_symbol";
 	
 

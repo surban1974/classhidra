@@ -77,6 +77,7 @@ public class auth_init implements Serializable{
 	private String _ruoloDesc;
 	private String _ruoli;
 	private String _language;
+	private String _language_profile;
 	private String _country;
 	private String _timezone;
 	private String _matricola;
@@ -255,6 +256,7 @@ public class auth_init implements Serializable{
 		_ruoloDesc = another.get_ruoloDesc();
 		_ruoli = another.get_ruoli();
 		_language = another.get_language();
+		_language_profile = another.get_language_profile();
 		_country = another.get_country();
 		_timezone = another.get_timezone();
 		_matricola = another.get_matricola();
@@ -298,6 +300,7 @@ public class auth_init implements Serializable{
 		_matricola="";
 		_mail="";
 		_language="EN";
+		_language_profile="EN";
 		_country="";
 		_timezone="";
 		_target="";
@@ -602,6 +605,14 @@ public class auth_init implements Serializable{
 
 	public void set_sessionId(String _sessionId) {
 		this._sessionId = _sessionId;
+	}
+
+	public String get_language_profile() {
+		return _language_profile;
+	}
+
+	public void set_language_profile(String _language_profile) {
+		this._language_profile = _language_profile;
 	}
 
 }

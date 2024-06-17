@@ -119,6 +119,98 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 	protected String createEndTagBody() {
 		
 		final StringBuffer results = new StringBuffer("</select>");
+		
+		if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append("</section>");
+		}			
+		
+		String prefixName=null;
+		HttpServletRequest request  = (HttpServletRequest) this.pageContext.getRequest();
+		if(bean!=null && request.getAttribute(tagBean.CONST_HEAP_BEANS)!=null) {
+			@SuppressWarnings("unchecked")
+			final HashMap<String, String> hashMap = (HashMap<String,String>)request.getAttribute(tagBean.CONST_HEAP_BEANS);
+			if(hashMap!=null && hashMap.get(bean)!=null)
+					prefixName = hashMap.get(bean);
+		}
+
+		if(prefixName==null)
+			prefixName=name;
+		else prefixName+="."+name;
+		
+		if(name!=null && formatInput!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$format_"+prefixName);
+			else results.append("$format_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatInput);
+			results.append("\">");
+		}
+		if(name!=null && formatOutput!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatOutput_"+prefixName);
+			else results.append("$formatOutput_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatOutput);
+			results.append("\">");
+		}
+		if(name!=null && formatLanguage!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatLanguage_"+prefixName);
+			else results.append("$formatLanguage_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatLanguage);
+			results.append("\">");
+		}
+		if(name!=null && formatCountry!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatCountry_"+prefixName);
+			else results.append("$formatCountry_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatCountry);
+			results.append("\">");
+		}
+		if(name!=null && formatTimeZoneShift!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatTimeZoneShift_"+prefixName);
+			else results.append("$formatTimeZoneShift_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatTimeZoneShift);
+			results.append("\">");
+		}
+		if(name!=null && formatLocationFromUserAuth!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatLocationFromUserAuth_"+prefixName);
+			else results.append("$formatLocationFromUserAuth_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatLocationFromUserAuth);
+			results.append("\">");
+		}			
+		if(name!=null && replaceOnBlank!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$replaceOnBlank_"+prefixName);
+			else results.append("$replaceOnBlank_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(replaceOnBlank);
+			results.append("\">");
+		}
+		if(name!=null && replaceOnErrorFormat!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$replaceOnErrorFormat_"+prefixName);
+			else results.append("$replaceOnErrorFormat_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(replaceOnErrorFormat);
+			results.append("\">");
+		}
+		
+		
 		return results.toString();
 
 	}
@@ -195,6 +287,10 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			formatCurrency=bsController.getAppInit().get_tag_format_currency();			
 		if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
 			formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+		if(formatTimeZoneShift==null && bsController.getAppInit().get_tag_format_timezone_shift()!=null && !bsController.getAppInit().get_tag_format_timezone_shift().equals(""))
+			formatTimeZoneShift=bsController.getAppInit().get_tag_format_currency();			
+		if(formatTimeZoneShift==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT)!=null)
+			formatTimeZoneShift=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT).toString();
 		
 		if(formatLocationFromUserAuth!=null)
 			formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
@@ -206,6 +302,17 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			formatCurrency=checkParametersIfDynamic(formatCurrency, null);
 		if(formatOutput!=null)
 			formatOutput=checkParametersIfDynamic(formatOutput, null);
+		if(formatInput!=null)
+			formatInput=checkParametersIfDynamic(formatInput, null);
+		if(formatTimeZoneShift!=null)
+			formatTimeZoneShift=checkParametersIfDynamic(formatTimeZoneShift, null);
+		if(replaceOnBlank!=null)
+			replaceOnBlank=checkParametersIfDynamic(replaceOnBlank, null);
+		if(replaceOnErrorFormat!=null)
+			replaceOnErrorFormat=checkParametersIfDynamic(replaceOnErrorFormat, null);
+		if(placeholder!=null)
+				placeholder=checkParametersIfDynamic(placeholder, null);
+
 		
 //		if(value==null){
 			if(bean==null && name!=null){
@@ -214,9 +321,19 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 					if(writeValue!=null) {
 						if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true")) {
 							auth=bsController.checkAuth_init(request);
-							value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
+							value=util_format.makeFormatedString(formatOutput, 
+									(formatLanguage==null)?auth.get_language_profile():formatLanguage,
+									(formatCountry==null)?auth.get_country():formatCountry,
+									(formatTimeZoneShift==null)?auth.get_timezone():formatTimeZoneShift,
+									null, writeValue);
+							if(formatLanguage==null)
+								formatLanguage = auth.get_language_profile();
+							if(formatCountry==null)
+								formatCountry = auth.get_country();
+							if(formatTimeZoneShift==null)
+								formatTimeZoneShift = auth.get_timezone();
 						}else
-							value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,formatCurrency, writeValue);
+							value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, formatTimeZoneShift, null, writeValue);
 						
 					}
 				}catch(Exception e){}
@@ -298,6 +415,11 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
 								asyncUpdateUrl+="$formatCountry_"+prefixName+"="+util_format.normaliseURLParameter(formatCountry)+"&";
 							else asyncUpdateUrl+="$formatCountry_"+name+"="+util_format.normaliseURLParameter(formatCountry)+"&";
+						}	
+						if(formatTimeZoneShift!=null){
+							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+								asyncUpdateUrl+="$formatTimeZoneShift_"+prefixName+"="+util_format.normaliseURLParameter(formatTimeZoneShift)+"&";
+							else asyncUpdateUrl+="$formatTimeZoneShift_"+name+"="+util_format.normaliseURLParameter(formatTimeZoneShift)+"&";
 						}					
 						if(replaceOnBlank!=null){
 							if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
@@ -315,7 +437,36 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 			}
 	
 			
-		final StringBuffer results = new StringBuffer("<select ");
+		final StringBuffer results = new StringBuffer("");
+		String inputId=null;
+		if(objId!=null){
+			inputId=objId;
+		}else{
+			if(name!=null){				
+				if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+					inputId=prefixName;
+				else inputId=name;
+			}
+		}
+		
+		if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append("<section class=\"");
+			if(formatCurrency!=null) {
+				results.append(" selectFormatCurrencySectionStyles");
+			}
+			if(formatTimeZoneShift!=null && formatTimeZone!=null) {
+				results.append(" selectFormatTimeZoneShiftSectionStyles");
+			}
+			results.append("\" >");
+			if(formatCurrency!=null) {
+				results.append("<label for=\""+inputId+"\" class=\"selectFormatCurrencyLabelStyles\">"+util_format.getCurrensySymbolByCode(formatCurrency)+"</label>");			
+			}
+			if(formatTimeZoneShift!=null && formatTimeZone!=null) {
+				results.append("<label for=\""+inputId+"\" class=\"selectFormatTimeZoneShiftLabelStyles\">"+updateFormatTimezone()+"</label>");			
+			}			
+		}		
+		
+		results.append("<select ");
 		if(name!=null){
 			results.append(" name=\"");
 			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
@@ -450,9 +601,24 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 
 		if (styleClass != null) {
 			results.append(" class=\"");
-			results.append(styleClass);
+			if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+				results.append(styleClass);
+				if(formatCurrency!=null)
+					results.append(" inputFormatCurrencyStyles");
+				if(formatTimeZoneShift!=null && formatTimeZone!=null)
+					results.append(" inputFormatTimeZoneShiftStyles");
+			}else
+				results.append(styleClass);
+			results.append('"');
+		}else if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append(" class=\"");
+			if(formatCurrency!=null)
+				results.append(" inputFormatCurrencyStyles");
+			if(formatTimeZoneShift!=null && formatTimeZone!=null)
+				results.append(" inputFormatTimeZoneShiftStyles");	
 			results.append('"');
 		}
+			
 		if (style != null) {
 			results.append(" style=\"");
 			results.append(style);
@@ -657,33 +823,6 @@ public class tagSelect extends tagInput implements DynamicAttributes {
 
 		results.append('>');
 
-		if(name!=null && formatInput!=null){
-			results.append("<input name=\"");
-			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-				results.append("$format_"+prefixName);
-			else results.append("$format_"+name);
-			results.append("\" type=\"hidden\" value=\"");
-			results.append(formatInput);
-			results.append("\">");
-		}
-		if(name!=null && replaceOnBlank!=null){
-			results.append("<input name=\"");
-			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-				results.append("$replaceOnBlank_"+prefixName);
-			else results.append("$replaceOnBlank_"+name);
-			results.append("\" type=\"hidden\" value=\"");
-			results.append(replaceOnBlank);
-			results.append("\">");
-		}
-		if(name!=null && replaceOnErrorFormat!=null){
-			results.append("<input name=\"");
-			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
-				results.append("$replaceOnErrorFormat_"+prefixName);
-			else results.append("$replaceOnErrorFormat_"+name);
-			results.append("\" type=\"hidden\" value=\"");
-			results.append(replaceOnErrorFormat);
-			results.append("\">");
-		}
 		
 		prefixName=null;
 		return results.toString();

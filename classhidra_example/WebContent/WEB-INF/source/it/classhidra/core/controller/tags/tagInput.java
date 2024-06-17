@@ -26,7 +26,9 @@ package it.classhidra.core.controller.tags;
 
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,7 @@ import it.classhidra.core.tool.exception.bsTagEndRendering;
 import it.classhidra.core.tool.util.util_format;
 import it.classhidra.core.tool.util.util_reflect;
 import it.classhidra.core.tool.util.util_tag;
+import it.classhidra.core.tool.util.util_timezone;
 import it.classhidra.core.tool.util.util_xml;
 
 public class tagInput extends ClTagSupport implements DynamicAttributes {
@@ -103,6 +106,8 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 	protected String formatInput = null;
 	protected String formatOutput = null;
 	protected String formatCurrency=null;
+	protected String formatTimeZoneShift=null;
+	protected String formatTimeZone=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String formatLocationFromUserAuth=null;
@@ -202,6 +207,19 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		this.release();
 		return super.doEndTag();
 	}
+	
+	protected String updateFormatTimezone() {
+		if(formatTimeZoneShift==null || formatTimeZoneShift.isEmpty() || formatTimeZone==null || formatTimeZone.isEmpty())
+			return formatTimeZoneShift;
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat(formatTimeZone);
+			java.util.Date data = new Date();
+			util_timezone.updateTimeZone(sdf, data, formatTimeZoneShift);
+			return sdf.format(data);
+		}catch (Exception e) {
+		}
+		return formatTimeZoneShift;
+	}
 
 	public void release() {
 		super.release();
@@ -235,6 +253,8 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		formatInput = null;
 		formatOutput = null;
 		formatCurrency=null;
+		formatTimeZoneShift=null;
+		formatTimeZone=null;
 		formatLanguage=null;
 		formatCountry=null;
 		formatLocationFromUserAuth=null;
@@ -411,6 +431,10 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 				formatCurrency=bsController.getAppInit().get_tag_format_currency();			
 			if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
 				formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+			if(formatTimeZoneShift==null && bsController.getAppInit().get_tag_format_timezone_shift()!=null && !bsController.getAppInit().get_tag_format_timezone_shift().equals(""))
+				formatTimeZoneShift=bsController.getAppInit().get_tag_format_currency();			
+			if(formatTimeZoneShift==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT)!=null)
+				formatTimeZoneShift=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT).toString();
 			
 			if(formatLocationFromUserAuth!=null)
 				formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
@@ -422,19 +446,43 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 				formatCurrency=checkParametersIfDynamic(formatCurrency, null);
 			if(formatOutput!=null)
 				formatOutput=checkParametersIfDynamic(formatOutput, null);
+			if(formatInput!=null)
+				formatInput=checkParametersIfDynamic(formatInput, null);
+			if(formatTimeZoneShift!=null)
+				formatTimeZoneShift=checkParametersIfDynamic(formatTimeZoneShift, null);
+			if(formatTimeZone!=null)
+				formatTimeZone=checkParametersIfDynamic(formatTimeZone, null);
+			if(replaceOnBlank!=null)
+				replaceOnBlank=checkParametersIfDynamic(replaceOnBlank, null);
+			if(replaceOnErrorFormat!=null)
+				replaceOnErrorFormat=checkParametersIfDynamic(replaceOnErrorFormat, null);
+			if(placeholder!=null)
+				placeholder=checkParametersIfDynamic(placeholder, null);
+
+
 			
 			
 			if(anotherBean!=null){
-				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true"))
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth==null)
 					auth=bsController.checkAuth_init(request);
 				if(name==null){
 					writeValue = anotherBean;
 					name=bean;
 					try{
-						if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-							value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
-						else
-							value = util_format.makeFormatedString(formatOutput,formatLanguage, formatCountry, formatCurrency, writeValue);
+						if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null) {
+							value=util_format.makeFormatedString(formatOutput, 
+								(formatLanguage==null)?auth.get_language_profile():formatLanguage,
+								(formatCountry==null)?auth.get_country():formatCountry,
+								(formatTimeZoneShift==null)?auth.get_timezone():formatTimeZoneShift,
+								null, writeValue);
+							if(formatLanguage==null)
+								formatLanguage = auth.get_language_profile();
+							if(formatCountry==null)
+								formatCountry = auth.get_country();
+							if(formatTimeZoneShift==null)
+								formatTimeZoneShift = auth.get_timezone();
+						}else
+							value = util_format.makeFormatedString(formatOutput,formatLanguage, formatCountry, formatTimeZoneShift, null, writeValue);
 						
 					}catch(Exception e){
 					}
@@ -442,10 +490,20 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 					try{
 						writeValue = util_reflect.prepareWriteValueForTag(anotherBean,method_prefix,name,arg);
 						if(writeValue!=null) {
-							if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
-								value=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
-							else
-								value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry, formatCurrency, writeValue);
+							if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null) {
+								value=util_format.makeFormatedString(formatOutput, 
+									(formatLanguage==null)?auth.get_language_profile():formatLanguage,
+									(formatCountry==null)?auth.get_country():formatCountry,
+									(formatTimeZoneShift==null)?auth.get_timezone():formatTimeZoneShift,
+									null, writeValue);
+								if(formatLanguage==null)
+									formatLanguage = auth.get_language_profile();
+								if(formatCountry==null)
+									formatCountry = auth.get_country();
+								if(formatTimeZoneShift==null)
+									formatTimeZoneShift = auth.get_timezone();
+							}else
+								value = util_format.makeFormatedString(formatOutput,formatLanguage,formatCountry,formatTimeZoneShift, null, writeValue); 
 						}
 					}catch(Exception e){}
 				}
@@ -490,7 +548,12 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
 							asyncUpdateUrl+="$formatCountry_"+prefixName+"="+util_format.normaliseURLParameter(formatCountry)+"&";
 						else asyncUpdateUrl+="$formatCountry_"+name+"="+util_format.normaliseURLParameter(formatCountry)+"&";
-					}	
+					}
+					if(formatTimeZoneShift!=null){
+						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+							asyncUpdateUrl+="$formatTimeZoneShift_"+prefixName+"="+util_format.normaliseURLParameter(formatTimeZoneShift)+"&";
+						else asyncUpdateUrl+="$formatTimeZoneShift_"+name+"="+util_format.normaliseURLParameter(formatTimeZoneShift)+"&";
+					}					
 					if(formatLocationFromUserAuth!=null){
 						if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
 							asyncUpdateUrl+="$formatLocationFromUserAuth_"+prefixName+"="+util_format.normaliseURLParameter(formatLocationFromUserAuth)+"&";
@@ -511,7 +574,36 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			}
 		}
 		boolean isChecked = false;
-		final StringBuffer results = new StringBuffer("<input ");
+		final StringBuffer results = new StringBuffer();
+		String inputId=null;
+		if(objId!=null){
+			inputId=objId;
+		}else{
+			if(name!=null){				
+				if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+					inputId=prefixName;
+				else inputId=name;
+			}
+		}
+		
+		if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append("<section class=\"");
+			if(formatCurrency!=null) {
+				results.append(" inputFormatCurrencySectionStyles");
+			}
+			if(formatTimeZoneShift!=null && formatTimeZone!=null) {
+				results.append(" inputFormatTimeZoneShiftSectionStyles");
+			}
+			results.append("\" >");
+			if(formatCurrency!=null) {
+				results.append("<label for=\""+inputId+"\" class=\"inputFormatCurrencyLabelStyles\">"+util_format.getCurrensySymbolByCode(formatCurrency)+"</label>");			
+			}
+			if(formatTimeZoneShift!=null && formatTimeZone!=null) {
+				results.append("<label for=\""+inputId+"\" class=\"inputFormatTimeZoneShiftLabelStyles\">"+updateFormatTimezone()+"</label>");	
+			}			
+		}
+		
+		results.append("<input ");
 		if(name!=null){
 			results.append(" name=\"");
 			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
@@ -519,6 +611,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			else results.append(name);
 			results.append('"');
 		}
+		
 		if(objId!=null){
 			results.append(" id=\"");
 			results.append(objId);
@@ -742,7 +835,6 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 		if(value!=null)
 			try{
 				results.append(" value=\"");
-//				if(replaceOnBlank != null) value=util_format.replace(value,replaceOnBlank,"");
 				if(replaceOnBlank != null && value!=null && replaceOnBlank.equals(value)) 
 					value=util_format.replace(value,replaceOnBlank,"");				
 				if ( clear != null && clear.equalsIgnoreCase("true") && value.equalsIgnoreCase("0")) value="";
@@ -794,9 +886,24 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 
 		if (styleClass != null) {
 			results.append(" class=\"");
-			results.append(styleClass);
+			if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+				results.append(styleClass);
+				if(formatCurrency!=null)
+					results.append(" inputFormatCurrencyStyles");
+				if(formatTimeZoneShift!=null && formatTimeZone!=null)
+					results.append(" inputFormatTimeZoneShiftStyles");
+			}else
+				results.append(styleClass);
+			results.append('"');
+		}else if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append(" class=\"");
+			if(formatCurrency!=null)
+				results.append(" inputFormatCurrencyStyles");
+			if(formatTimeZoneShift!=null && formatTimeZone!=null)
+				results.append(" inputFormatTimeZoneShiftStyles");	
 			results.append('"');
 		}
+		
 		if (style != null) {
 			results.append(" style=\"");
 			results.append(style);
@@ -891,33 +998,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			results.append(onblur);
 		}
 		results.append('"');
-/*		
-		if (onblur != null) {
-			results.append(" onblur=\"");
-			if(toUpperCase!=null && (toUpperCase.equalsIgnoreCase("no") || toUpperCase.equalsIgnoreCase("false"))){
-				if(toTrim!=null && (toTrim.equalsIgnoreCase("no") || toTrim.equalsIgnoreCase("false"))){
-				}else results.append("this.value=trim(this.value); ");
-			}
-			else{
-				if(toTrim!=null && (toTrim.equalsIgnoreCase("no") || toTrim.equalsIgnoreCase("false")))
-					results.append("this.value.toUpperCase(); ");
-				else results.append("this.value=trim(this.value.toUpperCase()); ");
-			}
-			results.append(onblur);
-			results.append('"');
-		}else{
-			results.append(" onblur=\"");
-			if(toUpperCase!=null && (toUpperCase.toUpperCase().equals("NO") || toUpperCase.toUpperCase().equals("FALSE"))){
-				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE"))){
-				}else results.append("this.value=trim(this.value); ");
-			}else{
-				if(toTrim!=null && (toTrim.toUpperCase().equals("NO") || toTrim.toUpperCase().equals("FALSE")))
-					results.append("this.value.toUpperCase(); ");
-				else results.append("this.value=trim(this.value.toUpperCase()); ");
-			}
-			results.append('"');
-		}
-*/
+
 		if (onchange != null) {
 			results.append(" onchange=\"");
 			results.append(onchange);
@@ -1036,6 +1117,10 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 
 
 		results.append('>');
+		if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
+			results.append("</section>");
+		}
+
 
 		if(name!=null && formatInput!=null){
 			results.append("<input name=\"");
@@ -1046,6 +1131,52 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			results.append(formatInput);
 			results.append("\">");
 		}
+	
+		if(name!=null && formatOutput!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatOutput_"+prefixName);
+			else results.append("$formatOutput_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatOutput);
+			results.append("\">");
+		}		
+		if(name!=null && formatLanguage!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatLanguage_"+prefixName);
+			else results.append("$formatLanguage_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatLanguage);
+			results.append("\">");
+		}
+		if(name!=null && formatCountry!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatCountry_"+prefixName);
+			else results.append("$formatCountry_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatCountry);
+			results.append("\">");
+		}
+		if(name!=null && formatTimeZoneShift!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatTimeZoneShift_"+prefixName);
+			else results.append("$formatTimeZoneShift_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatTimeZoneShift);
+			results.append("\">");
+		}
+		if(name!=null && formatLocationFromUserAuth!=null){
+			results.append("<input name=\"");
+			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
+				results.append("$formatLocationFromUserAuth_"+prefixName);
+			else results.append("$formatLocationFromUserAuth_"+name);
+			results.append("\" type=\"hidden\" value=\"");
+			results.append(formatLocationFromUserAuth);
+			results.append("\">");
+		}			
 		if(name!=null && replaceOnBlank!=null){
 			results.append("<input name=\"");
 			if(solveBeanName!=null && solveBeanName.equalsIgnoreCase("true"))
@@ -1714,6 +1845,22 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 
 	public void setFormatLocationFromUserAuth(String formatLocationFromUserAuth) {
 		this.formatLocationFromUserAuth = formatLocationFromUserAuth;
+	}
+
+	public String getFormatTimeZoneShift() {
+		return formatTimeZoneShift;
+	}
+
+	public void setFormatTimeZoneShift(String formatTimeZoneShift) {
+		this.formatTimeZoneShift = formatTimeZoneShift;
+	}
+
+	public String getFormatTimeZone() {
+		return formatTimeZone;
+	}
+
+	public void setFormatTimeZone(String formatTimeZone) {
+		this.formatTimeZone = formatTimeZone;
 	}	
 
 }

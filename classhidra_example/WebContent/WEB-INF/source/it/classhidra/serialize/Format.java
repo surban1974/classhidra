@@ -12,6 +12,7 @@ public @interface Format {
 	String format() default "";
 	String language() default "";
 	String country() default "";
+	String timeZoneShift() default "";
 	String regex() default "";
 	boolean ascii() default false;
 	String characterset() default "";

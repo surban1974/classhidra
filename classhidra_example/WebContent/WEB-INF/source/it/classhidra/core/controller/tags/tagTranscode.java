@@ -64,6 +64,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 	protected String styleClass=null;
 	protected String formatOutput=null;
 	protected String formatCurrency=null;
+	protected String formatTimeZoneShift=null;
 	protected String formatLanguage=null;
 	protected String formatCountry=null;
 	protected String formatLocationFromUserAuth=null;
@@ -133,6 +134,7 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 		styleClass=null;
 		formatOutput=null;
 		formatCurrency=null;
+		formatTimeZoneShift=null;
 		formatLocationFromUserAuth=null;
 		method_prefix=null;
 		replaceOnBlank=null;
@@ -354,47 +356,59 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 
 				results.append(">");
 			}
+
+			if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
+				formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();			
+			if(formatLocationFromUserAuth==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATLOCATIONFROMUSERAUTH)!=null)
+				formatLocationFromUserAuth=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATLOCATIONFROMUSERAUTH).toString();
+
+			if(formatLanguage==null && bsController.getAppInit().get_tag_format_language()!=null && !bsController.getAppInit().get_tag_format_language().equals(""))
+				formatLanguage=bsController.getAppInit().get_tag_format_language();			
+			if(formatLanguage==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATLANGUAGE)!=null)
+				formatLanguage=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATLANGUAGE).toString();
+
+			if(formatCountry==null && bsController.getAppInit().get_tag_format_country()!=null && !bsController.getAppInit().get_tag_format_country().equals(""))
+				formatCountry=bsController.getAppInit().get_tag_format_country();			
+			if(formatCountry==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY)!=null)
+				formatCountry=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY).toString();	
+			if(formatCurrency==null && bsController.getAppInit().get_tag_format_currency()!=null && !bsController.getAppInit().get_tag_format_currency().equals(""))
+				formatCurrency=bsController.getAppInit().get_tag_format_currency();			
+			if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
+				formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
+			if(formatTimeZoneShift==null && bsController.getAppInit().get_tag_format_timezone_shift()!=null && !bsController.getAppInit().get_tag_format_timezone_shift().equals(""))
+				formatTimeZoneShift=bsController.getAppInit().get_tag_format_currency();			
+			if(formatTimeZoneShift==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT)!=null)
+				formatTimeZoneShift=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATTIMEZONESHIFT).toString();
+			
+			if(formatLocationFromUserAuth!=null)
+				formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
+			if(formatLanguage!=null)
+				formatLanguage=checkParametersIfDynamic(formatLanguage, null);
+			if(formatCountry!=null)
+				formatCountry=checkParametersIfDynamic(formatCountry, null);
+			if(formatCurrency!=null)
+				formatCurrency=checkParametersIfDynamic(formatCurrency, null);
+			if(formatOutput!=null)
+				formatOutput=checkParametersIfDynamic(formatOutput, null);
+			if(formatTimeZoneShift!=null)
+				formatTimeZoneShift=checkParametersIfDynamic(formatTimeZoneShift, null);
+			if(replaceOnBlank!=null)
+				replaceOnBlank=checkParametersIfDynamic(replaceOnBlank, null);
+			
+			
 			try{
-				if(formatLocationFromUserAuth==null && bsController.getAppInit().get_tag_format_user_auth()!=null && !bsController.getAppInit().get_tag_format_user_auth().equals(""))
-					formatLocationFromUserAuth=bsController.getAppInit().get_tag_format_user_auth();			
-				if(formatLocationFromUserAuth==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATLOCATIONFROMUSERAUTH)!=null)
-					formatLocationFromUserAuth=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATLOCATIONFROMUSERAUTH).toString();
-
-				if(formatLanguage==null && bsController.getAppInit().get_tag_format_language()!=null && !bsController.getAppInit().get_tag_format_language().equals(""))
-					formatLanguage=bsController.getAppInit().get_tag_format_language();			
-				if(formatLanguage==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATLANGUAGE)!=null)
-					formatLanguage=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATLANGUAGE).toString();
-
-				if(formatCountry==null && bsController.getAppInit().get_tag_format_country()!=null && !bsController.getAppInit().get_tag_format_country().equals(""))
-					formatCountry=bsController.getAppInit().get_tag_format_country();			
-				if(formatCountry==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY)!=null)
-					formatCountry=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCOUNTRY).toString();
-				if(formatCurrency==null && bsController.getAppInit().get_tag_format_currency()!=null && !bsController.getAppInit().get_tag_format_currency().equals(""))
-					formatCurrency=bsController.getAppInit().get_tag_format_currency();			
-				if(formatCurrency==null && bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY)!=null)
-					formatCurrency=bsController.getFromLocalContainer(bsConstants.CONST_TAG_ALL_FORMATCURRENCY).toString();
 				
-				if(formatLocationFromUserAuth!=null)
-					formatLocationFromUserAuth=checkParametersIfDynamic(formatLocationFromUserAuth, null);
-				if(formatLanguage!=null)
-					formatLanguage=checkParametersIfDynamic(formatLanguage, null);
-				if(formatCountry!=null)
-					formatCountry=checkParametersIfDynamic(formatCountry, null);
-				if(formatCurrency!=null)
-					formatCurrency=checkParametersIfDynamic(formatCurrency, null);
-				if(formatOutput!=null)
-					formatOutput=checkParametersIfDynamic(formatOutput, null);
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth==null)
+					auth=bsController.checkAuth_init((HttpServletRequest) this.pageContext.getRequest());
 				
-				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true")) {
-					auth=bsController.checkAuth_init(request);
-					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language(), auth.get_country(), formatCurrency, writeValue);
-				}else
-					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage,formatCountry, formatCurrency, writeValue);
-
-				
+				if(formatLocationFromUserAuth!=null && formatLocationFromUserAuth.equalsIgnoreCase("true") && auth!=null)
+					writeValue=util_format.makeFormatedString(formatOutput, auth.get_language_profile(), auth.get_country(), formatTimeZoneShift, formatCurrency, writeValue);
+				else
+					writeValue=util_format.makeFormatedString(formatOutput, formatLanguage, formatCountry, formatTimeZoneShift, formatCurrency, writeValue);
 				if(replaceOnBlank != null && writeValue!=null && replaceOnBlank.equals(writeValue.toString())) 
 					writeValue=util_format.replace(writeValue.toString(),replaceOnBlank,"");
-			}catch(Exception e){}
+			}catch(Exception e){}	
+				
 			if(normalXML!=null && normalXML.toLowerCase().equals("true"))
 				results.append(util_xml.normalXML((writeValue==null)?"":writeValue.toString(),charset));	
 			else if(normalXML10!=null && normalXML10.toLowerCase().equals("true"))
@@ -665,6 +679,14 @@ public class tagTranscode extends ClTagSupport implements DynamicAttributes {
 
 	public void setFormatCurrency(String formatCurrency) {
 		this.formatCurrency = formatCurrency;
+	}
+
+	public String getFormatTimeZoneShift() {
+		return formatTimeZoneShift;
+	}
+
+	public void setFormatTimeZoneShift(String formatTimeZoneShift) {
+		this.formatTimeZoneShift = formatTimeZoneShift;
 	}	
 }
 
