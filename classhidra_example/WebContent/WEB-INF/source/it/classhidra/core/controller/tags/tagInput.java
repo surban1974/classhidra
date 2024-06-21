@@ -594,9 +594,18 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 			if(formatTimeZoneShift!=null && formatTimeZone!=null) {
 				results.append(" inputFormatTimeZoneShiftSectionStyles");
 			}
-			results.append("\" >");
+			results.append("\" ><nobr>");
 			if(formatCurrency!=null) {
-				results.append("<label for=\""+inputId+"\" class=\"inputFormatCurrencyLabelStyles\">"+util_format.getCurrensySymbolByCode(formatCurrency)+"</label>");			
+				String curr = util_format.getCurrensySymbolByCode(formatCurrency);
+				if(curr==null)
+					curr="&nbsp;&nbsp;&nbsp;";
+				if(curr.length()>3) {
+
+				}else if(curr.length()==1)
+					curr="&nbsp;"+curr+"&nbsp;";
+				else if(curr.length()==2)
+					curr="&nbsp;"+curr;				
+				results.append("<label for=\""+inputId+"\" class=\"inputFormatCurrencyLabelStyles\">"+curr+"</label>");			
 			}
 			if(formatTimeZoneShift!=null && formatTimeZone!=null) {
 				results.append("<label for=\""+inputId+"\" class=\"inputFormatTimeZoneShiftLabelStyles\">"+updateFormatTimezone()+"</label>");	
@@ -1118,7 +1127,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 
 		results.append('>');
 		if(formatCurrency!=null || (formatTimeZoneShift!=null && formatTimeZone!=null)) {
-			results.append("</section>");
+			results.append("</nobr></section>");
 		}
 
 

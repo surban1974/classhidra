@@ -77,14 +77,14 @@ public  static  String timestampToString( Timestamp timestamp, String formato) {
 	return  result;
 }
 public  static  String timestampToString( Timestamp timestamp, String formato, Locale loc) {
-	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	java.text.SimpleDateFormat sdf = (loc!=null)?new java.text.SimpleDateFormat(formato,loc):new java.text.SimpleDateFormat(formato);
 	String result=null;
 	result = sdf.format(timestamp);
 	return  result;
 }
 
 public  static  String timestampToString( Timestamp timestamp, String formato, Locale loc, String timeZoneToShift) {
-	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	java.text.SimpleDateFormat sdf = (loc!=null)?new java.text.SimpleDateFormat(formato,loc):new java.text.SimpleDateFormat(formato);
 	util_timezone.updateTimeZone(sdf, timestamp, timeZoneToShift);
 	String result=null;
 	result = sdf.format(timestamp);
@@ -126,13 +126,13 @@ public  static  String dataToString( java.util.Date data, String formato, String
 	return  result;
 }
 public  static  String dataToString( java.util.Date data, String formato, Locale loc) {
-	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	java.text.SimpleDateFormat sdf = (loc!=null)?new java.text.SimpleDateFormat(formato,loc):new java.text.SimpleDateFormat(formato);
 	String result=null;
 	result = sdf.format(data);
 	return  result;
 }
 public  static  String dataToString( java.util.Date data, String formato, Locale loc, String timeZoneToShift) {
-	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	java.text.SimpleDateFormat sdf = (loc!=null)?new java.text.SimpleDateFormat(formato,loc):new java.text.SimpleDateFormat(formato);
 	util_timezone.updateTimeZone(sdf, data, timeZoneToShift);
 	String result=null;
 	result = sdf.format(data);
@@ -153,13 +153,13 @@ public  static  String dataToString( java.sql.Date data, String formato, String 
 	return  result;
 }
 public  static  String dataToString( java.sql.Date data, String formato, Locale loc) {
-	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	java.text.SimpleDateFormat sdf = (loc!=null)?new java.text.SimpleDateFormat(formato,loc):new java.text.SimpleDateFormat(formato);
 	String result=null;
 	result = sdf.format(data);
 	return  result;
 }
 public  static  String dataToString( java.sql.Date data, String formato, Locale loc, String timeZoneToShift) {
-	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(formato,loc);
+	java.text.SimpleDateFormat sdf = (loc!=null)?new java.text.SimpleDateFormat(formato,loc):new java.text.SimpleDateFormat(formato);
 	util_timezone.updateTimeZone(sdf, data, timeZoneToShift);
 	String result=null;
 	result = sdf.format(data);
@@ -485,7 +485,7 @@ public static java.sql.Timestamp stringToTimestamp ( String data, String formato
 	return new java.sql.Timestamp(dataResult.getTime());
 }
 public static java.sql.Timestamp stringToTimestamp ( String data, String formato, Locale loc) throws Exception {
-	SimpleDateFormat sdf = new SimpleDateFormat(formato,loc);
+	SimpleDateFormat sdf = (loc!=null)?new java.text.SimpleDateFormat(formato,loc):new java.text.SimpleDateFormat(formato);
 	ParsePosition pos = new ParsePosition(0);
 	Date dataResult = null;
 	try {

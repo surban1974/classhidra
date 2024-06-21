@@ -103,6 +103,9 @@ public class parameter extends elementBase{
 		description="";
 		languagetranslationtable=new languagetranslationtable();
 		format_input="";
+		format_country="";
+		format_language="";
+		format_timezone_shift="";
 		format_output="";
 		value_type=""; 
 		view_type="";
@@ -130,6 +133,37 @@ public class parameter extends elementBase{
 		try{
 			description_view = sqlTransformer.getTransformed( description_view, this, h_parameters, lang);
 		}catch(Exception e){	
+			new bsException(e, iStub.log_ERROR);
+		}	
+		
+		try{
+			format_input = sqlTransformer.getTransformed( format_input, this, h_parameters, lang);
+		}catch(Exception e){		
+			new bsException(e, iStub.log_ERROR);
+		}
+		try{
+			format_output = sqlTransformer.getTransformed( format_output, this, h_parameters, lang);
+		}catch(Exception e){		
+			new bsException(e, iStub.log_ERROR);
+		}
+		try{
+			format_language = sqlTransformer.getTransformed( format_language, this, h_parameters, lang);
+		}catch(Exception e){		
+			new bsException(e, iStub.log_ERROR);
+		}
+		try{
+			format_country = sqlTransformer.getTransformed( format_country, this, h_parameters, lang);
+		}catch(Exception e){		
+			new bsException(e, iStub.log_ERROR);
+		}
+		try{
+			format_currency = sqlTransformer.getTransformed( format_currency, this, h_parameters, lang);
+		}catch(Exception e){		
+			new bsException(e, iStub.log_ERROR);
+		}	
+		try{
+			format_timezone_shift = sqlTransformer.getTransformed( format_timezone_shift, this, h_parameters, lang);
+		}catch(Exception e){		
 			new bsException(e, iStub.log_ERROR);
 		}		
 //		description_view=description;
