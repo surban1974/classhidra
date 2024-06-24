@@ -210,7 +210,7 @@ public class tagInput extends ClTagSupport implements DynamicAttributes {
 	
 	protected String updateFormatTimezone() {
 		if(formatTimeZoneShift==null || formatTimeZoneShift.isEmpty() || formatTimeZone==null || formatTimeZone.isEmpty())
-			return formatTimeZoneShift;
+			return "&nbsp;";
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(formatTimeZone);
 			java.util.Date data = new Date();

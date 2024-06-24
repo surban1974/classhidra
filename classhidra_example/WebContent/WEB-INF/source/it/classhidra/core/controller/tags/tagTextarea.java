@@ -140,7 +140,7 @@ public class tagTextarea extends ClTagSupport implements DynamicAttributes {
 	
 	protected String updateFormatTimezone() {
 		if(formatTimeZoneShift==null || formatTimeZoneShift.isEmpty() || formatTimeZone==null || formatTimeZone.isEmpty())
-			return formatTimeZoneShift;
+			return "&nbsp;";
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(formatTimeZone);
 			return sdf.format(new Date());
