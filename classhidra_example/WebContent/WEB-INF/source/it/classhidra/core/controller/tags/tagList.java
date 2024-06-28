@@ -671,7 +671,7 @@ if(addHiddenInput!=null && addHiddenInput.toUpperCase().equals("FALSE")){
 	}
 	results.append("/>"+System.getProperty("line.separator"));
 }
-results.append("<a id=\"a_"+div_id+"\" href=\"javascript:void(0)\" style=\"text-decoration: none;\">"+System.getProperty("line.separator"));
+results.append("<a id=\"a_"+div_id+"\" href_=\"javascript:void(0)\" style=\"text-decoration: none;\">"+System.getProperty("line.separator"));
 
 		return results.toString();
 	}
