@@ -1,5 +1,5 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Thu Jun 27 11:14:42 CEST 2024
+#Fri Aug 16 15:07:05 CEST 2024
 classhidra-base-1.5.9.jar>=
 classhidra-base-1.5.9-sources.jar>=
 classhidra-base-1.5.9.pom>=
