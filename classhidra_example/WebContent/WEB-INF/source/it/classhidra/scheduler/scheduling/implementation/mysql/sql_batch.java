@@ -6,6 +6,7 @@ import it.classhidra.core.tool.util.util_format;
 import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
+import it.classhidra.scheduler.scheduling.db.db_batch_property;
 import it.classhidra.scheduler.scheduling.init.batch_init;
 import it.classhidra.scheduler.servlets.servletBatchScheduling;
 
@@ -191,4 +192,51 @@ public class sql_batch {
 	    result+="where cd_btch='"+util_format.convertAp(batch.getCd_btch())+"' and cd_ist="+batch.getCd_ist()+" \n";
 		return result;
 	}
+	
+	public static String sql_DeleteBatchProperties(HashMap<String,?> form){
+		batch_init b_init = null;
+	    try{
+	    	b_init = servletBatchScheduling.getConfiguration();
+	    }catch(Exception e){
+	    	b_init = new batch_init();
+	    }
+	    db_batch batch = (db_batch)form.get("selected");
+	    String result="";
+	    result="DELETE FROM "+b_init.get_db_prefix()+"batch_property \n";
+	    result+="where cd_btch='"+util_format.convertAp(batch.getCd_btch())+"' and cd_ist="+batch.getCd_ist()+" \n";
+		return result;
+	}	
+	
+	public static String sql_UpdateBatchProperties(HashMap<String,?> form){
+		batch_init b_init = null;
+	    try{
+	    	b_init = servletBatchScheduling.getConfiguration();
+	    }catch(Exception e){
+	    	b_init = new batch_init();
+	    }
+	    db_batch batch = (db_batch)form.get("selected");
+	    db_batch_property property = (db_batch_property)form.get("selected_property");
+	    String result="";
+	    result="UPDATE "+b_init.get_db_prefix()+"batch_property SET value='"+util_format.convertAp(property.getValue())+"'  \n";
+	    result+="where cd_btch='"+util_format.convertAp(batch.getCd_btch())+"' and cd_ist="+batch.getCd_ist()+" and cd_property='"+util_format.convertAp(property.getCd_property())+"' \n";
+		return result;
+	}		
+	
+	public static String sql_InsertBatchProperty(HashMap<String,?> form){
+		batch_init b_init = null;
+	    try{
+	    	b_init = servletBatchScheduling.getConfiguration();
+	    }catch(Exception e){
+	    	b_init = new batch_init();
+	    }
+	    db_batch_property property = (db_batch_property)form.get("selected_property");
+	    String result="";
+	    result="INSERT INTO "+b_init.get_db_prefix()+"batch_property (cd_ist, cd_btch, cd_property, value) VALUES (\n";
+	    result+=property.getCd_ist()+",";
+	    result+="'"+util_format.convertAp(property.getCd_btch())+"',";
+	    result+="'"+util_format.convertAp(property.getCd_property())+"',";
+	    result+="'"+util_format.convertAp(property.getValue())+"'";
+	    result+=") \n";
+		return result;
+	}	
 }

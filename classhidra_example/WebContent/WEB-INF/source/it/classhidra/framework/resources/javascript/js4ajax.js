@@ -399,8 +399,12 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 					viewBack=true;
 				}
 				try{
-					if(viewBack==true && document.getElementById(target))
-						document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>";
+					if(viewBack==true && document.getElementById(target)){
+						if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+							document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>";
+						else
+							document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>";
+					}
 				}catch(e){
 				}
 			}
@@ -742,8 +746,12 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 					viewBack=true;
 				}
 				try{
-					if(viewBack==true && document.getElementById(target))
-						document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='images/wait.gif' border='0'></td></tr></table>";
+					if(viewBack==true && document.getElementById(target)){
+						if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+							document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>";
+						else
+							document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='images/wait.gif' border='0'></td></tr></table>";
+					}
 				}catch(e){
 				}
 			}
@@ -1107,8 +1115,12 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 					viewBack=true;
 				}
 				try{
-					if(viewBack==true && document.getElementById(target))
-						document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img src='images/wait.gif' border='0'></td></tr></table>";
+					if(viewBack==true && document.getElementById(target)){
+						if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+							document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeMPARTRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>";
+						else
+							document.getElementById(target).innerHTML="<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeMPARTRequest' src='images/wait.gif' border='0'></td></tr></table>";
+					}
 				}catch(e){
 				}
 			}

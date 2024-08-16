@@ -120,8 +120,12 @@ function ajax_submit(frm,target,afterJSFunction,inbase64,redrawTargetJSFunction,
 				viewBack=true;
 			}
 			try{
-				if(viewBack==true)
-					current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				if(viewBack==true){
+					if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+					else
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				}		
 			}catch(e){
 			}
 		}
@@ -161,8 +165,12 @@ function ajax_submitExt(frm,action,target,afterJSFunction,inbase64,redrawTargetJ
 				viewBack=true;
 			}
 			try{
-				if(viewBack==true)
-					current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				if(viewBack==true){
+					if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+					else
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				}
 			}catch(e){
 			}
 		}
@@ -214,8 +222,12 @@ function ajax_makeRequest(urlWidthParameters,target,afterJSFunction,redrawTarget
 			viewBack=true;
 		}
 		try{
-			if(viewBack==true)
-				current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				if(viewBack==true){
+					if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+					else
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				}
 		}catch(e){
 		}
 	}
@@ -259,8 +271,12 @@ function ajax_submit_json(frm,target,afterJSFunction,inbase64,redrawTargetJSFunc
 				viewBack=true;
 			}
 			try{
-				if(viewBack==true)
-					current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				if(viewBack==true){
+					if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+					else
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				}
 			}catch(e){
 			}
 		}
@@ -302,8 +318,12 @@ function ajax_submitExt_json(frm,action,target,afterJSFunction,inbase64,redrawTa
 				viewBack=true;
 			}
 			try{
-				if(viewBack==true)
-					current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				if(viewBack==true){
+					if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+					else
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				}					
 			}catch(e){
 			}
 		}
@@ -360,8 +380,12 @@ function ajax_makeJSONRequest(urlWidthParameters,jsonParameters,target,afterJSFu
 			viewBack=true;
 		}
 		try{
-			if(viewBack==true)
-				current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				if(viewBack==true){
+					if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+					else
+						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeJSONRequest' src='images/wait.gif' border='0'></td></tr></table>");
+				}
 		}catch(e){
 		}
 	}
@@ -402,8 +426,12 @@ function ajax_submit_mpart(frm,target,afterJSFunction,inbase64,redrawTargetJSFun
 					viewBack=true;
 				}
 				try{
-					if(viewBack==true)
-						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+					if(viewBack==true){
+						if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+							current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeMPARTRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+						else
+							current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeMPARTRequest' src='images/wait.gif' border='0'></td></tr></table>");
+					}
 				}catch(e){
 				}
 			}
@@ -444,8 +472,12 @@ function ajax_submitExt_mpart(frm,action,target,afterJSFunction,inbase64,redrawT
 					viewBack=true;
 				}
 				try{
-					if(viewBack==true)
-						current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+					if(viewBack==true){
+						if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+							current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeMPARTRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+						else
+							current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeMPARTRequest' src='images/wait.gif' border='0'></td></tr></table>");
+					}
 				}catch(e){
 				}
 			}
@@ -513,8 +545,12 @@ function ajax_makeMPARTRequest(urlWidthParameters,formdata,target,afterJSFunctio
 				viewBack=true;
 			}
 			try{
-				if(viewBack==true)
-					current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeRequest' src='images/wait.gif' border='0'></td></tr></table>");
+					if(viewBack==true){
+						if (typeof global_ajax_wait_path !== 'undefined' && global_ajax_wait_path!=null) 
+							current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeMPARTRequest' src='"+global_ajax_wait_path+"' border='0'></td></tr></table>");
+						else
+							current.setProgressWait("<table border='0' width='100%' height='100%'><tr><td align='center'><img id='img_ajax_makeMPARTRequest' src='images/wait.gif' border='0'></td></tr></table>");
+					}
 			}catch(e){
 			}
 		}

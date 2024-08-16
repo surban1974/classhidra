@@ -18,6 +18,7 @@ import it.classhidra.scheduler.common.i_4Batch;
 import it.classhidra.scheduler.common.i_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch;
 import it.classhidra.scheduler.scheduling.db.db_batch_log;
+import it.classhidra.scheduler.scheduling.db.db_batch_property;
 import it.classhidra.scheduler.scheduling.db.i_batch_log;
 import it.classhidra.scheduler.util.util_batch;
 
@@ -39,7 +40,14 @@ public class db_4Batch implements i_4Batch  {
 			return operation_FINDFORMLIST(form);
 		
 		if(oper.equals(o_LOAD_BATCH_PROPERTIES))
-			return operation_LOAD_BATCH_PROPERTIES(form);		
+			return operation_LOAD_BATCH_PROPERTIES(form);	
+		
+		if(oper.equals(o_DELETE_BATCH_PROPERTIES))
+			return operation_DELETE_BATCH_PROPERTIES(form);	
+		
+		if(oper.equals(o_INSERT_BATCH_PROPERTY))
+			return operation_INSERT_BATCH_PROPERTY(form);	
+		
 
 		if(oper.equals(o_DELETE))
 			return operation_DELETE(form);
@@ -532,4 +540,61 @@ public class db_4Batch implements i_4Batch  {
 		}
 		return property;
 	}	
+	
+	public Object operation_DELETE_BATCH_PROPERTIES(HashMap<String,?> form){
+	    db_batch batch = (db_batch)form.get("selected");
+	    if(batch==null)
+			return new Boolean(false);
+	    
+		Connection conn=null;
+		Statement st=null;
+		ResultSet rs=null;
+		
+		try{
+			conn = new db_connection().getContent();
+			conn.setAutoCommit(false);
+			st = conn.createStatement();
+			st.executeUpdate(sql_batch.sql_DeleteBatchProperties(form));
+			conn.commit();
+			return new Boolean(true);
+		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+			new bsException("Scheduler: "+ex.toString(), iStub.log_ERROR);
+		}finally{
+			db_connection.release(rs, st, conn);
+		}
+		return new Boolean(false);
+	}	
+	
+	public Object operation_INSERT_BATCH_PROPERTY(HashMap<String,?> form){
+	    db_batch_property property = (db_batch_property)form.get("selected_property");
+	    if(property==null)
+			return new Boolean(false);
+	    
+		Connection conn=null;
+		Statement st=null;
+		ResultSet rs=null;
+		
+		try{
+			conn = new db_connection().getContent();
+			conn.setAutoCommit(false);
+			st = conn.createStatement();
+			st.executeUpdate(sql_batch.sql_InsertBatchProperty(form));
+			conn.commit();
+			return new Boolean(true);
+		}catch(Exception ex){
+			try{
+				conn.rollback();
+			}catch(Exception e){
+			}
+			new bsException("Scheduler: "+ex.toString(), iStub.log_ERROR);
+		}finally{
+			db_connection.release(rs, st, conn);
+		}
+		return new Boolean(false);
+	}	
+
 }

@@ -164,7 +164,13 @@ public class xml_4Batch implements i_4Batch  {
 					return operation_FINDFORMLIST(form);
 				
 		if(oper.equals(o_LOAD_BATCH_PROPERTIES))
-					return operation_LOAD_BATCH_PROPERTIES(form);		
+					return operation_LOAD_BATCH_PROPERTIES(form);	
+		
+		if(oper.equals(o_DELETE_BATCH_PROPERTIES))
+					return operation_DELETE_BATCH_PROPERTIES(form);	
+		
+		if(oper.equals(o_INSERT_BATCH_PROPERTY))
+					return operation_INSERT_BATCH_PROPERTY(form);	
 		
 		if(oper.equals(o_DELETE))
 					return operation_DELETE(form);
@@ -559,7 +565,6 @@ public class xml_4Batch implements i_4Batch  {
 	
 	public Object operation_LOAD_BATCH_PROPERTIES(HashMap<String,?> form){
 
-
 	    db_batch batch = (db_batch)form.get("selected");
 	    if(batch==null)
 			return new Boolean(false);
@@ -576,5 +581,37 @@ public class xml_4Batch implements i_4Batch  {
 			}
 		}
 		return property;
+	}
+	
+	public Object operation_DELETE_BATCH_PROPERTIES(HashMap<String,?> form){
+
+	    db_batch batch = (db_batch)form.get("selected");
+	    if(batch==null)
+			return new Boolean(false);
+	    
+		Properties property = new Properties();
+		
+		Iterator<db_batch_property> it = xml_batch_property.iterator();
+		while (it.hasNext()) {
+			db_batch_property prop = it.next();
+			if(prop.getCd_ist().shortValue()==batch.getCd_ist().shortValue() && prop.getCd_btch().equals(batch.getCd_btch())){
+				it.remove();				
+			}
+		}
+		return property;
+	}	
+	
+	public Object operation_INSERT_BATCH_PROPERTY(HashMap<String,?> form){
+
+	    db_batch_property property = (db_batch_property)form.get("selected_property");
+	    if(property==null)
+			return new Boolean(false);
+	    
+	    if(xml_batch_property==null)
+	    	xml_batch_property = new ArrayList<db_batch_property>();
+	    
+	    xml_batch_property.add(property);	
+	    
+	    return new Boolean(true);
 	}	
 }

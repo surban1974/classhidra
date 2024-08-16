@@ -80,6 +80,18 @@ public class ProcessBatchEvent implements Serializable {
 		}
 	}	
 	
+	public String[] launchR(Integer cd_ist, String cd_btch, boolean recalc, boolean sequence, String common_area){
+		String[] result_eb = null;
+		try {
+			result_eb = executeBatch(cd_ist,cd_btch,common_area,recalc,sequence,recalc);
+		}catch(Exception ex){
+			new bsException("Scheduler: "+ex.toString(),iStub.log_ERROR);
+		}catch(Throwable th){
+			new bsException("Scheduler: "+th.toString(),iStub.log_ERROR);
+		}
+		return result_eb;
+	}	
+	
 	public String[] launchR(Integer cd_ist, String cd_btch, boolean recalc, boolean sequence){
 		String[] result_eb = null;
 		try {
