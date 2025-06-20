@@ -892,6 +892,10 @@ public static String formatDecimalWithCurrency(NumberFormat decimalFormat, Local
 	}
 }
 
+public static String makeFormatedString(String format, Object ref) throws Exception{
+	return makeFormatedString(format, null, null, null, null, ref);
+}
+
 public static String makeFormatedString(String format, String language, Object ref) throws Exception{
 	return makeFormatedString(format, language, null, null, null, ref);
 }
