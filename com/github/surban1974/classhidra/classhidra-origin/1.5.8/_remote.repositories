@@ -1,6 +1,4 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Wed Aug 23 13:52:34 CEST 2023
-classhidra-origin-1.5.8.rar>classhidra-mvn-repo=
-classhidra-origin-1.5.8.rar>=
+#Thu Jun 05 10:39:21 CEST 2025
 classhidra-origin-1.5.8.pom>classhidra-mvn-repo=
-classhidra-origin-1.5.8.pom>=
+classhidra-origin-1.5.8.rar>classhidra-mvn-repo=

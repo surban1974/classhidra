@@ -1,4 +1,4 @@
-#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Fri Dec 04 18:37:39 CET 2020
-classhidra-origin-1.5.7.rar>=
-classhidra-origin-1.5.7.pom>=
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Jun 05 10:38:39 CEST 2025
+classhidra-origin-1.5.7.pom>classhidra-mvn-repo=
+classhidra-origin-1.5.7.rar>classhidra-mvn-repo=
